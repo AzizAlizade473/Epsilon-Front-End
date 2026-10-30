@@ -1,7 +1,7 @@
 # Epsilon progress
 
-Scope: PART 0 and STEP 00 only. Stop after STEP 00 for manual testing.
-Branch: `step/00-bootstrap`, based on initial `main` commit `d888174`.
+Scope: STEP 01 design system. STEP 00 is merged into `main`.
+Branch: `step/01-design-system`, based on `main` merge commit `66c4176`.
 
 A checked item is complete only after its commit reaches GitHub.
 
@@ -20,7 +20,7 @@ A checked item is complete only after its commit reaches GitHub.
 
 ## STEP 01
 
-- [ ] 01.a — tokens + theme + typography + motion
+- [x] 01.a — tokens + theme + typography + motion
 - [ ] 01.b — Text, Icon, Screen, Header
 - [ ] 01.c — Button, IconButton (+ tests)
 - [ ] 01.d — ListRow, Card, Chip, Switch, SegmentedControl
@@ -268,7 +268,10 @@ A checked item is complete only after its commit reaches GitHub.
 - 00.b: source copy matches byte-for-byte; 30 step files and all micro-step IDs checked against the source; Git whitespace checks passed. No package scripts exist yet.
 - Device testing: not verified.
 
-STEP 01 has not begun. Later-step documents are specifications only.
+STEP 00 merged into `main` (`66c4176`). STEP 01 in progress on `step/01-design-system`.
+Later-step documents are specifications only.
+
+- 01.a: Design tokens, theme, typography, and motion (`resolveMotion` / `useMotion` for Reduce Motion). 83 tests pass.
 
 - 00.c: TypeScript, Expo version check, CLI schema compatibility tests, and npm audit --omit=dev --audit-level=high pass. Metro HTTP status verified; Android Hermes export succeeds (2477278 bytes baseline). Direct dependency licenses MIT/Apache-2.0 verified. Seven low-severity transitive tooling audit findings documented in decisions/0001-bootstrap-dependencies.md. Device launch not verified.
 
