@@ -85,3 +85,32 @@ export function parseEnv(
   }
   return result.data;
 }
+
+let cachedEnv: Environment | null = null;
+
+export function validateEnv(
+  source: Readonly<Record<string, unknown>> = process.env,
+): Environment {
+  return parseEnv(source);
+}
+
+export function getEnv(): Environment {
+  if (!cachedEnv) {
+    cachedEnv = validateEnv(process.env);
+  }
+  return cachedEnv;
+}
+
+export function resetEnvForTesting(): void {
+  cachedEnv = null;
+}
+
+export const env: Environment = new Proxy({} as Environment, {
+  get(_target, prop: string | symbol) {
+    if (typeof prop === 'string') {
+      const active = getEnv();
+      return active[prop as keyof Environment];
+    }
+    return undefined;
+  },
+});

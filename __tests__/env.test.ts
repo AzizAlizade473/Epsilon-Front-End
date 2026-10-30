@@ -1,6 +1,12 @@
 import { describe, expect, test } from '@jest/globals';
 
-import { parseEnv } from '@/lib/env';
+import {
+  env,
+  getEnv,
+  parseEnv,
+  resetEnvForTesting,
+  validateEnv,
+} from '@/lib/env';
 
 const development = {
   EXPO_PUBLIC_APP_ENV: 'development',
@@ -93,5 +99,34 @@ describe('environment schema', () => {
         EXPO_PUBLIC_API_URL: 'sensitive-invalid-value',
       }),
     ).toThrow('Invalid environment fields: EXPO_PUBLIC_API_URL');
+  });
+  test('validates fallback to process.env via validateEnv', () => {
+    resetEnvForTesting();
+    const originalEnv = process.env;
+    try {
+      process.env = { ...originalEnv, ...development };
+      expect(validateEnv()).toMatchObject({
+        EXPO_PUBLIC_APP_ENV: 'development',
+        EXPO_PUBLIC_API_MODE: 'mock',
+        EXPO_PUBLIC_MIN_AGE: 16,
+        ENABLE_GOOGLE_SIGNIN: false,
+        ENABLE_APPLE_SIGNIN: false,
+      });
+    } finally {
+      process.env = originalEnv;
+      resetEnvForTesting();
+    }
+  });
+  test('supports getEnv and env proxy with test resetting', () => {
+    resetEnvForTesting();
+    const originalEnv = process.env;
+    try {
+      process.env = { ...originalEnv, ...development };
+      expect(getEnv().EXPO_PUBLIC_APP_ENV).toBe('development');
+      expect(env.EXPO_PUBLIC_API_MODE).toBe('mock');
+    } finally {
+      process.env = originalEnv;
+      resetEnvForTesting();
+    }
   });
 });
