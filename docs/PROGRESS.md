@@ -9,7 +9,7 @@ A checked item is complete only after its commit reaches GitHub.
 
 - [x] 00.a — Git preflight: confirm repo, `origin`, branch `main`; create `.gitignore` (node_modules, `.env*` except `.env.example`, build output, `*.keystore`, `*.jks`, `*.p8`, `*.pem`); first commit; verify `git push` works. If not: stop and tell Aziz what to run.
 - [x] 00.b — Split this file into `docs/steps/NN-name.md` (one file per STEP, plus `docs/steps/PART0-1-2-3.md` for protocol/context/standards/structure). Create `docs/PROGRESS.md` (a checklist of every micro-step in this file, unchecked) and a short `CLAUDE.md`: "Read docs/PROGRESS.md and the current step file. Follow PART 0 loop and PART 2 standards (docs/steps/PART0-1-2-3.md). Android first. One micro-step at a time." Commit and push.
-- [ ] 00.c — Create the Expo project (TypeScript, Expo Router) in the repo root. Pin exact versions. Confirm it starts.
+- [x] 00.c — Create the Expo project (TypeScript, Expo Router) in the repo root. Pin exact versions. Confirm it starts.
 - [ ] 00.d — `tsconfig` strict + `noUncheckedIndexedAccess` + path aliases (`@/…` → `src/…`). ESLint (no-explicit-any, react-hooks, import rules for dependency direction, `import/no-cycle`), Prettier, Husky + lint-staged (eslint + prettier on staged files). Scripts: `lint`, `typecheck`, `test`, `i18n:check` (placeholder), and `check` = all of them.
 - [ ] 00.e — Create the folder skeleton from PART 3 (use `.gitkeep`; no screens yet).
 - [ ] 00.f — `src/lib/env.ts` with Zod: `EXPO_PUBLIC_API_URL`, `EXPO_PUBLIC_API_MODE` (`mock|live`), `EXPO_PUBLIC_APP_ENV` (`development|staging|production`), `EXPO_PUBLIC_MIN_AGE` (default 16), `EXPO_PUBLIC_SUPPORT_EMAIL`, `EXPO_PUBLIC_PRIVACY_URL`, `EXPO_PUBLIC_TERMS_URL`, `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`, `ENABLE_GOOGLE_SIGNIN`, `ENABLE_APPLE_SIGNIN` (default false). Throw on invalid values. Build guards (SEC-9): production forbids `mock` mode and non-production URLs. `.env.example` documents everything.
@@ -269,3 +269,5 @@ A checked item is complete only after its commit reaches GitHub.
 - Device testing: not verified.
 
 STEP 01 has not begun. Later-step documents are specifications only.
+
+- 00.c: TypeScript, Expo version check, CLI schema compatibility tests, and npm audit --omit=dev --audit-level=high pass. Metro HTTP status verified; Android Hermes export succeeds (2477278 bytes baseline). Direct dependency licenses MIT/Apache-2.0 verified. Seven low-severity transitive tooling audit findings documented in decisions/0001-bootstrap-dependencies.md. Device launch not verified.
