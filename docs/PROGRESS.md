@@ -275,5 +275,5 @@ STEP 01 has not begun. Later-step documents are specifications only.
 ## STEP 00.d substeps
 
 - [x] 00.d.1 Strict TypeScript, import boundaries and Prettier. All available checks passed on resume: lint, typecheck, format:check, CLI compatibility, Expo dependency validation, Git whitespace check.
-- [ ] 00.d.2 Jest and combined verification scripts.
+- [x] 00.d.2 Jest and combined verification scripts. Full npm run check passes, including two tooling tests. Test dependencies are development-only (no release bundle impact).
 - [ ] 00.d.3 Husky and lint-staged.
