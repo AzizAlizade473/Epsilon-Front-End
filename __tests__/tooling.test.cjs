@@ -104,3 +104,15 @@ test('AGENTS.md and .cursor/rules/epsilon.mdc exist, contain core rules, and sta
     expect(text).toContain('any');
   }
 });
+
+test('docs/DEV_SETUP.md documents Windows, emulator, USB debugging, EAS dev client, and rebuilds', () => {
+  const content = fs.readFileSync('docs/DEV_SETUP.md', 'utf-8');
+  expect(content).toContain('Android Studio');
+  expect(content).toContain('Google Play');
+  expect(content).toContain('USB debugging');
+  expect(content).toContain(
+    'eas build --profile development --platform android',
+  );
+  expect(content).toContain('npx expo start --dev-client');
+  expect(content).toContain('Rebuild');
+});
