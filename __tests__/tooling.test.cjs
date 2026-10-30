@@ -116,3 +116,10 @@ test('docs/DEV_SETUP.md documents Windows, emulator, USB debugging, EAS dev clie
   expect(content).toContain('npx expo start --dev-client');
   expect(content).toContain('Rebuild');
 });
+
+test('.github/workflows/ci.yml runs npm ci and npm run check on push and PR', () => {
+  const content = fs.readFileSync('.github/workflows/ci.yml', 'utf-8');
+  expect(content).toContain('npm ci');
+  expect(content).toContain('npm run check');
+  expect(content).toContain("branches: ['main', 'step/**']");
+});

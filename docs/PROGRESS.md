@@ -16,7 +16,7 @@ A checked item is complete only after its commit reaches GitHub.
 - [x] 00.g — `app.config.ts` (Android first): name "Epsilon", slug `epsilon`, scheme `epsilon`, package from env (default `com.epsilonup.app`, TODO confirm), portrait only, light UI style, New Architecture on, adaptive icon (foreground/background/monochrome), edge-to-edge, `softwareKeyboardLayoutMode` resize, permissions only CAMERA (SEC-8, `allowBackup` false, cleartext off), plugins: expo-router, expo-camera, expo-secure-store, expo-localization, expo-splash-screen, expo-build-properties (minify release), `runtimeVersion` policy per OPS-3. Add `expo-dev-client`. `eas.json` profiles: `development` (dev client, APK), `preview` (internal), `production` (AAB, autoIncrement), with update channels.
 - [x] 00.h — Write `AGENTS.md` (copy to `.cursor/rules/epsilon.mdc`): a compact (≤ 40 lines) summary of PART 0.1, the SEC/NET/PERF/REL one-liners, "tokens not literals", "i18n not literals", "money via `lib/money`", "no `any`", and "read docs/PROGRESS.md first". Keep it short because it is loaded every session.
 - [x] 00.i — `docs/DEV_SETUP.md`: Windows setup (Android Studio, emulator image with Google Play, USB debugging), `eas build --profile development --platform android`, `npx expo start --dev-client`, how to rebuild the dev client.
-- [ ] 00.j — CI later in STEP 25; for now add a minimal GitHub Actions workflow running `npm ci` and `npm run check`.
+- [x] 00.j — CI later in STEP 25; for now add a minimal GitHub Actions workflow running `npm ci` and `npm run check`.
 
 ## STEP 01
 
@@ -297,3 +297,4 @@ STEP 01 has not begun. Later-step documents are specifications only.
 - 00.g: Dynamic Android-first app.config.ts with CAMERA permission, allowBackup false, cleartext off, Hermes release minification, runtimeVersion policy, and eas.json development (APK), preview (internal), and production (AAB) profiles with update channels. Android export and all 74 tests pass.
 - 00.h: Created compact AGENTS.md and .cursor/rules/epsilon.mdc (20 and 26 lines, <= 40 lines limit) summarizing loop, core pillars, and implementation invariants. All 75 tests pass.
 - 00.i: Created docs/DEV_SETUP.md covering Windows workstation prerequisites, Android Studio SDK and Google Play emulator setup, USB debugging, EAS dev-client builds and installation, and client rebuild rules. All 76 tests pass.
+- 00.j: Added .github/workflows/ci.yml running on main and step/** branches with Node 20, npm cache, npm ci, and npm run check. All 77 tests pass.
