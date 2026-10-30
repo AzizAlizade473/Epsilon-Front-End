@@ -279,3 +279,9 @@ STEP 01 has not begun. Later-step documents are specifications only.
 - [x] 00.d.3 Husky and lint-staged. Full check passes; installed hook rejects an intentionally invalid staged TypeScript fixture. Hook dependencies are development-only, MIT licensed, with no release bundle impact.
 
 - 00.e: All 49 PART 3 skeleton directories verified with .gitkeep files; no additional routes or feature implementations. Full npm run check passes. No runtime bundle impact.
+
+## STEP 00.f substeps
+
+- [x] 00.f.1 Production URL guard and 43 URL cases; full check passes (45 total tests). Zod 4.6.6 pinned (MIT, 6,148,944 unpacked bytes; app bundle impact measured when wired).
+- [ ] 00.f.2 Strict environment schema and tests.
+- [ ] 00.f.3 Environment documentation and build validation entry point.
