@@ -33,3 +33,40 @@ test('.env.example documents all required variables without secrets or fake doma
   }
   expect(content).not.toContain('api.epsilon.az');
 });
+
+test('app.config.ts satisfies Android-first, security, and runtime requirements', () => {
+  const { getConfig } = require('@expo/config');
+  const { exp } = getConfig(process.cwd(), { skipSDKVersionRequirement: true });
+  expect(exp.name).toBe('Epsilon');
+  expect(exp.slug).toBe('epsilon');
+  expect(exp.scheme).toBe('epsilon');
+  expect(exp.orientation).toBe('portrait');
+  expect(exp.userInterfaceStyle).toBe('light');
+  expect(exp.android.package).toBe('com.epsilonup.app');
+  expect(exp.android.softwareKeyboardLayoutMode).toBe('resize');
+  expect(exp.android.allowBackup).toBe(false);
+  expect(exp.android.permissions).toEqual(['android.permission.CAMERA']);
+  expect(exp.runtimeVersion).toEqual({ policy: 'appVersion' });
+  const buildPropertiesPlugin = exp.plugins.find(
+    (p) => Array.isArray(p) && p[0] === 'expo-build-properties',
+  );
+  expect(buildPropertiesPlugin).toBeDefined();
+  expect(buildPropertiesPlugin[1].android.usesCleartextTraffic).toBe(false);
+  expect(buildPropertiesPlugin[1].android.enableProguardInReleaseBuilds).toBe(
+    true,
+  );
+  expect(
+    buildPropertiesPlugin[1].android.enableShrinkResourcesInReleaseBuilds,
+  ).toBe(true);
+  const pluginNames = exp.plugins.map((p) => (Array.isArray(p) ? p[0] : p));
+  expect(pluginNames).toEqual(
+    expect.arrayContaining([
+      'expo-router',
+      'expo-camera',
+      'expo-secure-store',
+      'expo-localization',
+      'expo-splash-screen',
+      'expo-build-properties',
+    ]),
+  );
+});

@@ -291,5 +291,5 @@ STEP 01 has not begun. Later-step documents are specifications only.
 ## STEP 00.g substeps
 
 - [x] 00.g.1 Pinned Expo SDK 58 native modules (DEP-1, DEP-2): expo-camera 58.0.14, expo-secure-store 58.0.2, expo-localization 58.0.5, expo-splash-screen 58.0.12, expo-build-properties 58.0.11, expo-dev-client 58.0.17. All MIT licensed, npm audit passes.
-- [ ] 00.g.2 app.config.ts Android configuration and build plugins.
+- [x] 00.g.2 app.config.ts Android configuration and build plugins. Android-first setup, CAMERA-only permissions, allowBackup false, cleartext off, and Hermes release minification verified (73 total tests).
 - [ ] 00.g.3 eas.json profiles and update channels.
