@@ -1,0 +1,11 @@
+node_modules/
+.expo/
+dist/
+build/
+coverage/
+android/
+ios/
+package-lock.json
+# Preserve the authoritative source and its extracted specifications.
+docs/MASTER_PROMPT.md
+docs/steps/

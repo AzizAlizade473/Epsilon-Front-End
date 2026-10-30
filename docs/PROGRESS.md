@@ -1,0 +1,300 @@
+# Epsilon progress
+
+Scope: PART 0 and STEP 00 only. Stop after STEP 00 for manual testing.
+Branch: `step/00-bootstrap`, based on initial `main` commit `d888174`.
+
+A checked item is complete only after its commit reaches GitHub.
+
+## STEP 00
+
+- [x] 00.a — Git preflight: confirm repo, `origin`, branch `main`; create `.gitignore` (node_modules, `.env*` except `.env.example`, build output, `*.keystore`, `*.jks`, `*.p8`, `*.pem`); first commit; verify `git push` works. If not: stop and tell Aziz what to run.
+- [x] 00.b — Split this file into `docs/steps/NN-name.md` (one file per STEP, plus `docs/steps/PART0-1-2-3.md` for protocol/context/standards/structure). Create `docs/PROGRESS.md` (a checklist of every micro-step in this file, unchecked) and a short `CLAUDE.md`: "Read docs/PROGRESS.md and the current step file. Follow PART 0 loop and PART 2 standards (docs/steps/PART0-1-2-3.md). Android first. One micro-step at a time." Commit and push.
+- [x] 00.c — Create the Expo project (TypeScript, Expo Router) in the repo root. Pin exact versions. Confirm it starts.
+- [x] 00.d — `tsconfig` strict + `noUncheckedIndexedAccess` + path aliases (`@/…` → `src/…`). ESLint (no-explicit-any, react-hooks, import rules for dependency direction, `import/no-cycle`), Prettier, Husky + lint-staged (eslint + prettier on staged files). Scripts: `lint`, `typecheck`, `test`, `i18n:check` (placeholder), and `check` = all of them.
+- [x] 00.e — Create the folder skeleton from PART 3 (use `.gitkeep`; no screens yet).
+- [x] 00.f — `src/lib/env.ts` with Zod: `EXPO_PUBLIC_API_URL`, `EXPO_PUBLIC_API_MODE` (`mock|live`), `EXPO_PUBLIC_APP_ENV` (`development|staging|production`), `EXPO_PUBLIC_MIN_AGE` (default 16), `EXPO_PUBLIC_SUPPORT_EMAIL`, `EXPO_PUBLIC_PRIVACY_URL`, `EXPO_PUBLIC_TERMS_URL`, `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`, `ENABLE_GOOGLE_SIGNIN`, `ENABLE_APPLE_SIGNIN` (default false). Throw on invalid values. Build guards (SEC-9): production forbids `mock` mode and non-production URLs. `.env.example` documents everything.
+- [x] 00.g — `app.config.ts` (Android first): name "Epsilon", slug `epsilon`, scheme `epsilon`, package from env (default `com.epsilonup.app`, TODO confirm), portrait only, light UI style, New Architecture on, adaptive icon (foreground/background/monochrome), edge-to-edge, `softwareKeyboardLayoutMode` resize, permissions only CAMERA (SEC-8, `allowBackup` false, cleartext off), plugins: expo-router, expo-camera, expo-secure-store, expo-localization, expo-splash-screen, expo-build-properties (minify release), `runtimeVersion` policy per OPS-3. Add `expo-dev-client`. `eas.json` profiles: `development` (dev client, APK), `preview` (internal), `production` (AAB, autoIncrement), with update channels.
+- [x] 00.h — Write `AGENTS.md` (copy to `.cursor/rules/epsilon.mdc`): a compact (≤ 40 lines) summary of PART 0.1, the SEC/NET/PERF/REL one-liners, "tokens not literals", "i18n not literals", "money via `lib/money`", "no `any`", and "read docs/PROGRESS.md first". Keep it short because it is loaded every session.
+- [x] 00.i — `docs/DEV_SETUP.md`: Windows setup (Android Studio, emulator image with Google Play, USB debugging), `eas build --profile development --platform android`, `npx expo start --dev-client`, how to rebuild the dev client.
+- [x] 00.j — CI later in STEP 25; for now add a minimal GitHub Actions workflow running `npm ci` and `npm run check`.
+
+## STEP 01
+
+- [ ] 01.a — tokens + theme + typography + motion
+- [ ] 01.b — Text, Icon, Screen, Header
+- [ ] 01.c — Button, IconButton (+ tests)
+- [ ] 01.d — ListRow, Card, Chip, Switch, SegmentedControl
+- [ ] 01.e — Input (+ tests)
+- [ ] 01.f — Amount (+ money tests later in STEP 04)
+- [ ] 01.g — Skeleton, EmptyState, ErrorState, Toast
+- [ ] 01.h — dev gallery route
+- [ ] 01.i — `docs/DESIGN_SYSTEM.md`.
+
+## STEP 02
+
+- [ ] 02.a — root layout + providers + splash gate
+- [ ] 02.b — route skeleton with stubs and typed routes
+- [ ] 02.c — TabBar + center button
+- [ ] 02.d — Sheet + transparent-modal wiring
+- [ ] 02.e — bootstrap redirect + deep-link param schemas (+ tests)
+- [ ] 02.f — Back-button behavior.
+
+## STEP 03
+
+- [ ] 03.a — contracts
+- [ ] 03.b — client + errors + idempotency (+ tests)
+- [ ] 03.c — refresh single-flight (+ tests)
+- [ ] 03.d — service interfaces
+- [ ] 03.e — mock implementations + fixtures + contract tests
+- [ ] 03.f — dev scenario menu
+- [ ] 03.g — query defaults + key factories.
+
+## STEP 04
+
+- [ ] 04.a — i18n setup + 3 locale files + language persistence
+- [ ] 04.b — `i18n:check` script wired into `check`
+- [ ] 04.c — money (+ tests: 0, 5, 100, 123456, negatives)
+- [ ] 04.d — date (+ tests)
+- [ ] 04.e — plurals.
+
+## STEP 05
+
+- [ ] 05.a — layout + strings
+- [ ] 05.b — buttons (Google official style, phone primary) + flags
+- [ ] 05.c — legal links caption
+- [ ] 05.d — motion + a11y labels ("Google ilə davam et", "Telefon nömrəsi ilə davam et") + test.
+
+## STEP 06
+
+- [ ] 06.a — phone schema + formatter (+ tests)
+- [ ] 06.b — `PhoneField`
+- [ ] 06.c — screen + keyboard-safe button
+- [ ] 06.d — request mutation + errors
+- [ ] 06.e — a11y + test.
+
+## STEP 07
+
+- [ ] 07.a — `OtpInput` + `ResendTimer` (+ tests)
+- [ ] 07.b — screen + verify mutation
+- [ ] 07.c — error states + shake
+- [ ] 07.d — session save + routing by `nextStep` (+ tests)
+- [ ] 07.e — a11y.
+
+## STEP 08
+
+- [ ] 08.a — plugin/config + env gating + docs
+- [ ] 08.b — `useGoogleSignIn` hook (+ tests)
+- [ ] 08.c — wire the Welcome button
+- [ ] 08.d — error messages
+- [ ] 08.e — session + `nextStep` routing
+- [ ] 08.f — logout integration.
+
+## STEP 09
+
+- [ ] 09.a — schema + age rule (+ boundary tests: exactly MIN_AGE allowed, one day short blocked)
+- [ ] 09.b — form fields
+- [ ] 09.c — date picker
+- [ ] 09.d — submit + routing
+- [ ] 09.e — a11y.
+
+## STEP 10
+
+- [ ] 10.a — phone-verify entry screen
+- [ ] 10.b — code screen
+- [ ] 10.c — PHONE_IN_USE sheet
+- [ ] 10.d — skip/banner logic by config
+- [ ] 10.e — resume-at-step tests.
+
+## STEP 11
+
+- [ ] 11.a — `useWallet` + `useWalletTransactions` hooks (+ tests)
+- [ ] 11.b — shared `TransactionRow`
+- [ ] 11.c — Home layout + strings
+- [ ] 11.d — states (skeleton/error/offline)
+- [ ] 11.e — count-up + motion
+- [ ] 11.f — a11y + test.
+
+## STEP 12
+
+- [ ] 12.a — hook + keys + infinite query (+ tests)
+- [ ] 12.b — list + row
+- [ ] 12.c — search + debounce
+- [ ] 12.d — states + strings.
+
+## STEP 13
+
+- [ ] 13.a — state machine (+ tests)
+- [ ] 13.b — permission screens
+- [ ] 13.c — camera + overlay + scan line
+- [ ] 13.d — resolve call + success/lock
+- [ ] 13.e — error cards
+- [ ] 13.f — manual-entry sheet
+- [ ] 13.g — lifecycle (focus/background) + a11y.
+
+## STEP 14
+
+- [ ] 14.a — hook + initial data (+ tests)
+- [ ] 14.b — header + items list
+- [ ] 14.c — status/read-only logic
+- [ ] 14.d — footer + rewardHint
+- [ ] 14.e — a11y.
+
+## STEP 15
+
+- [ ] 15.a — outbox module (+ tests)
+- [ ] 15.b — star rating component + labels
+- [ ] 15.c — reason chips + comment
+- [ ] 15.d — submit mutation + idempotency + outbox wiring
+- [ ] 15.e — error/dismiss-confirm flows
+- [ ] 15.f — retry on start/foreground
+- [ ] 15.g — a11y.
+
+## STEP 16
+
+- [ ] 16.a — layout + three reward variants (+ tests)
+- [ ] 16.b — motion + haptic
+- [ ] 16.c — navigation rules.
+
+## STEP 17
+
+- [ ] 17.a — date grouping util (+ tests)
+- [ ] 17.b — hero + pending chip
+- [ ] 17.c — history list + sticky headers
+- [ ] 17.d — row variants (+ tests)
+- [ ] 17.e — states + empty
+- [ ] 17.f — foreground refetch + a11y.
+
+## STEP 18
+
+- [ ] 18.a — sheet + rows + omit-null logic (+ tests)
+- [ ] 18.b — copy + toast
+- [ ] 18.c — refresh + states.
+
+## STEP 19
+
+- [ ] 19.a — identity block
+- [ ] 19.b — grouped rows + routes
+- [ ] 19.c — logout flow + full cleanup (+ test that nothing remains)
+- [ ] 19.d — version footer + a11y.
+
+## STEP 20
+
+- [ ] 20.a — personal info
+- [ ] 20.b — my reviews
+- [ ] 20.c — notifications + permission flow
+- [ ] 20.d — language
+- [ ] 20.e — privacy links + crash toggle
+- [ ] 20.f — delete flow with re-auth (+ tests)
+- [ ] 20.g — help.
+
+## STEP 21
+
+- [ ] 21.a — OfflineBanner + online manager
+- [ ] 21.b — ErrorBoundary + test (throw in a child)
+- [ ] 21.c — toast queue
+- [ ] 21.d — not-found + session expiry
+- [ ] 21.e — update gate
+- [ ] 21.f — BAD_RESPONSE + clock tests.
+
+## STEP 22
+
+- [ ] 22.a — manifest/permission audit script + result
+- [ ] 22.b — fixes found
+- [ ] 22.c — TalkBack and font-scale pass with fixes
+- [ ] 22.d — write `docs/ANDROID_AUDIT.md`.
+
+## STEP 23
+
+- [ ] 23.a — decision + install + config plugin
+- [ ] 23.b — deferred init + env gating
+- [ ] 23.c — scrubber (+ tests)
+- [ ] 23.d — toggle integration
+- [ ] 23.e — source map upload in EAS
+- [ ] 23.f — startup measurement recorded in `docs/PERF_REPORT.md`.
+
+## STEP 24
+
+- [ ] 24.a — missing unit tests per the list
+- [ ] 24.b — coverage thresholds in CI
+- [ ] 24.c — Maestro setup + flow 1
+- [ ] 24.d — flows 2–5
+- [ ] 24.e — scenario table in `docs/QA_CHECKLIST.md`.
+
+## STEP 25
+
+- [ ] 25.a — PR workflow
+- [ ] 25.b — audit/license/secret scan
+- [ ] 25.c — guard script (+ test)
+- [ ] 25.d — bundle report
+- [ ] 25.e — Dependabot + PR template + CHANGELOG
+- [ ] 25.f — manual EAS workflows
+- [ ] 25.g — docs.
+
+## STEP 26
+
+- [ ] 26.a — conventions + errors
+- [ ] 26.b — OpenAPI for auth/user/config
+- [ ] 26.c — OpenAPI for restaurants/receipts/feedback/wallet/notifications
+- [ ] 26.d — `BUSINESS_RULES.md` (MUST list above)
+- [ ] 26.e — open decisions + reviewer access plan
+- [ ] 26.f — fixtures-vs-schema contract test.
+
+## STEP 27
+
+- [ ] 27.a — data inventory
+- [ ] 27.b — legal TODO + lawyer questions
+- [ ] 27.c — incident response
+- [ ] 27.d — store-readiness drafts.
+
+## STEP 28
+
+- [ ] 28.a — baseline measurements
+- [ ] 28.b — bundle/startup fixes
+- [ ] 28.c — list/animation fixes
+- [ ] 28.d — memory/lifecycle checks
+- [ ] 28.e — final numbers.
+
+## STEP 29
+
+- [ ] 29.a — EAS production + submit profile
+- [ ] 29.b — `RELEASE_ANDROID.md`
+- [ ] 29.c — `RELEASE_GATE.md`
+- [ ] 29.d — internal-testing build installed from Google Play and walked through (sign in with Google, scan a staging receipt, rate, see the wallet)
+- [ ] 29.e — staged-rollout plan.
+
+## Verification log
+
+- 00.a: canonical origin and initial main commit verified; ignore-rule checks and Git whitespace checks passed; pushed `1aafb5c` and verified remote hash.
+- 00.b: source copy matches byte-for-byte; 30 step files and all micro-step IDs checked against the source; Git whitespace checks passed. No package scripts exist yet.
+- Device testing: not verified.
+
+STEP 01 has not begun. Later-step documents are specifications only.
+
+- 00.c: TypeScript, Expo version check, CLI schema compatibility tests, and npm audit --omit=dev --audit-level=high pass. Metro HTTP status verified; Android Hermes export succeeds (2477278 bytes baseline). Direct dependency licenses MIT/Apache-2.0 verified. Seven low-severity transitive tooling audit findings documented in decisions/0001-bootstrap-dependencies.md. Device launch not verified.
+
+## STEP 00.d substeps
+
+- [x] 00.d.1 Strict TypeScript, import boundaries and Prettier. All available checks passed on resume: lint, typecheck, format:check, CLI compatibility, Expo dependency validation, Git whitespace check.
+- [x] 00.d.2 Jest and combined verification scripts. Full npm run check passes, including two tooling tests. Test dependencies are development-only (no release bundle impact).
+- [x] 00.d.3 Husky and lint-staged. Full check passes; installed hook rejects an intentionally invalid staged TypeScript fixture. Hook dependencies are development-only, MIT licensed, with no release bundle impact.
+
+- 00.e: All 49 PART 3 skeleton directories verified with .gitkeep files; no additional routes or feature implementations. Full npm run check passes. No runtime bundle impact.
+
+## STEP 00.f substeps
+
+- [x] 00.f.1 Production URL guard and 43 URL cases; full check passes (45 total tests). Zod 4.6.6 pinned (MIT, 6,148,944 unpacked bytes; app bundle impact measured when wired).
+- [x] 00.f.2 Strict environment schema and tests. 24 test cases pass (69 total across suites); full check passes.
+- [x] 00.f.3 Environment documentation and build validation entry point. .env.example documents all variables, production guards, and production URL TODO; validateEnv, getEnv, env proxy, and tooling tests pass (72 total tests).
+
+- 00.f: Strict environment validation schema with Zod, production URL guard (SEC-9), build guards forbidding mock mode and non-production URLs in production, .env.example documenting all configuration variables and production domain TODO, and build/runtime validation entry points. All 72 tests pass.
+
+## STEP 00.g substeps
+
+- [x] 00.g.1 Pinned Expo SDK 58 native modules (DEP-1, DEP-2): expo-camera 58.0.14, expo-secure-store 58.0.2, expo-localization 58.0.5, expo-splash-screen 58.0.12, expo-build-properties 58.0.11, expo-dev-client 58.0.17. All MIT licensed, npm audit passes.
+- [x] 00.g.2 app.config.ts Android configuration and build plugins. Android-first setup, CAMERA-only permissions, allowBackup false, cleartext off, and Hermes release minification verified (73 total tests).
+- [x] 00.g.3 eas.json profiles and update channels. Validated development (APK), preview (internal), and production (AAB) profiles with update channels; tooling test passes (74 total tests).
+
+- 00.g: Dynamic Android-first app.config.ts with CAMERA permission, allowBackup false, cleartext off, Hermes release minification, runtimeVersion policy, and eas.json development (APK), preview (internal), and production (AAB) profiles with update channels. Android export and all 74 tests pass.
+- 00.h: Created compact AGENTS.md and .cursor/rules/epsilon.mdc (20 and 26 lines, <= 40 lines limit) summarizing loop, core pillars, and implementation invariants. All 75 tests pass.
+- 00.i: Created docs/DEV_SETUP.md covering Windows workstation prerequisites, Android Studio SDK and Google Play emulator setup, USB debugging, EAS dev-client builds and installation, and client rebuild rules. All 76 tests pass.
+- 00.j: Added .github/workflows/ci.yml running on main and step/** branches with Node 20, npm cache, npm ci, and npm run check. All 77 tests pass.
