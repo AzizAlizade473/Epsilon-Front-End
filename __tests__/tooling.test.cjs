@@ -70,3 +70,23 @@ test('app.config.ts satisfies Android-first, security, and runtime requirements'
     ]),
   );
 });
+
+test('eas.json defines development, preview, and production profiles with update channels', () => {
+  const eas = JSON.parse(fs.readFileSync('eas.json', 'utf-8'));
+  expect(eas.build.development).toMatchObject({
+    developmentClient: true,
+    distribution: 'internal',
+    channel: 'development',
+    android: { buildType: 'apk' },
+  });
+  expect(eas.build.preview).toMatchObject({
+    distribution: 'internal',
+    channel: 'preview',
+    android: { buildType: 'apk' },
+  });
+  expect(eas.build.production).toMatchObject({
+    autoIncrement: true,
+    channel: 'production',
+    android: { buildType: 'app-bundle' },
+  });
+});
