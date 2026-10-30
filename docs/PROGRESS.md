@@ -283,5 +283,5 @@ STEP 01 has not begun. Later-step documents are specifications only.
 ## STEP 00.f substeps
 
 - [x] 00.f.1 Production URL guard and 43 URL cases; full check passes (45 total tests). Zod 4.6.6 pinned (MIT, 6,148,944 unpacked bytes; app bundle impact measured when wired).
-- [ ] 00.f.2 Strict environment schema and tests.
+- [x] 00.f.2 Strict environment schema and tests. 24 test cases pass (69 total across suites); full check passes.
 - [ ] 00.f.3 Environment documentation and build validation entry point.
