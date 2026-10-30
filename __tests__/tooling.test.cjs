@@ -90,3 +90,17 @@ test('eas.json defines development, preview, and production profiles with update
     android: { buildType: 'app-bundle' },
   });
 });
+
+test('AGENTS.md and .cursor/rules/epsilon.mdc exist, contain core rules, and stay <= 40 lines', () => {
+  const agents = fs.readFileSync('AGENTS.md', 'utf-8');
+  const mdc = fs.readFileSync('.cursor/rules/epsilon.mdc', 'utf-8');
+  expect(agents.split('\n').length).toBeLessThanOrEqual(40);
+  expect(mdc.split('\n').length).toBeLessThanOrEqual(40);
+  for (const text of [agents, mdc]) {
+    expect(text).toContain('docs/PROGRESS.md');
+    expect(text).toContain('Tokens not literals');
+    expect(text).toContain('i18n not literals');
+    expect(text).toContain('lib/money');
+    expect(text).toContain('any');
+  }
+});
