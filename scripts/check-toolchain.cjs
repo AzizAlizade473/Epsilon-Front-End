@@ -20,27 +20,46 @@ const plugin = {
   cliExtensions: {
     description: 'Compatibility fixture',
     entryPoint: 'fixture.js',
-    commands: [{
-      name: 'inspect',
-      title: 'Inspect',
-      environments: ['cli', 'mcp'],
-      parameters: [
-        { name: 'label', type: 'text' },
-        { name: 'count', type: 'number' },
-        { name: 'confirm', type: 'confirm' },
-      ],
-    }],
+    commands: [
+      {
+        name: 'inspect',
+        title: 'Inspect',
+        environments: ['cli', 'mcp'],
+        parameters: [
+          { name: 'label', type: 'text' },
+          { name: 'count', type: 'number' },
+          { name: 'confirm', type: 'confirm' },
+        ],
+      },
+    ],
   },
 };
 assert.equal(PluginSchema.safeParse(plugin).success, true);
-assert.equal(PluginSchema.safeParse({ ...plugin, packageName: '' }).success, false);
+assert.equal(
+  PluginSchema.safeParse({ ...plugin, packageName: '' }).success,
+  false,
+);
 const schema = createMCPDevToolsExtensionSchema(plugin);
-assert.equal(schema.safeParse({ command: 'inspect', label: 'ok', count: 1, confirm: true }).success, true);
+assert.equal(
+  schema.safeParse({ command: 'inspect', label: 'ok', count: 1, confirm: true })
+    .success,
+  true,
+);
 for (const invalid of [
   { command: 'unknown' },
   { command: 'inspect', count: '1' },
   { command: 'inspect', unexpected: true },
-]) assert.equal(schema.safeParse(invalid).success, false);
-assert.equal(DevToolsPluginOutputSchema.safeParse([{ type: 'text', text: 'ok', level: 'info' }]).success, true);
-assert.equal(DevToolsPluginOutputSchema.safeParse([{ type: 'image', url: 'invalid' }]).success, false);
+])
+  assert.equal(schema.safeParse(invalid).success, false);
+assert.equal(
+  DevToolsPluginOutputSchema.safeParse([
+    { type: 'text', text: 'ok', level: 'info' },
+  ]).success,
+  true,
+);
+assert.equal(
+  DevToolsPluginOutputSchema.safeParse([{ type: 'image', url: 'invalid' }])
+    .success,
+  false,
+);
 process.stdout.write('Expo CLI schema compatibility checks passed.\n');

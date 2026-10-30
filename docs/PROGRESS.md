@@ -271,3 +271,9 @@ A checked item is complete only after its commit reaches GitHub.
 STEP 01 has not begun. Later-step documents are specifications only.
 
 - 00.c: TypeScript, Expo version check, CLI schema compatibility tests, and npm audit --omit=dev --audit-level=high pass. Metro HTTP status verified; Android Hermes export succeeds (2477278 bytes baseline). Direct dependency licenses MIT/Apache-2.0 verified. Seven low-severity transitive tooling audit findings documented in decisions/0001-bootstrap-dependencies.md. Device launch not verified.
+
+## STEP 00.d substeps
+
+- [x] 00.d.1 Strict TypeScript, import boundaries and Prettier. All available checks passed on resume: lint, typecheck, format:check, CLI compatibility, Expo dependency validation, Git whitespace check.
+- [ ] 00.d.2 Jest and combined verification scripts.
+- [ ] 00.d.3 Husky and lint-staged.
