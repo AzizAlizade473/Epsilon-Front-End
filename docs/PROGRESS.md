@@ -5,6 +5,13 @@ Branch: `step/01-design-system`, based on `main` merge commit `66c4176`.
 
 A checked item is complete only after its commit reaches GitHub.
 
+Recovery: fetched all branches/tags on 2026-10-31; latest pushed development
+was `86bb6af` (01.a). No old-laptop 01.b edits were pushed. All 83 baseline
+tests pass; no missing `extend-expect` error. Windows CRLF formatting and stale
+Node 20 instructions are repaired by 01.recovery. Use Node 22.22.1+.
+Next: 01.b (split into components of at most 150 changed lines).
+Device/TalkBack/font-scale/performance checks remain not verified.
+
 ## STEP 00
 
 - [x] 00.a — Git preflight: confirm repo, `origin`, branch `main`; create `.gitignore` (node_modules, `.env*` except `.env.example`, build output, `*.keystore`, `*.jks`, `*.p8`, `*.pem`); first commit; verify `git push` works. If not: stop and tell Aziz what to run.
@@ -20,6 +27,7 @@ A checked item is complete only after its commit reaches GitHub.
 
 ## STEP 01
 
+- [x] 01.recovery — Recover pushed branch; align Node prerequisites/CI and enforce LF on Windows.
 - [x] 01.a — tokens + theme + typography + motion
 - [ ] 01.b — Text, Icon, Screen, Header
 - [ ] 01.c — Button, IconButton (+ tests)

@@ -6,7 +6,10 @@ This document describes setting up a Windows workstation for developing and test
 
 ## 1. Prerequisites
 
-1. **Node.js**: Node 20+ LTS and npm 10+.
+1. **Node.js**: Node 22.22.1 (or a compatible newer LTS) and npm 10+.
+   React Native 0.88 requires Node 22.13+; locked lint-staged requires 22.22.1+.
+   Install the committed dependencies with `npm ci`; do not regenerate the lockfile.
+   Git uses LF line endings via `.gitattributes`, including on Windows.
 2. **Git**: Installed with Windows Credential Manager.
 3. **Java Development Kit**: JDK 17 (Eclipse Temurin 17 or Azul Zulu 17).
    - Set environment variable `JAVA_HOME` to your JDK installation path (e.g., `C:\Program Files\Eclipse Adoptium\jdk-17...`).
