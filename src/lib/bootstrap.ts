@@ -4,6 +4,7 @@ import { z } from 'zod';
 export const storageKeys = {
   session: 'epsilon.session',
   onboarding: 'epsilon.onboarding.completed',
+  language: 'epsilon.language',
 } as const;
 
 const sessionSchema = z
