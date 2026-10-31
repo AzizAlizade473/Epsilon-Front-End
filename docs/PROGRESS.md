@@ -32,6 +32,7 @@ Device/TalkBack/font-scale/performance checks remain not verified.
 - [ ] 01.b — Text, Icon, Screen, Header
   - [x] 01.b.1 — Text: system typography, token tones, unrestricted font scaling and native accessibility props.
   - [x] 01.b.2 — Approved pinned icon/haptics/component-test dependencies; Android VIBRATE blocked (SEC-8).
+  - [x] 01.b.3 — Lucide Icon: labeled/decorative modes, stroke 2, modular imports; RNTL 14 tests.
 - [ ] 01.c — Button, IconButton (+ tests)
 - [ ] 01.d — ListRow, Card, Chip, Switch, SegmentedControl
 - [ ] 01.e — Input (+ tests)

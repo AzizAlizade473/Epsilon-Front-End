@@ -51,6 +51,7 @@ export const layout = {
   contentMaxWidth: 480,
   designWidth: 360,
   tapTarget: 44,
+  iconStrokeWidth: 2,
   hairlineWidth: 1,
 } as const;
 
