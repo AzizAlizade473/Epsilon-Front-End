@@ -1,3 +1,3 @@
-import { createStubScreen } from '@/components/navigation/StubScreen';
+import { createStubSheetScreen } from '@/components/navigation/StubScreen';
 
-export default createStubScreen('transaction');
+export default createStubSheetScreen('transaction');

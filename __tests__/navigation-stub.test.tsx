@@ -4,7 +4,10 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import az from '../locales/az.json';
 
-import { createStubScreen } from '@/components/navigation/StubScreen';
+import {
+  createStubScreen,
+  createStubSheetScreen,
+} from '@/components/navigation/StubScreen';
 import { initializeI18n } from '@/lib/i18n';
 
 test('route stubs show only their localized accessible heading', async () => {
@@ -23,4 +26,21 @@ test('route stubs show only their localized accessible heading', async () => {
     screen.getByRole('header', { name: az.navigation.phone }),
   ).toBeOnTheScreen();
   expect(screen.queryByRole('button')).toBeNull();
+});
+
+test('transparent sheet route stubs render Sheet with accessible heading', async () => {
+  await initializeI18n();
+  const SheetStub = createStubSheetScreen('rate');
+  const metrics = {
+    frame: { x: 0, y: 0, width: 360, height: 640 },
+    insets: { top: 24, bottom: 24, left: 0, right: 0 },
+  };
+  await render(
+    <SafeAreaProvider initialMetrics={metrics}>
+      <SheetStub />
+    </SafeAreaProvider>,
+  );
+  expect(
+    screen.getByRole('header', { name: az.navigation.rate }),
+  ).toBeOnTheScreen();
 });

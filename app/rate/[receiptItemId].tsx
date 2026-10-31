@@ -1,3 +1,3 @@
-import { createStubScreen } from '@/components/navigation/StubScreen';
+import { createStubSheetScreen } from '@/components/navigation/StubScreen';
 
-export default createStubScreen('rate');
+export default createStubSheetScreen('rate');
