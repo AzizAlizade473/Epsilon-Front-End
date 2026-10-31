@@ -52,6 +52,7 @@ Device/TalkBack/font-scale/performance checks remain not verified.
   - [x] 01.g.2 — EmptyState and ErrorState: wrapping copy, decorative icon, optional action and accessible retry alert.
   - [x] 01.g.3 — Toast: polite alert, named dismissal, native opacity/Reduce Motion; queue/provider remains STEP 21; 01.g complete.
 - [ ] 01.h — dev gallery route
+  - [x] 01.h.1 — Matching AZ/EN/RU gallery copy and typed, AZ-default preview resources; production i18next remains STEP 04.
 - [ ] 01.i — `docs/DESIGN_SYSTEM.md`.
 
 ## STEP 02
