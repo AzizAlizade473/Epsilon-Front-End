@@ -8,6 +8,7 @@ module.exports = {
     {
       displayName: 'app',
       preset: 'jest-expo',
+      setupFilesAfterEnv: ['<rootDir>/scripts/jest-app-setup.ts'],
       testMatch: [
         '<rootDir>/__tests__/**/*.test.ts',
         '<rootDir>/__tests__/**/*.test.tsx',

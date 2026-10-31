@@ -6,6 +6,7 @@ import { I18nextProvider } from 'react-i18next';
 import { ToastProvider } from './ToastProvider';
 
 import { colors } from '@/design';
+import { OfflineBanner } from '@/components/feedback/OfflineBanner';
 import type { BootData } from '@/lib/bootstrap';
 import { i18n } from '@/lib/i18n';
 
@@ -60,7 +61,9 @@ export function RuntimeProviders({
           <AuthContext.Provider
             value={{ ...boot, user: null, requirePhoneVerification: true }}
           >
-            <ToastProvider>{children}</ToastProvider>
+            <ToastProvider>
+              <OfflineBanner>{children}</OfflineBanner>
+            </ToastProvider>
           </AuthContext.Provider>
         </QueryClientProvider>
       </I18nextProvider>
