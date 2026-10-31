@@ -55,6 +55,12 @@ Device/TalkBack/font-scale/performance checks remain not verified.
   - [x] 01.h.1 — Matching AZ/EN/RU gallery copy and typed, AZ-default preview resources; production i18next remains STEP 04.
   - [x] 01.h.2 — Gallery control samples: interactive selections/input, button states, rows and icons.
   - [x] 01.h.3 — Gallery amounts, loading/empty/error states and interactive retry/Toast samples; no network/product data.
+  - [x] 01.h.4 — Dev-only gallery route/startup, safe-area preview, typography and instant AZ/EN/RU switching; production redirect test.
+
+01.h.4 verification: 133 tests pass; Android Hermes release export 2,477,897 bytes
+versus 2,477,278-byte bootstrap baseline (+0.025%). English gallery copy/sample
+markers are absent from bytecode. Device rendering/performance remains not verified.
+
 - [ ] 01.i — `docs/DESIGN_SYSTEM.md`.
 
 ## STEP 02

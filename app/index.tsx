@@ -1,3 +1,5 @@
+import { Redirect } from 'expo-router';
+
 export default function Bootstrap() {
-  return null;
+  return __DEV__ ? <Redirect href="/_design-gallery" /> : null;
 }
