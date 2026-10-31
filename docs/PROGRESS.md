@@ -1,7 +1,7 @@
 # Epsilon progress
 
-Scope: STEP 11-12 Home/Restaurants batch complete. STEP 00-10 are merged into `main`.
-Branch: `step/11-12-product`, based on verified `main` merge commit `4dd5f82`.
+Scope: STEP 13-16 verified-purchase feedback batch complete. STEP 00-12 are merged into `main`.
+Branch: `step/13-16-core-feedback`, based on verified `main` merge commit `814fe17`.
 
 A checked item is complete only after its commit reaches GitHub.
 
@@ -12,9 +12,9 @@ commit before creating this batch branch. Older uncommitted STEP 01 work on this
 PC was inspected and preserved, including untracked files, in the named stash
 `main-pc-preservation-step01-before-github-recovery-2026-10-31`. It was not merged.
 
-Current authorization: merge STEP 08-10 and complete STEP 11-12 as one continuous
-batch with a final quality gate/push, overriding the per-micro-step loop. STEP 13
-is untouched. STEP 11-12 must not be merged into main without authorization.
+Current authorization: merge STEP 11-12 and complete STEP 13-16 as one continuous
+batch with a final quality gate/push, overriding the per-micro-step loop. STEP 17
+is untouched. STEP 13-16 must not be merged into main without authorization.
 Manual Android/device checks remain pending and do not block implementation.
 
 ## STEP 00
@@ -184,37 +184,37 @@ merged manifest/device behavior remains STEP 22/manual verification.
 
 ## STEP 13
 
-- [ ] 13.a — state machine (+ tests)
-- [ ] 13.b — permission screens
-- [ ] 13.c — camera + overlay + scan line
-- [ ] 13.d — resolve call + success/lock
-- [ ] 13.e — error cards
-- [ ] 13.f — manual-entry sheet
-- [ ] 13.g — lifecycle (focus/background) + a11y.
+- [x] 13.a — state machine (+ tests)
+- [x] 13.b — permission screens
+- [x] 13.c — camera + overlay + scan line
+- [x] 13.d — resolve call + success/lock
+- [x] 13.e — error cards
+- [x] 13.f — manual-entry sheet
+- [x] 13.g — lifecycle (focus/background) + a11y.
 
 ## STEP 14
 
-- [ ] 14.a — hook + initial data (+ tests)
-- [ ] 14.b — header + items list
-- [ ] 14.c — status/read-only logic
-- [ ] 14.d — footer + rewardHint
-- [ ] 14.e — a11y.
+- [x] 14.a — hook + initial data (+ tests)
+- [x] 14.b — header + items list
+- [x] 14.c — status/read-only logic
+- [x] 14.d — footer + rewardHint
+- [x] 14.e — a11y.
 
 ## STEP 15
 
-- [ ] 15.a — outbox module (+ tests)
-- [ ] 15.b — star rating component + labels
-- [ ] 15.c — reason chips + comment
-- [ ] 15.d — submit mutation + idempotency + outbox wiring
-- [ ] 15.e — error/dismiss-confirm flows
-- [ ] 15.f — retry on start/foreground
-- [ ] 15.g — a11y.
+- [x] 15.a — outbox module (+ tests)
+- [x] 15.b — star rating component + labels
+- [x] 15.c — reason chips + comment
+- [x] 15.d — submit mutation + idempotency + outbox wiring
+- [x] 15.e — error/dismiss-confirm flows
+- [x] 15.f — retry on start/foreground
+- [x] 15.g — a11y.
 
 ## STEP 16
 
-- [ ] 16.a — layout + three reward variants (+ tests)
-- [ ] 16.b — motion + haptic
-- [ ] 16.c — navigation rules.
+- [x] 16.a — layout + three reward variants (+ tests)
+- [x] 16.b — motion + haptic
+- [x] 16.c — navigation rules.
 
 ## STEP 17
 
@@ -535,3 +535,55 @@ branch. STEP 13 onward remains specification-only.
   verification, real logo/exact blue, and advisory limitations remain documented.
 - Ready for merge review with those manual integration/visual checks pending.
   No STEP 11-12 merge is performed. STEP 13 camera/receipt/feedback work is untouched.
+
+## STEP 13-16 batch verification (2026-10-31)
+
+- Fetched/pruned GitHub, verified approved STEP 11-12 tip `0fff998`, merged
+  without conflicts/history rewriting, verified the identical merge tree and
+  pushed main at `814fe17`. This single batch uses `step/13-16-core-feedback`.
+  The older preservation stash is untouched. STEP 17 remains unimplemented.
+- STEP 13: explicit permission/Settings/manual-entry recovery, QR-only camera,
+  first-candidate lock, bounded opaque input, lifecycle cancellation, localized
+  domain errors and success replacement. References travel only in POST bodies;
+  no QR parsing, opening, logging, URL parameters or persistent claim storage.
+- STEP 14: resolve primes the receipt query cache. FlashList displays exact server
+  restaurant/branch/time/items/quantities/prices/total and optional rewardHint.
+  Claimed/expired/rated/non-rateable items are read-only. Queued and accepted
+  items cannot be submitted again while refreshed server data arrives.
+- STEP 15: accessible five-star radios, up to three canonical reason chips,
+  optional 500-character comment, dirty-dismiss confirmation, repeat-tap lock,
+  inline retry and stable mutation keys. The bounded account-scoped outbox saves
+  before POST, retains exact payload/key on ambiguous failures, retries sequentially
+  on startup/login/foreground/reconnect, prunes after seven days, caps at 20 and
+  removes success/duplicate/validation outcomes. Logout clears every feedback key;
+  epochs/cancellation prevent late responses from restoring data across accounts.
+- STEP 16: memory-only completion context, confirmed/pending/none reward variants,
+  server amount required for confirmed rewards, receipt/home navigation locks,
+  no reward or dish-name URL parameters, disabled back gesture and hardware Back
+  to Home. Query invalidation refetches receipt, wallet/transactions and feedback;
+  no optimistic balances, reward computation or client eligibility decisions.
+- Product/security and Epsilon Design System + Unslop source/component reviews
+  passed across Scan -> Receipt -> Rating -> Confirmation: spacing, color, icons,
+  copy, typography, layout, details, visuals and motion. Existing tokens/Lucide,
+  flat rows and concise AZ/EN/RU copy remain authoritative. No decorative financial
+  celebration. Reduce Motion is instant; other animations use native/UI-thread
+  transform/opacity. The standing design rule remains in DESIGN_SYSTEM.md once.
+- Final `npm run check`: zero-warning lint, strict TypeScript, 69 suites / 460
+  tests, all 246 locale base keys and formatting pass. Coverage includes scan
+  permissions/background/locking/cancellation, opaque POST bodies, exact purchased
+  items, draft/dismiss/retry, duplicate prevention, outbox recreation/limits/drop
+  rules/logout/account isolation, server reward variants and completion navigation.
+- Android Hermes release export passed: 5,716,340 bytes versus 5,608,840 at the
+  merged STEP 11-12 baseline (+1.92%, below 10%). No native APK/AAB or device
+  performance claim. Expo dependency compatibility and Git whitespace checks pass.
+- Owner-approved AsyncStorage 2.2.0 is exactly pinned (MIT; 380,789 unpacked bytes).
+  Its two added transitive packages are MIT. No unrelated upgrades. Production
+  dependency audit: zero high/critical; existing 1 low / 30 moderate remain.
+- MANUAL CAMERA/DEVICE QA PENDING: no adb/Android SDK on this PC. Rebuild the dev
+  client for AsyncStorage, then verify camera startup (~400ms), grant/deny/revoke,
+  repeated frames, torch, manual input, keyboard/small screens/TalkBack/1.3x fonts,
+  Reduce Motion, airplane-mode submit/kill/reopen and all three reward variants.
+  Real backend claims/idempotency/rewards and existing Google configuration/brand
+  asset limitations still need owner/device verification. See DEV_SETUP.md.
+- Ready for merge review with those manual integration/visual checks pending.
+  This batch is pushed separately; it is not merged into main.

@@ -67,6 +67,10 @@ export function Input({
                 : colors.border,
             backgroundColor: disabled ? colors.divider : colors.surface,
             textAlignVertical: multiline ? 'top' : 'center',
+            minHeight: multiline
+              ? typography.body.lineHeight * (props.numberOfLines ?? 3) +
+                spacing[16] * 2
+              : layout.controlHeight,
           },
         ]}
       />

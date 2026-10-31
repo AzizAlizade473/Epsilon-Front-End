@@ -37,6 +37,7 @@ import {
 export type SheetProps = {
   children: React.ReactNode;
   onClose: () => void;
+  onBeforeClose?: () => boolean;
   visible?: boolean;
   accessibilityLabel?: string;
 };
@@ -44,6 +45,7 @@ export type SheetProps = {
 export function Sheet({
   children,
   onClose,
+  onBeforeClose,
   visible = true,
   accessibilityLabel,
 }: SheetProps) {
@@ -58,6 +60,10 @@ export function Sheet({
 
   const dismiss = useCallback(() => {
     if (closingRef.current) return;
+    if (onBeforeClose && !onBeforeClose()) {
+      translateY.value = reduceMotion ? 0 : withSpring(0, motionTokens.spring);
+      return;
+    }
     closingRef.current = true;
     if (reduceMotion) {
       opacity.value = withTiming(
@@ -77,7 +83,7 @@ export function Sheet({
         },
       );
     }
-  }, [onClose, reduceMotion, sheetHeight, opacity, translateY]);
+  }, [onClose, onBeforeClose, reduceMotion, sheetHeight, opacity, translateY]);
 
   useEffect(() => {
     if (visible) {
@@ -97,10 +103,12 @@ export function Sheet({
           mass: 1,
         });
       }
-    } else {
-      dismiss();
     }
-  }, [visible, dismiss, reduceMotion, opacity, translateY]);
+  }, [visible, reduceMotion, opacity, translateY]);
+
+  useEffect(() => {
+    if (!visible) dismiss();
+  }, [visible, dismiss]);
 
   useEffect(() => {
     const subscription = BackHandler.addEventListener(
@@ -149,7 +157,7 @@ export function Sheet({
 
   return (
     <GestureHandlerRootView
-      style={styles.root}
+      style={[styles.root, { paddingTop: insets.top }]}
       accessibilityViewIsModal
       accessibilityRole="alert"
     >
@@ -196,10 +204,14 @@ const styles = StyleSheet.create({
     backgroundColor: colors.overlay,
   },
   keyboardContainer: {
+    maxHeight: '100%',
+    flexShrink: 1,
     justifyContent: 'flex-end',
     width: '100%',
   },
   sheet: {
+    maxHeight: '100%',
+    flexShrink: 1,
     backgroundColor: colors.surface,
     borderTopLeftRadius: radius[20],
     borderTopRightRadius: radius[20],
@@ -221,6 +233,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.border,
   },
   content: {
+    flexShrink: 1,
     paddingBottom: spacing[12],
   },
 });

@@ -8,9 +8,11 @@ import { render, screen, fireEvent } from '@testing-library/react-native';
 
 import { DevScenarioMenu } from '@/components/dev/dev-scenario-menu';
 import { getMockScenario, setMockScenario } from '@/services/mock/scenario';
+import { initializeI18n } from '@/lib/i18n';
 
 describe('DevScenarioMenu', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    await initializeI18n();
     setMockScenario('success');
   });
 

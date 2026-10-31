@@ -169,21 +169,31 @@ export const httpRestaurantService: RestaurantService = {
 };
 
 export const httpReceiptService: ReceiptService = {
-  async resolve(qrPayload) {
-    return requestWithAuth('POST', '/receipts/resolve', receiptSchema, {
-      qrPayload,
+  async resolve(input, options) {
+    return requestWithAuth('POST', '/receipts/resolve', receiptSchema, input, {
+      ...options,
+      idempotencyKey:
+        options?.idempotencyKey ?? generateIdempotencyKey('receipt-resolve'),
     });
   },
 
-  async get(id) {
-    return requestWithAuth('GET', `/receipts/${id}`, receiptSchema);
+  async get(id, options) {
+    return requestWithAuth(
+      'GET',
+      `/receipts/${id}`,
+      receiptSchema,
+      undefined,
+      options,
+    );
   },
 };
 
 export const httpFeedbackService: FeedbackService = {
-  async submit(input: FeedbackInput) {
+  async submit(input: FeedbackInput, options) {
     return requestWithAuth('POST', '/feedback', feedbackResultSchema, input, {
-      idempotencyKey: generateIdempotencyKey('feedback'),
+      ...options,
+      idempotencyKey:
+        options?.idempotencyKey ?? generateIdempotencyKey('feedback'),
     });
   },
 

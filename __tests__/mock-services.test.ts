@@ -120,7 +120,7 @@ describe('mock services scenario execution', () => {
   it('throws RECEIPT_ALREADY_CLAIMED in receipt_already_claimed scenario', async () => {
     setMockScenario('receipt_already_claimed');
     await expect(
-      mockReceiptService.resolve('payload_123'),
+      mockReceiptService.resolve({ kind: 'qr', value: 'payload_123' }),
     ).rejects.toMatchObject({
       code: 'RECEIPT_ALREADY_CLAIMED',
       status: 409,

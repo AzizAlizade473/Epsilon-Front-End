@@ -22,6 +22,7 @@ export type BootData = {
 };
 
 export type NavigationUser = {
+  id?: string;
   firstName: string | null;
   birthDate: string | null;
   phoneVerified: boolean;

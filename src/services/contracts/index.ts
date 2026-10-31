@@ -193,6 +193,17 @@ export const receiptSchema = z
   .strict();
 
 export type Receipt = z.infer<typeof receiptSchema>;
+export const purchaseReferenceSchema = z
+  .object({
+    kind: z.enum(['qr', 'code']),
+    value: z
+      .string()
+      .min(1)
+      .max(2048)
+      .refine((value) => value.trim().length > 0),
+  })
+  .strict();
+export type PurchaseReference = z.infer<typeof purchaseReferenceSchema>;
 
 // ---------------------------------------------------------------------------
 // Feedback
@@ -206,7 +217,7 @@ export const feedbackInputSchema = z
     /** Optional free-text comment, max 500 characters */
     comment: z.string().max(500).optional(),
     /** Optional structured reason codes */
-    reasonCodes: z.array(z.string().min(1)).optional(),
+    reasonCodes: z.array(z.string().min(1)).max(3).optional(),
   })
   .strict();
 
@@ -221,7 +232,12 @@ export const feedbackResultSchema = z
         /** Reward amount in qəpik; null when status is "none". */
         amountMinor: qepik.nullable(),
       })
-      .strict(),
+      .strict()
+      .refine(
+        (reward) =>
+          reward.status !== 'confirmed' || reward.amountMinor !== null,
+        'Confirmed reward requires a server amount',
+      ),
   })
   .strict();
 

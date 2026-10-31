@@ -196,4 +196,30 @@ and search/cursor semantics. Rows intentionally have no detail action.
 
 Development mocks are explicitly labeled and use demo restaurant names with no
 real partner logos. Production continues to use validated live service responses.
-The Scan action opens the existing route; camera/receipt work remains STEP 13.
+The Scan action now opens the verified-purchase flow described below.
+
+## Verified-purchase feedback (STEP 13-16)
+
+Rebuild the Android dev client for the approved AsyncStorage 2.2.0 native module.
+Feedback payloads and stable retry keys live in a bounded, account-scoped local
+outbox; tokens remain in SecureStore. Logout removes all feedback outbox keys.
+The queue retries on startup, login, foreground and reconnect. It never computes
+cashback or changes wallet values locally.
+
+In development mock mode, manual code `DEMO-PURCHASE-01` resolves the explicitly
+labeled demo receipt. This is a walkthrough value, not a production token format.
+Use the existing dev scenario menu for unsupported/not-found/expired/claimed,
+network/validation/duplicate feedback and confirmed (Success), pending or no
+cashback. Select a reward scenario before rating the next unreviewed demo dish;
+relaunch resets the in-memory mock server. Mock wallet values are fixtures.
+Production always uses the validated live service and real server-issued references.
+
+**MANUAL CAMERA/DEVICE QA PENDING:** verify permission explanation and Settings
+recovery (including revocation), camera visible within ~400ms, torch, first-frame
+locking, background/focus cancellation and manual entry. Verify long item names,
+server prices, keyboard/scrolling, TalkBack star/reason/status announcements,
+1.3x fonts and Reduce Motion. Submit in airplane mode, kill, reconnect/reopen and
+verify the original key is replayed once against an idempotent backend. Confirm
+all three reward variants and receipt/home/hardware Back without stale sheets.
+This PC has no adb/Android SDK; JavaScript export does not verify native behavior,
+APK size, cold-start timing or the deployed backend's financial integrity.

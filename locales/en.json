@@ -182,5 +182,126 @@
     "empty": "Restaurants will appear here soon.",
     "noResults": "No results",
     "tryAnother": "Try another name."
+  },
+  "scan": {
+    "permissionTitle": "Scan your receipt",
+    "permissionBody": "Use your camera to scan the QR code on a participating restaurant receipt. You can also enter the receipt code.",
+    "allow": "Allow camera access",
+    "settings": "Open settings",
+    "manual": "Enter code manually",
+    "code": "Receipt code",
+    "position": "Place the receipt QR code inside the frame",
+    "resolving": "Checking receipt…",
+    "resolved": "Receipt verified",
+    "torchOn": "Turn torch on",
+    "torchOff": "Turn torch off",
+    "retry": "Try again",
+    "errors": {
+      "unsupported": {
+        "title": "Code not supported",
+        "body": "Scan the QR code on a participating restaurant receipt."
+      },
+      "claimed": {
+        "title": "Receipt already used",
+        "body": "This receipt has already been claimed."
+      },
+      "expired": {
+        "title": "Receipt expired",
+        "body": "This receipt is no longer available for feedback."
+      },
+      "notFound": {
+        "title": "Receipt not found",
+        "body": "Check the code and try again."
+      },
+      "network": {
+        "title": "Could not connect",
+        "body": "Check your connection and try again."
+      },
+      "unknown": {
+        "title": "Could not check receipt",
+        "body": "Please try again."
+      }
+    }
+  },
+  "receipt": {
+    "branchDate": "{{branch}} · {{date}}, {{time}}",
+    "status": {
+      "verified": "Verified",
+      "claimed": "Already used",
+      "expired": "Expired"
+    },
+    "items": "Your dishes",
+    "quantityPrice": "{{qty}} × {{price}}",
+    "rated": "Rated",
+    "rate": "Rate",
+    "rateItem": "Rate {{name}}",
+    "total": "Total",
+    "rewardHint": "Potential cashback: {{amount}}",
+    "identifier": "Receipt: {{id}}",
+    "unavailable": "Receipt unavailable"
+  },
+  "feedback": {
+    "question": "How was this dish?",
+    "starChoice_one": "{{count}} star — {{meaning}}",
+    "starChoice_other": "{{count}} stars — {{meaning}}",
+    "ratingValue_one": "{{count}} star",
+    "ratingValue_other": "{{count}} stars",
+    "rating": {
+      "1": "Very bad",
+      "2": "Bad",
+      "3": "Okay",
+      "4": "Good",
+      "5": "Excellent"
+    },
+    "reasons": {
+      "taste": "Taste",
+      "temperature": "Temperature",
+      "portion": "Portion",
+      "price": "Price",
+      "presentation": "Presentation",
+      "wait_time": "Wait time"
+    },
+    "comment": "Comment (optional)",
+    "counter_one": "{{count}} / 500",
+    "counter_other": "{{count}} / 500",
+    "neutralReward": "Cashback does not depend on whether your rating is positive or negative.",
+    "queued": "Sending…",
+    "saved": "Your rating is saved on this device and will be retried automatically.",
+    "send": "Send rating",
+    "thanks": "Thank you!",
+    "sent": "Your feedback has been sent.",
+    "rewardConfirmed": "Cashback credited",
+    "rewardPending": "Cashback is being checked and will appear after confirmation.",
+    "otherDish": "Rate another dish",
+    "home": "Go home",
+    "invalid": "Please check your rating and try again.",
+    "duplicate": "You have already rated this dish.",
+    "retryLater": "Could not send yet. Your rating is saved; retry when connected.",
+    "queueFull": "Your saved ratings queue is full. Reconnect to send them first.",
+    "saveFailed": "Could not save your rating. Please try again.",
+    "unavailable": "This dish is not available for rating.",
+    "discardTitle": "Leave your rating?",
+    "discardBody": "Your unsent changes will be lost.",
+    "stay": "Stay",
+    "leave": "Leave"
+  },
+  "dev": {
+    "title": "Mock scenarios",
+    "scenarios": {
+      "success": "Success",
+      "empty": "Empty data",
+      "network_error": "Network error",
+      "unauthorized": "Session expired",
+      "otp_invalid": "Invalid SMS code",
+      "otp_expired": "Expired SMS code",
+      "receipt_already_claimed": "Receipt already used",
+      "receipt_expired": "Receipt expired",
+      "feedback_already_submitted": "Feedback already submitted",
+      "receipt_unsupported": "Unsupported QR",
+      "receipt_not_found": "Receipt not found",
+      "feedback_pending": "Cashback pending",
+      "feedback_none": "No cashback",
+      "feedback_validation": "Invalid feedback"
+    }
   }
 }

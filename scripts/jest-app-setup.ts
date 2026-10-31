@@ -1,6 +1,12 @@
 import 'react-native-gesture-handler/jestSetup';
 import { jest } from '@jest/globals';
 
+jest.mock('@react-native-async-storage/async-storage', () =>
+  jest.requireActual(
+    '@react-native-async-storage/async-storage/jest/async-storage-mock',
+  ),
+);
+
 jest.mock('react-native-reanimated', () =>
   jest.requireActual<typeof import('react-native-reanimated')>(
     'react-native-reanimated/mock',

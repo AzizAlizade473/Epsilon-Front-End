@@ -1,4 +1,6 @@
-import { expect, jest, test } from '@jest/globals';
+import { afterEach, expect, jest, test } from '@jest/globals';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { createQueryClient } from '@/services/query';
 import { userEvent } from '@testing-library/react-native';
 import { renderRouter, screen, testRouter } from 'expo-router/testing-library';
 
@@ -6,6 +8,20 @@ import az from '../locales/az.json';
 
 import { RootNavigator } from '@/components/navigation/RootNavigator';
 import { initializeI18n } from '@/lib/i18n';
+const client = createQueryClient();
+afterEach(() => client.clear());
+const mockGetPermission = jest.fn(() => Promise.resolve(null));
+jest.mock('expo-camera', () => ({
+  CameraView: () => null,
+  useCameraPermissions: () => [null, jest.fn(), mockGetPermission],
+}));
+function TestRoot() {
+  return (
+    <QueryClientProvider client={client}>
+      <RootNavigator />
+    </QueryClientProvider>
+  );
+}
 jest.mock('@/features/home/screens/HomeScreen', () => ({
   __esModule: true,
   default: () => null,
@@ -26,7 +42,7 @@ jest.mock('@/providers/AuthProvider', () => ({
 test('four tabs stay selected underneath the root Scan modal', async () => {
   await initializeI18n();
   const result = await renderRouter(
-    { appDir: 'app', overrides: { _layout: RootNavigator } },
+    { appDir: 'app', overrides: { _layout: TestRoot } },
     { initialUrl: '/home' },
   );
   const user = userEvent.setup();
