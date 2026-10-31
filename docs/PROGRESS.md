@@ -107,7 +107,7 @@ merged manifest/device behavior remains STEP 22/manual verification.
 - [x] 03.d — service interfaces
 - [x] 03.e — mock implementations + fixtures + contract tests
 - [x] 03.f — dev scenario menu
-- [ ] 03.g — query defaults + key factories.
+- [x] 03.g — query defaults + key factories. STEP 03 complete.
 
 ## STEP 04
 
