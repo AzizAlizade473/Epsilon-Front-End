@@ -1,19 +1,17 @@
 # Epsilon progress
 
-Scope: STEP 02 navigation shell. STEP 01 approved and merged into `main`.
-Branch: `step/02-navigation`, based on merge commit `8771325`.
+Scope: STEP 03 services layer, API client, mocks. STEP 02 approved and merged into `main`.
+Branch: `main` (transitioning to `step/03-services`).
 
 A checked item is complete only after its commit reaches GitHub.
 
-Recovery: fetched all branches/tags on 2026-10-31; latest pushed development
-was `86bb6af` (01.a). No old-laptop 01.b edits were pushed. All 83 baseline
-tests pass; no missing `extend-expect` error. Windows CRLF formatting and stale
-Node 20 instructions are repaired by 01.recovery. Use Node 22.22.1+.
-Latest verified code commit: `7bb038e` (contrast correction); later commits document this checkpoint.
-Checks: `npm run check` green, 144 tests / 25 suites; Expo dependency validation
-and Android development/release exports pass. GitHub Actions execution not verified.
-Next: 02.a provider/bootstrap shell, then the remaining STEP 02 micro-steps.
-Aziz authorized STEP 01 merge and autonomous STEP 02 on 2026-10-31.
+Recovery: fetched all branches/tags on 2026-10-31. STEP 00, STEP 01, and STEP 02
+merged into `main` (`f4fa666`). Checks green: 39 test suites / 187 tests pass.
+Architecture updated with ADR 0004: verified purchase-feedback architecture,
+channel decoupling (QR as V1 input mechanism, domain model centered on verified
+purchases), universal wallet, and decoupling of future accountless web feedback.
+Next: 03.a contracts, then remaining STEP 03 micro-steps.
+Aziz authorized STEP 02 merge and autonomous STEP 03 on 2026-10-31.
 Manual device checks remain pending and do not block this implementation.
 Open design input: exact brand blue awaits the real logo asset; placeholder is retained.
 Device/TalkBack/font-scale/performance checks remain not verified.

@@ -47,7 +47,7 @@ On `next`: open a pull request with `gh pr create` if `gh` is available, otherwi
 
 # PART 1 — PRODUCT CONTEXT AND DECISIONS
 
-**App:** Epsilon — a consumer app (Azerbaijan). A user scans a restaurant receipt QR, rates the dishes they actually bought, and earns cashback into ONE universal wallet. Restaurants get dish-level analytics in a separate product (not in this repo).
+**App:** Epsilon — a consumer app (Azerbaijan). A user links a verified restaurant purchase (V1: scans a receipt QR containing an opaque claim token), rates the specific dishes they actually bought, and earns cashback into ONE universal wallet if eligible. The core product is verified dish-level intelligence, not QR scanning itself (which is the V1 input mechanism, decoupled from future purchase-linking channels and future accountless web feedback). Restaurants receive dish-level analytics in a separate product (not in this repo).
 
 **Fixed decisions** (change only if Aziz says so):
 
@@ -57,11 +57,11 @@ On `next`: open a pull request with `gh pr create` if `gh` is available, otherwi
 | Sign-in | **Google** + **Phone with SMS code (+994)**. Apple sign-in is implemented later (before iOS release) behind `ENABLE_APPLE_SIGNIN=false`. |
 | Phone verification | Every account must verify a phone number once (anti-fraud). Backend flag `requirePhoneVerification` (default true). |
 | Age | Date of birth at signup; under `MIN_AGE` (default 16) is blocked. |
-| Wallet | **One universal cashback wallet.** Every ledger row records its source restaurant (for accounting). |
+| Wallet | **One universal cashback wallet.** Every ledger row records its source restaurant (for accounting). No restaurant-specific wallets. |
 | Redemption (spending) | **Not designed.** No redeem button or screen in v1. Do not invent it. |
 | Money | Integer qəpik (1 ₼ = 100). Never floats. Display "12.50 ₼". |
-| Rewards | The server decides eligibility and amounts. The app only displays. Rewards are for honest feedback, never for positive ratings. |
-| Receipts | Only backend-verified receipts. The app sends the raw QR payload and never parses or opens it. |
+| Rewards | The server decides eligibility and amounts. The app only displays. Cashback is an incentive for eligible Epsilon members, not a guarantee on every submission. Rewards are for honest feedback, never for positive ratings. |
+| Receipts / Purchases | Only backend-verified purchases. V1 physical receipts encode an opaque, server-issued claim token; the client never parses financial data from QR or computes eligibility. Domain architecture treats verified purchase as primary, decoupled from QR scanning. |
 | Nutrition/calories | Out of scope. |
 | Languages | AZ (default), EN, RU. |
 | Theme | Light only in v1 (but correct if the OS is in dark mode). |
