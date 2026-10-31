@@ -141,5 +141,46 @@
     "verifyBanner": "Verify your number to receive cashback",
     "logout": "Sign out",
     "logoutConfirm": "Do you want to sign out?"
+  },
+  "product": {
+    "demoData": "Test data — not real activity or a partner directory.",
+    "loadError": "Unable to load data.",
+    "loadMore": "Load more"
+  },
+  "home": {
+    "greeting": "Hello, {{firstName}}",
+    "balance": "Total cashback",
+    "balanceSpeech": "Total cashback, {{sign}}{{manat}} manat {{qepik}} qepik",
+    "pending": "Pending {{amount}}",
+    "universalWallet": "Cashback accumulates across all partner restaurants.",
+    "scan": "Scan receipt",
+    "scanHelper": "Rate your dishes and earn cashback.",
+    "recent": "Recent activity",
+    "viewAll": "View all",
+    "noActivity": "No activity yet.",
+    "balanceUnavailable": "Balance is currently unavailable."
+  },
+  "wallet": {
+    "minus": "minus ",
+    "type": {
+      "earned": "Cashback",
+      "redeemed": "Redeemed",
+      "reversed": "Reversed",
+      "expired": "Expired"
+    },
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "cancelled": "Cancelled"
+    }
+  },
+  "restaurants": {
+    "search": "Search restaurants",
+    "clear": "Clear search",
+    "branches_one": "{{count}} branch",
+    "branches_other": "{{count}} branches",
+    "empty": "Restaurants will appear here soon.",
+    "noResults": "No results",
+    "tryAnother": "Try another name."
   }
 }

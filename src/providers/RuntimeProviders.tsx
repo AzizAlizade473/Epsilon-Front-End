@@ -1,4 +1,5 @@
-import { QueryClientProvider } from '@tanstack/react-query';
+import { focusManager, QueryClientProvider } from '@tanstack/react-query';
+import { AppState } from 'react-native';
 import { createQueryClient } from '@/services/query';
 import { DefaultTheme, ThemeProvider } from 'expo-router';
 import { useEffect, useState, type ReactNode } from 'react';
@@ -40,6 +41,16 @@ export function RuntimeProviders({
   onBootConsumed?: () => void;
 }) {
   const [queryClient] = useState(() => createQueryClient());
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (state) =>
+      focusManager.setFocused(state === 'active'),
+    );
+    return () => {
+      subscription.remove();
+      focusManager.setFocused(undefined);
+    };
+  }, []);
 
   useEffect(() => {
     setLocaleAccessor(() => i18n.language ?? 'az');

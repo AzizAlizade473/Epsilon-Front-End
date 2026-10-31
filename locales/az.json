@@ -141,5 +141,46 @@
     "verifyBanner": "Keşbek almaq üçün nömrəni təsdiqləyin",
     "logout": "Hesabdan çıx",
     "logoutConfirm": "Hesabdan çıxmaq istəyirsiniz?"
+  },
+  "product": {
+    "demoData": "Sınaq məlumatları — real əməliyyat və ya partnyor siyahısı deyil.",
+    "loadError": "Məlumatları yükləmək mümkün olmadı.",
+    "loadMore": "Daha çox göstər"
+  },
+  "home": {
+    "greeting": "Salam, {{firstName}}",
+    "balance": "Ümumi keşbek",
+    "balanceSpeech": "Ümumi keşbek, {{sign}}{{manat}} manat {{qepik}} qəpik",
+    "pending": "Gözləyən {{amount}}",
+    "universalWallet": "Keşbek bütün partnyor restoranlarda toplanır.",
+    "scan": "Çeki skan et",
+    "scanHelper": "Yeməkləri qiymətləndirin və keşbek qazanın.",
+    "recent": "Son fəaliyyət",
+    "viewAll": "Hamısına bax",
+    "noActivity": "Hələ fəaliyyət yoxdur.",
+    "balanceUnavailable": "Balans hazırda əlçatan deyil."
+  },
+  "wallet": {
+    "minus": "mənfi ",
+    "type": {
+      "earned": "Keşbek",
+      "redeemed": "İstifadə edildi",
+      "reversed": "Geri qaytarıldı",
+      "expired": "Müddəti bitdi"
+    },
+    "status": {
+      "pending": "Gözləyir",
+      "confirmed": "Təsdiqləndi",
+      "cancelled": "Ləğv edildi"
+    }
+  },
+  "restaurants": {
+    "search": "Restoran axtar",
+    "clear": "Axtarışı təmizlə",
+    "branches_one": "{{count}} filial",
+    "branches_other": "{{count}} filial",
+    "empty": "Restoranlar tezliklə burada görünəcək.",
+    "noResults": "Heç nə tapılmadı",
+    "tryAnother": "Başqa ad yoxlayın."
   }
 }

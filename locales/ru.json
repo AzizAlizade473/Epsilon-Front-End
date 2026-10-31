@@ -143,5 +143,48 @@
     "verifyBanner": "Подтвердите номер для получения кешбэка",
     "logout": "Выйти",
     "logoutConfirm": "Выйти из аккаунта?"
+  },
+  "product": {
+    "demoData": "Тестовые данные — не реальные операции или список партнёров.",
+    "loadError": "Не удалось загрузить данные.",
+    "loadMore": "Показать ещё"
+  },
+  "home": {
+    "greeting": "Здравствуйте, {{firstName}}",
+    "balance": "Всего кешбэка",
+    "balanceSpeech": "Всего кешбэка, {{sign}}{{manat}} манат {{qepik}} гяпик",
+    "pending": "Ожидает {{amount}}",
+    "universalWallet": "Кешбэк накапливается во всех партнёрских ресторанах.",
+    "scan": "Сканировать чек",
+    "scanHelper": "Оценивайте блюда и получайте кешбэк.",
+    "recent": "Последние операции",
+    "viewAll": "Показать все",
+    "noActivity": "Операций пока нет.",
+    "balanceUnavailable": "Баланс сейчас недоступен."
+  },
+  "wallet": {
+    "minus": "минус ",
+    "type": {
+      "earned": "Кешбэк",
+      "redeemed": "Использовано",
+      "reversed": "Возврат",
+      "expired": "Срок истёк"
+    },
+    "status": {
+      "pending": "Ожидает",
+      "confirmed": "Подтверждено",
+      "cancelled": "Отменено"
+    }
+  },
+  "restaurants": {
+    "search": "Поиск ресторанов",
+    "clear": "Очистить поиск",
+    "branches_one": "{{count}} филиал",
+    "branches_few": "{{count}} филиала",
+    "branches_many": "{{count}} филиалов",
+    "branches_other": "{{count}} филиала",
+    "empty": "Рестораны скоро появятся здесь.",
+    "noResults": "Ничего не найдено",
+    "tryAnother": "Попробуйте другое название."
   }
 }

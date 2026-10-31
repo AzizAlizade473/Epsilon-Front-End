@@ -1,3 +1,1 @@
-import { createStubScreen } from '@/components/navigation/StubScreen';
-
-export default createStubScreen('restaurants', true);
+export { default } from '@/features/restaurants/screens/RestaurantsScreen';

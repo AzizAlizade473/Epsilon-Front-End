@@ -136,6 +136,10 @@ export const restaurantSchema = z
   .strict();
 
 export type Restaurant = z.infer<typeof restaurantSchema>;
+export const restaurantPageSchema = z.union([
+  paginatedSchema(restaurantSchema),
+  z.array(restaurantSchema).transform((items) => ({ items, nextCursor: null })),
+]);
 
 // ---------------------------------------------------------------------------
 // Receipt

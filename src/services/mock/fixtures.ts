@@ -47,19 +47,19 @@ export const mockConfig: Config = {
 export const mockRestaurants: Restaurant[] = [
   {
     id: 'rest_01',
-    name: 'Paul Baku',
-    logoUrl: 'https://images.example.az/paul-logo.png',
+    name: 'Demo restoran 1',
+    logoUrl: null,
     branchCount: 3,
   },
   {
     id: 'rest_02',
-    name: 'Mangal Steak House',
-    logoUrl: 'https://images.example.az/mangal-logo.png',
+    name: 'Demo restoran 2',
+    logoUrl: null,
     branchCount: 2,
   },
   {
     id: 'rest_03',
-    name: 'Şirvanşah Muzey Restoran',
+    name: 'Demo restoran 3',
     logoUrl: null,
     branchCount: 1,
   },
@@ -123,7 +123,7 @@ export const mockTransactions: WalletTransaction[] = [
     createdAt: '2024-02-14T20:00:00Z',
     source: {
       restaurantId: 'rest_01',
-      restaurantName: 'Paul Baku',
+      restaurantName: 'Demo restoran 1',
       branchName: 'Fəvvarələr Meydanı filialı',
     },
     receiptId: 'rcpt_789456',
@@ -137,7 +137,7 @@ export const mockTransactions: WalletTransaction[] = [
     createdAt: '2024-02-10T14:15:00Z',
     source: {
       restaurantId: 'rest_02',
-      restaurantName: 'Mangal Steak House',
+      restaurantName: 'Demo restoran 2',
       branchName: null,
     },
     receiptId: null,

@@ -46,7 +46,10 @@ export const queryKeys = {
   },
   restaurant: {
     all: ['restaurant'] as const,
-    list: () => [...queryKeys.restaurant.all, 'list'] as const,
+    list: (params?: { search?: string; limit?: number }) =>
+      params
+        ? ([...queryKeys.restaurant.all, 'list', params] as const)
+        : ([...queryKeys.restaurant.all, 'list'] as const),
     detail: (id: string) =>
       [...queryKeys.restaurant.all, 'detail', id] as const,
   },

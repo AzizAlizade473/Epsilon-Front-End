@@ -1,11 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
-import { useRef, useState, type ReactNode } from 'react';
+import { useRef, useState, type ReactNode, type ReactElement } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   StyleSheet,
   View,
+  type RefreshControlProps,
 } from 'react-native';
 import { SafeAreaView, type Edges } from 'react-native-safe-area-context';
 
@@ -20,6 +21,7 @@ export type ScreenProps = Pick<HeaderProps, 'leading' | 'trailing'> & {
   scroll?: boolean;
   footer?: ReactNode;
   edges?: Edges;
+  refreshControl?: ReactElement<RefreshControlProps>;
 };
 
 export function Screen({
@@ -30,6 +32,7 @@ export function Screen({
   scroll = true,
   footer,
   edges,
+  refreshControl,
 }: ScreenProps) {
   const [collapsed, setCollapsed] = useState(false);
   const collapsedRef = useRef(false);
@@ -73,6 +76,7 @@ export function Screen({
         {scroll ? (
           <ScrollView
             testID="screen-scroll"
+            refreshControl={refreshControl}
             contentContainerStyle={styles.content}
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="on-drag"
