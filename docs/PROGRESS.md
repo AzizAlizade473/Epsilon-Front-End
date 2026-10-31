@@ -1,8 +1,7 @@
 # Epsilon progress
 
-Scope: STEP 01 implementation complete; manual Android verification pending.
-STEP 00 is merged into `main`. STEP 01 remains unmerged.
-Branch: `step/01-design-system`, based on `main` merge commit `66c4176`.
+Scope: STEP 02 navigation shell. STEP 01 approved and merged into `main`.
+Branch: `step/02-navigation`, based on merge commit `8771325`.
 
 A checked item is complete only after its commit reaches GitHub.
 
@@ -13,8 +12,9 @@ Node 20 instructions are repaired by 01.recovery. Use Node 22.22.1+.
 Latest verified code commit: `7bb038e` (contrast correction); later commits document this checkpoint.
 Checks: `npm run check` green, 144 tests / 25 suites; Expo dependency validation
 and Android development/release exports pass. GitHub Actions execution not verified.
-Next: Aziz tests the gallery, then explicitly authorizes merge. Do not merge or
-start STEP 02 without that authorization. No unresolved implementation blocker.
+Next: 02.a provider/bootstrap shell, then the remaining STEP 02 micro-steps.
+Aziz authorized STEP 01 merge and autonomous STEP 02 on 2026-10-31.
+Manual device checks remain pending and do not block this implementation.
 Open design input: exact brand blue awaits the real logo asset; placeholder is retained.
 Device/TalkBack/font-scale/performance checks remain not verified.
 
@@ -80,12 +80,26 @@ merged manifest/device behavior remains STEP 22/manual verification.
 
 ## STEP 02
 
-- [ ] 02.a — root layout + providers + splash gate
-- [ ] 02.b — route skeleton with stubs and typed routes
-- [ ] 02.c — TabBar + center button
-- [ ] 02.d — Sheet + transparent-modal wiring
-- [ ] 02.e — bootstrap redirect + deep-link param schemas (+ tests)
-- [ ] 02.f — Back-button behavior.
+- [x] 02.a — root layout + providers + splash gate
+  - [x] 02.a.1 — Merge STEP 01 (`8771325`), create this branch, and pin owner-approved navigation dependencies; generated lockfile is outside the handwritten line budget.
+  - [x] 02.a.2 — Single-flight SecureStore boot reader; strict stored-session validation, retry and cache-release tests; server owns expiry.
+  - [x] 02.a.3 — Navigation and bootstrap copy in AZ/EN/RU; matching-key tests.
+  - [x] 02.a.4 — AZ-default i18n boot plus Theme/I18n/Query/Auth foundation; server profile hydration remains the later service/auth integration.
+  - [x] 02.a.5 — Global Toast host after Auth; safe-area positioning, localized dismissal and provider integration test.
+  - [x] 02.a.6 — Deferred native connectivity banner/Query online manager, safe-area placement and no HTTP reachability probes; full reconnect choreography remains STEP 21.
+  - [x] 02.a.7 — Splash gate waits for i18n/local auth restoration, reveals only after layout, and recovers from boot errors; tests cover both paths.
+  - [x] 02.a.8 — Root safe-area/bootstrap wiring, global native splash retention and 200ms fade; failed i18n initialization can retry. 02.a complete.
+- [x] 02.b — route skeleton with stubs and typed routes
+  - [x] 02.b.1 — All specified title-only route stubs and auth/onboarding layouts; localized accessible headings, tab-owned bottom insets.
+  - [x] 02.b.2 — Native stack presentations, transparent Sheet modals and 150ms tab fades with Reduce Motion; scan remains an external modal.
+  - [x] 02.b.3 — Expo-generated route types on every typecheck, including fresh CI; compile-time unknown-route/missing-ID guards. 02.b complete.
+- [x] 02.c — TabBar + center button
+  - [x] 02.c.1 — Center Scan action: native-driver 0.94 spring, haptics, focus-reset repeat-press guard and modal-push test.
+  - [x] 02.c.2 — Accessible tab items: selected state, decorative glyphs and 64pt minimum; inactive labels use secondary on white for UX-1 contrast, icons retain inkMuted.
+  - [x] 02.c.3 — Fixed white/hairline tab bar, raised Scan target, safe-area/font-scale height handling and real-router modal/return integration test. 02.c complete.
+- [x] 02.d — Sheet + transparent-modal wiring
+- [x] 02.e — bootstrap redirect + deep-link param schemas (+ tests)
+- [x] 02.f — Back-button behavior. STEP 02 complete.
 
 ## STEP 03
 
@@ -316,7 +330,7 @@ merged manifest/device behavior remains STEP 22/manual verification.
 - 00.b: source copy matches byte-for-byte; 30 step files and all micro-step IDs checked against the source; Git whitespace checks passed. No package scripts exist yet.
 - Device testing: not verified.
 
-STEP 00 merged into `main` (`66c4176`). STEP 01 in progress on `step/01-design-system`.
+STEP 00 and STEP 01 are merged into `main` (`8771325`). STEP 02 is in progress.
 Later-step documents are specifications only.
 
 - 01.a: Design tokens, theme, typography, and motion (`resolveMotion` / `useMotion` for Reduce Motion). 83 tests pass.

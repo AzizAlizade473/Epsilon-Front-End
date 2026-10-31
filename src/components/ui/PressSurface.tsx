@@ -27,6 +27,8 @@ export type PressSurfaceProps = {
   style?: StyleProp<ViewStyle>;
   contentStyle?: StyleProp<ViewStyle>;
   pressedColor?: ColorValue;
+  pressScale?: number;
+  spring?: boolean;
   accessibilityRole?: PressableProps['accessibilityRole'];
   accessibilityState?: PressableProps['accessibilityState'];
 };
@@ -41,6 +43,8 @@ export function PressSurface({
   style,
   contentStyle,
   pressedColor,
+  pressScale,
+  spring = false,
   accessibilityRole = 'button',
   accessibilityState,
 }: PressSurfaceProps) {
@@ -51,6 +55,14 @@ export function PressSurface({
     scale.stopAnimation();
     if (motion.reduceMotion) {
       scale.setValue(value);
+      return;
+    }
+    if (spring) {
+      Animated.spring(scale, {
+        ...motion.spring,
+        toValue: value,
+        useNativeDriver: true,
+      }).start();
       return;
     }
     Animated.timing(scale, {
@@ -86,7 +98,9 @@ export function PressSurface({
           contentStyle,
           pressed && { backgroundColor: pressedColor },
         ]}
-        onPressIn={() => animate(motion.pressScale)}
+        onPressIn={() =>
+          animate(motion.reduceMotion ? 1 : (pressScale ?? motion.pressScale))
+        }
         onPressOut={() => animate(1)}
         onPress={() => {
           if (blocked) return;

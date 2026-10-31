@@ -8,6 +8,8 @@ module.exports = {
     {
       displayName: 'app',
       preset: 'jest-expo',
+      resolver: 'react-native-reanimated/jest/resolver.js',
+      setupFilesAfterEnv: ['<rootDir>/scripts/jest-app-setup.ts'],
       testMatch: [
         '<rootDir>/__tests__/**/*.test.ts',
         '<rootDir>/__tests__/**/*.test.tsx',
