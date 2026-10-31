@@ -99,7 +99,7 @@ merged manifest/device behavior remains STEP 22/manual verification.
   - [x] 02.c.3 — Fixed white/hairline tab bar, raised Scan target, safe-area/font-scale height handling and real-router modal/return integration test. 02.c complete.
 - [x] 02.d — Sheet + transparent-modal wiring
 - [x] 02.e — bootstrap redirect + deep-link param schemas (+ tests)
-- [ ] 02.f — Back-button behavior.
+- [x] 02.f — Back-button behavior. STEP 02 complete.
 
 ## STEP 03
 
