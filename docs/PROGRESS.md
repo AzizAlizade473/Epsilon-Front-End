@@ -48,6 +48,7 @@ Device/TalkBack/font-scale/performance checks remain not verified.
 - [x] 01.e — Input (+ tests): wrapping labels/errors, native input/ref props, 56pt minimum, font scaling, focus/disabled styles and draft-preservation tests.
 - [x] 01.f — Amount and integer-only lib/money formatter, signed values, 60% currency glyph and spoken-label override; basic money tests included, STEP 04 integration remains pending.
 - [ ] 01.g — Skeleton, EmptyState, ErrorState, Toast
+  - [x] 01.g.1 — Flat native-driver Skeleton pulse; Reduce Motion defaults to still until the OS preference resolves.
 - [ ] 01.h — dev gallery route
 - [ ] 01.i — `docs/DESIGN_SYSTEM.md`.
 

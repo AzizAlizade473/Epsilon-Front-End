@@ -60,6 +60,8 @@ export const layout = {
   leadingIconSize: 40,
   disabledOpacity: 0.5,
   currencyScale: 0.6,
+  skeletonMinOpacity: 0.5,
+  skeletonPulseDuration: 900,
   hairlineWidth: StyleSheet.hairlineWidth,
 } as const;
 
