@@ -43,6 +43,7 @@ Device/TalkBack/font-scale/performance checks remain not verified.
 - [ ] 01.d — ListRow, Card, Chip, Switch, SegmentedControl
   - [x] 01.d.1 — Flat hairline Card and static/interactive Chip with text labels and visible selection marks.
   - [x] 01.d.2 — Controlled Switch with checked/disabled states and change tests.
+  - [x] 01.d.3 — SegmentedControl: radio semantics, visible selection mark, no callback when reselecting the current option.
 - [ ] 01.e — Input (+ tests)
 - [ ] 01.f — Amount (+ money tests later in STEP 04)
 - [ ] 01.g — Skeleton, EmptyState, ErrorState, Toast

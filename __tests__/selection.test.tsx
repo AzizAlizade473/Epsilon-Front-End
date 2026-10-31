@@ -1,7 +1,33 @@
 import { expect, jest, test } from '@jest/globals';
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import {
+  fireEvent,
+  render,
+  screen,
+  userEvent,
+} from '@testing-library/react-native';
 
 import { Switch } from '@/components/ui/Switch';
+import { SegmentedControl } from '@/components/ui/SegmentedControl';
+
+test('SegmentedControl exposes one choice and ignores reselecting it', async () => {
+  const change = jest.fn();
+  await render(
+    <SegmentedControl
+      label="Language"
+      options={[
+        { value: 'az', label: 'AZ' },
+        { value: 'en', label: 'EN' },
+      ]}
+      value="az"
+      onValueChange={change}
+    />,
+  );
+  const user = userEvent.setup();
+  await user.press(screen.getByRole('radio', { name: 'AZ', checked: true }));
+  expect(change).not.toHaveBeenCalled();
+  await user.press(screen.getByRole('radio', { name: 'EN', checked: false }));
+  expect(change).toHaveBeenCalledWith('en');
+});
 
 test.each([false, true])(
   'Switch reports its state and respects disabled=%s',
