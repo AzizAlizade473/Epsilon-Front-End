@@ -8,7 +8,8 @@ import { Icon } from '@/components/ui/Icon';
 import { PressSurface } from '@/components/ui/PressSurface';
 import { Text } from '@/components/ui/Text';
 import { colors, layout, spacing } from '@/design';
-import { formatDate } from '@/lib/date';
+import { formatDate, formatTime } from '@/lib/date';
+import { TransactionTypeIcon } from './TransactionTypeIcon';
 import { formatMoney } from '@/lib/money';
 import type { WalletTransaction } from '@/services/contracts';
 
@@ -21,13 +22,14 @@ const icons = {
 export function TransactionRow({
   transaction,
   onPress,
+  history = false,
 }: {
   transaction: WalletTransaction;
   onPress?: () => void;
+  history?: boolean;
 }) {
   const { t, i18n } = useTranslation();
-  const title =
-    transaction.source?.restaurantName ?? t(`wallet.type.${transaction.type}`);
+  const title = transaction.source?.restaurantName ?? t('navigation.cashback');
   const status = t(`wallet.status.${transaction.status}`);
   const amount = formatMoney(transaction.amountMinor, { sign: 'always' });
   const date = formatDate(transaction.createdAt, { locale: i18n.language });
@@ -36,15 +38,40 @@ export function TransactionRow({
     .join(', ');
   const content = (
     <>
-      <Icon icon={icons[transaction.type]} decorative />
+      {history ? (
+        <TransactionTypeIcon type={transaction.type} />
+      ) : (
+        <Icon icon={icons[transaction.type]} decorative />
+      )}
       <View style={styles.copy}>
         <Text>{title}</Text>
-        {transaction.itemName && (
+        {!history && transaction.itemName && (
           <Text variant="caption">{transaction.itemName}</Text>
         )}
-        <Text variant="caption">{`${status} · ${date}`}</Text>
+        <Text variant="caption">
+          {history
+            ? `${t(`wallet.type.${transaction.type}`)} · ${formatTime(transaction.createdAt)}`
+            : `${status} · ${date}`}
+        </Text>
+        {history && transaction.status !== 'confirmed' && (
+          <Text variant="caption">{status}</Text>
+        )}
       </View>
-      <Text variant="headline" style={styles.amount}>
+      <Text
+        variant="headline"
+        style={[
+          styles.amount,
+          {
+            color:
+              transaction.status === 'pending'
+                ? colors.inkSecondary
+                : transaction.type === 'earned' &&
+                    transaction.status === 'confirmed'
+                  ? colors.successInk
+                  : colors.ink,
+          },
+        ]}
+      >
         {amount}
       </Text>
     </>

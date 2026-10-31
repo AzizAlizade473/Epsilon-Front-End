@@ -17,7 +17,7 @@ const tones = {
   default: colors.ink,
   secondary: colors.inkSecondary,
   danger: colors.danger,
-  success: colors.success,
+  success: colors.successInk,
 } as const;
 
 /** System typography; text always follows the user's font size setting. */

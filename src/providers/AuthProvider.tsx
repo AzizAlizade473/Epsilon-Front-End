@@ -1,4 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
+import '@/lib/preferences';
 import {
   createContext,
   useCallback,
@@ -34,6 +35,8 @@ import {
 } from '@/services/http/client-with-refresh';
 
 type AuthActions = {
+  reauthenticate: (result: AuthResult) => Promise<void>;
+  finishAccountDeletion: () => Promise<void>;
   completeSignIn: (result: AuthResult) => Promise<void>;
   updateUser: (
     user: User,
@@ -112,12 +115,19 @@ export function AuthProvider({
     publish({
       session: null,
       user: null,
+      onboardingComplete: false,
       nextStep: undefined,
       restoreStatus: undefined,
     });
     setRestored(true);
     const cleanup = clearAuthFlows();
-    await persist(() => SecureStore.deleteItemAsync(storageKeys.session));
+    await persist(async () => {
+      await Promise.all(
+        Object.values(storageKeys).map((key) =>
+          SecureStore.deleteItemAsync(key),
+        ),
+      );
+    });
     await cleanup;
   }, [persist, publish, queryClient]);
   const loadConfig = useCallback(async () => {
@@ -225,6 +235,17 @@ export function AuthProvider({
       <ActionsContext.Provider
         value={{
           completeSignIn,
+          reauthenticate: async (result) => {
+            if (
+              result.user.id !== snapshot.current.user?.id ||
+              result.isNewUser
+            )
+              throw new Error('Account mismatch');
+            await saveSession(result.session);
+          },
+          finishAccountDeletion: async () => {
+            await clearSession();
+          },
           updateUser,
           loadConfig,
           logout,

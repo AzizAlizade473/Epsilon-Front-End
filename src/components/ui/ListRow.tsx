@@ -16,6 +16,8 @@ export type ListRowProps = {
   disabled?: boolean;
   divider?: boolean;
   accessibilityLabel?: string;
+  plainIcon?: boolean;
+  chevron?: boolean;
 };
 
 export function ListRow({
@@ -27,11 +29,18 @@ export function ListRow({
   disabled,
   divider = true,
   accessibilityLabel,
+  plainIcon = false,
+  chevron = true,
 }: ListRowProps) {
   const content = (
     <>
       {icon && (
-        <View style={styles.leading}>
+        <View
+          style={[
+            styles.leading,
+            plainIcon && { backgroundColor: colors.transparent },
+          ]}
+        >
           <Icon icon={icon} decorative />
         </View>
       )}
@@ -44,7 +53,9 @@ export function ListRow({
           {value}
         </Text>
       )}
-      {onPress && <Icon icon={ChevronRight} size="small" decorative />}
+      {onPress && chevron && (
+        <Icon icon={ChevronRight} size="small" decorative />
+      )}
     </>
   );
   return (

@@ -1,4 +1,9 @@
-import { VerificationTabStub } from '@/features/auth/screens/VerificationTabStub';
+import { AuthBoundary } from '@/features/auth/components/AuthBoundary';
+import WalletScreen from '@/features/cashback/screens/WalletScreen';
 export default function Route() {
-  return <VerificationTabStub title="cashback" />;
+  return (
+    <AuthBoundary mode="complete">
+      <WalletScreen />
+    </AuthBoundary>
+  );
 }

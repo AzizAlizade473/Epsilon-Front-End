@@ -40,6 +40,7 @@ const SCENARIOS: MockScenario[] = [
   'feedback_pending',
   'feedback_none',
   'feedback_validation',
+  'wallet_long_history',
 ];
 
 export function DevScenarioMenu({

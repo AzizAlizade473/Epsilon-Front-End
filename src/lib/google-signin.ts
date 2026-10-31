@@ -9,7 +9,8 @@ export type GoogleSdk = {
   GoogleSignin: Pick<
     typeof GoogleSignin,
     'configure' | 'hasPlayServices' | 'signIn' | 'signOut'
-  >;
+  > &
+    Partial<Pick<typeof GoogleSignin, 'revokeAccess'>>;
   statusCodes: {
     SIGN_IN_CANCELLED: string;
     IN_PROGRESS: string;
@@ -101,6 +102,9 @@ export function createGoogleDriver(
     },
     async signOut() {
       if (sdk) await sdk.GoogleSignin.signOut();
+    },
+    async revokeAccess() {
+      if (sdk) await sdk.GoogleSignin.revokeAccess?.();
     },
   };
 }

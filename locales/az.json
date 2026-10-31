@@ -172,6 +172,24 @@
       "pending": "Gözləyir",
       "confirmed": "Təsdiqləndi",
       "cancelled": "Ləğv edildi"
+    },
+    "loadError": "Keşbek məlumatlarını yükləmək alınmadı",
+    "more": "Daha çox göstər",
+    "end": "Bütün əməliyyatlar göstərilib",
+    "emptyTitle": "Hələ əməliyyat yoxdur",
+    "emptyBody": "Skan etdiyiniz qəbzlər və qazandığınız keşbeklər burada görünəcək.",
+    "details": "Əməliyyat",
+    "refreshError": "Yeniləmək alınmadı. Son alınmış məlumat göstərilir.",
+    "transactionUnavailable": "Əməliyyat əlçatan deyil",
+    "copied": "Kopyalandı",
+    "copyValue": "{{label}}: {{value}}. Kopyala",
+    "fields": {
+      "restaurant": "Restoran",
+      "branch": "Filial",
+      "dish": "Yemək",
+      "date": "Tarix",
+      "receiptId": "Qəbz nömrəsi",
+      "transactionId": "Əməliyyat nömrəsi"
     }
   },
   "restaurants": {
@@ -301,7 +319,90 @@
       "receipt_not_found": "Qəbz tapılmadı",
       "feedback_pending": "Keşbek gözləmədə",
       "feedback_none": "Keşbek yoxdur",
-      "feedback_validation": "Rəy yoxlaması xətası"
+      "feedback_validation": "Rəy yoxlaması xətası",
+      "wallet_long_history": "Uzun keşbek tarixçəsi (1000)"
     }
+  },
+  "profile": {
+    "brand": "Epsilon nişanı",
+    "mark": "ε",
+    "edit": "Məlumatları redaktə et",
+    "account": "HESAB",
+    "security": "TƏHLÜKƏSİZLİK VƏ DƏSTƏK",
+    "personal": "Şəxsi məlumatlar",
+    "reviews": "Rəylərim",
+    "notifications": "Bildirişlər",
+    "language": "Dil seçimi",
+    "privacy": "Məxfilik və təhlükəsizlik",
+    "help": "Yardım və dəstək",
+    "logout": "Hesabdan çıx",
+    "logoutConfirm": "Hesabdan çıxmaq istəyirsiniz?",
+    "logoutAction": "Çıx",
+    "logoutLocal": "Bu cihazda hesabdan çıxıldı. Serverlə bağlantı alınmadı.",
+    "version": "Epsilon v{{version}}",
+    "saved": "Yadda saxlanıldı",
+    "save": "Yadda saxla",
+    "phone": "Telefon",
+    "phoneHelp": "Telefon nömrəsini dəyişmək üçün dəstəklə əlaqə saxlayın.",
+    "birthDate": "Doğum tarixi",
+    "identities": "Daxil olma üsulları",
+    "provider": {
+      "phone": "Telefon",
+      "google": "Google",
+      "apple": "Apple"
+    },
+    "reviewsEmpty": "Hələ rəy yoxdur",
+    "reviewsBody": "Qiymətləndirdiyiniz yeməklər burada görünəcək.",
+    "languages": {
+      "az": "Azərbaycan dili",
+      "en": "English",
+      "ru": "Русский"
+    },
+    "selected": "Seçilib",
+    "languageSyncError": "Dil bu cihazda dəyişdirildi. Hesabınızla sinxronlaşdırmaq üçün yenidən cəhd edin.",
+    "contact": "Dəstəklə əlaqə",
+    "privacyPolicy": "Məxfilik siyasəti",
+    "terms": "İstifadə şərtləri",
+    "dataTitle": "Məlumatlarımın istifadəsi",
+    "dataBody": "Epsilon hesab, alış, rəy və keşbek məlumatlarını bu funksiyaları təmin etmək üçün istifadə edir. İzləmə, reklam və sessiya yazısı yoxdur. Ətraflı məlumat məxfilik siyasətindədir.",
+    "crashReports": "Xəta hesabatları göndər",
+    "crashBody": "Texniki xəta hesabatlarına icazə verin. Hesabatlara ad, telefon, alış məlumatları və rəylər daxil edilmir.",
+    "deleteAccount": "Hesabı sil",
+    "deleteBody": "Hesabın silinməsi üçün əvvəlcə kimliyinizi yenidən təsdiqləməlisiniz. Məlumatların saxlanması və silinməsi məxfilik siyasətinə və serverin aşağıda göstərilən məlumatına əsaslanır.",
+    "reauthBody": "Bu hesaba aid telefon və ya Google ilə yenidən daxil olun.",
+    "reauthPhone": "{{phone}} nömrəsinə kod göndər",
+    "reauthGoogle": "Google ilə yenidən təsdiqlə",
+    "reauthUnavailable": "Təsdiqləmə üsulu əlçatan deyil. Dəstəklə əlaqə saxlayın.",
+    "smsCode": "SMS kodu",
+    "deleteType": "Davam etmək üçün {{keyword}} yazın.",
+    "deleteConfirmation": "Silmənin təsdiqi",
+    "deleteError": "Əməliyyat tamamlanmadı. Eyni hesabı təsdiqləyib yenidən cəhd edin.",
+    "cashbackUpdates": "Keşbek yenilikləri",
+    "partnerUpdates": "Yeni partnyor restoranlar",
+    "notificationConsent": "Reklam bildirişləri yalnız razılığınızla göndərilir.",
+    "notificationExplain": "Seçdiyiniz yenilikləri almaq üçün Epsilon-a bildiriş göndərməyə icazə verin.",
+    "notificationAllow": "İcazə ver",
+    "notificationDenied": "Bildirişlər bu cihazda bağlıdır. Onları cihazın ayarlarından aktiv edə bilərsiniz.",
+    "notificationSetup": "Bildirişləri aktiv etmək alınmadı. Yenidən cəhd edin və ya dəstəklə əlaqə saxlayın.",
+    "notificationSettings": "Cihaz ayarlarını aç",
+    "faq": {
+      "1": {
+        "question": "Qəbzi necə skan edə bilərəm?",
+        "answer": "Skan düyməsinə toxunun və qəbzdəki QR kodu çərçivəyə yerləşdirin. Kod serverdə yoxlanıldıqdan sonra alınan yeməklər görünür."
+      },
+      "2": {
+        "question": "Qəbz niyə dəstəklənmir?",
+        "answer": "Qəbz Epsilon ilə inteqrasiya edilmiş restorandan olmalıdır. Kod oxunmursa, onu əl ilə daxil etməyə və ya dəstəklə əlaqə saxlamağa çalışın."
+      },
+      "3": {
+        "question": "Keşbek nə vaxt təsdiqlənir?",
+        "answer": "Keşbekin uyğunluğunu, məbləğini və statusunu server müəyyən edir. Gözləyən və təsdiqlənmiş məbləğlər balansda ayrı göstərilir."
+      },
+      "4": {
+        "question": "Hesabımı necə silə bilərəm?",
+        "answer": "Məxfilik və təhlükəsizlik bölməsində Hesabı sil seçin. Kimliyinizi yenidən təsdiqləyin və ekrandakı təsdiqi tamamlayın."
+      }
+    },
+    "deleteKeyword": "SİL"
   }
 }

@@ -172,6 +172,24 @@
       "pending": "Pending",
       "confirmed": "Confirmed",
       "cancelled": "Cancelled"
+    },
+    "loadError": "Could not load cashback information",
+    "more": "Load more",
+    "end": "All transactions shown",
+    "emptyTitle": "No transactions yet",
+    "emptyBody": "Your scanned receipts and cashback will appear here.",
+    "details": "Transaction",
+    "refreshError": "Could not refresh. Showing the last received information.",
+    "transactionUnavailable": "Transaction unavailable",
+    "copied": "Copied",
+    "copyValue": "{{label}}: {{value}}. Copy",
+    "fields": {
+      "restaurant": "Restaurant",
+      "branch": "Branch",
+      "dish": "Dish",
+      "date": "Date",
+      "receiptId": "Receipt number",
+      "transactionId": "Transaction number"
     }
   },
   "restaurants": {
@@ -301,7 +319,90 @@
       "receipt_not_found": "Receipt not found",
       "feedback_pending": "Cashback pending",
       "feedback_none": "No cashback",
-      "feedback_validation": "Invalid feedback"
+      "feedback_validation": "Invalid feedback",
+      "wallet_long_history": "Long cashback history (1000)"
     }
+  },
+  "profile": {
+    "brand": "Epsilon mark",
+    "mark": "ε",
+    "edit": "Edit personal information",
+    "account": "ACCOUNT",
+    "security": "SECURITY AND SUPPORT",
+    "personal": "Personal information",
+    "reviews": "My reviews",
+    "notifications": "Notifications",
+    "language": "Language",
+    "privacy": "Privacy and security",
+    "help": "Help and support",
+    "logout": "Sign out",
+    "logoutConfirm": "Sign out of your account?",
+    "logoutAction": "Sign out",
+    "logoutLocal": "Signed out on this device. Could not connect to the server.",
+    "version": "Epsilon v{{version}}",
+    "saved": "Saved",
+    "save": "Save",
+    "phone": "Phone",
+    "phoneHelp": "Contact support to change your phone number.",
+    "birthDate": "Date of birth",
+    "identities": "Sign-in methods",
+    "provider": {
+      "phone": "Phone",
+      "google": "Google",
+      "apple": "Apple"
+    },
+    "reviewsEmpty": "No reviews yet",
+    "reviewsBody": "The dishes you rate will appear here.",
+    "languages": {
+      "az": "Azərbaycan dili",
+      "en": "English",
+      "ru": "Русский"
+    },
+    "selected": "Selected",
+    "languageSyncError": "The language changed on this device. Retry to sync it to your account.",
+    "contact": "Contact support",
+    "privacyPolicy": "Privacy policy",
+    "terms": "Terms of use",
+    "dataTitle": "How my data is used",
+    "dataBody": "Epsilon uses account, purchase, feedback and cashback data to provide these features. There is no tracking, advertising or session recording. See the privacy policy for details.",
+    "crashReports": "Send crash reports",
+    "crashBody": "Allow technical crash reports. Reports exclude names, phone numbers, purchase details and comments.",
+    "deleteAccount": "Delete account",
+    "deleteBody": "To delete your account, first verify your identity again. Data retention and deletion follow the privacy policy and any server information shown below.",
+    "reauthBody": "Verify this account again using its phone number or Google identity.",
+    "reauthPhone": "Send code to {{phone}}",
+    "reauthGoogle": "Verify again with Google",
+    "reauthUnavailable": "Verification is unavailable. Contact support.",
+    "smsCode": "SMS code",
+    "deleteType": "Type {{keyword}} to continue.",
+    "deleteConfirmation": "Deletion confirmation",
+    "deleteError": "The operation did not finish. Verify the same account and try again.",
+    "cashbackUpdates": "Cashback updates",
+    "partnerUpdates": "New partner restaurants",
+    "notificationConsent": "Promotional notifications are sent only with your consent.",
+    "notificationExplain": "Allow Epsilon to send notifications for the updates you choose.",
+    "notificationAllow": "Allow",
+    "notificationDenied": "Notifications are disabled on this device. You can enable them in device settings.",
+    "notificationSetup": "Could not enable notifications. Retry or contact support.",
+    "notificationSettings": "Open device settings",
+    "faq": {
+      "1": {
+        "question": "How do I scan a receipt?",
+        "answer": "Tap Scan and place the receipt QR code inside the frame. Purchased dishes appear after the server checks the code."
+      },
+      "2": {
+        "question": "Why is a receipt unsupported?",
+        "answer": "The restaurant must be integrated with Epsilon. If the code cannot be read, try entering it manually or contact support."
+      },
+      "3": {
+        "question": "When is cashback confirmed?",
+        "answer": "The server determines cashback eligibility, amount and status. Pending and confirmed amounts are shown separately in your wallet."
+      },
+      "4": {
+        "question": "How do I delete my account?",
+        "answer": "Choose Delete account under Privacy and security. Verify your identity again and complete the confirmation shown."
+      }
+    },
+    "deleteKeyword": "DELETE"
   }
 }
