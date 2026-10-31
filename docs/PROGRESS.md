@@ -1,20 +1,20 @@
 # Epsilon progress
 
-Scope: STEP 03 services layer, API client, mocks. STEP 02 approved and merged into `main`.
-Branch: `main` (transitioning to `step/03-services`).
+Scope: STEP 05-07 Android authentication batch. STEP 00-04 are merged into `main`.
+Branch: `step/05-07-auth`, based on recovered `origin/main` commit `8bdf92e`.
 
 A checked item is complete only after its commit reaches GitHub.
 
-Recovery: fetched all branches/tags on 2026-10-31. STEP 00, STEP 01, and STEP 02
-merged into `main` (`f4fa666`). Checks green: 39 test suites / 187 tests pass.
-Architecture updated with ADR 0004: verified purchase-feedback architecture,
-channel decoupling (QR as V1 input mechanism, domain model centered on verified
-purchases), universal wallet, and decoupling of future accountless web feedback.
-Next: 03.a contracts, then remaining STEP 03 micro-steps.
-Aziz authorized STEP 02 merge and autonomous STEP 03 on 2026-10-31.
-Manual device checks remain pending and do not block this implementation.
-Open design input: exact brand blue awaits the real logo asset; placeholder is retained.
-Device/TalkBack/font-scale/performance checks remain not verified.
+Recovery (2026-10-31): fetched/pruned all remote branches and verified their tips.
+No remote STEP 05-07 branch existed; `origin/main` (`8bdf92e`) contains the furthest
+pushed implementation (STEP 04 complete). Local `main` was fast-forwarded to that
+commit before creating this batch branch. Older uncommitted STEP 01 work on this
+PC was inspected and preserved, including untracked files, in the named stash
+`main-pc-preservation-step01-before-github-recovery-2026-10-31`. It was not merged.
+
+Aziz authorized one continuous STEP 05-07 batch with one final quality gate and
+final push, overriding the per-micro-step loop for this batch. STEP 08 is untouched.
+Manual Android/device checks remain pending and do not block implementation.
 
 ## STEP 00
 
@@ -119,26 +119,26 @@ merged manifest/device behavior remains STEP 22/manual verification.
 
 ## STEP 05
 
-- [ ] 05.a — layout + strings
-- [ ] 05.b — buttons (Google official style, phone primary) + flags
-- [ ] 05.c — legal links caption
-- [ ] 05.d — motion + a11y labels ("Google ilə davam et", "Telefon nömrəsi ilə davam et") + test.
+- [x] 05.a — layout + strings
+- [x] 05.b — buttons (Google official style, phone primary) + flags
+- [x] 05.c — legal links caption
+- [x] 05.d — motion + a11y labels ("Google ilə davam et", "Telefon nömrəsi ilə davam et") + test.
 
 ## STEP 06
 
-- [ ] 06.a — phone schema + formatter (+ tests)
-- [ ] 06.b — `PhoneField`
-- [ ] 06.c — screen + keyboard-safe button
-- [ ] 06.d — request mutation + errors
-- [ ] 06.e — a11y + test.
+- [x] 06.a — phone schema + formatter (+ tests)
+- [x] 06.b — `PhoneField`
+- [x] 06.c — screen + keyboard-safe button
+- [x] 06.d — request mutation + errors
+- [x] 06.e — a11y + test.
 
 ## STEP 07
 
-- [ ] 07.a — `OtpInput` + `ResendTimer` (+ tests)
-- [ ] 07.b — screen + verify mutation
-- [ ] 07.c — error states + shake
-- [ ] 07.d — session save + routing by `nextStep` (+ tests)
-- [ ] 07.e — a11y.
+- [x] 07.a — `OtpInput` + `ResendTimer` (+ tests)
+- [x] 07.b — screen + verify mutation
+- [x] 07.c — error states + shake
+- [x] 07.d — session save + routing by `nextStep` (+ tests)
+- [x] 07.e — a11y.
 
 ## STEP 08
 
@@ -361,3 +361,50 @@ Later-step documents are specifications only.
 - 00.h: Created compact AGENTS.md and .cursor/rules/epsilon.mdc (20 and 26 lines, <= 40 lines limit) summarizing loop, core pillars, and implementation invariants. All 75 tests pass.
 - 00.i: Created docs/DEV_SETUP.md covering Windows workstation prerequisites, Android Studio SDK and Google Play emulator setup, USB debugging, EAS dev-client builds and installation, and client rebuild rules. All 76 tests pass.
 - 00.j: Added .github/workflows/ci.yml running on main and step/** branches with Node 20, npm cache, npm ci, and npm run check. All 77 tests pass.
+
+## STEP 05-07 batch verification (2026-10-31)
+
+- Welcome, phone entry and OTP now use the existing design primitives and AZ/EN/RU
+  localization, with shared PhoneField/OtpInput/ResendTimer for STEP 10 reuse.
+- Normalized Azerbaijan mobile input; hidden single-field SMS autofill; six-digit
+  auto-submit; service-backed request/verify; shared submission guard; masked phone
+  in copy, no phone/code route params or query-cache entries.
+- Server-relative resend/lockout deadlines survive navigation/backgrounding. They
+  are display/interaction guards only; the server decides OTP validity and expiry.
+- Invalid/expired/too-many/network/generic and secure-storage failures are handled;
+  native-driver error shake, Reduce Motion color flash and permission-free Android
+  error haptics. Session persistence precedes authenticated state and nextStep
+  routing. Boot sessions hydrate from user/config services, with retry and wired
+  single-flight refresh/logout callbacks; tokens are read from SecureStore at boot only.
+- Epsilon Design System + Unslop source review completed across spacing, color,
+  icons, copy, typography, layout, details, visuals and motion. Standing rule is
+  recorded once in DESIGN_SYSTEM.md. No decorative redesign or new visual system.
+- Approved expo-web-browser 58.0.7 (MIT, 244,559 unpacked bytes); legal links use
+  configured URLs and browser failures are handled. Native dev client rebuild is
+  required for the added native module. Google assets are bundled and attributed
+  in assets/brand/README.md; Google authentication remains STEP 08. Apple is omitted
+  on Android, consistent with the Android-only service contract.
+- Known design input: real Epsilon logo/exact brand blue still awaits owner asset;
+  Welcome uses a text wordmark and the existing provisional blue.
+- Manual verification not performed: small Android keyboard/layout, 1.3x font
+  scale, TalkBack, real SMS autofill, legal-link device behavior and low-end startup.
+  No production backend/device authentication or APK installation is claimed.
+- Final `npm run check`: lint (zero warnings), strict typecheck, 53 suites / 367
+  tests, 110 locale base keys across AZ/EN/RU, and repository formatting all pass.
+  Git whitespace checks and Expo dependency validation pass.
+- Android Hermes release export passes: 5,217,070 bytes versus 5,065,224 bytes at
+  recovered `8bdf92e` (+3.0%, below the 10% guard). This is bundle verification,
+  not a native build or device performance measurement.
+- Expo SDK compatibility validation required existing patch updates: Expo
+  58.0.22, build-properties 58.0.12, dev-client 58.0.18, router 58.0.29. All direct
+  dependencies, including web-browser, remain exactly pinned. Updated the CLI
+  compatibility probe for upstream schema relocation/JSON Schema validation and
+  explicit MCP Zod injection; retained every positive and negative validation case
+  and the patched-Zod version assertion.
+- Production-dependency audit at high severity passes (zero high/critical).
+  Existing transitive tooling advisories remain: 1 low / 28 moderate with
+  `--omit=dev`; npm recommends breaking SDK downgrades for some findings. No
+  forced audit fixes or weakened checks were applied. Further supply-chain work
+  remains with the planned dependency/CI audit stages.
+- Implementation is ready for review/merge with the manual checks and brand input
+  above recorded. No merge into main is authorized or performed in this batch.

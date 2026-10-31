@@ -73,6 +73,41 @@ function abortError(): () => Promise<Response> {
     );
 }
 
+it.each([15, 120])(
+  'carries server OTP lockout duration %s to the UI',
+  async (retryAfterSeconds) => {
+    mockFetch([jsonResponse({ code: 'OTP_TOO_MANY', retryAfterSeconds }, 429)]);
+    await expect(
+      request(
+        'POST',
+        '/auth/otp/verify',
+        echoSchema,
+        {},
+        { idempotencyKey: 'test-lockout' },
+      ),
+    ).rejects.toMatchObject({ code: 'OTP_TOO_MANY', retryAfterSeconds });
+  },
+);
+
+it('reads numeric Retry-After when the error body has no duration', async () => {
+  mockFetch([
+    async () =>
+      new Response(JSON.stringify({ code: 'RATE_LIMITED' }), {
+        status: 429,
+        headers: { 'Retry-After': '45' },
+      }),
+  ]);
+  await expect(
+    request(
+      'POST',
+      '/auth/otp/request',
+      echoSchema,
+      {},
+      { idempotencyKey: 'test-retry-after' },
+    ),
+  ).rejects.toMatchObject({ code: 'RATE_LIMITED', retryAfterSeconds: 45 });
+});
+
 // ---------------------------------------------------------------------------
 // Setup
 // ---------------------------------------------------------------------------

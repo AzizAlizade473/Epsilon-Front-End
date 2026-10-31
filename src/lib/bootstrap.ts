@@ -30,6 +30,8 @@ export type NavigationUser = {
 export type AuthState = BootData & {
   user: NavigationUser | null;
   requirePhoneVerification: boolean;
+  restoreStatus?: 'loading' | 'error';
+  retryRestore?: () => void;
 };
 
 export type BootstrapRoute =

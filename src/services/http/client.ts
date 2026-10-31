@@ -81,6 +81,7 @@ const serverErrorBodySchema = z
   .object({
     code: z.string(),
     message: z.string().optional(),
+    retryAfterSeconds: z.number().int().nonnegative().optional(),
   })
   .passthrough();
 
@@ -226,6 +227,9 @@ async function executeRequest<T>(
   if (!response.ok) {
     let code: ApiErrorCode = codeFromStatus(response.status);
     let message = `HTTP ${response.status}`;
+    const retryHeader = response.headers.get('Retry-After');
+    let retryAfterSeconds: number | null =
+      retryHeader && /^\d+$/.test(retryHeader) ? Number(retryHeader) : null;
 
     try {
       const errorJson: unknown = await response.json();
@@ -233,6 +237,7 @@ async function executeRequest<T>(
       if (parsed.success) {
         code = parsed.data.code as ApiErrorCode;
         message = parsed.data.message ?? message;
+        retryAfterSeconds = parsed.data.retryAfterSeconds ?? retryAfterSeconds;
       }
     } catch {
       // Non-JSON error body; keep defaults
@@ -243,6 +248,7 @@ async function executeRequest<T>(
       message,
       status: response.status,
       requestId: serverRequestId,
+      retryAfterSeconds,
     });
   }
 
