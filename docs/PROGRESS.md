@@ -54,6 +54,7 @@ Device/TalkBack/font-scale/performance checks remain not verified.
 - [ ] 01.h — dev gallery route
   - [x] 01.h.1 — Matching AZ/EN/RU gallery copy and typed, AZ-default preview resources; production i18next remains STEP 04.
   - [x] 01.h.2 — Gallery control samples: interactive selections/input, button states, rows and icons.
+  - [x] 01.h.3 — Gallery amounts, loading/empty/error states and interactive retry/Toast samples; no network/product data.
 - [ ] 01.i — `docs/DESIGN_SYSTEM.md`.
 
 ## STEP 02
