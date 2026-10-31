@@ -34,6 +34,7 @@ Device/TalkBack/font-scale/performance checks remain not verified.
   - [x] 01.b.2 — Approved pinned icon/haptics/component-test dependencies; Android VIBRATE blocked (SEC-8).
   - [x] 01.b.3 — Lucide Icon: labeled/decorative modes, stroke 2, modular imports; RNTL 14 tests.
   - [x] 01.b.4 — Header: wrapping heading and caller-owned action slots; accessibility/navigation tests.
+  - [x] 01.b.5 — Screen: safe area, dark status bar, centered 480pt column, keyboard handling and fixed footer.
 - [ ] 01.c — Button, IconButton (+ tests)
 - [ ] 01.d — ListRow, Card, Chip, Switch, SegmentedControl
 - [ ] 01.e — Input (+ tests)
