@@ -62,7 +62,7 @@ export function setLocaleAccessor(fn: () => string): void {
 // Types
 // ---------------------------------------------------------------------------
 
-type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 export interface RequestOptions {
   /** Idempotency-Key for mutations (NET-3). Required for POST/PUT/PATCH/DELETE. */

@@ -103,7 +103,7 @@ merged manifest/device behavior remains STEP 22/manual verification.
 
 - [x] 03.a — contracts
 - [x] 03.b — client + errors + idempotency (+ tests)
-- [ ] 03.c — refresh single-flight (+ tests)
+- [x] 03.c — refresh single-flight (+ tests)
 - [ ] 03.d — service interfaces
 - [ ] 03.e — mock implementations + fixtures + contract tests
 - [ ] 03.f — dev scenario menu
