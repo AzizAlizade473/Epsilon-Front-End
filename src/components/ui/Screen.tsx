@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import type { ReactNode } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -12,7 +12,7 @@ import { SafeAreaView, type Edges } from 'react-native-safe-area-context';
 import { Header, type HeaderProps } from './Header';
 import { Text } from './Text';
 
-import { colors, layout, spacing, theme } from '@/design';
+import { colors, layout, spacing, theme, typography } from '@/design';
 
 export type ScreenProps = Pick<HeaderProps, 'leading' | 'trailing'> & {
   children: ReactNode;
@@ -31,12 +31,26 @@ export function Screen({
   footer,
   edges,
 }: ScreenProps) {
+  const [collapsed, setCollapsed] = useState(false);
+  const collapsedRef = useRef(false);
+  const titleHeight = useRef<number>(typography.title1.lineHeight);
   const content = (
     <>
       {scroll && title && (
-        <Text variant="title1" accessibilityRole="header">
-          {title}
-        </Text>
+        <View
+          accessibilityElementsHidden={collapsed}
+          importantForAccessibility={collapsed ? 'no-hide-descendants' : 'auto'}
+        >
+          <Text
+            variant="title1"
+            accessibilityRole="header"
+            onLayout={(event) => {
+              titleHeight.current = event.nativeEvent.layout.height;
+            }}
+          >
+            {title}
+          </Text>
+        </View>
       )}
       {children}
     </>
@@ -53,7 +67,7 @@ export function Screen({
             title={title ?? ''}
             leading={leading}
             trailing={trailing}
-            titleVisible={!scroll}
+            titleVisible={!scroll || collapsed}
           />
         )}
         {scroll ? (
@@ -62,6 +76,17 @@ export function Screen({
             contentContainerStyle={styles.content}
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="on-drag"
+            scrollEventThrottle={spacing[16]}
+            onScroll={(event) => {
+              const next =
+                Boolean(title) &&
+                event.nativeEvent.contentOffset.y >=
+                  titleHeight.current + spacing[16];
+              if (next !== collapsedRef.current) {
+                collapsedRef.current = next;
+                setCollapsed(next);
+              }
+            }}
           >
             {content}
           </ScrollView>
