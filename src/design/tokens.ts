@@ -56,6 +56,7 @@ export const layout = {
   tapTarget: 44,
   iconStrokeWidth: 2,
   controlHeight: 56,
+  tabBarHeight: 64,
   rowHeight: 52,
   leadingIconSize: 40,
   disabledOpacity: 0.5,

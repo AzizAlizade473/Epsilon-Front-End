@@ -95,6 +95,7 @@ merged manifest/device behavior remains STEP 22/manual verification.
   - [x] 02.b.3 — Expo-generated route types on every typecheck, including fresh CI; compile-time unknown-route/missing-ID guards. 02.b complete.
 - [ ] 02.c — TabBar + center button
   - [x] 02.c.1 — Center Scan action: native-driver 0.94 spring, haptics, focus-reset repeat-press guard and modal-push test.
+  - [x] 02.c.2 — Accessible tab items: selected state, decorative glyphs and 64pt minimum; inactive labels use secondary on white for UX-1 contrast, icons retain inkMuted.
 - [ ] 02.d — Sheet + transparent-modal wiring
 - [ ] 02.e — bootstrap redirect + deep-link param schemas (+ tests)
 - [ ] 02.f — Back-button behavior.
