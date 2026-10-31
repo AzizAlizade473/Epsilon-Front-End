@@ -1,3 +1,9 @@
-import { createStubScreen } from '@/components/navigation/StubScreen';
-
-export default createStubScreen('feedbackDone');
+import { AuthBoundary } from '@/features/auth/components/AuthBoundary';
+import { FeedbackDoneScreen } from '@/features/feedback/screens/FeedbackDoneScreen';
+export default function Route() {
+  return (
+    <AuthBoundary mode="complete">
+      <FeedbackDoneScreen />
+    </AuthBoundary>
+  );
+}

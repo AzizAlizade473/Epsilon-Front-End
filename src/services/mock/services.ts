@@ -2,7 +2,13 @@
  * 03.e — Mock services implementation.
  */
 
-import type { User } from '../contracts';
+import {
+  feedbackInputSchema,
+  purchaseReferenceSchema,
+  type User,
+  type FeedbackResult,
+} from '../contracts';
+import { ApiError } from '../http/errors';
 import type {
   AuthService,
   ConfigService,
@@ -25,6 +31,19 @@ import {
 import { checkMockScenario, getMockScenario, simulateDelay } from './scenario';
 
 let _currentUser: User = { ...mockUser };
+const mockRatings = new Map<string, number>();
+const mockFeedbackResults = new Map<string, FeedbackResult>();
+export function resetMockFeedback() {
+  mockRatings.clear();
+  mockFeedbackResults.clear();
+}
+const currentReceipt = () => ({
+  ...mockReceipt,
+  items: mockReceipt.items.map((item) => ({
+    ...item,
+    rating: mockRatings.get(item.id) ?? item.rating,
+  })),
+});
 
 export const mockAuthService: AuthService = {
   async requestOtp() {
@@ -169,30 +188,74 @@ export const mockRestaurantService: RestaurantService = {
 };
 
 export const mockReceiptService: ReceiptService = {
-  async resolve() {
+  async resolve(input) {
     await simulateDelay();
     checkMockScenario('receipt');
-    return mockReceipt;
+    purchaseReferenceSchema.parse(input);
+    return currentReceipt();
   },
 
-  async get() {
+  async get(id) {
     await simulateDelay();
+    if (id !== mockReceipt.id)
+      throw new ApiError({
+        code: 'RECEIPT_NOT_FOUND',
+        message: 'Unknown mock receipt',
+        status: 404,
+      });
+    const scenario = getMockScenario();
+    if (
+      scenario === 'receipt_already_claimed' ||
+      scenario === 'receipt_expired'
+    )
+      return {
+        ...currentReceipt(),
+        status: scenario === 'receipt_expired' ? 'expired' : 'claimed',
+      };
     checkMockScenario('receipt');
-    return mockReceipt;
+    return currentReceipt();
   },
 };
 
 export const mockFeedbackService: FeedbackService = {
-  async submit() {
+  async submit(input, options) {
     await simulateDelay();
     checkMockScenario('feedback');
-    return {
-      feedbackId: 'fb_mock_123',
-      reward: {
-        status: 'confirmed',
-        amountMinor: 250,
-      },
+    feedbackInputSchema.parse(input);
+    const existing = options?.idempotencyKey
+      ? mockFeedbackResults.get(options.idempotencyKey)
+      : undefined;
+    if (existing) return existing;
+    const item = mockReceipt.items.find(
+      (entry) => entry.id === input.receiptItemId,
+    );
+    if (!item || !item.canRate)
+      throw new ApiError({
+        code: 'VALIDATION_FAILED',
+        message: 'Unknown mock item',
+        status: 422,
+      });
+    if (mockRatings.has(item.id))
+      throw new ApiError({
+        code: 'FEEDBACK_ALREADY_SUBMITTED',
+        message: 'Duplicate mock rating',
+        status: 409,
+      });
+    const scenario = getMockScenario();
+    const status =
+      scenario === 'feedback_pending'
+        ? 'pending'
+        : scenario === 'feedback_none'
+          ? 'none'
+          : 'confirmed';
+    const result: FeedbackResult = {
+      feedbackId: `fb_mock_${item.id}`,
+      reward: { status, amountMinor: status === 'confirmed' ? 250 : null },
     };
+    mockRatings.set(item.id, input.rating);
+    if (options?.idempotencyKey)
+      mockFeedbackResults.set(options.idempotencyKey, result);
+    return result;
   },
 
   async list() {

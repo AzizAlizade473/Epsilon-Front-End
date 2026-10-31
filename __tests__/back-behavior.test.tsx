@@ -9,6 +9,13 @@ import az from '../locales/az.json';
 
 import { BackButton } from '@/components/navigation/BackButton';
 import { initializeI18n } from '@/lib/i18n';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { createQueryClient } from '@/services/query';
+jest.mock('expo-camera', () => ({
+  CameraView: () => null,
+  useCameraPermissions: () => [null, jest.fn(), mockGetPermission],
+}));
+const mockGetPermission = jest.fn(() => Promise.resolve(null));
 jest.mock('@/features/auth/components/AuthBoundary', () => ({
   AuthBoundary: ({ children }: { children: React.ReactNode }) => children,
 }));
@@ -19,7 +26,7 @@ let capturedTabsProps: { backBehavior?: string } | undefined;
 jest.mock('expo-router', () => {
   const react = jest.requireActual<typeof import('react')>('react');
   return {
-    useRouter: () => ({ back: mockBack }),
+    useRouter: () => ({ back: mockBack, canGoBack: () => true }),
     useFocusEffect: (effect: () => void) => react.useEffect(effect, [effect]),
   };
 });
@@ -88,12 +95,14 @@ describe('Scan modal Back behavior (02.f)', () => {
     await initializeI18n();
     await render(
       <SafeAreaProvider initialMetrics={initialMetrics}>
-        <ScanScreen />
+        <QueryClientProvider client={createQueryClient()}>
+          <ScanScreen />
+        </QueryClientProvider>
       </SafeAreaProvider>,
     );
 
     expect(
-      screen.getByRole('header', { name: az.navigation.scan }),
+      screen.getByRole('header', { name: az.scan.permissionTitle }),
     ).toBeOnTheScreen();
     const closeBtn = screen.getByRole('button', { name: az.navigation.close });
     expect(closeBtn).toBeOnTheScreen();
@@ -116,7 +125,9 @@ describe('Scan modal Back behavior (02.f)', () => {
 
     await render(
       <SafeAreaProvider initialMetrics={initialMetrics}>
-        <ScanScreen />
+        <QueryClientProvider client={createQueryClient()}>
+          <ScanScreen />
+        </QueryClientProvider>
       </SafeAreaProvider>,
     );
 

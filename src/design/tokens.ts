@@ -7,6 +7,7 @@ import { StyleSheet } from 'react-native';
 
 export const colors = {
   transparent: 'transparent',
+  cameraBackground: '#000000',
   brand: {
     primary: '#2563EB',
     primaryPressed: '#1D4ED8',
@@ -62,6 +63,12 @@ export const layout = {
   tabBarHeight: 64,
   rowHeight: 52,
   detailRowHeight: 68,
+  scanViewfinderSize: 260,
+  scanBracketWidth: 3,
+  scanLineWidth: 1,
+  receiptLogoSize: 48,
+  successMarkSize: 72,
+  ratingStarSize: 48,
   leadingIconSize: 40,
   disabledOpacity: 0.5,
   currencyScale: 0.6,

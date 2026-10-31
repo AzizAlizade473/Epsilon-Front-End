@@ -13,6 +13,11 @@ export type MockScenario =
   | 'otp_expired'
   | 'receipt_already_claimed'
   | 'receipt_expired'
+  | 'receipt_unsupported'
+  | 'receipt_not_found'
+  | 'feedback_pending'
+  | 'feedback_none'
+  | 'feedback_validation'
   | 'feedback_already_submitted';
 
 let _activeScenario: MockScenario = 'success';
@@ -70,6 +75,18 @@ export function checkMockScenario(
     }
   }
   if (scope === 'receipt') {
+    if (
+      _activeScenario === 'receipt_unsupported' ||
+      _activeScenario === 'receipt_not_found'
+    )
+      throw new ApiError({
+        code:
+          _activeScenario === 'receipt_unsupported'
+            ? 'RECEIPT_UNSUPPORTED'
+            : 'RECEIPT_NOT_FOUND',
+        message: 'Simulated receipt error',
+        status: 400,
+      });
     if (_activeScenario === 'receipt_already_claimed') {
       throw new ApiError({
         code: 'RECEIPT_ALREADY_CLAIMED',
@@ -86,6 +103,12 @@ export function checkMockScenario(
     }
   }
   if (scope === 'feedback') {
+    if (_activeScenario === 'feedback_validation')
+      throw new ApiError({
+        code: 'VALIDATION_FAILED',
+        message: 'Simulated invalid feedback',
+        status: 422,
+      });
     if (_activeScenario === 'feedback_already_submitted') {
       throw new ApiError({
         code: 'FEEDBACK_ALREADY_SUBMITTED',

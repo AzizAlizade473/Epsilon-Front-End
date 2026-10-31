@@ -6,6 +6,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { I18nextProvider } from 'react-i18next';
 
 import { ToastProvider } from './ToastProvider';
+import { FeedbackProvider } from './FeedbackProvider';
 import { AuthProvider, useAuth as useAuthState } from './AuthProvider';
 
 import { colors } from '@/design';
@@ -65,7 +66,9 @@ export function RuntimeProviders({
         <QueryClientProvider client={queryClient}>
           <AuthProvider boot={boot} onBootConsumed={onBootConsumed}>
             <ToastProvider>
-              <OfflineBanner>{children}</OfflineBanner>
+              <FeedbackProvider>
+                <OfflineBanner>{children}</OfflineBanner>
+              </FeedbackProvider>
             </ToastProvider>
           </AuthProvider>
         </QueryClientProvider>

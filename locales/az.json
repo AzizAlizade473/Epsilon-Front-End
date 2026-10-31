@@ -182,5 +182,126 @@
     "empty": "Restoranlar tezliklə burada görünəcək.",
     "noResults": "Heç nə tapılmadı",
     "tryAnother": "Başqa ad yoxlayın."
+  },
+  "scan": {
+    "permissionTitle": "Qəbzi skan et",
+    "permissionBody": "Partnyor restoranın qəbzindəki QR kodu kamera ilə skan edin. Qəbz kodunu əl ilə də daxil edə bilərsiniz.",
+    "allow": "Kameraya icazə ver",
+    "settings": "Ayarları aç",
+    "manual": "Kodu əl ilə daxil et",
+    "code": "Qəbz kodu",
+    "position": "Qəbzdəki QR kodu çərçivəyə yerləşdirin",
+    "resolving": "Qəbz yoxlanılır…",
+    "resolved": "Qəbz təsdiqləndi",
+    "torchOn": "Fənəri yandır",
+    "torchOff": "Fənəri söndür",
+    "retry": "Yenidən cəhd et",
+    "errors": {
+      "unsupported": {
+        "title": "Kod dəstəklənmir",
+        "body": "Partnyor restoranın qəbzindəki QR kodu skan edin."
+      },
+      "claimed": {
+        "title": "Qəbz artıq istifadə edilib",
+        "body": "Bu qəbz artıq istifadə edilib."
+      },
+      "expired": {
+        "title": "Qəbzin vaxtı bitib",
+        "body": "Bu qəbz üzrə artıq rəy bildirmək mümkün deyil."
+      },
+      "notFound": {
+        "title": "Qəbz tapılmadı",
+        "body": "Kodu yoxlayıb yenidən cəhd edin."
+      },
+      "network": {
+        "title": "Bağlantı alınmadı",
+        "body": "İnternet bağlantınızı yoxlayıb yenidən cəhd edin."
+      },
+      "unknown": {
+        "title": "Qəbzi yoxlamaq alınmadı",
+        "body": "Yenidən cəhd edin."
+      }
+    }
+  },
+  "receipt": {
+    "branchDate": "{{branch}} · {{date}}, {{time}}",
+    "status": {
+      "verified": "Təsdiqləndi",
+      "claimed": "İstifadə edilib",
+      "expired": "Vaxtı bitib"
+    },
+    "items": "Yeməkləriniz",
+    "quantityPrice": "{{qty}} × {{price}}",
+    "rated": "Qiymətləndirilib",
+    "rate": "Qiymətləndir",
+    "rateItem": "{{name}} — qiymətləndir",
+    "total": "Cəmi",
+    "rewardHint": "Mümkün keşbek: {{amount}}",
+    "identifier": "Qəbz: {{id}}",
+    "unavailable": "Qəbz əlçatan deyil"
+  },
+  "feedback": {
+    "question": "Bu yemək necə idi?",
+    "starChoice_one": "{{count}} ulduz — {{meaning}}",
+    "starChoice_other": "{{count}} ulduz — {{meaning}}",
+    "ratingValue_one": "{{count}} ulduz",
+    "ratingValue_other": "{{count}} ulduz",
+    "rating": {
+      "1": "Çox pis",
+      "2": "Pis",
+      "3": "Normal",
+      "4": "Yaxşı",
+      "5": "Əla"
+    },
+    "reasons": {
+      "taste": "Dad",
+      "temperature": "Temperatur",
+      "portion": "Porsiya",
+      "price": "Qiymət",
+      "presentation": "Təqdimat",
+      "wait_time": "Gözləmə vaxtı"
+    },
+    "comment": "Şərh (istəyə bağlı)",
+    "counter_one": "{{count}} / 500",
+    "counter_other": "{{count}} / 500",
+    "neutralReward": "Keşbek rəyinizin müsbət və ya mənfi olmasından asılı deyil.",
+    "queued": "Göndərilir…",
+    "saved": "Rəyiniz bu cihazda saxlanılıb və avtomatik yenidən göndəriləcək.",
+    "send": "Rəyi göndər",
+    "thanks": "Təşəkkürlər!",
+    "sent": "Rəyiniz göndərildi.",
+    "rewardConfirmed": "Keşbek balansınıza əlavə olundu",
+    "rewardPending": "Keşbek yoxlanılır, təsdiqdən sonra balansda görünəcək.",
+    "otherDish": "Başqa yeməyi qiymətləndir",
+    "home": "Ana səhifəyə keç",
+    "invalid": "Rəyinizi yoxlayıb yenidən cəhd edin.",
+    "duplicate": "Bu yemək üçün artıq rəy bildirmisiniz.",
+    "retryLater": "Hələ göndərmək alınmadı. Rəyiniz saxlanılıb; bağlantı olduqda yenidən cəhd edin.",
+    "queueFull": "Saxlanmış rəylər növbəsi doludur. Əvvəlcə internetə qoşulub onları göndərin.",
+    "saveFailed": "Rəyi saxlamaq alınmadı. Yenidən cəhd edin.",
+    "unavailable": "Bu yeməyi qiymətləndirmək mümkün deyil.",
+    "discardTitle": "Rəydən çıxırsınız?",
+    "discardBody": "Göndərilməmiş dəyişiklikləriniz itəcək.",
+    "stay": "Qal",
+    "leave": "Çıx"
+  },
+  "dev": {
+    "title": "Sınaq ssenariləri",
+    "scenarios": {
+      "success": "Uğurlu (Success)",
+      "empty": "Boş siyahı (Empty)",
+      "network_error": "Şəbəkə xətası (Network)",
+      "unauthorized": "401 İcazəsiz (Unauthorized)",
+      "otp_invalid": "Yanlış OTP (OTP Invalid)",
+      "otp_expired": "Vaxtı bitmiş OTP (OTP Expired)",
+      "receipt_already_claimed": "Qəbz artıq istifadə edilib",
+      "receipt_expired": "Qəbzin vaxtı bitib",
+      "feedback_already_submitted": "Rəy artıq göndərilib",
+      "receipt_unsupported": "QR dəstəklənmir",
+      "receipt_not_found": "Qəbz tapılmadı",
+      "feedback_pending": "Keşbek gözləmədə",
+      "feedback_none": "Keşbek yoxdur",
+      "feedback_validation": "Rəy yoxlaması xətası"
+    }
   }
 }

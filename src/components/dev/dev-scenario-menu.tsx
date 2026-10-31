@@ -6,6 +6,10 @@
  */
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import X from 'lucide-react-native/icons/x';
+import Check from 'lucide-react-native/icons/check';
+import { Icon } from '@/components/ui/Icon';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { colors, radius, spacing, typography } from '@/design';
@@ -21,52 +25,21 @@ export type DevScenarioMenuProps = {
   onSelectScenario?: (scenario: MockScenario) => void;
 };
 
-const SCENARIOS: { id: MockScenario; label: string; desc: string }[] = [
-  {
-    id: 'success',
-    label: 'Uğurlu (Success)',
-    desc: 'Normal server cavabı və zəngin məlumatlar',
-  },
-  {
-    id: 'empty',
-    label: 'Boş siyahı (Empty)',
-    desc: 'Boş restoranlar, sıfır balans, boş tarixçə',
-  },
-  {
-    id: 'network_error',
-    label: 'Şəbəkə xətası (Network)',
-    desc: 'Simulyasiya edilmiş şəbəkə kəsilməsi (status 0)',
-  },
-  {
-    id: 'unauthorized',
-    label: '401 İcazəsiz (Unauthorized)',
-    desc: 'Sessiyanın bitməsi və təkrar yönləndirmə',
-  },
-  {
-    id: 'otp_invalid',
-    label: 'Yanlış OTP (OTP Invalid)',
-    desc: 'OTP yoxlaması 400 OTP_INVALID qaytarır',
-  },
-  {
-    id: 'otp_expired',
-    label: 'Vaxtı bitmiş OTP (OTP Expired)',
-    desc: 'OTP yoxlaması 400 OTP_EXPIRED qaytarır',
-  },
-  {
-    id: 'receipt_already_claimed',
-    label: 'Qəbz artıq istifadə edilib',
-    desc: 'Qəbz 409 RECEIPT_ALREADY_CLAIMED qaytarır',
-  },
-  {
-    id: 'receipt_expired',
-    label: 'Qəbzin vaxtı bitib',
-    desc: 'Qəbz 410 RECEIPT_EXPIRED qaytarır',
-  },
-  {
-    id: 'feedback_already_submitted',
-    label: 'Rəy artıq göndərilib',
-    desc: '409 FEEDBACK_ALREADY_SUBMITTED xətası',
-  },
+const SCENARIOS: MockScenario[] = [
+  'success',
+  'empty',
+  'network_error',
+  'unauthorized',
+  'otp_invalid',
+  'otp_expired',
+  'receipt_already_claimed',
+  'receipt_expired',
+  'feedback_already_submitted',
+  'receipt_unsupported',
+  'receipt_not_found',
+  'feedback_pending',
+  'feedback_none',
+  'feedback_validation',
 ];
 
 export function DevScenarioMenu({
@@ -74,6 +47,7 @@ export function DevScenarioMenu({
   onClose,
   onSelectScenario,
 }: DevScenarioMenuProps) {
+  const { t } = useTranslation();
   if (!__DEV__ || !visible) {
     return null;
   }
@@ -90,32 +64,32 @@ export function DevScenarioMenu({
     <View style={styles.overlay} testID="dev-scenario-menu">
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.title}>🛠 Mock Ssenariləri (Dev Menu)</Text>
+          <Text style={styles.title}>{t('dev.title')}</Text>
           <Pressable
-            accessibilityLabel="Bağla"
+            accessibilityLabel={t('navigation.close')}
             accessibilityRole="button"
             onPress={onClose}
             style={styles.closeButton}
             testID="dev-scenario-close"
           >
-            <Text style={styles.closeText}>✕</Text>
+            <Icon icon={X} decorative />
           </Pressable>
         </View>
 
         <ScrollView contentContainerStyle={styles.list}>
           {SCENARIOS.map((item) => {
-            const isSelected = item.id === currentScenario;
+            const isSelected = item === currentScenario;
             return (
               <Pressable
                 accessibilityRole="button"
                 accessibilityState={{ selected: isSelected }}
-                key={item.id}
-                onPress={() => handleSelect(item.id)}
+                key={item}
+                onPress={() => handleSelect(item)}
                 style={[
                   styles.item,
                   isSelected ? styles.itemActive : undefined,
                 ]}
-                testID={`scenario-item-${item.id}`}
+                testID={`scenario-item-${item}`}
               >
                 <View style={styles.itemHeader}>
                   <Text
@@ -124,13 +98,10 @@ export function DevScenarioMenu({
                       isSelected ? styles.itemLabelActive : undefined,
                     ]}
                   >
-                    {item.label}
+                    {t(`dev.scenarios.${item}`)}
                   </Text>
-                  {isSelected ? (
-                    <Text style={styles.activeCheck}>✓ Aktiv</Text>
-                  ) : null}
+                  {isSelected ? <Icon icon={Check} decorative /> : null}
                 </View>
-                <Text style={styles.itemDesc}>{item.desc}</Text>
               </Pressable>
             );
           })}

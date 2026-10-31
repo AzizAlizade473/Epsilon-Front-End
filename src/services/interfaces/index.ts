@@ -12,6 +12,7 @@ import type {
   FeedbackResult,
   Paginated,
   ProfileUpdateResult,
+  PurchaseReference,
   Receipt,
   Restaurant,
   Session,
@@ -59,12 +60,18 @@ export interface RestaurantService {
 }
 
 export interface ReceiptService {
-  resolve(qrPayload: string): Promise<Receipt>;
-  get(id: string): Promise<Receipt>;
+  resolve(
+    input: PurchaseReference,
+    options?: MutationOptions,
+  ): Promise<Receipt>;
+  get(id: string, options?: ReadOptions): Promise<Receipt>;
 }
 
 export interface FeedbackService {
-  submit(input: FeedbackInput): Promise<FeedbackResult>;
+  submit(
+    input: FeedbackInput,
+    options?: MutationOptions,
+  ): Promise<FeedbackResult>;
   list(params?: {
     cursor?: string;
     limit?: number;
@@ -83,6 +90,7 @@ export interface WalletService {
   transaction(id: string): Promise<WalletTransaction>;
 }
 export type ReadOptions = { signal?: AbortSignal };
+export type MutationOptions = ReadOptions & { idempotencyKey?: string };
 
 export interface NotificationService {
   settings(): Promise<{ pushEnabled: boolean }>;
