@@ -94,6 +94,7 @@ merged manifest/device behavior remains STEP 22/manual verification.
   - [x] 02.b.2 — Native stack presentations, transparent Sheet modals and 150ms tab fades with Reduce Motion; scan remains an external modal.
   - [x] 02.b.3 — Expo-generated route types on every typecheck, including fresh CI; compile-time unknown-route/missing-ID guards. 02.b complete.
 - [ ] 02.c — TabBar + center button
+  - [x] 02.c.1 — Center Scan action: native-driver 0.94 spring, haptics, focus-reset repeat-press guard and modal-push test.
 - [ ] 02.d — Sheet + transparent-modal wiring
 - [ ] 02.e — bootstrap redirect + deep-link param schemas (+ tests)
 - [ ] 02.f — Back-button behavior.

@@ -3,6 +3,7 @@ import { AccessibilityInfo, Easing } from 'react-native';
 
 export const motionTokens = {
   tabFadeDuration: 150,
+  scanPressScale: 0.94,
   duration: {
     fast: 120,
     normal: 200,
