@@ -89,9 +89,10 @@ merged manifest/device behavior remains STEP 22/manual verification.
   - [x] 02.a.6 — Deferred native connectivity banner/Query online manager, safe-area placement and no HTTP reachability probes; full reconnect choreography remains STEP 21.
   - [x] 02.a.7 — Splash gate waits for i18n/local auth restoration, reveals only after layout, and recovers from boot errors; tests cover both paths.
   - [x] 02.a.8 — Root safe-area/bootstrap wiring, global native splash retention and 200ms fade; failed i18n initialization can retry. 02.a complete.
-- [ ] 02.b — route skeleton with stubs and typed routes
+- [x] 02.b — route skeleton with stubs and typed routes
   - [x] 02.b.1 — All specified title-only route stubs and auth/onboarding layouts; localized accessible headings, tab-owned bottom insets.
   - [x] 02.b.2 — Native stack presentations, transparent Sheet modals and 150ms tab fades with Reduce Motion; scan remains an external modal.
+  - [x] 02.b.3 — Expo-generated route types on every typecheck, including fresh CI; compile-time unknown-route/missing-ID guards. 02.b complete.
 - [ ] 02.c — TabBar + center button
 - [ ] 02.d — Sheet + transparent-modal wiring
 - [ ] 02.e — bootstrap redirect + deep-link param schemas (+ tests)

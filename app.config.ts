@@ -8,6 +8,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   scheme: 'epsilon',
   orientation: 'portrait',
   userInterfaceStyle: 'light',
+  experiments: { typedRoutes: true },
   android: {
     package: process.env.EXPO_PUBLIC_ANDROID_PACKAGE || 'com.epsilonup.app',
     adaptiveIcon: {
