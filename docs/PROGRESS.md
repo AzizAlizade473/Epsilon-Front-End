@@ -1,6 +1,7 @@
 # Epsilon progress
 
-Scope: STEP 01 design system. STEP 00 is merged into `main`.
+Scope: STEP 01 implementation complete; manual Android verification pending.
+STEP 00 is merged into `main`. STEP 01 remains unmerged.
 Branch: `step/01-design-system`, based on `main` merge commit `66c4176`.
 
 A checked item is complete only after its commit reaches GitHub.
@@ -9,7 +10,12 @@ Recovery: fetched all branches/tags on 2026-10-31; latest pushed development
 was `86bb6af` (01.a). No old-laptop 01.b edits were pushed. All 83 baseline
 tests pass; no missing `extend-expect` error. Windows CRLF formatting and stale
 Node 20 instructions are repaired by 01.recovery. Use Node 22.22.1+.
-Next: 01.i — Design system documentation and STEP 01 boundary report.
+Latest verified code commit: `7bb038e` (contrast correction); later commits document this checkpoint.
+Checks: `npm run check` green, 144 tests / 25 suites; Expo dependency validation
+and Android development/release exports pass. GitHub Actions execution not verified.
+Next: Aziz tests the gallery, then explicitly authorizes merge. Do not merge or
+start STEP 02 without that authorization. No unresolved implementation blocker.
+Open design input: exact brand blue awaits the real logo asset; placeholder is retained.
 Device/TalkBack/font-scale/performance checks remain not verified.
 
 ## STEP 00
@@ -68,7 +74,7 @@ false, CAMERA plus required INTERNET, and removal rules for VIBRATE, storage and
 overlay permissions. This is generated app-manifest validation; a compiled APK's
 merged manifest/device behavior remains STEP 22/manual verification.
 
-- [ ] 01.i — `docs/DESIGN_SYSTEM.md`.
+- [x] 01.i — `docs/DESIGN_SYSTEM.md`, component contracts, Windows runtime commands, verification evidence and pending manual gate.
 
 - [x] 01.review.1 — Contrast review: use ink for helpers/subtitles on gray; secondary gray remains white-surface-only (4.76:1). Added WCAG text-pair guards without changing the prescribed palette.
 

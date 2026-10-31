@@ -27,6 +27,21 @@ This document describes setting up a Windows workstation for developing and test
 
 ---
 
+### Recovered laptop runtime (2026-10-31)
+
+This laptop's global Node is older than the locked toolchain. A portable Node
+22.22.1 with npm 10.9.3 is installed outside the repository. In a new PowerShell:
+
+```powershell
+$env:Path = "$env:LOCALAPPDATA\EpsilonTools\package\bin;$env:Path"
+node --version
+npm --version
+```
+
+Then use `npm ci`, `npm run check` and the Expo commands below normally. On another
+laptop, install Node 22.22.1+ normally rather than copying this machine's runtime.
+STEP 01 adds native SVG/haptics: rebuild the dev client before opening the gallery.
+
 ## 2. Android Virtual Device (Emulator) Setup
 
 1. Open Android Studio -> **Virtual Device Manager**.
