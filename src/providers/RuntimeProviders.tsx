@@ -1,4 +1,5 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { createQueryClient } from '@/services/query';
 import { DefaultTheme, ThemeProvider } from 'expo-router';
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import { I18nextProvider } from 'react-i18next';
@@ -37,15 +38,7 @@ export function RuntimeProviders({
   boot: BootData;
   children: ReactNode;
 }) {
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: { retry: false },
-          mutations: { retry: false },
-        },
-      }),
-  );
+  const [queryClient] = useState(() => createQueryClient());
   return (
     <ThemeProvider value={lightTheme}>
       <I18nextProvider i18n={i18n}>
