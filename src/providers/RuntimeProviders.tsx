@@ -33,9 +33,11 @@ const lightTheme = {
 export function RuntimeProviders({
   boot,
   children,
+  onBootConsumed,
 }: {
   boot: BootData;
   children: ReactNode;
+  onBootConsumed?: () => void;
 }) {
   const [queryClient] = useState(() => createQueryClient());
 
@@ -50,7 +52,7 @@ export function RuntimeProviders({
     <ThemeProvider value={lightTheme}>
       <I18nextProvider i18n={i18n}>
         <QueryClientProvider client={queryClient}>
-          <AuthProvider boot={boot}>
+          <AuthProvider boot={boot} onBootConsumed={onBootConsumed}>
             <ToastProvider>
               <OfflineBanner>{children}</OfflineBanner>
             </ToastProvider>

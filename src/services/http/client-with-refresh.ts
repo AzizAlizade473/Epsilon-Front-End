@@ -10,6 +10,7 @@
  */
 
 import { z } from 'zod';
+import { authOperation } from '@/lib/auth-lifecycle';
 
 import {
   request,
@@ -51,12 +52,20 @@ async function triggerSingleFlightRefresh(): Promise<string> {
   }
 
   if (!_inflightRefresh) {
+    const epoch = authOperation.epoch();
     _inflightRefresh = _refreshFn()
       .then((newAccessToken) => {
+        if (!authOperation.current(epoch))
+          throw new ApiError({
+            code: 'UNAUTHORIZED',
+            message: 'Obsolete authentication',
+            status: 401,
+          });
         setAccessToken(newAccessToken);
         return newAccessToken;
       })
       .catch(async (err) => {
+        if (!authOperation.current(epoch)) throw err;
         setAccessToken(null);
         if (_onLogout) {
           try {
@@ -82,13 +91,14 @@ export async function requestWithAuth<T>(
   body?: unknown,
   options?: RequestOptions,
 ): Promise<T> {
+  const epoch = authOperation.epoch();
   try {
     return await request(method, path, schema, body, options);
   } catch (err) {
     const isUnauthorized =
       err instanceof ApiError && err.code === 'UNAUTHORIZED';
 
-    if (!isUnauthorized || !_refreshFn) {
+    if (!isUnauthorized || !_refreshFn || !authOperation.current(epoch)) {
       throw err;
     }
 
@@ -104,7 +114,11 @@ export async function requestWithAuth<T>(
     try {
       return await request(method, path, schema, body, options);
     } catch (retryErr) {
-      if (retryErr instanceof ApiError && retryErr.code === 'UNAUTHORIZED') {
+      if (
+        retryErr instanceof ApiError &&
+        retryErr.code === 'UNAUTHORIZED' &&
+        authOperation.current(epoch)
+      ) {
         setAccessToken(null);
         if (_onLogout) {
           try {

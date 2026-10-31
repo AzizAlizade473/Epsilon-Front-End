@@ -1,3 +1,4 @@
-import { createStubScreen } from '@/components/navigation/StubScreen';
-
-export default createStubScreen('home', true);
+import { VerificationTabStub } from '@/features/auth/screens/VerificationTabStub';
+export default function Route() {
+  return <VerificationTabStub title="home" />;
+}

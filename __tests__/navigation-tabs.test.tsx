@@ -1,4 +1,4 @@
-import { expect, test } from '@jest/globals';
+import { expect, jest, test } from '@jest/globals';
 import { userEvent } from '@testing-library/react-native';
 import { renderRouter, screen, testRouter } from 'expo-router/testing-library';
 
@@ -6,6 +6,14 @@ import az from '../locales/az.json';
 
 import { RootNavigator } from '@/components/navigation/RootNavigator';
 import { initializeI18n } from '@/lib/i18n';
+jest.mock('@/providers/AuthProvider', () => ({
+  useAuth: () => ({
+    session: {},
+    onboardingComplete: true,
+    user: { firstName: 'Test', birthDate: '2000-01-01', phoneVerified: true },
+    requirePhoneVerification: true,
+  }),
+}));
 
 test('four tabs stay selected underneath the root Scan modal', async () => {
   await initializeI18n();

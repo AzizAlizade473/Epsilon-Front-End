@@ -98,6 +98,13 @@ export const authResultSchema = z
 
 export type AuthResult = z.infer<typeof authResultSchema>;
 
+/** Canonical onboarding envelope; legacy User-only APIs remain supported explicitly. */
+export const profileUpdateResultSchema = z.union([
+  z.object({ user: userSchema, nextStep: nextStepSchema }).strict(),
+  userSchema.transform((user) => ({ user, nextStep: null })),
+]);
+export type ProfileUpdateResult = z.infer<typeof profileUpdateResultSchema>;
+
 // ---------------------------------------------------------------------------
 // Config
 // ---------------------------------------------------------------------------

@@ -1,29 +1,16 @@
 import { useSyncExternalStore } from 'react';
+import { authOperation, registerAuthCleanup } from '@/lib/auth-lifecycle';
+export { authOperation };
 
 export type OtpChallenge = {
   phone: string;
   resendAt: number;
   lockedUntil: number;
+  mode: 'signIn' | 'link';
 };
 
 let challenge: OtpChallenge | null = null;
 const listeners = new Set<() => void>();
-let pending = false;
-let requestRetryAt = 0;
-export const authOperation = {
-  acquire() {
-    if (pending) return false;
-    pending = true;
-    return true;
-  },
-  release() {
-    pending = false;
-  },
-  retryAt: () => requestRetryAt,
-  limit(seconds: number) {
-    requestRetryAt = Date.now() + seconds * 1000;
-  },
-};
 function emit() {
   listeners.forEach((listener) => listener());
 }
@@ -31,9 +18,14 @@ function emit() {
 /** Memory only: no phone or code in route params, storage, query keys or logs. */
 export const otpChallenge = {
   get: () => challenge,
-  set(phone: string, retryAfterSeconds: number) {
+  set(
+    phone: string,
+    retryAfterSeconds: number,
+    mode: 'signIn' | 'link' = 'signIn',
+  ) {
     challenge = {
       phone,
+      mode,
       resendAt: Date.now() + retryAfterSeconds * 1000,
       lockedUntil: 0,
     };
@@ -54,6 +46,7 @@ export const otpChallenge = {
     emit();
   },
 };
+registerAuthCleanup(() => otpChallenge.clear());
 
 export function useOtpChallenge() {
   return useSyncExternalStore(

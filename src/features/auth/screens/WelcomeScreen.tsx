@@ -11,7 +11,8 @@ import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
 import { spacing } from '@/design';
 import { env } from '@/lib/env';
-import { useToast } from '@/providers/ToastProvider';
+import { useGoogleSignIn } from '../hooks/useGoogleSignIn';
+import { authOperation } from '@/lib/auth-lifecycle';
 import { FadeUp } from '../components/FadeUp';
 import { LegalLinks } from '../components/LegalLinks';
 import { GoogleButton } from '../components/GoogleButton';
@@ -19,7 +20,7 @@ import { GoogleButton } from '../components/GoogleButton';
 export default function WelcomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const toast = useToast();
+  const google = useGoogleSignIn();
   const gate = useRef(false);
   const [busy, setBusy] = useState(false);
   useFocusEffect(
@@ -29,21 +30,36 @@ export default function WelcomeScreen() {
     }, []),
   );
   const phone = () => {
-    if (gate.current) return;
+    if (gate.current || google.busy || !authOperation.acquire()) return;
     gate.current = true;
     setBusy(true);
     router.push('/phone');
+    authOperation.release();
   };
   return (
     <Screen
       footer={
         <FadeUp order={4}>
           <View style={styles.actions}>
+            {google.error && (
+              <Text
+                accessibilityRole="alert"
+                accessibilityLiveRegion="polite"
+                tone="danger"
+              >
+                {google.error}
+              </Text>
+            )}
             {env.ENABLE_GOOGLE_SIGNIN && (
               <>
                 <GoogleButton
-                  disabled={busy}
-                  onPress={() => toast(t('auth.socialUnavailable'))}
+                  disabled={busy || google.busy}
+                  loading={google.busy}
+                  onPress={() => {
+                    void google.signIn().then((route) => {
+                      if (route) router.replace(route);
+                    });
+                  }}
                 />
                 <Text variant="caption" style={styles.center}>
                   {t('auth.or')}
@@ -53,6 +69,7 @@ export default function WelcomeScreen() {
             <Button
               label={t('auth.continuePhone')}
               loading={busy}
+              disabled={google.busy}
               onPress={phone}
             />
             <LegalLinks />

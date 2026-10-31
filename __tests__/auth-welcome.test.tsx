@@ -14,6 +14,10 @@ import { initializeI18n } from '@/lib/i18n';
 
 const mockPush = jest.fn();
 const mockToast = jest.fn();
+const mockSignIn = jest.fn<() => Promise<null>>().mockResolvedValue(null);
+jest.mock('@/features/auth/hooks/useGoogleSignIn', () => ({
+  useGoogleSignIn: () => ({ busy: false, signIn: mockSignIn }),
+}));
 jest.mock('@/lib/env', () => ({
   env: {
     ENABLE_GOOGLE_SIGNIN: false,
@@ -75,12 +79,12 @@ it('opens only configured legal links through the system browser surface', async
     env.EXPO_PUBLIC_PRIVACY_URL,
   );
 });
-it('shows the flagged Google option without starting STEP 08 authentication', async () => {
+it('shows the flagged Google option and starts the shared sign-in flow', async () => {
   env.ENABLE_GOOGLE_SIGNIN = true;
   await welcome();
   await fireEvent.press(
     screen.getByRole('button', { name: az.auth.continueGoogle }),
   );
-  expect(mockToast).toHaveBeenCalledWith(az.auth.socialUnavailable);
+  expect(mockSignIn).toHaveBeenCalledTimes(1);
   expect(mockPush).not.toHaveBeenCalled();
 });

@@ -51,6 +51,10 @@ test('app.config.ts satisfies Android-first, security, and runtime requirements'
     'android.permission.READ_EXTERNAL_STORAGE',
     'android.permission.WRITE_EXTERNAL_STORAGE',
     'android.permission.SYSTEM_ALERT_WINDOW',
+    'android.permission.GET_ACCOUNTS',
+    'android.permission.READ_CONTACTS',
+    'android.permission.READ_SMS',
+    'android.permission.RECEIVE_SMS',
   ]);
   expect(exp.runtimeVersion).toEqual({ policy: 'appVersion' });
   const buildPropertiesPlugin = exp.plugins.find(

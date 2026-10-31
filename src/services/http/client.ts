@@ -16,6 +16,7 @@
 import { z } from 'zod';
 
 import { env } from '@/lib/env';
+import { observeServerDate } from '@/lib/server-clock';
 import { ApiError, type ApiErrorCode, codeFromStatus } from './errors';
 
 // ---------------------------------------------------------------------------
@@ -219,6 +220,7 @@ async function executeRequest<T>(
   }
 
   const serverRequestId = response.headers.get('X-Request-Id') ?? requestId;
+  observeServerDate(response.headers.get('Date'));
 
   // ---------------------------------------------------------------------------
   // Error responses

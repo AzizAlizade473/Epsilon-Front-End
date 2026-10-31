@@ -1,5 +1,5 @@
 import * as Splash from 'expo-splash-screen';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import az from '../../locales/az.json';
@@ -27,6 +27,11 @@ export function BootstrapGate({
   const [boot, setBoot] = useState<BootData | null>(null);
   const [failed, setFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
+  const consumeBoot = useCallback(() => {
+    setBoot((previous) =>
+      previous?.session ? { ...previous, session: null } : previous,
+    );
+  }, []);
   useEffect(() => {
     let active = true;
     void load()
@@ -54,7 +59,9 @@ export function BootstrapGate({
       }}
     >
       {boot ? (
-        <RuntimeProviders boot={boot}>{children}</RuntimeProviders>
+        <RuntimeProviders boot={boot} onBootConsumed={consumeBoot}>
+          {children}
+        </RuntimeProviders>
       ) : failed ? (
         <ErrorState
           title={title}

@@ -9,6 +9,9 @@ import az from '../locales/az.json';
 
 import { BackButton } from '@/components/navigation/BackButton';
 import { initializeI18n } from '@/lib/i18n';
+jest.mock('@/features/auth/components/AuthBoundary', () => ({
+  AuthBoundary: ({ children }: { children: React.ReactNode }) => children,
+}));
 
 const mockBack = jest.fn();
 let capturedTabsProps: { backBehavior?: string } | undefined;

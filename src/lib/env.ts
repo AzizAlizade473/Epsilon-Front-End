@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import Constants from 'expo-constants';
 
 import { isProductionApiUrl } from './production-url';
 
@@ -96,7 +97,36 @@ export function validateEnv(
 
 export function getEnv(): Environment {
   if (!cachedEnv) {
-    cachedEnv = validateEnv(process.env);
+    const flags = z
+      .object({ google: z.boolean(), apple: z.boolean() })
+      .safeParse(Constants.expoConfig?.extra?.epsilonFlags);
+    const source = process.env;
+    cachedEnv = validateEnv({
+      ...source,
+      EXPO_PUBLIC_API_URL:
+        process.env.EXPO_PUBLIC_API_URL ?? source.EXPO_PUBLIC_API_URL,
+      EXPO_PUBLIC_API_MODE:
+        process.env.EXPO_PUBLIC_API_MODE ?? source.EXPO_PUBLIC_API_MODE,
+      EXPO_PUBLIC_APP_ENV:
+        process.env.EXPO_PUBLIC_APP_ENV ?? source.EXPO_PUBLIC_APP_ENV,
+      EXPO_PUBLIC_MIN_AGE:
+        process.env.EXPO_PUBLIC_MIN_AGE ?? source.EXPO_PUBLIC_MIN_AGE,
+      EXPO_PUBLIC_SUPPORT_EMAIL:
+        process.env.EXPO_PUBLIC_SUPPORT_EMAIL ??
+        source.EXPO_PUBLIC_SUPPORT_EMAIL,
+      EXPO_PUBLIC_PRIVACY_URL:
+        process.env.EXPO_PUBLIC_PRIVACY_URL ?? source.EXPO_PUBLIC_PRIVACY_URL,
+      EXPO_PUBLIC_TERMS_URL:
+        process.env.EXPO_PUBLIC_TERMS_URL ?? source.EXPO_PUBLIC_TERMS_URL,
+      EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID:
+        process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+      ...(flags.success
+        ? {
+            ENABLE_GOOGLE_SIGNIN: String(flags.data.google),
+            ENABLE_APPLE_SIGNIN: String(flags.data.apple),
+          }
+        : {}),
+    });
   }
   return cachedEnv;
 }

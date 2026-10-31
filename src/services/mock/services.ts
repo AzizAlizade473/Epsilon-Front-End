@@ -118,7 +118,13 @@ export const mockUserService: UserService = {
       ...(input.birthDate !== undefined ? { birthDate: input.birthDate } : {}),
       ...(input.language !== undefined ? { language: input.language } : {}),
     };
-    return _currentUser;
+    return {
+      user: _currentUser,
+      nextStep:
+        mockConfig.requirePhoneVerification && !_currentUser.phoneVerified
+          ? 'phone'
+          : 'home',
+    };
   },
 
   async deleteAccount() {

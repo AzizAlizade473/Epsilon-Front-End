@@ -129,3 +129,54 @@ npx expo run:android
    adb install -r <path-to-new-build>.apk
    ```
 3. Restart Metro: `npx expo start --dev-client --clear`.
+
+## Google sign-in and onboarding (STEP 08-10)
+
+Google uses `@react-native-google-signin/google-signin`'s **original native SDK**.
+There is no browser OAuth flow, app-managed authorization-code callback or
+additional redirect scheme. The existing browser module remains for legal links.
+Apple and web sign-in are outside this Android batch.
+
+Before enabling Google, the owner must configure Google Cloud:
+
+1. OAuth consent: Epsilon name, support email and privacy URL; only
+   `openid`, `email`, `profile`; publish the consent configuration for production.
+2. Create a **Web OAuth client**. Its public ID is
+   `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`, also used as the backend token audience.
+3. Create **Android OAuth clients** for the actual package (`com.epsilonup.app`
+   unless configured otherwise) and each SHA-1: local debug key if used, EAS
+   development/preview/production keys, and Google Play App Signing key later.
+   Obtain EAS key fingerprints through `eas credentials`; never commit key files.
+   Incorrect SHA-1/package/client configuration causes DEVELOPER_ERROR.
+4. Set `ENABLE_GOOGLE_SIGNIN=true` with the public web client ID in the intended
+   EAS environment, and rebuild. Keep it false until Cloud/backend configuration
+   is ready. Do not put provider secrets in the app.
+
+Android autolinks the native SDK without Firebase or `google-services.json`.
+The local Expo plugin validates enabled configuration and declares package
+visibility only for Play Services. It adds no account/contact/SMS permissions.
+The upstream non-Firebase plugin configures an iOS URL scheme; that setup is
+deferred until a real iOS OAuth client exists. No placeholder iOS scheme is used.
+The SDK configures once, after the first frame, only when enabled with a client
+ID. A missing native module produces a recoverable sign-in error, never a fake
+successful account. Native Google sign-out participates in auth cleanup.
+
+**Rebuild the Android development client** for Google sign-in, the native date
+picker, and the previously added browser module. The existing dev-client APK
+does not gain new native modules from a JavaScript update. This session did not
+build/install an APK or access Google Cloud credentials.
+
+**MANUAL DEVICE QA PENDING:** real Google sign-in/cancel/use-another-account;
+new account profile then phone link; underage rejection; phone already linked
+sheet/support; optional skip/reminder; kill/relaunch at each onboarding stage;
+SMS autofill/resend; small Android keyboard, TalkBack and 1.3x font scale.
+The environment has no available adb/Android SDK, so these are not claimed passed.
+
+Profile updates accept the canonical `{user, nextStep}` response, validating both
+fields at the HTTP boundary. Existing APIs returning only `User` are supported
+explicitly: routing uses that server user plus `/config` through the established
+bootstrap resolver. No cashback or eligibility is computed by this fallback.
+Age/date validation uses the HTTP Date-adjusted display clock and server minimum
+age; the backend's AGE_RESTRICTED response remains authoritative. No draft profile,
+phone challenge or OTP is persisted. Relaunch fetches user/config to resume profile
+or phone verification; a lost in-memory SMS challenge resumes at phone entry.

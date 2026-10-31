@@ -13,7 +13,13 @@ import type { ReactNode } from 'react';
 import az from '../locales/az.json';
 import PhoneScreen from '@/features/auth/screens/PhoneScreen';
 import OtpScreen from '@/features/auth/screens/OtpScreen';
-import { AuthProvider, useAuth } from '@/providers/AuthProvider';
+import {
+  AuthProvider,
+  useAuth,
+  useAuthActions,
+} from '@/providers/AuthProvider';
+import { Button } from '@/components/ui/Button';
+import { registerAuthCleanup } from '@/lib/auth-lifecycle';
 import { Text } from '@/components/ui/Text';
 import { initializeI18n } from '@/lib/i18n';
 import { storageKeys } from '@/lib/bootstrap';
@@ -53,6 +59,7 @@ jest.mock('@/services', () => ({
     user: { me: () => mockMe() },
     config: { get: async () => ({ requirePhoneVerification: true }) },
     auth: {
+      logout: async () => undefined,
       requestOtp: (input: { phone: string }) => mockRequest(input),
       verifyOtp: (input: { phone: string; code: string }) => mockVerify(input),
     },
@@ -76,6 +83,25 @@ function StateProbe() {
     <Text testID="auth-state">
       {auth.session ? auth.user?.firstName : 'signed-out'}
     </Text>
+  );
+}
+function ActionProbe() {
+  const { completeSignIn, logout } = useAuthActions();
+  return (
+    <>
+      <Button
+        label="Test sign in"
+        onPress={() => {
+          void completeSignIn(result());
+        }}
+      />
+      <Button
+        label="Test sign out"
+        onPress={() => {
+          void logout();
+        }}
+      />
+    </>
   );
 }
 function RestoreProbe() {
@@ -125,6 +151,27 @@ beforeEach(async () => {
 });
 
 describe('Phone → OTP → session', () => {
+  it('logout deletes the secure session and clears auth state and registered provider/OTP state', async () => {
+    const cleanup = jest.fn<() => void>();
+    const unregister = registerAuthCleanup(cleanup);
+    await render(<ActionProbe />, { wrapper: Wrapper });
+    await fireEvent.press(screen.getByRole('button', { name: 'Test sign in' }));
+    await waitFor(() => expect(getAccessToken()).toBe(session.accessToken));
+    otpChallenge.set('+994501234567', 60, 'link');
+    await fireEvent.press(
+      screen.getByRole('button', { name: 'Test sign out' }),
+    );
+    await waitFor(() =>
+      expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith(
+        storageKeys.session,
+      ),
+    );
+    expect(getAccessToken()).toBeNull();
+    expect(otpChallenge.get()).toBeNull();
+    expect(screen.getByTestId('auth-state')).toHaveTextContent('signed-out');
+    expect(cleanup).toHaveBeenCalledTimes(1);
+    unregister();
+  });
   it('hydrates a boot session from the service without reading tokens from storage again', async () => {
     await render(
       <QueryClientProvider client={createQueryClient()}>

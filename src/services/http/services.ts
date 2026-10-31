@@ -9,6 +9,7 @@ import {
   configSchema,
   feedbackResultSchema,
   paginatedSchema,
+  profileUpdateResultSchema,
   receiptSchema,
   restaurantSchema,
   sessionSchema,
@@ -121,9 +122,15 @@ export const httpUserService: UserService = {
   },
 
   async updateProfile(input) {
-    return requestWithAuth('PATCH', '/users/me', userSchema, input, {
-      idempotencyKey: generateIdempotencyKey('profile-update'),
-    });
+    return requestWithAuth(
+      'PATCH',
+      '/users/me',
+      profileUpdateResultSchema,
+      input,
+      {
+        idempotencyKey: generateIdempotencyKey('profile-update'),
+      },
+    );
   },
 
   async deleteAccount() {

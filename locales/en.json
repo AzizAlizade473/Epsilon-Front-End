@@ -117,7 +117,29 @@
     "resendAfter": "Resend in {{s}} sec.",
     "otpInvalid": "Incorrect code. Try again.",
     "otpExpired": "The code has expired. Send a new code.",
-    "tooMany": "Too many attempts. Please try again later.",
-    "socialUnavailable": "Google sign-in is not available yet. Continue with your phone number."
+    "tooMany": "Too many attempts. Please try again later."
+  },
+  "onboarding": {
+    "googleFailed": "Unable to sign in. Please try again.",
+    "googleNetwork": "No internet connection",
+    "googlePlayServices": "Google Play services need to be updated.",
+    "googleNoAccount": "No Google account on this device",
+    "googleUnverified": "This Google account’s email is not verified.",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "birthDate": "Date of birth",
+    "account": "Account: {{email}}",
+    "invalidName": "Use 2–40 characters: letters, spaces, hyphens or apostrophes.",
+    "invalidDate": "Select a valid date of birth.",
+    "ageRestricted": "You must be at least {{age}} to use Epsilon.",
+    "profileInvalid": "Check your details and try again.",
+    "verifyPhoneHelper": "Verify your phone number once to protect your account and keep cashback calculations secure.",
+    "phoneInUse": "This number is linked to another account.",
+    "otherPhone": "Use another number",
+    "contactSupport": "Contact support",
+    "notNow": "Not now",
+    "verifyBanner": "Verify your number to receive cashback",
+    "logout": "Sign out",
+    "logoutConfirm": "Do you want to sign out?"
   }
 }
