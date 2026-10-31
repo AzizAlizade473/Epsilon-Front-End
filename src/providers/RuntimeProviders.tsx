@@ -7,18 +7,10 @@ import { ToastProvider } from './ToastProvider';
 
 import { colors } from '@/design';
 import { OfflineBanner } from '@/components/feedback/OfflineBanner';
-import type { BootData } from '@/lib/bootstrap';
+import type { AuthState, BootData, NavigationUser } from '@/lib/bootstrap';
 import { i18n } from '@/lib/i18n';
 
-export type NavigationUser = {
-  firstName: string | null;
-  birthDate: string | null;
-  phoneVerified: boolean;
-};
-export type AuthState = BootData & {
-  user: NavigationUser | null;
-  requirePhoneVerification: boolean;
-};
+export type { AuthState, NavigationUser };
 const AuthContext = createContext<AuthState | null>(null);
 export function useAuth(): AuthState {
   const auth = useContext(AuthContext);

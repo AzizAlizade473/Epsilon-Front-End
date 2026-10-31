@@ -1,5 +1,10 @@
 import { Redirect } from 'expo-router';
 
+import { resolveBootstrapRoute } from '@/lib/bootstrap';
+import { useAuth } from '@/providers/RuntimeProviders';
+
 export default function Bootstrap() {
-  return __DEV__ ? <Redirect href="/_design-gallery" /> : null;
+  const auth = useAuth();
+  const target = resolveBootstrapRoute(auth);
+  return <Redirect href={target} />;
 }

@@ -20,6 +20,36 @@ export type BootData = {
   onboardingComplete: boolean;
 };
 
+export type NavigationUser = {
+  firstName: string | null;
+  birthDate: string | null;
+  phoneVerified: boolean;
+};
+
+export type AuthState = BootData & {
+  user: NavigationUser | null;
+  requirePhoneVerification: boolean;
+};
+
+export type BootstrapRoute =
+  '/welcome' | '/phone' | '/profile-setup' | '/phone-verify' | '/home';
+
+export function resolveBootstrapRoute(auth: AuthState): BootstrapRoute {
+  if (!auth.onboardingComplete) {
+    return '/welcome';
+  }
+  if (!auth.session) {
+    return '/phone';
+  }
+  if (!auth.user?.firstName || !auth.user?.birthDate) {
+    return '/profile-setup';
+  }
+  if (auth.requirePhoneVerification && !auth.user.phoneVerified) {
+    return '/phone-verify';
+  }
+  return '/home';
+}
+
 function parseSession(raw: string | null): BootSession | null {
   if (!raw) return null;
   try {

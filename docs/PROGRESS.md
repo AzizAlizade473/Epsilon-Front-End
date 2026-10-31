@@ -98,7 +98,7 @@ merged manifest/device behavior remains STEP 22/manual verification.
   - [x] 02.c.2 — Accessible tab items: selected state, decorative glyphs and 64pt minimum; inactive labels use secondary on white for UX-1 contrast, icons retain inkMuted.
   - [x] 02.c.3 — Fixed white/hairline tab bar, raised Scan target, safe-area/font-scale height handling and real-router modal/return integration test. 02.c complete.
 - [x] 02.d — Sheet + transparent-modal wiring
-- [ ] 02.e — bootstrap redirect + deep-link param schemas (+ tests)
+- [x] 02.e — bootstrap redirect + deep-link param schemas (+ tests)
 - [ ] 02.f — Back-button behavior.
 
 ## STEP 03
