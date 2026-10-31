@@ -111,11 +111,11 @@ merged manifest/device behavior remains STEP 22/manual verification.
 
 ## STEP 04
 
-- [ ] 04.a — i18n setup + 3 locale files + language persistence
-- [ ] 04.b — `i18n:check` script wired into `check`
-- [ ] 04.c — money (+ tests: 0, 5, 100, 123456, negatives)
-- [ ] 04.d — date (+ tests)
-- [ ] 04.e — plurals.
+- [x] 04.a — i18n setup + 3 locale files + language persistence
+- [x] 04.b — `i18n:check` script wired into `check`
+- [x] 04.c — money (+ tests: 0, 5, 100, 123456, negatives)
+- [x] 04.d — date (+ tests)
+- [x] 04.e — plurals. STEP 04 complete.
 
 ## STEP 05
 
