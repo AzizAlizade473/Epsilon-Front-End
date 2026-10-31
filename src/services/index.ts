@@ -9,11 +9,14 @@
 
 import { env } from '@/lib/env';
 import { httpServices } from './http/services';
+import { mockServices } from './mock/services';
 import type { ServiceContainer } from './interfaces';
 
-// In step 03.e, mockServices will be implemented.
-// For now, if mock is selected in non-prod, we will fallback to httpServices or mockServices.
-let _services: ServiceContainer = httpServices;
+const shouldUseMock =
+  env.EXPO_PUBLIC_APP_ENV !== 'production' &&
+  env.EXPO_PUBLIC_API_MODE === 'mock';
+
+let _services: ServiceContainer = shouldUseMock ? mockServices : httpServices;
 
 export function setServiceContainer(container: ServiceContainer): void {
   if (env.EXPO_PUBLIC_APP_ENV === 'production') {
