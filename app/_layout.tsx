@@ -1,4 +1,3 @@
-import { Slot } from 'expo-router';
 import * as Splash from 'expo-splash-screen';
 import {
   SafeAreaProvider,
@@ -7,6 +6,7 @@ import {
 
 import { motionTokens } from '@/design';
 import { BootstrapGate } from '@/providers/BootstrapGate';
+import { RootNavigator } from '@/components/navigation/RootNavigator';
 
 void Splash.preventAutoHideAsync().catch(() => undefined);
 Splash.setOptions({ duration: motionTokens.duration.normal, fade: true });
@@ -15,7 +15,7 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
       <BootstrapGate>
-        <Slot />
+        <RootNavigator />
       </BootstrapGate>
     </SafeAreaProvider>
   );

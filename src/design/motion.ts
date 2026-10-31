@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { AccessibilityInfo, Easing } from 'react-native';
 
 export const motionTokens = {
+  tabFadeDuration: 150,
   duration: {
     fast: 120,
     normal: 200,
