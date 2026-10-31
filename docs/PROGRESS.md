@@ -80,7 +80,7 @@ merged manifest/device behavior remains STEP 22/manual verification.
 
 ## STEP 02
 
-- [ ] 02.a — root layout + providers + splash gate
+- [x] 02.a — root layout + providers + splash gate
   - [x] 02.a.1 — Merge STEP 01 (`8771325`), create this branch, and pin owner-approved navigation dependencies; generated lockfile is outside the handwritten line budget.
   - [x] 02.a.2 — Single-flight SecureStore boot reader; strict stored-session validation, retry and cache-release tests; server owns expiry.
   - [x] 02.a.3 — Navigation and bootstrap copy in AZ/EN/RU; matching-key tests.
@@ -88,6 +88,7 @@ merged manifest/device behavior remains STEP 22/manual verification.
   - [x] 02.a.5 — Global Toast host after Auth; safe-area positioning, localized dismissal and provider integration test.
   - [x] 02.a.6 — Deferred native connectivity banner/Query online manager, safe-area placement and no HTTP reachability probes; full reconnect choreography remains STEP 21.
   - [x] 02.a.7 — Splash gate waits for i18n/local auth restoration, reveals only after layout, and recovers from boot errors; tests cover both paths.
+  - [x] 02.a.8 — Root safe-area/bootstrap wiring, global native splash retention and 200ms fade; failed i18n initialization can retry. 02.a complete.
 - [ ] 02.b — route skeleton with stubs and typed routes
 - [ ] 02.c — TabBar + center button
 - [ ] 02.d — Sheet + transparent-modal wiring

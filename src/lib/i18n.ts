@@ -24,6 +24,10 @@ export function initializeI18n(): Promise<void> {
       interpolation: { escapeValue: false },
       react: { useSuspense: false },
     })
-    .then(() => undefined);
+    .then(() => undefined)
+    .catch((error: unknown) => {
+      initialization = undefined;
+      throw error;
+    });
   return initialization;
 }
