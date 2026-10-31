@@ -15,7 +15,9 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@react-native-community/datetimepicker": "9.2.1",
     "@react-native-community/netinfo": "12.0.1",
+    "@react-native-google-signin/google-signin": "17.0.0",
     "@tanstack/react-query": "5.105.0",
     "expo": "58.0.22",
     "expo-build-properties": "58.0.12",
@@ -34,6 +36,7 @@
     "lucide-react-native": "1.65.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "react-hook-form": "7.91.0",
     "react-i18next": "17.1.9",
     "react-native": "0.88.1",
     "react-native-gesture-handler": "3.3.0",

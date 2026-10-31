@@ -11,6 +11,7 @@ import type {
   FeedbackInput,
   FeedbackResult,
   Paginated,
+  ProfileUpdateResult,
   Receipt,
   Restaurant,
   Session,
@@ -41,7 +42,7 @@ export interface UserService {
     lastName?: string;
     birthDate?: string;
     language?: string;
-  }): Promise<User>;
+  }): Promise<ProfileUpdateResult>;
   deleteAccount(): Promise<void>;
 }
 

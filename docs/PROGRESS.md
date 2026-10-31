@@ -1,19 +1,20 @@
 # Epsilon progress
 
-Scope: STEP 05-07 Android authentication batch. STEP 00-04 are merged into `main`.
-Branch: `step/05-07-auth`, based on recovered `origin/main` commit `8bdf92e`.
+Scope: STEP 08-10 Android onboarding batch complete. STEP 00-07 are merged into `main`.
+Branch: `step/08-10-onboarding`, based on verified `main` merge commit `2b115a3`.
 
 A checked item is complete only after its commit reaches GitHub.
 
-Recovery (2026-10-31): fetched/pruned all remote branches and verified their tips.
+Earlier STEP 05-07 recovery (2026-10-31): fetched/pruned all remote branches and verified their tips.
 No remote STEP 05-07 branch existed; `origin/main` (`8bdf92e`) contains the furthest
 pushed implementation (STEP 04 complete). Local `main` was fast-forwarded to that
 commit before creating this batch branch. Older uncommitted STEP 01 work on this
 PC was inspected and preserved, including untracked files, in the named stash
 `main-pc-preservation-step01-before-github-recovery-2026-10-31`. It was not merged.
 
-Aziz authorized one continuous STEP 05-07 batch with one final quality gate and
-final push, overriding the per-micro-step loop for this batch. STEP 08 is untouched.
+Current authorization: merge STEP 05-07 and complete STEP 08-10 as one continuous
+batch with a final quality gate/push, overriding the per-micro-step loop. STEP 11
+is untouched. STEP 08-10 must not be merged into main without authorization.
 Manual Android/device checks remain pending and do not block implementation.
 
 ## STEP 00
@@ -142,28 +143,28 @@ merged manifest/device behavior remains STEP 22/manual verification.
 
 ## STEP 08
 
-- [ ] 08.a — plugin/config + env gating + docs
-- [ ] 08.b — `useGoogleSignIn` hook (+ tests)
-- [ ] 08.c — wire the Welcome button
-- [ ] 08.d — error messages
-- [ ] 08.e — session + `nextStep` routing
-- [ ] 08.f — logout integration.
+- [x] 08.a — plugin/config + env gating + docs
+- [x] 08.b — `useGoogleSignIn` hook (+ tests)
+- [x] 08.c — wire the Welcome button
+- [x] 08.d — error messages
+- [x] 08.e — session + `nextStep` routing
+- [x] 08.f — logout integration.
 
 ## STEP 09
 
-- [ ] 09.a — schema + age rule (+ boundary tests: exactly MIN_AGE allowed, one day short blocked)
-- [ ] 09.b — form fields
-- [ ] 09.c — date picker
-- [ ] 09.d — submit + routing
-- [ ] 09.e — a11y.
+- [x] 09.a — schema + age rule (+ boundary tests: exactly MIN_AGE allowed, one day short blocked)
+- [x] 09.b — form fields
+- [x] 09.c — date picker
+- [x] 09.d — submit + routing
+- [x] 09.e — a11y.
 
 ## STEP 10
 
-- [ ] 10.a — phone-verify entry screen
-- [ ] 10.b — code screen
-- [ ] 10.c — PHONE_IN_USE sheet
-- [ ] 10.d — skip/banner logic by config
-- [ ] 10.e — resume-at-step tests.
+- [x] 10.a — phone-verify entry screen
+- [x] 10.b — code screen
+- [x] 10.c — PHONE_IN_USE sheet
+- [x] 10.d — skip/banner logic by config
+- [x] 10.e — resume-at-step tests.
 
 ## STEP 11
 
@@ -328,8 +329,8 @@ merged manifest/device behavior remains STEP 22/manual verification.
 - 00.b: source copy matches byte-for-byte; 30 step files and all micro-step IDs checked against the source; Git whitespace checks passed. No package scripts exist yet.
 - Device testing: not verified.
 
-STEP 00 and STEP 01 are merged into `main` (`8771325`). STEP 02 is in progress.
-Later-step documents are specifications only.
+STEP 00-07 are merged into `main` (`2b115a3`). STEP 08-10 are complete on the batch
+branch. STEP 11 onward remains specification-only.
 
 - 01.a: Design tokens, theme, typography, and motion (`resolveMotion` / `useMotion` for Reduce Motion). 83 tests pass.
 
@@ -408,3 +409,69 @@ Later-step documents are specifications only.
   remains with the planned dependency/CI audit stages.
 - Implementation is ready for review/merge with the manual checks and brand input
   above recorded. No merge into main is authorized or performed in this batch.
+
+## STEP 08-10 batch verification (2026-10-31)
+
+- Recovered GitHub, verified `origin/step/05-07-auth` at `07a3e20`, and left the
+  earlier preservation stash untouched. Merged with a merge commit (no squash or
+  rewrite), confirmed identical feature-tree content, and pushed `main` at
+  `2b115a3`. Created the single `step/08-10-onboarding` branch from that merge.
+- STEP 08: original native Google SDK, gated/deferred single configuration, Play
+  Services check, silent cancellation, mapped provider/backend/network errors,
+  duplicate prevention, backend-only token exchange and nextStep routing. No
+  browser OAuth, app-managed authorization-code callback, extra scopes, Apple
+  flow, fake auth success, or sensitive logging. User cache is populated only
+  from validated server data; native Google sign-out participates in logout.
+- STEP 09: react-hook-form + Zod; prefilled names, native birth-date picker,
+  default 18 years ago, max today, read-only email, instant AZ/EN/RU language,
+  keyboard-safe submission, localized field/server errors and age boundaries.
+  Server `/config.minAge` and AGE_RESTRICTED remain authoritative. HTTP Date
+  adjusts the display/validation clock; the server still decides all eligibility.
+- Profile update boundary supports validated `{user, nextStep}` and legacy User
+  responses explicitly. The latter route through the existing resolver using
+  server user/config fields. No client money/reward logic was introduced.
+- STEP 10: reused phone/OTP/resend components and shared errors/limits/shake.
+  Challenges distinguish sign-in from authenticated linking; link endpoints
+  update the existing account. PHONE_IN_USE opens the edit/support sheet with no
+  automatic account merge. Mandatory verification has no back-to-Welcome or skip;
+  optional skip keeps phoneVerified false and shows the Home/Cashback reminder.
+  Those routes retain their placeholder content; STEP 11 was not started.
+- Guarded Welcome/sign-in, profile, phone linking and finished tabs. Relaunch
+  hydrates user/config to resume the right stage; lost in-memory SMS challenges
+  resume phone entry. No personal-data drafts or OTPs are persisted.
+- Auth cleanup clears secure session, memory token, query data and registered
+  Google/OTP state. Serialized secure writes/deletes and flow epochs prevent
+  obsolete responses from restoring a logged-out account. Boot token references
+  are handed off/released; tokens are read from SecureStore only at boot.
+- Public configuration uses Expo-inlined values and manifest flags. The Android
+  config plugin validates enabled Google setup and exposes only Play Services.
+  Introspection confirms CAMERA/INTERNET, allowBackup=false, cleartext=false and
+  removal rules for account/contact/SMS/storage/overlay/vibration permissions.
+  This is generated-config verification, not a compiled APK manifest audit.
+- Epsilon Design System + Unslop review completed for relevant STEP 05-10 screens,
+  forms, error states, sheets, reminders and controls: spacing, color, icons, copy,
+  typography, layout, details, visuals, motion. Preserved existing good design;
+  the standing rule remains documented once in DESIGN_SYSTEM.md. Real logo and
+  exact brand blue remain pending; existing wordmark/tokens are retained.
+- Final `npm run check`: lint with zero warnings, strict TypeScript, 58 suites /
+  408 tests, 130 locale base keys across AZ/EN/RU, formatting all green. Tests
+  cover native Google success/cancel/errors, backend rejection, duplicate and
+  late-response guards, profile/age/leap-day validation and submission, linking,
+  logout cleanup, mandatory/optional routing and boot resume.
+- Final Android Hermes release export: 5,425,609 bytes versus 5,217,070 bytes at
+  merged STEP 05-07 (+4.0%, below the 10% guard). Expo dependency validation and
+  Git whitespace checks pass. No native APK/AAB build or device timing is claimed.
+- Owner-approved, exactly pinned MIT dependencies: Google sign-in 17.0.0
+  (182,365 unpacked bytes), datetimepicker 9.2.1 (268,460 bytes, Expo-compatible),
+  react-hook-form 7.91.0 (1,639,036 bytes). No unrelated dependency upgrades.
+- Production-dependency audit at high severity passes: 0 high/critical, 1 low /
+  30 moderate. Two new affected-package entries propagate the existing Expo
+  advisory chain through Google/date-picker peers; no new primary SDK auth
+  advisory was identified. No forced fixes or incompatible downgrades.
+- MANUAL DEVICE QA PENDING. No Android SDK/adb is installed here. Dev client must
+  be rebuilt for Google/date-picker/browser native modules. Real Google Cloud
+  consent/client/SHA-1 setup and live backend/device sign-in are not verified.
+  DEV_SETUP.md records owner configuration and small-device/TalkBack/font-scale,
+  SMS, cancel/another-account, phone-in-use, optional skip and kill/relaunch QA.
+- Implementation is ready for merge review, with the manual QA/configuration
+  and real brand-asset limitations above. No STEP 08-10 merge is performed.

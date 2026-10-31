@@ -18,12 +18,17 @@ import { ResendTimer, useSecondsUntil } from '../components/ResendTimer';
 import { usePhoneAuth } from '../hooks/usePhoneAuth';
 import { maskPhone } from '../schemas';
 import { otpChallenge, useOtpChallenge } from '../store';
+import { PhoneInUseSheet } from '../components/PhoneInUseSheet';
 
-export default function OtpScreen() {
+export default function OtpScreen({
+  mode = 'signIn',
+}: {
+  mode?: 'signIn' | 'link';
+}) {
   const { t } = useTranslation();
   const router = useRouter();
   const challenge = useOtpChallenge();
-  const auth = usePhoneAuth();
+  const auth = usePhoneAuth(mode);
   const [code, setCode] = useState('');
   const [completed, setCompleted] = useState(false);
   const flashOpacity = useAnimatedValue(0);
@@ -76,7 +81,8 @@ export default function OtpScreen() {
       router.replace(route);
     }
   };
-  if (!challenge && !completed) return <Redirect href="/phone" />;
+  if ((!challenge || challenge.mode !== mode) && !completed)
+    return <Redirect href={mode === 'link' ? '/phone-verify' : '/phone'} />;
   return (
     <Screen
       title={t('navigation.otp')}
@@ -141,6 +147,16 @@ export default function OtpScreen() {
           void submit(code);
         }}
       />
+      {mode === 'link' && (
+        <PhoneInUseSheet
+          visible={auth.phoneInUse}
+          onEdit={() => {
+            auth.dismissPhoneInUse();
+            otpChallenge.clear();
+            router.replace('/phone-verify');
+          }}
+        />
+      )}
     </Screen>
   );
 }

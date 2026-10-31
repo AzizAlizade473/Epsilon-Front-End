@@ -117,7 +117,29 @@
     "resendAfter": "{{s}} san. sonra yenidən göndər",
     "otpInvalid": "Kod yanlışdır. Yenidən cəhd edin.",
     "otpExpired": "Kodun müddəti bitib. Yeni kod göndərin.",
-    "tooMany": "Çox cəhd edildi. Bir az sonra yenidən yoxlayın.",
-    "socialUnavailable": "Google ilə giriş hələ aktiv deyil. Telefon nömrəsi ilə davam edin."
+    "tooMany": "Çox cəhd edildi. Bir az sonra yenidən yoxlayın."
+  },
+  "onboarding": {
+    "googleFailed": "Daxil olmaq mümkün olmadı. Yenidən cəhd edin.",
+    "googleNetwork": "İnternet bağlantısı yoxdur",
+    "googlePlayServices": "Google Play xidmətləri yenilənməlidir.",
+    "googleNoAccount": "Telefonda Google hesabı yoxdur",
+    "googleUnverified": "Bu Google hesabının e-poçtu təsdiqlənməyib.",
+    "firstName": "Ad",
+    "lastName": "Soyad",
+    "birthDate": "Doğum tarixi",
+    "account": "Hesab: {{email}}",
+    "invalidName": "2–40 simvol daxil edin: hərflər, boşluq, defis və apostrof.",
+    "invalidDate": "Doğum tarixini düzgün seçin.",
+    "ageRestricted": "Epsilon-dan istifadə üçün ən azı {{age}} yaşınız olmalıdır.",
+    "profileInvalid": "Məlumatları yoxlayın və yenidən cəhd edin.",
+    "verifyPhoneHelper": "Hesabınızı qorumaq və keşbeki təhlükəsiz hesablamaq üçün nömrənizi bir dəfə təsdiqləməlisiniz.",
+    "phoneInUse": "Bu nömrə başqa hesaba bağlıdır.",
+    "otherPhone": "Başqa nömrə yaz",
+    "contactSupport": "Dəstəklə əlaqə",
+    "notNow": "İndi yox",
+    "verifyBanner": "Keşbek almaq üçün nömrəni təsdiqləyin",
+    "logout": "Hesabdan çıx",
+    "logoutConfirm": "Hesabdan çıxmaq istəyirsiniz?"
   }
 }

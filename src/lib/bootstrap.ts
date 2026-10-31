@@ -25,11 +25,16 @@ export type NavigationUser = {
   firstName: string | null;
   birthDate: string | null;
   phoneVerified: boolean;
+  lastName?: string | null;
+  email?: string | null;
+  language?: string;
 };
 
 export type AuthState = BootData & {
   user: NavigationUser | null;
   requirePhoneVerification: boolean;
+  minimumAge?: number;
+  nextStep?: 'profile' | 'phone' | 'home';
   restoreStatus?: 'loading' | 'error';
   retryRestore?: () => void;
 };
@@ -44,12 +49,14 @@ export function resolveBootstrapRoute(auth: AuthState): BootstrapRoute {
   if (!auth.session) {
     return '/phone';
   }
+  if (auth.nextStep === 'profile') return '/profile-setup';
   if (!auth.user?.firstName || !auth.user?.birthDate) {
     return '/profile-setup';
   }
   if (auth.requirePhoneVerification && !auth.user.phoneVerified) {
     return '/phone-verify';
   }
+  if (auth.nextStep === 'phone') return '/phone-verify';
   return '/home';
 }
 

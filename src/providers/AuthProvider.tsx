@@ -11,22 +11,40 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 import {
   bootStorage,
+  resolveBootstrapRoute,
   storageKeys,
   type AuthState,
   type BootData,
 } from '@/lib/bootstrap';
-import type { AuthResult, Session } from '@/services/contracts';
+import { authOperation, clearAuthFlows } from '@/lib/auth-lifecycle';
+import { initializeGoogle } from '@/lib/google-signin';
+import type {
+  AuthResult,
+  Config,
+  NextStep,
+  Session,
+  User,
+} from '@/services/contracts';
 import { services } from '@/services';
+import { queryKeys } from '@/services/query';
 import { setAccessToken } from '@/services/http/client';
 import {
   configureAuthRefresh,
   resetAuthRefresh,
 } from '@/services/http/client-with-refresh';
 
-type AuthActions = { completeSignIn: (result: AuthResult) => Promise<void> };
+type AuthActions = {
+  completeSignIn: (result: AuthResult) => Promise<void>;
+  updateUser: (
+    user: User,
+    nextStep?: NextStep | null,
+  ) => ReturnType<typeof resolveBootstrapRoute>;
+  loadConfig: () => Promise<Config>;
+  logout: () => Promise<void>;
+  skipPhone: () => void;
+};
 const StateContext = createContext<AuthState | null>(null);
 const ActionsContext = createContext<AuthActions | null>(null);
-
 export function useAuth() {
   const value = useContext(StateContext);
   if (!value) throw new Error('Auth provider is missing');
@@ -37,13 +55,14 @@ export function useAuthActions() {
   if (!value) throw new Error('Auth provider is missing');
   return value;
 }
-
 export function AuthProvider({
   boot,
   children,
+  onBootConsumed,
 }: {
   boot: BootData;
   children: ReactNode;
+  onBootConsumed?: () => void;
 }) {
   const queryClient = useQueryClient();
   const [state, setState] = useState<AuthState>({
@@ -51,94 +70,145 @@ export function AuthProvider({
     user: null,
     requirePhoneVerification: true,
   });
+  const snapshot = useRef(state);
+  const [hasBootSession] = useState(Boolean(boot.session));
   const [restoreAttempt, setRestoreAttempt] = useState(0);
   const [restored, setRestored] = useState(!boot.session);
   const session = useRef(boot.session);
-  const saveSession = useCallback(async (next: Session) => {
-    await SecureStore.setItemAsync(storageKeys.session, JSON.stringify(next));
-    bootStorage.clear();
-    session.current = next;
-    setAccessToken(next.accessToken);
-    setState((previous) => ({ ...previous, session: next }));
+  const queue = useRef(Promise.resolve());
+  const publish = useCallback((patch: Partial<AuthState>) => {
+    snapshot.current = { ...snapshot.current, ...patch };
+    setState(snapshot.current);
   }, []);
-
+  const persist = useCallback((operation: () => Promise<void>) => {
+    const pending = queue.current.catch(() => undefined).then(operation);
+    queue.current = pending;
+    return pending;
+  }, []);
+  const saveSession = useCallback(
+    async (next: Session, epoch = authOperation.epoch()) => {
+      await persist(async () => {
+        if (!authOperation.current(epoch))
+          throw new Error('Obsolete authentication');
+        await SecureStore.setItemAsync(
+          storageKeys.session,
+          JSON.stringify(next),
+        );
+      });
+      if (!authOperation.current(epoch))
+        throw new Error('Obsolete authentication');
+      bootStorage.clear();
+      session.current = next;
+      setAccessToken(next.accessToken);
+      publish({ session: next });
+    },
+    [persist, publish],
+  );
+  const clearSession = useCallback(async () => {
+    session.current = null;
+    setAccessToken(null);
+    bootStorage.clear();
+    queryClient.clear();
+    publish({
+      session: null,
+      user: null,
+      nextStep: undefined,
+      restoreStatus: undefined,
+    });
+    setRestored(true);
+    const cleanup = clearAuthFlows();
+    await persist(() => SecureStore.deleteItemAsync(storageKeys.session));
+    await cleanup;
+  }, [persist, publish, queryClient]);
+  const loadConfig = useCallback(async () => {
+    const epoch = authOperation.epoch();
+    const config = await services.config.get();
+    if (authOperation.current(epoch))
+      publish({
+        requirePhoneVerification: config.requirePhoneVerification,
+        minimumAge: config.minAge,
+      });
+    return config;
+  }, [publish]);
+  const updateUser = useCallback(
+    (user: User, nextStep?: NextStep | null) => {
+      publish({ user, nextStep: nextStep ?? undefined });
+      queryClient.setQueryData(queryKeys.user.profile(), user);
+      return resolveBootstrapRoute(snapshot.current);
+    },
+    [publish, queryClient],
+  );
   useEffect(() => {
+    onBootConsumed?.();
+    bootStorage.clear();
+  }, [onBootConsumed]);
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      void initializeGoogle().catch(() => undefined);
+    });
     setAccessToken(session.current?.accessToken ?? null);
     configureAuthRefresh({
       refresh: async () => {
+        const epoch = authOperation.epoch();
         if (!session.current) throw new Error('Session unavailable');
         const next = await services.auth.refresh({
           refreshToken: session.current.refreshToken,
         });
-        await saveSession(next);
+        if (!authOperation.current(epoch))
+          throw new Error('Obsolete authentication');
+        await saveSession(next, epoch);
         return next.accessToken;
       },
-      onLogout: async () => {
-        session.current = null;
-        setAccessToken(null);
-        bootStorage.clear();
-        queryClient.clear();
-        setState((previous) => ({
-          ...previous,
-          session: null,
-          user: null,
-          restoreStatus: undefined,
-        }));
-        setRestored(true);
-        await SecureStore.deleteItemAsync(storageKeys.session);
-      },
+      onLogout: clearSession,
     });
     return () => {
+      cancelAnimationFrame(frame);
       resetAuthRefresh();
       setAccessToken(null);
+      queryClient.clear();
     };
-  }, [queryClient, saveSession]);
-
+  }, [saveSession, clearSession, queryClient]);
   useEffect(() => {
-    if (!boot.session) return;
+    if (!hasBootSession) return;
     let active = true;
-    const restore = async () => {
-      try {
-        const [user, config] = await Promise.all([
-          services.user.me(),
-          services.config.get(),
-        ]);
-        if (active && session.current) {
-          setState((previous) => ({
-            ...previous,
-            user,
-            requirePhoneVerification: config.requirePhoneVerification,
-            restoreStatus: undefined,
-          }));
-          setRestored(true);
-        }
-      } catch {
-        if (active && session.current)
-          setState((previous) => ({ ...previous, restoreStatus: 'error' }));
-      }
-    };
-    // Defer service hydration until after the minimal boot render.
+    const epoch = authOperation.epoch();
     const timer = setTimeout(() => {
-      void restore();
+      void Promise.all([services.user.me(), loadConfig()])
+        .then(([user]) => {
+          if (active && authOperation.current(epoch) && session.current) {
+            updateUser(user);
+            publish({ restoreStatus: undefined });
+            setRestored(true);
+          }
+        })
+        .catch(() => {
+          if (active && authOperation.current(epoch) && session.current)
+            publish({ restoreStatus: 'error' });
+        });
     }, 0);
     return () => {
       active = false;
       clearTimeout(timer);
     };
-  }, [boot.session, restoreAttempt]);
-
+  }, [hasBootSession, restoreAttempt, loadConfig, updateUser, publish]);
   const completeSignIn = async (result: AuthResult) => {
-    // Commit the secure record before publishing authenticated state or navigating.
-    await SecureStore.setItemAsync(storageKeys.onboarding, 'true');
-    await saveSession(result.session);
+    const epoch = authOperation.epoch();
+    await persist(() =>
+      SecureStore.setItemAsync(storageKeys.onboarding, 'true'),
+    );
+    await saveSession(result.session, epoch);
     queryClient.clear();
-    setState((previous) => ({
-      ...previous,
-      user: result.user,
-      onboardingComplete: true,
-    }));
+    publish({ onboardingComplete: true });
+    updateUser(result.user, result.nextStep);
+    setRestored(true);
   };
-
+  const logout = async () => {
+    try {
+      await services.auth.logout();
+    } finally {
+      await clearSession();
+    }
+  };
   return (
     <StateContext.Provider
       value={{
@@ -147,12 +217,23 @@ export function AuthProvider({
           ? undefined
           : (state.restoreStatus ?? 'loading'),
         retryRestore: () => {
-          setState((previous) => ({ ...previous, restoreStatus: 'loading' }));
+          publish({ restoreStatus: 'loading' });
           setRestoreAttempt((attempt) => attempt + 1);
         },
       }}
     >
-      <ActionsContext.Provider value={{ completeSignIn }}>
+      <ActionsContext.Provider
+        value={{
+          completeSignIn,
+          updateUser,
+          loadConfig,
+          logout,
+          skipPhone: () => {
+            if (session.current && !snapshot.current.requirePhoneVerification)
+              publish({ nextStep: 'home' });
+          },
+        }}
+      >
         {children}
       </ActionsContext.Provider>
     </StateContext.Provider>

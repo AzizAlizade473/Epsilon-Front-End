@@ -14,10 +14,10 @@ export function routeForNextStep(nextStep: NextStep) {
 }
 
 /** Async service calls are kept outside the query cache to avoid retaining OTP/PII. */
-export function usePhoneAuth() {
+export function usePhoneAuth(mode: 'signIn' | 'link' = 'signIn') {
   const { t } = useTranslation();
   const toast = useToast();
-  const { completeSignIn } = useAuthActions();
+  const { completeSignIn, updateUser } = useAuthActions();
   const gate = useRef(false);
   const active = useRef(true);
   useEffect(() => {
@@ -30,9 +30,14 @@ export function usePhoneAuth() {
   const [error, setError] = useState<string>();
   const [invalidAttempt, setInvalidAttempt] = useState(0);
   const [requestRetryAt, setRequestRetryAt] = useState(authOperation.retryAt);
+  const [phoneInUse, setPhoneInUse] = useState(false);
 
   const handleError = (cause: unknown) => {
     const code = isApiError(cause) ? cause.code : 'UNKNOWN';
+    if (code === 'PHONE_IN_USE') {
+      setPhoneInUse(true);
+      return;
+    }
     if (code === 'NETWORK' || code === 'TIMEOUT') {
       toast(t(code === 'NETWORK' ? 'errors.network' : 'errors.timeout'));
       return;
@@ -63,24 +68,29 @@ export function usePhoneAuth() {
     }
     const current = otpChallenge.get();
     if (
-      current?.phone === parsed.data &&
+      current?.mode === mode &&
+      current.phone === parsed.data &&
       Math.max(current.resendAt, current.lockedUntil) > Date.now()
     )
       return false;
     if (!authOperation.acquire()) return false;
+    const epoch = authOperation.epoch();
     gate.current = true;
     setBusy(true);
     setError(undefined);
     try {
-      const result = await services.auth.requestOtp({ phone: parsed.data });
-      otpChallenge.set(parsed.data, result.retryAfterSeconds);
+      const result = await (mode === 'link'
+        ? services.auth.requestPhoneLinkOtp({ phone: parsed.data })
+        : services.auth.requestOtp({ phone: parsed.data }));
+      if (!authOperation.current(epoch)) return false;
+      otpChallenge.set(parsed.data, result.retryAfterSeconds, mode);
       return active.current;
     } catch (cause) {
-      if (active.current) handleError(cause);
+      if (active.current && authOperation.current(epoch)) handleError(cause);
       return false;
     } finally {
       gate.current = false;
-      authOperation.release();
+      authOperation.release(epoch);
       if (active.current) setBusy(false);
     }
   };
@@ -90,28 +100,41 @@ export function usePhoneAuth() {
     if (
       gate.current ||
       !current ||
+      current.mode !== mode ||
       current.lockedUntil > Date.now() ||
       !otpSchema.safeParse(code).success
     )
       return null;
     if (!authOperation.acquire()) return null;
+    const epoch = authOperation.epoch();
     gate.current = true;
     setBusy(true);
     setError(undefined);
     try {
+      if (mode === 'link') {
+        const user = await services.auth.verifyPhoneLink({
+          phone: current.phone,
+          code,
+        });
+        return active.current && authOperation.current(epoch)
+          ? updateUser(user)
+          : null;
+      }
       const result = await services.auth.verifyOtp({
         phone: current.phone,
         code,
       });
-      if (!active.current) return null;
+      if (!active.current || !authOperation.current(epoch)) return null;
       await completeSignIn(result);
-      return routeForNextStep(result.nextStep);
+      return active.current && authOperation.current(epoch)
+        ? routeForNextStep(result.nextStep)
+        : null;
     } catch (cause) {
-      if (active.current) handleError(cause);
+      if (active.current && authOperation.current(epoch)) handleError(cause);
       return null;
     } finally {
       gate.current = false;
-      authOperation.release();
+      authOperation.release(epoch);
       if (active.current) setBusy(false);
     }
   };
@@ -121,6 +144,8 @@ export function usePhoneAuth() {
     error,
     invalidAttempt,
     requestRetryAt,
+    phoneInUse,
+    dismissPhoneInUse: () => setPhoneInUse(false),
     clearError: () => setError(undefined),
     requestCode,
     verifyCode,

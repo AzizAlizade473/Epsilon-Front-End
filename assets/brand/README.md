@@ -12,5 +12,5 @@ Source: https://developers.google.com/static/identity/images/g-logo.png
 Usage: https://developers.google.com/identity/branding-guidelines
 Google brand assets remain Google's trademarks and are used only in its sign-in
 button under those guidelines. They are not Epsilon branding or licensed as
-Epsilon source code. Native Google authentication remains STEP 08; the control is
-feature-gated and reports unavailability until that integration is implemented.
+Epsilon source code. Native Google authentication is feature-gated and uses the
+original Google sign-in SDK; its ID token is exchanged only with the backend.

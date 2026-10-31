@@ -1,1 +1,9 @@
-export { default } from '@/features/auth/screens/OtpScreen';
+import Screen from '@/features/auth/screens/OtpScreen';
+import { AuthBoundary } from '@/features/auth/components/AuthBoundary';
+export default function Route() {
+  return (
+    <AuthBoundary mode="signedOut">
+      <Screen />
+    </AuthBoundary>
+  );
+}
