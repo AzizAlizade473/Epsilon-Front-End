@@ -1,3 +1,1 @@
-import { createStubScreen } from '@/components/navigation/StubScreen';
-
-export default createStubScreen('otp');
+export { default } from '@/features/auth/screens/OtpScreen';

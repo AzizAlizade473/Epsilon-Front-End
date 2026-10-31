@@ -1,3 +1,1 @@
-import { createStubScreen } from '@/components/navigation/StubScreen';
-
-export default createStubScreen('welcome');
+export { default } from '@/features/auth/screens/WelcomeScreen';

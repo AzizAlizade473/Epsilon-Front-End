@@ -33,10 +33,12 @@ import type {
 } from '../interfaces';
 import { z } from 'zod';
 
-const otpRequestResponseSchema = z.object({
-  expiresAt: z.string(),
-  retryAfterSeconds: z.number().int().nonnegative(),
-});
+const otpRequestResponseSchema = z
+  .object({
+    expiresAt: z.string().datetime({ offset: true }),
+    retryAfterSeconds: z.number().int().safe().nonnegative(),
+  })
+  .strict();
 
 const notificationSettingsSchema = z.object({
   pushEnabled: z.boolean(),

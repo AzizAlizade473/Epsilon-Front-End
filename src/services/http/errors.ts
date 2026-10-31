@@ -45,23 +45,27 @@ export class ApiError extends Error {
   readonly code: ApiErrorCode;
   readonly status: number;
   readonly requestId: string | null;
+  readonly retryAfterSeconds: number | null;
 
   constructor({
     code,
     message,
     status,
     requestId,
+    retryAfterSeconds,
   }: {
     code: ApiErrorCode;
     message: string;
     status: number;
     requestId?: string | null;
+    retryAfterSeconds?: number | null;
   }) {
     super(message);
     this.name = 'ApiError';
     this.code = code;
     this.status = status;
     this.requestId = requestId ?? null;
+    this.retryAfterSeconds = retryAfterSeconds ?? null;
     // Maintains proper stack trace in V8 environments.
     const errCtor = Error as unknown as {
       captureStackTrace?: (target: object, constructorOpt?: Function) => void;

@@ -63,6 +63,9 @@ export const layout = {
   currencyScale: 0.6,
   skeletonMinOpacity: 0.5,
   skeletonPulseDuration: 900,
+  otpBusyOpacity: 0.6,
+  otpShakeDistance: 8,
+  otpShakeDuration: 240,
   hairlineWidth: StyleSheet.hairlineWidth,
 } as const;
 

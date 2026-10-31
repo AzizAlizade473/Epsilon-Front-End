@@ -7,12 +7,14 @@ const expoRequire = createRequire(require.resolve('expo/package.json'));
 const cliPackage = expoRequire.resolve('@expo/cli/package.json');
 const cliRequire = createRequire(cliPackage);
 assert.equal(cliRequire('zod/package.json').version, '4.6.6');
+const { validate } = cliRequire('@expo/schema-utils');
+const { z } = cliRequire('zod');
 const server = path.join(path.dirname(cliPackage), 'build/src/start/server');
 const { PluginSchema, DevToolsPluginOutputSchema } = require(
-  path.join(server, 'DevToolsPlugin.schema.js'),
+  path.join(server, 'devtools/DevToolsPlugin.schema.js'),
 );
 const { createMCPDevToolsExtensionSchema } = require(
-  path.join(server, 'createMCPDevToolsExtensionSchema.js'),
+  path.join(server, 'mcp/createMCPDevToolsExtensionSchema.js'),
 );
 const plugin = {
   packageName: 'toolchain-fixture',
@@ -34,12 +36,9 @@ const plugin = {
     ],
   },
 };
-assert.equal(PluginSchema.safeParse(plugin).success, true);
-assert.equal(
-  PluginSchema.safeParse({ ...plugin, packageName: '' }).success,
-  false,
-);
-const schema = createMCPDevToolsExtensionSchema(plugin);
+assert.doesNotThrow(() => validate(PluginSchema, plugin));
+assert.throws(() => validate(PluginSchema, { ...plugin, packageName: '' }));
+const schema = createMCPDevToolsExtensionSchema(plugin, z);
 assert.equal(
   schema.safeParse({ command: 'inspect', label: 'ok', count: 1, confirm: true })
     .success,
@@ -51,15 +50,12 @@ for (const invalid of [
   { command: 'inspect', unexpected: true },
 ])
   assert.equal(schema.safeParse(invalid).success, false);
-assert.equal(
-  DevToolsPluginOutputSchema.safeParse([
+assert.doesNotThrow(() =>
+  validate(DevToolsPluginOutputSchema, [
     { type: 'text', text: 'ok', level: 'info' },
-  ]).success,
-  true,
+  ]),
 );
-assert.equal(
-  DevToolsPluginOutputSchema.safeParse([{ type: 'image', url: 'invalid' }])
-    .success,
-  false,
+assert.throws(() =>
+  validate(DevToolsPluginOutputSchema, [{ type: 'image', url: 'invalid' }]),
 );
 process.stdout.write('Expo CLI schema compatibility checks passed.\n');

@@ -12,11 +12,7 @@ import { httpServices } from './http/services';
 import { mockServices } from './mock/services';
 import type { ServiceContainer } from './interfaces';
 
-const shouldUseMock =
-  env.EXPO_PUBLIC_APP_ENV !== 'production' &&
-  env.EXPO_PUBLIC_API_MODE === 'mock';
-
-let _services: ServiceContainer = shouldUseMock ? mockServices : httpServices;
+let _services: ServiceContainer | undefined;
 
 export function setServiceContainer(container: ServiceContainer): void {
   if (env.EXPO_PUBLIC_APP_ENV === 'production') {
@@ -26,33 +22,37 @@ export function setServiceContainer(container: ServiceContainer): void {
 }
 
 export function getServices(): ServiceContainer {
-  return _services;
+  return (_services ??=
+    env.EXPO_PUBLIC_APP_ENV !== 'production' &&
+    env.EXPO_PUBLIC_API_MODE === 'mock'
+      ? mockServices
+      : httpServices);
 }
 
 export const services = {
   get auth() {
-    return _services.auth;
+    return getServices().auth;
   },
   get user() {
-    return _services.user;
+    return getServices().user;
   },
   get config() {
-    return _services.config;
+    return getServices().config;
   },
   get restaurant() {
-    return _services.restaurant;
+    return getServices().restaurant;
   },
   get receipt() {
-    return _services.receipt;
+    return getServices().receipt;
   },
   get feedback() {
-    return _services.feedback;
+    return getServices().feedback;
   },
   get wallet() {
-    return _services.wallet;
+    return getServices().wallet;
   },
   get notification() {
-    return _services.notification;
+    return getServices().notification;
   },
 };
 

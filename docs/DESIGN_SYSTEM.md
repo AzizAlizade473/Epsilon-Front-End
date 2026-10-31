@@ -4,6 +4,15 @@ Android first, light only, platform system fonts. Flat surfaces, clear financial
 hierarchy and generous space; no shadows, elevation, gradients, blur or copied branding.
 The implementation is in `src/design`, `src/components/ui` and `src/components/feedback`.
 
+Every Epsilon user-facing design must follow the Epsilon Design System and receive
+an [Unslop review](https://github.com/heydamir/unslop/tree/main): spacing → color →
+icons → copy → typography → layout → details → visuals → motion. Unslop, created by
+Damir Sokolovsky, is a quality/audit reference against generic AI/vibe-coded UI;
+Epsilon requirements and this design system remain authoritative. Preserve
+already-good interfaces. Avoid gratuitous gradients, glass, glows, decorative
+shapes, excessive cards/pills/containers, random icon backgrounds, emoji icons,
+arbitrary shadows, fake content, generic marketing copy and decorative animation.
+
 ## Tokens (UX-1)
 
 `src/design/tokens.ts` is the source for visual values. Brand primary `#2563EB`
