@@ -36,9 +36,10 @@ Device/TalkBack/font-scale/performance checks remain not verified.
   - [x] 01.b.4 — Header: wrapping heading and caller-owned action slots; accessibility/navigation tests.
   - [x] 01.b.5 — Screen: safe area, dark status bar, centered 480pt column, keyboard handling and fixed footer.
   - [x] 01.b.6 — Measured large-title collapse/restore with a single accessible heading; 01.b complete.
-- [ ] 01.c — Button, IconButton (+ tests)
+- [x] 01.c — Button, IconButton (+ tests)
   - [x] 01.c.1 — Shared press surface: native scale, Reduce Motion, Android ripple/permission-free haptics and blocked states.
   - [x] 01.c.2 — Button: primary/secondary/ghost/destructive, wrapping labels, stable loading width and busy-state repeat-press test.
+  - [x] 01.c.3 — 44pt IconButton with named action, decorative glyph and blocked loading state; 01.c complete.
 - [ ] 01.d — ListRow, Card, Chip, Switch, SegmentedControl
 - [ ] 01.e — Input (+ tests)
 - [ ] 01.f — Amount (+ money tests later in STEP 04)
