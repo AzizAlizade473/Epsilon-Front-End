@@ -90,6 +90,7 @@ merged manifest/device behavior remains STEP 22/manual verification.
   - [x] 02.a.7 — Splash gate waits for i18n/local auth restoration, reveals only after layout, and recovers from boot errors; tests cover both paths.
   - [x] 02.a.8 — Root safe-area/bootstrap wiring, global native splash retention and 200ms fade; failed i18n initialization can retry. 02.a complete.
 - [ ] 02.b — route skeleton with stubs and typed routes
+  - [x] 02.b.1 — All specified title-only route stubs and auth/onboarding layouts; localized accessible headings, tab-owned bottom insets.
 - [ ] 02.c — TabBar + center button
 - [ ] 02.d — Sheet + transparent-modal wiring
 - [ ] 02.e — bootstrap redirect + deep-link param schemas (+ tests)
