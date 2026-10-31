@@ -55,6 +55,8 @@ export const layout = {
   tapTarget: 44,
   iconStrokeWidth: 2,
   controlHeight: 56,
+  rowHeight: 52,
+  leadingIconSize: 40,
   disabledOpacity: 0.5,
   hairlineWidth: StyleSheet.hairlineWidth,
 } as const;

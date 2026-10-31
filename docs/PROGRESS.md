@@ -9,7 +9,7 @@ Recovery: fetched all branches/tags on 2026-10-31; latest pushed development
 was `86bb6af` (01.a). No old-laptop 01.b edits were pushed. All 83 baseline
 tests pass; no missing `extend-expect` error. Windows CRLF formatting and stale
 Node 20 instructions are repaired by 01.recovery. Use Node 22.22.1+.
-Next: 01.b (split into components of at most 150 changed lines).
+Next: 01.e — Input and its component tests.
 Device/TalkBack/font-scale/performance checks remain not verified.
 
 ## STEP 00
@@ -40,10 +40,11 @@ Device/TalkBack/font-scale/performance checks remain not verified.
   - [x] 01.c.1 — Shared press surface: native scale, Reduce Motion, Android ripple/permission-free haptics and blocked states.
   - [x] 01.c.2 — Button: primary/secondary/ghost/destructive, wrapping labels, stable loading width and busy-state repeat-press test.
   - [x] 01.c.3 — 44pt IconButton with named action, decorative glyph and blocked loading state; 01.c complete.
-- [ ] 01.d — ListRow, Card, Chip, Switch, SegmentedControl
+- [x] 01.d — ListRow, Card, Chip, Switch, SegmentedControl
   - [x] 01.d.1 — Flat hairline Card and static/interactive Chip with text labels and visible selection marks.
   - [x] 01.d.2 — Controlled Switch with checked/disabled states and change tests.
   - [x] 01.d.3 — SegmentedControl: radio semantics, visible selection mark, no callback when reselecting the current option.
+  - [x] 01.d.4 — ListRow: 40pt leading circle, wrapping details/value, optional action chevron and inset hairline; 01.d complete.
 - [ ] 01.e — Input (+ tests)
 - [ ] 01.f — Amount (+ money tests later in STEP 04)
 - [ ] 01.g — Skeleton, EmptyState, ErrorState, Toast
