@@ -11,6 +11,7 @@ import {
   StyleSheet,
   useAnimatedValue,
   type PressableProps,
+  type ColorValue,
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
@@ -25,6 +26,7 @@ export type PressSurfaceProps = {
   loading?: boolean;
   style?: StyleProp<ViewStyle>;
   contentStyle?: StyleProp<ViewStyle>;
+  pressedColor?: ColorValue;
   accessibilityRole?: PressableProps['accessibilityRole'];
   accessibilityState?: PressableProps['accessibilityState'];
 };
@@ -38,6 +40,7 @@ export function PressSurface({
   loading = false,
   style,
   contentStyle,
+  pressedColor,
   accessibilityRole = 'button',
   accessibilityState,
 }: PressSurfaceProps) {
@@ -78,7 +81,11 @@ export function PressSurface({
         }}
         disabled={blocked}
         android_ripple={{ color: colors.brand.border }}
-        style={[styles.target, contentStyle]}
+        style={({ pressed }) => [
+          styles.target,
+          contentStyle,
+          pressed && { backgroundColor: pressedColor },
+        ]}
         onPressIn={() => animate(motion.pressScale)}
         onPressOut={() => animate(1)}
         onPress={() => {
