@@ -37,11 +37,7 @@ export function ListRow({
       )}
       <View style={styles.text}>
         <Text>{title}</Text>
-        {subtitle && (
-          <Text variant="caption" tone="secondary">
-            {subtitle}
-          </Text>
-        )}
+        {subtitle && <Text variant="caption">{subtitle}</Text>}
       </View>
       {value && (
         <Text variant="callout" style={styles.value}>

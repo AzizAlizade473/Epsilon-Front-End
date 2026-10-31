@@ -80,11 +80,7 @@ export function Input({
           {error}
         </Text>
       ) : (
-        hint && (
-          <Text variant="caption" tone="secondary">
-            {hint}
-          </Text>
-        )
+        hint && <Text variant="caption">{hint}</Text>
       )}
     </View>
   );

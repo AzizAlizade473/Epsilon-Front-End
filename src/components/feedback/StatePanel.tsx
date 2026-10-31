@@ -33,11 +33,7 @@ export function StatePanel({
       >
         {title}
       </Text>
-      {message && (
-        <Text tone="secondary" style={styles.copy}>
-          {message}
-        </Text>
-      )}
+      {message && <Text style={styles.copy}>{message}</Text>}
       {action && <Button {...action} />}
     </View>
   );

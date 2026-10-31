@@ -70,6 +70,8 @@ merged manifest/device behavior remains STEP 22/manual verification.
 
 - [ ] 01.i — `docs/DESIGN_SYSTEM.md`.
 
+- [x] 01.review.1 — Contrast review: use ink for helpers/subtitles on gray; secondary gray remains white-surface-only (4.76:1). Added WCAG text-pair guards without changing the prescribed palette.
+
 ## STEP 02
 
 - [ ] 02.a — root layout + providers + splash gate
