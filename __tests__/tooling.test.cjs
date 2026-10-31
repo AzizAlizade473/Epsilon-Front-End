@@ -46,9 +46,12 @@ test('app.config.ts satisfies Android-first, security, and runtime requirements'
   expect(exp.android.softwareKeyboardLayoutMode).toBe('resize');
   expect(exp.android.allowBackup).toBe(false);
   expect(exp.android.permissions).toEqual(['android.permission.CAMERA']);
-  expect(exp.android.blockedPermissions).toContain(
+  expect(exp.android.blockedPermissions).toEqual([
     'android.permission.VIBRATE',
-  );
+    'android.permission.READ_EXTERNAL_STORAGE',
+    'android.permission.WRITE_EXTERNAL_STORAGE',
+    'android.permission.SYSTEM_ALERT_WINDOW',
+  ]);
   expect(exp.runtimeVersion).toEqual({ policy: 'appVersion' });
   const buildPropertiesPlugin = exp.plugins.find(
     (p) => Array.isArray(p) && p[0] === 'expo-build-properties',

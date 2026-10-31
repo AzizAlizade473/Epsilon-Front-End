@@ -9,7 +9,7 @@ Recovery: fetched all branches/tags on 2026-10-31; latest pushed development
 was `86bb6af` (01.a). No old-laptop 01.b edits were pushed. All 83 baseline
 tests pass; no missing `extend-expect` error. Windows CRLF formatting and stale
 Node 20 instructions are repaired by 01.recovery. Use Node 22.22.1+.
-Next: 01.h — Development-only design gallery and localized samples.
+Next: 01.i — Design system documentation and STEP 01 boundary report.
 Device/TalkBack/font-scale/performance checks remain not verified.
 
 ## STEP 00
@@ -51,15 +51,22 @@ Device/TalkBack/font-scale/performance checks remain not verified.
   - [x] 01.g.1 — Flat native-driver Skeleton pulse; Reduce Motion defaults to still until the OS preference resolves.
   - [x] 01.g.2 — EmptyState and ErrorState: wrapping copy, decorative icon, optional action and accessible retry alert.
   - [x] 01.g.3 — Toast: polite alert, named dismissal, native opacity/Reduce Motion; queue/provider remains STEP 21; 01.g complete.
-- [ ] 01.h — dev gallery route
+- [x] 01.h — dev gallery route
   - [x] 01.h.1 — Matching AZ/EN/RU gallery copy and typed, AZ-default preview resources; production i18next remains STEP 04.
   - [x] 01.h.2 — Gallery control samples: interactive selections/input, button states, rows and icons.
   - [x] 01.h.3 — Gallery amounts, loading/empty/error states and interactive retry/Toast samples; no network/product data.
   - [x] 01.h.4 — Dev-only gallery route/startup, safe-area preview, typography and instant AZ/EN/RU switching; production redirect test.
+  - [x] 01.h.5 — Android development export and Expo dependency validation; block template storage/overlay permissions and verify generated manifest removal rules (SEC-8).
 
 01.h.4 verification: 133 tests pass; Android Hermes release export 2,477,897 bytes
 versus 2,477,278-byte bootstrap baseline (+0.025%). English gallery copy/sample
 markers are absent from bytecode. Device rendering/performance remains not verified.
+
+01.h.5: Development Android export compiles all gallery samples (1,447 modules).
+Expo dependency validation passes. Introspection confirms allowBackup/cleartext
+false, CAMERA plus required INTERNET, and removal rules for VIBRATE, storage and
+overlay permissions. This is generated app-manifest validation; a compiled APK's
+merged manifest/device behavior remains STEP 22/manual verification.
 
 - [ ] 01.i — `docs/DESIGN_SYSTEM.md`.
 
