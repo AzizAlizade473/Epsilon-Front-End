@@ -18,6 +18,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     softwareKeyboardLayoutMode: 'resize',
     allowBackup: false,
     permissions: ['android.permission.CAMERA'],
+    blockedPermissions: ['android.permission.VIBRATE'],
   },
   runtimeVersion: {
     policy: 'appVersion',
