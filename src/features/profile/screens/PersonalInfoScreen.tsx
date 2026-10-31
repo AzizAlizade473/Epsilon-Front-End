@@ -69,6 +69,7 @@ function PersonalForm({ user }: { user: User }) {
         lastName: last.data,
       });
       if (!authOperation.current(epoch)) return;
+      if (result.user.id !== user.id) throw new Error('Profile mismatch');
       updateUser(result.user);
       setFirstName(result.user.firstName ?? '');
       setLastName(result.user.lastName ?? '');

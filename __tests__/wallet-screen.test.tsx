@@ -96,7 +96,7 @@ it('provides a scan action for an actually empty history', async () => {
 });
 it('omits null transaction context and reports copy success only after the clipboard succeeds', async () => {
   const transaction = mockTransactions[1]!;
-  const copy = jest.fn(async () => true);
+  const copy = jest.fn<(value: string) => Promise<boolean>>(async () => true);
   await page(<TransactionContent transaction={transaction} copy={copy} />);
   expect(screen.queryByText(az.wallet.fields.branch)).toBeNull();
   expect(screen.queryByText(az.wallet.fields.dish)).toBeNull();

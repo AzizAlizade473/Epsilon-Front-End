@@ -5,7 +5,7 @@ import MessageSquare from 'lucide-react-native/icons/message-square';
 import Bell from 'lucide-react-native/icons/bell';
 import Languages from 'lucide-react-native/icons/languages';
 import Shield from 'lucide-react-native/icons/shield';
-import CircleHelp from 'lucide-react-native/icons/circle-help';
+import CircleHelp from 'lucide-react-native/icons/circle-question-mark';
 import Pencil from 'lucide-react-native/icons/pencil';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

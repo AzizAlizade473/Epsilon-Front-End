@@ -65,7 +65,7 @@ it('confirms notification writes with a validated server response and idempotenc
     'stable-settings',
   );
   respond({ cashbackUpdates: 'yes', partnerUpdates: false });
-  await expect(httpNotificationService.preferences()).rejects.toMatchObject({
+  await expect(httpNotificationService.settings()).rejects.toMatchObject({
     code: 'BAD_RESPONSE',
   });
 });

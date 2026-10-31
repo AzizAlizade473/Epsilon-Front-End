@@ -10,6 +10,7 @@ import { changeLanguage, type SupportedLanguage } from '@/lib/i18n';
 import { authOperation } from '@/lib/auth-lifecycle';
 import { services } from '@/services';
 import { useAuthActions } from '@/providers/AuthProvider';
+import { useProfile } from '@/hooks/useProfile';
 import { useToast } from '@/providers/ToastProvider';
 import { layout, spacing } from '@/design';
 import { View } from 'react-native';
@@ -17,12 +18,14 @@ const languages = ['az', 'en', 'ru'] as const;
 export default function LanguageScreen() {
   const { t, i18n } = useTranslation();
   const { updateUser } = useAuthActions();
+  const profile = useProfile();
   const toast = useToast();
   const lock = useRef(false);
   const [busy, setBusy] = useState(false);
   const [pending, setPending] = useState<SupportedLanguage>();
   const select = async (language: SupportedLanguage) => {
-    if (lock.current) return;
+    if (lock.current || !profile.data) return;
+    const owner = profile.data.id;
     lock.current = true;
     setBusy(true);
     const epoch = authOperation.epoch();
@@ -32,6 +35,8 @@ export default function LanguageScreen() {
       await SecureStore.setItemAsync(storageKeys.language, language);
       if (!authOperation.current(epoch)) return;
       const result = await services.user.updateProfile({ language });
+      if (result.user.id !== owner || result.user.language !== language)
+        throw new Error('Language was not confirmed');
       if (authOperation.current(epoch)) {
         updateUser(result.user);
         setPending(undefined);
@@ -55,7 +60,7 @@ export default function LanguageScreen() {
         {languages.map((language) => (
           <PressSurface
             key={language}
-            disabled={busy}
+            disabled={busy || !profile.data}
             accessibilityRole="radio"
             accessibilityLabel={t(`profile.languages.${language}`)}
             accessibilityState={{ checked: i18n.language === language }}

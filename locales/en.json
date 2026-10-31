@@ -338,7 +338,7 @@
     "logout": "Sign out",
     "logoutConfirm": "Sign out of your account?",
     "logoutAction": "Sign out",
-    "logoutLocal": "Signed out on this device. Could not connect to the server.",
+    "logoutLocal": "Sign-out could not be completed. Please try again.",
     "version": "Epsilon v{{version}}",
     "saved": "Saved",
     "save": "Save",

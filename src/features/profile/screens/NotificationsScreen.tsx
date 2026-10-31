@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Linking, Modal, View } from 'react-native';
+import { AppState, Linking, Modal, View } from 'react-native';
 import { ProfilePage } from '../components/ProfilePage';
 import { Switch } from '@/components/ui/Switch';
 import { Text } from '@/components/ui/Text';
@@ -36,13 +36,20 @@ export function NotificationsScreen({
   const lock = useRef(false);
   useEffect(() => {
     let active = true;
-    void readPermission()
-      .then((granted) => {
-        if (active) setDenied(!granted);
-      })
-      .catch(() => undefined);
+    const check = () => {
+      void readPermission()
+        .then((granted) => {
+          if (active) setDenied(!granted);
+        })
+        .catch(() => undefined);
+    };
+    check();
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') check();
+    });
     return () => {
       active = false;
+      subscription.remove();
     };
   }, [readPermission]);
   const save = async (input: NotificationPreferences, enable: boolean) => {

@@ -1,3 +1,16 @@
-import { createStubScreen } from '@/components/navigation/StubScreen';
-
-export default createStubScreen('notifications');
+import { AuthBoundary } from '@/features/auth/components/AuthBoundary';
+import { NotificationsScreen } from '@/features/profile/screens/NotificationsScreen';
+import {
+  enableDeviceNotifications,
+  readNotificationPermission,
+} from '@/services/notification-device';
+export default function NotificationsRoute() {
+  return (
+    <AuthBoundary mode="complete">
+      <NotificationsScreen
+        enableDevice={enableDeviceNotifications}
+        readPermission={readNotificationPermission}
+      />
+    </AuthBoundary>
+  );
+}

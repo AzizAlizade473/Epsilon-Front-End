@@ -25,7 +25,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     softwareKeyboardLayoutMode: 'resize',
     allowBackup: false,
-    permissions: ['android.permission.CAMERA'],
+    permissions: [
+      'android.permission.CAMERA',
+      'android.permission.POST_NOTIFICATIONS',
+    ],
     blockedPermissions: [
       'android.permission.VIBRATE',
       'android.permission.READ_EXTERNAL_STORAGE',
@@ -35,6 +38,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       'android.permission.READ_CONTACTS',
       'android.permission.READ_SMS',
       'android.permission.RECEIVE_SMS',
+      'android.permission.SCHEDULE_EXACT_ALARM',
+      'android.permission.RECEIVE_BOOT_COMPLETED',
     ],
   },
   runtimeVersion: {
@@ -58,6 +63,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ],
     'expo-secure-store',
     'expo-web-browser',
+    ['expo-notifications', { defaultChannel: 'cashback-updates' }],
     'expo-localization',
     'expo-splash-screen',
     [

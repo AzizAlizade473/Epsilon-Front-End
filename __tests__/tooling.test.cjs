@@ -45,7 +45,10 @@ test('app.config.ts satisfies Android-first, security, and runtime requirements'
   expect(exp.android.package).toBe('com.epsilonup.app');
   expect(exp.android.softwareKeyboardLayoutMode).toBe('resize');
   expect(exp.android.allowBackup).toBe(false);
-  expect(exp.android.permissions).toEqual(['android.permission.CAMERA']);
+  expect(exp.android.permissions).toEqual([
+    'android.permission.CAMERA',
+    'android.permission.POST_NOTIFICATIONS',
+  ]);
   expect(exp.android.blockedPermissions).toEqual([
     'android.permission.VIBRATE',
     'android.permission.READ_EXTERNAL_STORAGE',
@@ -55,6 +58,8 @@ test('app.config.ts satisfies Android-first, security, and runtime requirements'
     'android.permission.READ_CONTACTS',
     'android.permission.READ_SMS',
     'android.permission.RECEIVE_SMS',
+    'android.permission.SCHEDULE_EXACT_ALARM',
+    'android.permission.RECEIVE_BOOT_COMPLETED',
   ]);
   expect(exp.runtimeVersion).toEqual({ policy: 'appVersion' });
   const buildPropertiesPlugin = exp.plugins.find(

@@ -1,7 +1,7 @@
 # Epsilon progress
 
-Scope: STEP 13-16 verified-purchase feedback batch complete. STEP 00-12 are merged into `main`.
-Branch: `step/13-16-core-feedback`, based on verified `main` merge commit `814fe17`.
+Scope: STEP 17-20 Wallet/Profile batch complete. STEP 00-16 are merged into `main`.
+Branch: `step/17-20-wallet-profile`, based on verified `main` merge commit `4582fe1`.
 
 A checked item is complete only after its commit reaches GitHub.
 
@@ -12,9 +12,10 @@ commit before creating this batch branch. Older uncommitted STEP 01 work on this
 PC was inspected and preserved, including untracked files, in the named stash
 `main-pc-preservation-step01-before-github-recovery-2026-10-31`. It was not merged.
 
-Current authorization: merge STEP 11-12 and complete STEP 13-16 as one continuous
-batch with a final quality gate/push, overriding the per-micro-step loop. STEP 17
-is untouched. STEP 13-16 must not be merged into main without authorization.
+Current authorization: merge STEP 13-16 and complete STEP 17-20 as one continuous
+batch with a final quality gate/push, overriding the per-micro-step loop. STEP 21
+is untouched. STEP 17-20 must not be merged into main without authorization.
+Animated logo/splash work is explicitly postponed.
 Manual Android/device checks remain pending and do not block implementation.
 
 ## STEP 00
@@ -218,35 +219,35 @@ merged manifest/device behavior remains STEP 22/manual verification.
 
 ## STEP 17
 
-- [ ] 17.a — date grouping util (+ tests)
-- [ ] 17.b — hero + pending chip
-- [ ] 17.c — history list + sticky headers
-- [ ] 17.d — row variants (+ tests)
-- [ ] 17.e — states + empty
-- [ ] 17.f — foreground refetch + a11y.
+- [x] 17.a — date grouping util (+ tests)
+- [x] 17.b — hero + pending chip
+- [x] 17.c — history list + sticky headers
+- [x] 17.d — row variants (+ tests)
+- [x] 17.e — states + empty
+- [x] 17.f — foreground refetch + a11y.
 
 ## STEP 18
 
-- [ ] 18.a — sheet + rows + omit-null logic (+ tests)
-- [ ] 18.b — copy + toast
-- [ ] 18.c — refresh + states.
+- [x] 18.a — sheet + rows + omit-null logic (+ tests)
+- [x] 18.b — copy + toast
+- [x] 18.c — refresh + states.
 
 ## STEP 19
 
-- [ ] 19.a — identity block
-- [ ] 19.b — grouped rows + routes
-- [ ] 19.c — logout flow + full cleanup (+ test that nothing remains)
-- [ ] 19.d — version footer + a11y.
+- [x] 19.a — identity block
+- [x] 19.b — grouped rows + routes
+- [x] 19.c — logout flow + full cleanup (+ test that nothing remains)
+- [x] 19.d — version footer + a11y.
 
 ## STEP 20
 
-- [ ] 20.a — personal info
-- [ ] 20.b — my reviews
-- [ ] 20.c — notifications + permission flow
-- [ ] 20.d — language
-- [ ] 20.e — privacy links + crash toggle
-- [ ] 20.f — delete flow with re-auth (+ tests)
-- [ ] 20.g — help.
+- [x] 20.a — personal info
+- [x] 20.b — my reviews
+- [x] 20.c — notifications + permission flow
+- [x] 20.d — language
+- [x] 20.e — privacy links + crash toggle
+- [x] 20.f — delete flow with re-auth (+ tests)
+- [x] 20.g — help.
 
 ## STEP 21
 
@@ -587,3 +588,66 @@ branch. STEP 13 onward remains specification-only.
   asset limitations still need owner/device verification. See DEV_SETUP.md.
 - Ready for merge review with those manual integration/visual checks pending.
   This batch is pushed separately; it is not merged into main.
+
+## STEP 17-20 batch verification (2026-10-31)
+
+- Recovered GitHub, verified approved `be71f3c`, merged STEP 13-16 without
+  conflicts/history rewriting, verified the identical tree and pushed main at
+  `4582fe1`. One branch: `step/17-20-wallet-profile`; implementation checkpoint
+  `5919a9a` is pushed. The older preservation stash remains untouched.
+- STEP 17: one universal server wallet, pending amount, cursor-paged FlashList,
+  device-local sticky date groups, signed transaction variants, empty/scan,
+  skeleton/error/cached/offline/end states and coordinated refresh. Shared wallet
+  keys preserve Home consistency and existing feedback invalidation. No balances
+  summed from history, invented rewards, optimistic finance or redemption actions.
+- STEP 18: authenticated transaction sheet primes from list cache and refreshes
+  from the service. Invalid IDs cannot fetch; missing transactions are not
+  substituted. Null context is omitted, status remains explicit, references copy
+  only after a tap and success toast follows successful native clipboard access.
+- STEP 19: current server identity, masked phone/email fallback, restrained grouped
+  account/support rows, truthful loaded-review counts (plus suffix if more pages),
+  logout confirmation, version and development-only scenario access. Logout clears
+  all known SecureStore keys, user/query state, outbox, preferences and Google
+  session. Cleanup and another-account isolation are behavior-tested.
+- STEP 20: validated name PATCH with retained error drafts; paged read-only review
+  history; server-confirmed notification switches with explanation, deferred OS
+  permission, one channel and token registration; instant persisted language plus
+  explicit backend-sync retry; legal links, local crash consent, account deletion
+  and four concise support FAQs. Crash consent is stored for STEP 23; no reporter
+  or analytics SDK is added. No logo/splash animation or STEP 21 work is started.
+- Deletion requires fresh OTP or Google authentication for the same account,
+  then the exact localized typed keyword, then backend DELETE with a stable key.
+  Backend deletionWarning is displayed if supplied. Only successful deletion
+  triggers Google revoke/sign-out and full cleanup; no client-only substitute for
+  server deletion, retention policy or recent-auth enforcement was invented.
+- Canonical profile/device/settings paths now use `/me`, `/devices` and
+  `/me/notification-settings`. Review read records and two notification booleans
+  validate strictly at the boundary; reward results are not fabricated into reviews.
+  HTTP 204 is accepted only when the endpoint schema accepts an empty response.
+  DEV_SETUP.md records expected projections and pending live-backend verification.
+- Product, financial/security and Epsilon Design System + Unslop source/component
+  reviews passed: spacing, color, icons, copy, typography, layout, details, visuals,
+  motion. Existing primitives, tokens and AZ/EN/RU copy are reused; no decorative
+  finance dashboard or social profile. Financial success text uses a darker green
+  for contrast. The permanent Unslop rule remains in DESIGN_SYSTEM.md once.
+- Final `npm run check`: zero-warning lint, strict TypeScript, 77 suites / 488
+  tests, 329 locale base keys and formatting pass. Coverage includes server money,
+  cursor cycles/deduplication, cached details, malformed IDs/responses, clipboard
+  outcome, profile routes/drafts/persistence, notification consent/denial/late
+  tokens, same-account reauthentication and deletion/logout cleanup.
+- Android Hermes export passed: 5,922,377 bytes versus the merged STEP 13-16
+  baseline 5,716,340 (+3.60%, below 10%). No APK/AAB or 60fps/device timing claim.
+  Owner-approved exact MIT pins: expo-clipboard 58.0.4 (268,393 unpacked bytes),
+  expo-notifications 58.1.7 (1,541,890 unpacked bytes); added transitives are MIT.
+  Expo compatibility passes. Production audit remains 1 low / 30 moderate,
+  zero high/critical. No forced or unrelated dependency upgrades.
+- MANUAL DEVICE QA PENDING: this PC has no adb/Android SDK. Rebuild the dev client;
+  verify notification grant/deny/Settings/channel, clipboard/TalkBack, small-screen
+  keyboard/1.3x fonts, long-history 1000-row performance, another-account logout,
+  and OTP/Google deletion against a backend enforcing recent authentication.
+  Configure the real EAS project and Android push credentials; token registration,
+  account/device unlinking, backend projections/retention/deletion and existing
+  Google/brand-asset integration are not claimed verified. DATA_INVENTORY.md records
+  current storage/cleanup boundaries. Earlier camera/device checks remain pending.
+- Ready for merge review with the stated manual/native/backend verification
+  pending. The batch is pushed separately and is not merged into main.

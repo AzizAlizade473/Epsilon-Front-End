@@ -62,6 +62,7 @@ function cachedTransaction(
 export function useWalletTransaction(id: string) {
   const client = useQueryClient();
   return useQuery({
+    refetchOnMount: 'always',
     queryKey: queryKeys.wallet.transaction(id),
     enabled: safeIdSchema.safeParse(id).success,
     queryFn: ({ signal }) =>

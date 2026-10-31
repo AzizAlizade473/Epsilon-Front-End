@@ -104,16 +104,23 @@ export default function ReviewsScreen() {
           }
           ListFooterComponent={
             query.hasNextPage || query.isError ? (
-              <Button
-                variant="ghost"
-                loading={query.isFetchingNextPage}
-                label={t(query.isError ? 'common.retry' : 'wallet.more')}
-                onPress={() => {
-                  if (query.isFetchNextPageError) void next();
-                  else if (query.isError) void query.refetch();
-                  else void next();
-                }}
-              />
+              <View>
+                {query.isError && (
+                  <Text tone="danger" accessibilityRole="alert">
+                    {t('errors.generic')}
+                  </Text>
+                )}
+                <Button
+                  variant="ghost"
+                  loading={query.isFetchingNextPage}
+                  label={t(query.isError ? 'common.retry' : 'wallet.more')}
+                  onPress={() => {
+                    if (query.isFetchNextPageError) void next();
+                    else if (query.isError) void query.refetch();
+                    else void next();
+                  }}
+                />
+              </View>
             ) : null
           }
         />

@@ -114,7 +114,10 @@ export default function WalletScreen() {
           keyExtractor={(item) => item.key}
           getItemType={(item) => item.kind}
           stickyHeaderIndices={grouped.stickyHeaderIndices}
-          refreshing={history.isRefetching && !history.isFetchingNextPage}
+          refreshing={
+            (history.isRefetching && !history.isFetchingNextPage) ||
+            wallet.isRefetching
+          }
           onRefresh={() => {
             void refresh();
           }}

@@ -338,7 +338,7 @@
     "logout": "Hesabdan çıx",
     "logoutConfirm": "Hesabdan çıxmaq istəyirsiniz?",
     "logoutAction": "Çıx",
-    "logoutLocal": "Bu cihazda hesabdan çıxıldı. Serverlə bağlantı alınmadı.",
+    "logoutLocal": "Çıxış tamamlana bilmədi. Yenidən cəhd edin.",
     "version": "Epsilon v{{version}}",
     "saved": "Yadda saxlanıldı",
     "save": "Yadda saxla",
