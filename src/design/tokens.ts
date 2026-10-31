@@ -59,6 +59,7 @@ export const layout = {
   rowHeight: 52,
   leadingIconSize: 40,
   disabledOpacity: 0.5,
+  currencyScale: 0.6,
   hairlineWidth: StyleSheet.hairlineWidth,
 } as const;
 
