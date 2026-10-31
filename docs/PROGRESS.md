@@ -83,6 +83,7 @@ merged manifest/device behavior remains STEP 22/manual verification.
 - [ ] 02.a — root layout + providers + splash gate
   - [x] 02.a.1 — Merge STEP 01 (`8771325`), create this branch, and pin owner-approved navigation dependencies; generated lockfile is outside the handwritten line budget.
   - [x] 02.a.2 — Single-flight SecureStore boot reader; strict stored-session validation, retry and cache-release tests; server owns expiry.
+  - [x] 02.a.3 — Navigation and bootstrap copy in AZ/EN/RU; matching-key tests.
 - [ ] 02.b — route skeleton with stubs and typed routes
 - [ ] 02.c — TabBar + center button
 - [ ] 02.d — Sheet + transparent-modal wiring
