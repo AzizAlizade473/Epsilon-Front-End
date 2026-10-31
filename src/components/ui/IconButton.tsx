@@ -10,25 +10,28 @@ export type IconButtonProps = Pick<
   'accessibilityLabel' | 'onPress' | 'disabled' | 'loading'
 > & {
   icon: IconProps['icon'];
+  tone?: 'default' | 'inverse';
 };
 
 export function IconButton({
   icon,
   loading = false,
+  tone = 'default',
   ...props
 }: IconButtonProps) {
+  const color = tone === 'inverse' ? colors.surface : colors.ink;
   return (
     <PressSurface
       {...props}
       loading={loading}
       style={styles.button}
-      pressedColor={colors.divider}
+      pressedColor={tone === 'inverse' ? colors.inkSecondary : colors.divider}
     >
       <View style={{ opacity: loading ? 0 : 1 }}>
-        <Icon icon={icon} decorative />
+        <Icon icon={icon} color={color} decorative />
       </View>
       {loading && (
-        <ActivityIndicator color={colors.ink} style={StyleSheet.absoluteFill} />
+        <ActivityIndicator color={color} style={StyleSheet.absoluteFill} />
       )}
     </PressSurface>
   );

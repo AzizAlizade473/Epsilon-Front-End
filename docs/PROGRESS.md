@@ -9,7 +9,7 @@ Recovery: fetched all branches/tags on 2026-10-31; latest pushed development
 was `86bb6af` (01.a). No old-laptop 01.b edits were pushed. All 83 baseline
 tests pass; no missing `extend-expect` error. Windows CRLF formatting and stale
 Node 20 instructions are repaired by 01.recovery. Use Node 22.22.1+.
-Next: 01.g — Skeleton, EmptyState, ErrorState and Toast.
+Next: 01.h — Development-only design gallery and localized samples.
 Device/TalkBack/font-scale/performance checks remain not verified.
 
 ## STEP 00
@@ -47,9 +47,10 @@ Device/TalkBack/font-scale/performance checks remain not verified.
   - [x] 01.d.4 — ListRow: 40pt leading circle, wrapping details/value, optional action chevron and inset hairline; 01.d complete.
 - [x] 01.e — Input (+ tests): wrapping labels/errors, native input/ref props, 56pt minimum, font scaling, focus/disabled styles and draft-preservation tests.
 - [x] 01.f — Amount and integer-only lib/money formatter, signed values, 60% currency glyph and spoken-label override; basic money tests included, STEP 04 integration remains pending.
-- [ ] 01.g — Skeleton, EmptyState, ErrorState, Toast
+- [x] 01.g — Skeleton, EmptyState, ErrorState, Toast
   - [x] 01.g.1 — Flat native-driver Skeleton pulse; Reduce Motion defaults to still until the OS preference resolves.
   - [x] 01.g.2 — EmptyState and ErrorState: wrapping copy, decorative icon, optional action and accessible retry alert.
+  - [x] 01.g.3 — Toast: polite alert, named dismissal, native opacity/Reduce Motion; queue/provider remains STEP 21; 01.g complete.
 - [ ] 01.h — dev gallery route
 - [ ] 01.i — `docs/DESIGN_SYSTEM.md`.
 
