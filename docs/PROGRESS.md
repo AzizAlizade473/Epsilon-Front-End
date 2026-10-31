@@ -37,6 +37,7 @@ Device/TalkBack/font-scale/performance checks remain not verified.
   - [x] 01.b.5 — Screen: safe area, dark status bar, centered 480pt column, keyboard handling and fixed footer.
   - [x] 01.b.6 — Measured large-title collapse/restore with a single accessible heading; 01.b complete.
 - [ ] 01.c — Button, IconButton (+ tests)
+  - [x] 01.c.1 — Shared press surface: native scale, Reduce Motion, Android ripple/permission-free haptics and blocked states.
 - [ ] 01.d — ListRow, Card, Chip, Switch, SegmentedControl
 - [ ] 01.e — Input (+ tests)
 - [ ] 01.f — Amount (+ money tests later in STEP 04)

@@ -53,6 +53,7 @@ export const layout = {
   tapTarget: 44,
   iconStrokeWidth: 2,
   controlHeight: 56,
+  disabledOpacity: 0.5,
   hairlineWidth: 1,
 } as const;
 
