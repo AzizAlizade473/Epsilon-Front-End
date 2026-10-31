@@ -42,6 +42,7 @@ Device/TalkBack/font-scale/performance checks remain not verified.
   - [x] 01.c.3 — 44pt IconButton with named action, decorative glyph and blocked loading state; 01.c complete.
 - [ ] 01.d — ListRow, Card, Chip, Switch, SegmentedControl
   - [x] 01.d.1 — Flat hairline Card and static/interactive Chip with text labels and visible selection marks.
+  - [x] 01.d.2 — Controlled Switch with checked/disabled states and change tests.
 - [ ] 01.e — Input (+ tests)
 - [ ] 01.f — Amount (+ money tests later in STEP 04)
 - [ ] 01.g — Skeleton, EmptyState, ErrorState, Toast
