@@ -1,3 +1,5 @@
+import { StyleSheet } from 'react-native';
+
 /**
  * Design tokens — the only place raw visual values live (UX-1).
  * Brand primary `#2563EB` is a placeholder; TODO replace with exact logo color.
@@ -54,7 +56,7 @@ export const layout = {
   iconStrokeWidth: 2,
   controlHeight: 56,
   disabledOpacity: 0.5,
-  hairlineWidth: 1,
+  hairlineWidth: StyleSheet.hairlineWidth,
 } as const;
 
 export type ColorToken = typeof colors;

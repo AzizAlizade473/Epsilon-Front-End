@@ -41,6 +41,7 @@ Device/TalkBack/font-scale/performance checks remain not verified.
   - [x] 01.c.2 — Button: primary/secondary/ghost/destructive, wrapping labels, stable loading width and busy-state repeat-press test.
   - [x] 01.c.3 — 44pt IconButton with named action, decorative glyph and blocked loading state; 01.c complete.
 - [ ] 01.d — ListRow, Card, Chip, Switch, SegmentedControl
+  - [x] 01.d.1 — Flat hairline Card and static/interactive Chip with text labels and visible selection marks.
 - [ ] 01.e — Input (+ tests)
 - [ ] 01.f — Amount (+ money tests later in STEP 04)
 - [ ] 01.g — Skeleton, EmptyState, ErrorState, Toast
