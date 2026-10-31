@@ -6,6 +6,7 @@ import { StyleSheet } from 'react-native';
  */
 
 export const colors = {
+  transparent: 'transparent',
   brand: {
     primary: '#2563EB',
     primaryPressed: '#1D4ED8',

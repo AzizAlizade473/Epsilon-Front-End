@@ -9,7 +9,7 @@ Recovery: fetched all branches/tags on 2026-10-31; latest pushed development
 was `86bb6af` (01.a). No old-laptop 01.b edits were pushed. All 83 baseline
 tests pass; no missing `extend-expect` error. Windows CRLF formatting and stale
 Node 20 instructions are repaired by 01.recovery. Use Node 22.22.1+.
-Next: 01.e — Input and its component tests.
+Next: 01.f — Amount with integer minor-unit formatting.
 Device/TalkBack/font-scale/performance checks remain not verified.
 
 ## STEP 00
@@ -45,7 +45,7 @@ Device/TalkBack/font-scale/performance checks remain not verified.
   - [x] 01.d.2 — Controlled Switch with checked/disabled states and change tests.
   - [x] 01.d.3 — SegmentedControl: radio semantics, visible selection mark, no callback when reselecting the current option.
   - [x] 01.d.4 — ListRow: 40pt leading circle, wrapping details/value, optional action chevron and inset hairline; 01.d complete.
-- [ ] 01.e — Input (+ tests)
+- [x] 01.e — Input (+ tests): wrapping labels/errors, native input/ref props, 56pt minimum, font scaling, focus/disabled styles and draft-preservation tests.
 - [ ] 01.f — Amount (+ money tests later in STEP 04)
 - [ ] 01.g — Skeleton, EmptyState, ErrorState, Toast
 - [ ] 01.h — dev gallery route
