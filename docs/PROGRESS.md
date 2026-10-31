@@ -1,7 +1,7 @@
 # Epsilon progress
 
-Scope: STEP 08-10 Android onboarding batch complete. STEP 00-07 are merged into `main`.
-Branch: `step/08-10-onboarding`, based on verified `main` merge commit `2b115a3`.
+Scope: STEP 11-12 Home/Restaurants batch complete. STEP 00-10 are merged into `main`.
+Branch: `step/11-12-product`, based on verified `main` merge commit `4dd5f82`.
 
 A checked item is complete only after its commit reaches GitHub.
 
@@ -12,9 +12,9 @@ commit before creating this batch branch. Older uncommitted STEP 01 work on this
 PC was inspected and preserved, including untracked files, in the named stash
 `main-pc-preservation-step01-before-github-recovery-2026-10-31`. It was not merged.
 
-Current authorization: merge STEP 05-07 and complete STEP 08-10 as one continuous
-batch with a final quality gate/push, overriding the per-micro-step loop. STEP 11
-is untouched. STEP 08-10 must not be merged into main without authorization.
+Current authorization: merge STEP 08-10 and complete STEP 11-12 as one continuous
+batch with a final quality gate/push, overriding the per-micro-step loop. STEP 13
+is untouched. STEP 11-12 must not be merged into main without authorization.
 Manual Android/device checks remain pending and do not block implementation.
 
 ## STEP 00
@@ -168,19 +168,19 @@ merged manifest/device behavior remains STEP 22/manual verification.
 
 ## STEP 11
 
-- [ ] 11.a — `useWallet` + `useWalletTransactions` hooks (+ tests)
-- [ ] 11.b — shared `TransactionRow`
-- [ ] 11.c — Home layout + strings
-- [ ] 11.d — states (skeleton/error/offline)
-- [ ] 11.e — count-up + motion
-- [ ] 11.f — a11y + test.
+- [x] 11.a — `useWallet` + `useWalletTransactions` hooks (+ tests)
+- [x] 11.b — shared `TransactionRow`
+- [x] 11.c — Home layout + strings
+- [x] 11.d — states (skeleton/error/offline)
+- [x] 11.e — count-up + motion
+- [x] 11.f — a11y + test.
 
 ## STEP 12
 
-- [ ] 12.a — hook + keys + infinite query (+ tests)
-- [ ] 12.b — list + row
-- [ ] 12.c — search + debounce
-- [ ] 12.d — states + strings.
+- [x] 12.a — hook + keys + infinite query (+ tests)
+- [x] 12.b — list + row
+- [x] 12.c — search + debounce
+- [x] 12.d — states + strings.
 
 ## STEP 13
 
@@ -329,8 +329,8 @@ merged manifest/device behavior remains STEP 22/manual verification.
 - 00.b: source copy matches byte-for-byte; 30 step files and all micro-step IDs checked against the source; Git whitespace checks passed. No package scripts exist yet.
 - Device testing: not verified.
 
-STEP 00-07 are merged into `main` (`2b115a3`). STEP 08-10 are complete on the batch
-branch. STEP 11 onward remains specification-only.
+STEP 00-10 are merged into `main` (`4dd5f82`). STEP 11-12 are complete on the batch
+branch. STEP 13 onward remains specification-only.
 
 - 01.a: Design tokens, theme, typography, and motion (`resolveMotion` / `useMotion` for Reduce Motion). 83 tests pass.
 
@@ -475,3 +475,63 @@ branch. STEP 11 onward remains specification-only.
   SMS, cancel/another-account, phone-in-use, optional skip and kill/relaunch QA.
 - Implementation is ready for merge review, with the manual QA/configuration
   and real brand-asset limitations above. No STEP 08-10 merge is performed.
+
+## STEP 11-12 batch verification (2026-10-31)
+
+- Fetched/pruned GitHub, verified completed `step/08-10-onboarding` at `6bbe2f5`,
+  merged it into main without conflicts or history rewriting, verified the merge
+  tree equals the approved feature tip, and pushed main at `4dd5f82`. Created the
+  single `step/11-12-product` branch. The older preservation stash is untouched.
+- STEP 11 Home: existing wordmark/bell header, required greeting, universal wallet
+  balance, pending chip, one primary Scan action, recent three transactions, empty
+  state, cached data/error/retry states and coordinated pull-to-refresh. Scan,
+  notifications, cashback and transaction actions use existing routes only.
+  No balance card, statistics grid, promotions or new financial rules.
+- Wallet hooks share existing query keys, 30-second freshness, GET retry policy,
+  cancellation signals and cache cleanup. Their implementation lives in the
+  shared hooks layer and is re-exported from cashback/hooks, so Home does not
+  import another feature’s internals. App foreground and tab focus refetch stale
+  queries; failed refresh keeps cached server values.
+- Shared TransactionRow uses server amounts/status/type, explicit signs, locale
+  dates, wrapping text and a named action. Balance speech uses whole manat/qepik.
+  Count-up is UI-thread presentation using integer formatting: no first-render
+  animation, instant updates with Reduce Motion, and instant digit-width changes
+  to avoid clipping. Row fades run once; no computed rewards or balances.
+- STEP 12 Restaurants: collapsing heading, 48pt search control with clear action,
+  300ms debounce, isolated search query keys, cursor pagination, duplicate/cycle
+  guards, accessible load-more/retry and FlashList virtualization. No nested
+  scrolling, marketplace features, detail links or tappable restaurant rows.
+- Restaurant responses validate at the HTTP boundary. Cursor pages and legacy
+  arrays normalize to a page contract; search/limit/cursor are encoded through
+  the existing GET endpoint. Backend logos use expo-image at 40pt with recycling
+  identity and neutral Store fallback. Empty directory, no-match, initial loading,
+  page error and cached refresh error states are distinct.
+- Existing mocks now use explicitly named demo restaurants and no business logos;
+  development mock mode shows a small test-data caption. No live partnership
+  claims or production fixtures were added. The required STEP 10 optional-phone
+  reminder remains available as a quiet action, not a promotional banner.
+- Home and Restaurants passed the Epsilon Design System + Unslop source/component
+  review: spacing, color, icons, copy, typography, layout, details, visuals, motion.
+  Row skeleton geometry matches the two-line rows; no decorative redesign. The
+  standing Unslop rule remains documented once in DESIGN_SYSTEM.md.
+- Final `npm run check`: zero-warning lint, strict TypeScript, 62 suites / 423
+  tests, 158 locale base keys across AZ/EN/RU and formatting all pass. Targeted
+  coverage includes server money/activity, Scan repeat presses, refresh, cache
+  preservation, debounced search/clear, empty/error distinction, pagination/search
+  isolation, malformed responses and cancellation. No checks were weakened.
+- Final Android Hermes release export: 5,608,840 bytes versus 5,425,609 bytes at
+  the merged STEP 08-10 baseline (+3.4%, below 10%). Expo dependency validation
+  and Git whitespace checks pass. No native APK/AAB build or device timing claim.
+- Owner approved FlashList and expo-image additions. Exact MIT pins: FlashList
+  2.3.2 (849,050 unpacked bytes; Expo’s compatible patch rather than latest 2.3.3)
+  and expo-image 58.0.18 (138,294,160 unpacked bytes). Native APK size is unmeasured;
+  the measured JS bundle stays within its guard. No unrelated package upgrades.
+- Production-dependency audit at high severity passes: 0 high/critical, 1 low /
+  30 moderate, unchanged from the onboarding batch. No forced advisory fixes.
+- MANUAL DEVICE QA PENDING: Home pull-to-refresh/layout/count-up/Reduce Motion,
+  stale foreground/offline behavior, TalkBack and 1.3x font scale, restaurant
+  keyboard/search/clear/pagination/recycling and real backend empty response.
+  Dev client rebuild now also needs expo-image. Existing Google Cloud/backend
+  verification, real logo/exact blue, and advisory limitations remain documented.
+- Ready for merge review with those manual integration/visual checks pending.
+  No STEP 11-12 merge is performed. STEP 13 camera/receipt/feedback work is untouched.

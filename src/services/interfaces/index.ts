@@ -51,7 +51,10 @@ export interface ConfigService {
 }
 
 export interface RestaurantService {
-  list(): Promise<Restaurant[]>;
+  list(
+    params?: { search?: string; cursor?: string; limit?: number },
+    options?: ReadOptions,
+  ): Promise<Paginated<Restaurant>>;
   get(id: string): Promise<Restaurant>;
 }
 
@@ -69,13 +72,17 @@ export interface FeedbackService {
 }
 
 export interface WalletService {
-  get(): Promise<Wallet>;
-  transactions(params?: {
-    cursor?: string;
-    limit?: number;
-  }): Promise<Paginated<WalletTransaction>>;
+  get(options?: ReadOptions): Promise<Wallet>;
+  transactions(
+    params?: {
+      cursor?: string;
+      limit?: number;
+    },
+    options?: ReadOptions,
+  ): Promise<Paginated<WalletTransaction>>;
   transaction(id: string): Promise<WalletTransaction>;
 }
+export type ReadOptions = { signal?: AbortSignal };
 
 export interface NotificationService {
   settings(): Promise<{ pushEnabled: boolean }>;

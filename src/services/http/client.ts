@@ -127,6 +127,11 @@ export async function request<T>(
   const maxAttempts = isGet ? GET_MAX_RETRIES + 1 : 1;
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    if (options?.signal?.aborted) {
+      const cancelled = new Error('Request cancelled');
+      cancelled.name = 'AbortError';
+      throw cancelled;
+    }
     if (attempt > 0) {
       await sleep(jitterMs(attempt - 1));
     }
@@ -136,6 +141,7 @@ export async function request<T>(
     } catch (err) {
       const isRetryable =
         isGet &&
+        !options?.signal?.aborted &&
         attempt < maxAttempts - 1 &&
         err instanceof ApiError &&
         (err.code === 'NETWORK' || err.code === 'TIMEOUT');
@@ -161,11 +167,9 @@ async function executeRequest<T>(
 
   // Combine external signal with internal timeout by listening on both.
   // AbortSignal.any is not yet guaranteed in all Hermes builds.
-  if (options?.signal) {
-    options.signal.addEventListener('abort', () =>
-      timeoutController.abort(options.signal!.reason),
-    );
-  }
+  const onAbort = () => timeoutController.abort();
+  if (options?.signal?.aborted) onAbort();
+  else options?.signal?.addEventListener('abort', onAbort, { once: true });
 
   const signal = timeoutController.signal;
   const requestId = newRequestId();
@@ -201,6 +205,11 @@ async function executeRequest<T>(
     });
   } catch (err) {
     clearTimeout(timeoutId);
+    if (options?.signal?.aborted) {
+      const cancelled = new Error('Request cancelled');
+      cancelled.name = 'AbortError';
+      throw cancelled;
+    }
     if (err instanceof Error && err.name === 'AbortError') {
       throw new ApiError({
         code: 'TIMEOUT',
@@ -217,6 +226,7 @@ async function executeRequest<T>(
     });
   } finally {
     clearTimeout(timeoutId);
+    options?.signal?.removeEventListener('abort', onAbort);
   }
 
   const serverRequestId = response.headers.get('X-Request-Id') ?? requestId;

@@ -5,6 +5,7 @@ export function moneyParts(
   minor: number,
   { sign = 'auto' }: MoneyOptions = {},
 ) {
+  'worklet';
   if (!Number.isSafeInteger(minor)) {
     throw new RangeError('Expected safe integer minor units');
   }

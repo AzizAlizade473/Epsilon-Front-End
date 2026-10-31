@@ -180,3 +180,20 @@ Age/date validation uses the HTTP Date-adjusted display clock and server minimum
 age; the backend's AGE_RESTRICTED response remains authoritative. No draft profile,
 phone challenge or OTP is persisted. Relaunch fetches user/config to resume profile
 or phone verification; a lost in-memory SMS challenge resumes at phone entry.
+
+## Home and Restaurants (STEP 11-12)
+
+Rebuild the dev client for the new `expo-image` native module. FlashList 2.3.2
+uses the existing New Architecture; both packages are exactly pinned to the
+SDK-compatible versions. An Android JavaScript export does not replace this
+native rebuild or verify native APK size/performance.
+
+**MANUAL DEVICE QA PENDING:** pull-to-refresh, stale foreground/offline data,
+Home count-up/Reduce Motion, TalkBack money/status announcements, 1.3x font
+scaling, restaurant title collapse, keyboard/search/clear, long-list pagination
+and logo recycling/fallback. Validate the real backend's empty restaurant response
+and search/cursor semantics. Rows intentionally have no detail action.
+
+Development mocks are explicitly labeled and use demo restaurant names with no
+real partner logos. Production continues to use validated live service responses.
+The Scan action opens the existing route; camera/receipt work remains STEP 13.

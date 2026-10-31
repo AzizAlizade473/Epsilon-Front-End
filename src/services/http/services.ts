@@ -12,6 +12,7 @@ import {
   profileUpdateResultSchema,
   receiptSchema,
   restaurantSchema,
+  restaurantPageSchema,
   sessionSchema,
   userSchema,
   walletSchema,
@@ -147,8 +148,19 @@ export const httpConfigService: ConfigService = {
 };
 
 export const httpRestaurantService: RestaurantService = {
-  async list() {
-    return requestWithAuth('GET', '/restaurants', z.array(restaurantSchema));
+  async list(params, options) {
+    const query = new URLSearchParams();
+    if (params?.search) query.set('search', params.search);
+    if (params?.cursor) query.set('cursor', params.cursor);
+    if (params?.limit) query.set('limit', String(params.limit));
+    const qs = query.toString();
+    return requestWithAuth(
+      'GET',
+      qs ? `/restaurants?${qs}` : '/restaurants',
+      restaurantPageSchema,
+      undefined,
+      options,
+    );
   },
 
   async get(id) {
@@ -186,11 +198,11 @@ export const httpFeedbackService: FeedbackService = {
 };
 
 export const httpWalletService: WalletService = {
-  async get() {
-    return requestWithAuth('GET', '/wallet', walletSchema);
+  async get(options) {
+    return requestWithAuth('GET', '/wallet', walletSchema, undefined, options);
   },
 
-  async transactions(params) {
+  async transactions(params, options) {
     const query = new URLSearchParams();
     if (params?.cursor) query.set('cursor', params.cursor);
     if (params?.limit) query.set('limit', String(params.limit));
@@ -200,6 +212,8 @@ export const httpWalletService: WalletService = {
       'GET',
       path,
       paginatedSchema(walletTransactionSchema),
+      undefined,
+      options,
     );
   },
 

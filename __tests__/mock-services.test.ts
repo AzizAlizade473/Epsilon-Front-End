@@ -81,7 +81,7 @@ describe('mock services scenario execution', () => {
     expect(user.id).toBe(mockUser.id);
 
     const restaurants = await mockRestaurantService.list();
-    expect(restaurants.length).toBeGreaterThan(0);
+    expect(restaurants.items.length).toBeGreaterThan(0);
 
     const wallet = await mockWalletService.get();
     expect(wallet.balanceMinor).toBe(mockWallet.balanceMinor);
@@ -90,7 +90,7 @@ describe('mock services scenario execution', () => {
   it('returns empty collections in empty scenario', async () => {
     setMockScenario('empty');
     const restaurants = await mockRestaurantService.list();
-    expect(restaurants).toEqual([]);
+    expect(restaurants).toEqual({ items: [], nextCursor: null });
 
     const txs = await mockWalletService.transactions();
     expect(txs.items).toEqual([]);

@@ -143,10 +143,21 @@ export const mockConfigService: ConfigService = {
 };
 
 export const mockRestaurantService: RestaurantService = {
-  async list() {
+  async list(params) {
     await simulateDelay();
     checkMockScenario();
-    return getMockScenario() === 'empty' ? [] : mockRestaurants;
+    const source = getMockScenario() === 'empty' ? [] : mockRestaurants;
+    const search = params?.search?.toLocaleLowerCase('az') ?? '';
+    const filtered = source.filter((item) =>
+      item.name.toLocaleLowerCase('az').includes(search),
+    );
+    const start = Math.max(0, Number(params?.cursor ?? 0) || 0);
+    const limit = params?.limit ?? 20;
+    return {
+      items: filtered.slice(start, start + limit),
+      nextCursor:
+        start + limit < filtered.length ? String(start + limit) : null,
+    };
   },
 
   async get(id) {
@@ -215,14 +226,17 @@ export const mockWalletService: WalletService = {
     return mockWallet;
   },
 
-  async transactions() {
+  async transactions(params) {
     await simulateDelay();
     checkMockScenario();
     if (getMockScenario() === 'empty') {
       return { items: [], nextCursor: null };
     }
     return {
-      items: mockTransactions,
+      items: mockTransactions.slice(
+        0,
+        params?.limit ?? mockTransactions.length,
+      ),
       nextCursor: null,
     };
   },
