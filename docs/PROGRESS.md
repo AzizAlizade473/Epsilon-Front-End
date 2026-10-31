@@ -85,6 +85,7 @@ merged manifest/device behavior remains STEP 22/manual verification.
   - [x] 02.a.2 — Single-flight SecureStore boot reader; strict stored-session validation, retry and cache-release tests; server owns expiry.
   - [x] 02.a.3 — Navigation and bootstrap copy in AZ/EN/RU; matching-key tests.
   - [x] 02.a.4 — AZ-default i18n boot plus Theme/I18n/Query/Auth foundation; server profile hydration remains the later service/auth integration.
+  - [x] 02.a.5 — Global Toast host after Auth; safe-area positioning, localized dismissal and provider integration test.
 - [ ] 02.b — route skeleton with stubs and typed routes
 - [ ] 02.c — TabBar + center button
 - [ ] 02.d — Sheet + transparent-modal wiring

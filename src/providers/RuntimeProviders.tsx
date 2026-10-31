@@ -3,6 +3,8 @@ import { DefaultTheme, ThemeProvider } from 'expo-router';
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import { I18nextProvider } from 'react-i18next';
 
+import { ToastProvider } from './ToastProvider';
+
 import { colors } from '@/design';
 import type { BootData } from '@/lib/bootstrap';
 import { i18n } from '@/lib/i18n';
@@ -58,7 +60,7 @@ export function RuntimeProviders({
           <AuthContext.Provider
             value={{ ...boot, user: null, requirePhoneVerification: true }}
           >
-            {children}
+            <ToastProvider>{children}</ToastProvider>
           </AuthContext.Provider>
         </QueryClientProvider>
       </I18nextProvider>
