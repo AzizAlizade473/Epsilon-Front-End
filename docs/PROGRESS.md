@@ -1,8 +1,7 @@
 # Epsilon progress
 
-Scope: STEP 01 implementation complete; manual Android verification pending.
-STEP 00 is merged into `main`. STEP 01 remains unmerged.
-Branch: `step/01-design-system`, based on `main` merge commit `66c4176`.
+Scope: STEP 02 navigation shell. STEP 01 approved and merged into `main`.
+Branch: `step/02-navigation`, based on merge commit `8771325`.
 
 A checked item is complete only after its commit reaches GitHub.
 
@@ -13,8 +12,9 @@ Node 20 instructions are repaired by 01.recovery. Use Node 22.22.1+.
 Latest verified code commit: `7bb038e` (contrast correction); later commits document this checkpoint.
 Checks: `npm run check` green, 144 tests / 25 suites; Expo dependency validation
 and Android development/release exports pass. GitHub Actions execution not verified.
-Next: Aziz tests the gallery, then explicitly authorizes merge. Do not merge or
-start STEP 02 without that authorization. No unresolved implementation blocker.
+Next: 02.a provider/bootstrap shell, then the remaining STEP 02 micro-steps.
+Aziz authorized STEP 01 merge and autonomous STEP 02 on 2026-10-31.
+Manual device checks remain pending and do not block this implementation.
 Open design input: exact brand blue awaits the real logo asset; placeholder is retained.
 Device/TalkBack/font-scale/performance checks remain not verified.
 
@@ -81,6 +81,7 @@ merged manifest/device behavior remains STEP 22/manual verification.
 ## STEP 02
 
 - [ ] 02.a — root layout + providers + splash gate
+  - [x] 02.a.1 — Merge STEP 01 (`8771325`), create this branch, and pin owner-approved navigation dependencies; generated lockfile is outside the handwritten line budget.
 - [ ] 02.b — route skeleton with stubs and typed routes
 - [ ] 02.c — TabBar + center button
 - [ ] 02.d — Sheet + transparent-modal wiring
@@ -316,7 +317,7 @@ merged manifest/device behavior remains STEP 22/manual verification.
 - 00.b: source copy matches byte-for-byte; 30 step files and all micro-step IDs checked against the source; Git whitespace checks passed. No package scripts exist yet.
 - Device testing: not verified.
 
-STEP 00 merged into `main` (`66c4176`). STEP 01 in progress on `step/01-design-system`.
+STEP 00 and STEP 01 are merged into `main` (`8771325`). STEP 02 is in progress.
 Later-step documents are specifications only.
 
 - 01.a: Design tokens, theme, typography, and motion (`resolveMotion` / `useMotion` for Reduce Motion). 83 tests pass.
