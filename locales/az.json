@@ -30,6 +30,31 @@
     "retry": "Yenidən cəhd et",
     "offline": "İnternet bağlantısı yoxdur"
   },
+  "common": {
+    "retry": "Yenidən cəhd et",
+    "offline": "İnternet bağlantısı yoxdur",
+    "genericError": "Nəsə səhv getdi",
+    "loading": "Yüklənir",
+    "back": "Geri",
+    "close": "Bağla",
+    "save": "Yadda saxla",
+    "continue": "Davam et",
+    "cancel": "Ləğv et",
+    "confirm": "Təsdiq et",
+    "points_one": "{{count}} xal",
+    "points_other": "{{count}} xal"
+  },
+  "errors": {
+    "network": "İnternet bağlantısı yoxdur",
+    "timeout": "Sorğu vaxtı bitdi",
+    "generic": "Nəsə səhv getdi",
+    "unauthorized": "Daxil olmaq tələb olunur",
+    "otpInvalid": "Yanlış kod daxil edildi",
+    "otpExpired": "Kodun vaxtı bitmişdir",
+    "receiptAlreadyClaimed": "Bu çek artıq istifadə edilib",
+    "receiptExpired": "Çekin vaxtı bitib",
+    "feedbackAlreadySubmitted": "Bu məhsul üçün artıq rəy bildirmisiniz"
+  },
   "gallery": {
     "title": "Dizayn qalereyası",
     "language": "Dil",

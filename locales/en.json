@@ -30,6 +30,31 @@
     "retry": "Try again",
     "offline": "No internet connection"
   },
+  "common": {
+    "retry": "Try again",
+    "offline": "No internet connection",
+    "genericError": "Something went wrong",
+    "loading": "Loading",
+    "back": "Back",
+    "close": "Close",
+    "save": "Save",
+    "continue": "Continue",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "points_one": "{{count}} point",
+    "points_other": "{{count}} points"
+  },
+  "errors": {
+    "network": "No internet connection",
+    "timeout": "Request timed out",
+    "generic": "Something went wrong",
+    "unauthorized": "Sign-in required",
+    "otpInvalid": "Invalid code entered",
+    "otpExpired": "Code has expired",
+    "receiptAlreadyClaimed": "This receipt has already been claimed",
+    "receiptExpired": "Receipt has expired",
+    "feedbackAlreadySubmitted": "You have already submitted feedback for this item"
+  },
   "gallery": {
     "title": "Design gallery",
     "language": "Language",
@@ -58,11 +83,11 @@
     "emptyTitle": "No data yet",
     "emptyMessage": "Data will appear here when available.",
     "errorTitle": "Something went wrong",
-    "errorMessage": "Please try again shortly.",
+    "errorMessage": "Try again in a little while.",
     "retry": "Try again",
     "toastMessage": "Action completed",
-    "dismiss": "Dismiss message",
-    "showToast": "Show message",
+    "dismiss": "Dismiss notification",
+    "showToast": "Show notification",
     "amount": "Amount"
   }
 }

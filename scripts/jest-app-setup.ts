@@ -23,3 +23,18 @@ jest.mock('@react-native-community/netinfo', () =>
     '@react-native-community/netinfo/jest/netinfo-mock',
   ),
 );
+
+// Provide a deterministic stub for expo-localization so that
+// resolveInitialLanguage() falls back to 'az' (the project default) in all
+// test files that do not explicitly override this mock.
+jest.mock('expo-localization', () => ({
+  getLocales: jest.fn(() => []),
+}));
+
+// Provide a no-op stub for expo-secure-store so storage reads return null
+// (no saved preference) and writes succeed silently in all test files that do
+// not explicitly override this mock.
+jest.mock('expo-secure-store', () => ({
+  getItemAsync: jest.fn(() => Promise.resolve(null)),
+  setItemAsync: jest.fn(() => Promise.resolve()),
+}));
