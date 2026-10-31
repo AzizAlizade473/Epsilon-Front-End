@@ -1,9 +1,22 @@
 # Epsilon progress
 
-Scope: PART 0 and STEP 00 only. Stop after STEP 00 for manual testing.
-Branch: `step/00-bootstrap`, based on initial `main` commit `d888174`.
+Scope: STEP 01 implementation complete; manual Android verification pending.
+STEP 00 is merged into `main`. STEP 01 remains unmerged.
+Branch: `step/01-design-system`, based on `main` merge commit `66c4176`.
 
 A checked item is complete only after its commit reaches GitHub.
+
+Recovery: fetched all branches/tags on 2026-10-31; latest pushed development
+was `86bb6af` (01.a). No old-laptop 01.b edits were pushed. All 83 baseline
+tests pass; no missing `extend-expect` error. Windows CRLF formatting and stale
+Node 20 instructions are repaired by 01.recovery. Use Node 22.22.1+.
+Latest verified code commit: `7bb038e` (contrast correction); later commits document this checkpoint.
+Checks: `npm run check` green, 144 tests / 25 suites; Expo dependency validation
+and Android development/release exports pass. GitHub Actions execution not verified.
+Next: Aziz tests the gallery, then explicitly authorizes merge. Do not merge or
+start STEP 02 without that authorization. No unresolved implementation blocker.
+Open design input: exact brand blue awaits the real logo asset; placeholder is retained.
+Device/TalkBack/font-scale/performance checks remain not verified.
 
 ## STEP 00
 
@@ -20,15 +33,50 @@ A checked item is complete only after its commit reaches GitHub.
 
 ## STEP 01
 
-- [ ] 01.a — tokens + theme + typography + motion
-- [ ] 01.b — Text, Icon, Screen, Header
-- [ ] 01.c — Button, IconButton (+ tests)
-- [ ] 01.d — ListRow, Card, Chip, Switch, SegmentedControl
-- [ ] 01.e — Input (+ tests)
-- [ ] 01.f — Amount (+ money tests later in STEP 04)
-- [ ] 01.g — Skeleton, EmptyState, ErrorState, Toast
-- [ ] 01.h — dev gallery route
-- [ ] 01.i — `docs/DESIGN_SYSTEM.md`.
+- [x] 01.recovery — Recover pushed branch; align Node prerequisites/CI and enforce LF on Windows.
+- [x] 01.a — tokens + theme + typography + motion
+- [x] 01.b — Text, Icon, Screen, Header
+  - [x] 01.b.1 — Text: system typography, token tones, unrestricted font scaling and native accessibility props.
+  - [x] 01.b.2 — Approved pinned icon/haptics/component-test dependencies; Android VIBRATE blocked (SEC-8).
+  - [x] 01.b.3 — Lucide Icon: labeled/decorative modes, stroke 2, modular imports; RNTL 14 tests.
+  - [x] 01.b.4 — Header: wrapping heading and caller-owned action slots; accessibility/navigation tests.
+  - [x] 01.b.5 — Screen: safe area, dark status bar, centered 480pt column, keyboard handling and fixed footer.
+  - [x] 01.b.6 — Measured large-title collapse/restore with a single accessible heading; 01.b complete.
+- [x] 01.c — Button, IconButton (+ tests)
+  - [x] 01.c.1 — Shared press surface: native scale, Reduce Motion, Android ripple/permission-free haptics and blocked states.
+  - [x] 01.c.2 — Button: primary/secondary/ghost/destructive, wrapping labels, stable loading width and busy-state repeat-press test.
+  - [x] 01.c.3 — 44pt IconButton with named action, decorative glyph and blocked loading state; 01.c complete.
+- [x] 01.d — ListRow, Card, Chip, Switch, SegmentedControl
+  - [x] 01.d.1 — Flat hairline Card and static/interactive Chip with text labels and visible selection marks.
+  - [x] 01.d.2 — Controlled Switch with checked/disabled states and change tests.
+  - [x] 01.d.3 — SegmentedControl: radio semantics, visible selection mark, no callback when reselecting the current option.
+  - [x] 01.d.4 — ListRow: 40pt leading circle, wrapping details/value, optional action chevron and inset hairline; 01.d complete.
+- [x] 01.e — Input (+ tests): wrapping labels/errors, native input/ref props, 56pt minimum, font scaling, focus/disabled styles and draft-preservation tests.
+- [x] 01.f — Amount and integer-only lib/money formatter, signed values, 60% currency glyph and spoken-label override; basic money tests included, STEP 04 integration remains pending.
+- [x] 01.g — Skeleton, EmptyState, ErrorState, Toast
+  - [x] 01.g.1 — Flat native-driver Skeleton pulse; Reduce Motion defaults to still until the OS preference resolves.
+  - [x] 01.g.2 — EmptyState and ErrorState: wrapping copy, decorative icon, optional action and accessible retry alert.
+  - [x] 01.g.3 — Toast: polite alert, named dismissal, native opacity/Reduce Motion; queue/provider remains STEP 21; 01.g complete.
+- [x] 01.h — dev gallery route
+  - [x] 01.h.1 — Matching AZ/EN/RU gallery copy and typed, AZ-default preview resources; production i18next remains STEP 04.
+  - [x] 01.h.2 — Gallery control samples: interactive selections/input, button states, rows and icons.
+  - [x] 01.h.3 — Gallery amounts, loading/empty/error states and interactive retry/Toast samples; no network/product data.
+  - [x] 01.h.4 — Dev-only gallery route/startup, safe-area preview, typography and instant AZ/EN/RU switching; production redirect test.
+  - [x] 01.h.5 — Android development export and Expo dependency validation; block template storage/overlay permissions and verify generated manifest removal rules (SEC-8).
+
+01.h.4 verification: 133 tests pass; Android Hermes release export 2,477,897 bytes
+versus 2,477,278-byte bootstrap baseline (+0.025%). English gallery copy/sample
+markers are absent from bytecode. Device rendering/performance remains not verified.
+
+01.h.5: Development Android export compiles all gallery samples (1,447 modules).
+Expo dependency validation passes. Introspection confirms allowBackup/cleartext
+false, CAMERA plus required INTERNET, and removal rules for VIBRATE, storage and
+overlay permissions. This is generated app-manifest validation; a compiled APK's
+merged manifest/device behavior remains STEP 22/manual verification.
+
+- [x] 01.i — `docs/DESIGN_SYSTEM.md`, component contracts, Windows runtime commands, verification evidence and pending manual gate.
+
+- [x] 01.review.1 — Contrast review: use ink for helpers/subtitles on gray; secondary gray remains white-surface-only (4.76:1). Added WCAG text-pair guards without changing the prescribed palette.
 
 ## STEP 02
 
@@ -268,7 +316,10 @@ A checked item is complete only after its commit reaches GitHub.
 - 00.b: source copy matches byte-for-byte; 30 step files and all micro-step IDs checked against the source; Git whitespace checks passed. No package scripts exist yet.
 - Device testing: not verified.
 
-STEP 01 has not begun. Later-step documents are specifications only.
+STEP 00 merged into `main` (`66c4176`). STEP 01 in progress on `step/01-design-system`.
+Later-step documents are specifications only.
+
+- 01.a: Design tokens, theme, typography, and motion (`resolveMotion` / `useMotion` for Reduce Motion). 83 tests pass.
 
 - 00.c: TypeScript, Expo version check, CLI schema compatibility tests, and npm audit --omit=dev --audit-level=high pass. Metro HTTP status verified; Android Hermes export succeeds (2477278 bytes baseline). Direct dependency licenses MIT/Apache-2.0 verified. Seven low-severity transitive tooling audit findings documented in decisions/0001-bootstrap-dependencies.md. Device launch not verified.
 
