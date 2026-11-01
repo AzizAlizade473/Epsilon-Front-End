@@ -1873,7 +1873,12 @@ components:
           properties:
             code:
               type: string
-              enum:
+              minLength: 1
+              description:
+                Recognized domain codes are listed in x-recognized-domain-codes.
+                Other stable server codes are opaque to the client and fall back
+                by HTTP status; never reuse reserved client-only codes.
+              x-recognized-domain-codes:
                 - UNAUTHORIZED
                 - SOCIAL_TOKEN_INVALID
                 - SOCIAL_EMAIL_UNVERIFIED

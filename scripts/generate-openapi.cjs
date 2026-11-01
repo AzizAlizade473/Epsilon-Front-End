@@ -114,7 +114,13 @@ schemas.ProfilePatch = object(
 schemas.Error = object({
   error: object(
     {
-      code: { type: 'string', enum: [...serverErrorCodes] },
+      code: {
+        type: 'string',
+        minLength: 1,
+        description:
+          'Recognized domain codes are listed in x-recognized-domain-codes. Other stable server codes are opaque to the client and fall back by HTTP status; never reuse reserved client-only codes.',
+        'x-recognized-domain-codes': [...serverErrorCodes],
+      },
       message: { type: 'string' },
       requestId: { type: 'string', minLength: 1, maxLength: 128 },
       retryAfterSeconds: {

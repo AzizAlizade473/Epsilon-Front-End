@@ -154,6 +154,11 @@ malformed codes fall back by HTTP status (401 unauthorized, 429 rate limited,
 domain codes. Client-only codes BAD_RESPONSE/NETWORK/TIMEOUT/UNKNOWN are not
 server response codes. Stable server codes are exported once in `http/errors.ts`
 and listed in OpenAPI; 403 remains generic forbidden without a new UI code.
+The OpenAPI wire error permits opaque non-domain server codes (for example, a
+generic service failure category selected by the backend). Its recognized-code
+annotation is not permission to cast an unknown code into the client enum.
+The runtime whitelist and status fallback remain mandatory; new domain behavior
+requires a coordinated contract/client change.
 Never include tokens, phone, comments or raw purchase references in error text,
 request IDs, logs or URLs.
 

@@ -1,7 +1,7 @@
 # Epsilon progress
 
-Scope: STEP 24-25 implementation complete; device/native/live-service verification remains pending. STEP 00-23 are merged into `main`.
-Branch: `step/24-25-quality-ci`, based on verified `main` merge commit `1ef24e3`.
+Scope: STEP 26-27 contract/legal preparation complete; owner/legal/backend sign-off and external QA remain pending. STEP 00-25 are merged into `main`.
+Branch: `step/26-27-contract-legal`, based on verified `main` merge commit `2ea4b97`.
 
 A checked item is complete only after its commit reaches GitHub.
 
@@ -12,7 +12,7 @@ commit before creating this batch branch. Older uncommitted STEP 01 work on this
 PC was inspected and preserved, including untracked files, in the named stash
 `main-pc-preservation-step01-before-github-recovery-2026-10-31`. It was not merged.
 
-Current authorization: merge STEP 21-23 into main, then implement STEP 24-25 continuously with one final comprehensive gate and logical recovery checkpoints. Keep this batch separate from main; STOP before STEP 26.
+Current authorization: merge STEP 24-25 into main, then complete STEP 26-27 contract/legal preparation and justified guards with a final comprehensive gate. Keep this branch separate from main; STOP before STEP 28. Do not invent owner financial/legal decisions or begin release work.
 Animated logo/splash work is explicitly postponed.
 Manual Android/device checks remain pending and do not block implementation.
 
@@ -292,19 +292,19 @@ merged manifest/device behavior remains STEP 22/manual verification.
 
 ## STEP 26
 
-- [ ] 26.a — conventions + errors
-- [ ] 26.b — OpenAPI for auth/user/config
-- [ ] 26.c — OpenAPI for restaurants/receipts/feedback/wallet/notifications
-- [ ] 26.d — `BUSINESS_RULES.md` (MUST list above)
-- [ ] 26.e — open decisions + reviewer access plan
-- [ ] 26.f — fixtures-vs-schema contract test.
+- [x] 26.a — conventions + errors
+- [x] 26.b — OpenAPI for auth/user/config
+- [x] 26.c — OpenAPI for restaurants/receipts/feedback/wallet/notifications
+- [x] 26.d — `BUSINESS_RULES.md` (MUST list above)
+- [x] 26.e — open decisions + reviewer access plan
+- [x] 26.f — fixtures-vs-schema contract test.
 
 ## STEP 27
 
-- [ ] 27.a — data inventory
-- [ ] 27.b — legal TODO + lawyer questions
-- [ ] 27.c — incident response
-- [ ] 27.d — store-readiness drafts.
+- [x] 27.a — data inventory
+- [x] 27.b — legal TODO + lawyer questions
+- [x] 27.c — incident response
+- [x] 27.d — store-readiness drafts.
 
 ## STEP 28
 
@@ -766,3 +766,69 @@ branch. STEP 13 onward remains specification-only.
   Animated logo/splash work remains postponed. STEP 26 is untouched. This branch
   is ready for merge review with the documented external validation limits and
   is not merged into main.
+
+## STEP 26-27 batch verification (2026-11-01)
+
+- Fetched all GitHub branches; `9baf3c2` was the latest valid STEP 24-25 state.
+  Cleanly merged it into main and verified the pushed merge `2ea4b97`. The older
+  preservation stash is untouched. Current batch remains separate from main.
+- STEP 26 preparation complete: `API_CONTRACT.md`, generated `openapi.yaml` and
+  `BUSINESS_RULES.md` define conventions, 23 active operations, schemas/errors,
+  server/client authority, integer-qepik money, one universal wallet, exact
+  purchased dishes and opaque purchase references. Apple and redemption remain
+  deferred. No backend, reward calculation or new product surface was built.
+- `contract:check` now runs in the normal quality gate, comparing the generated
+  OpenAPI with current Zod schemas, explicit operation definitions and HTTP path
+  inventory. Cross-field reward rules are represented; opaque generic server
+  errors remain representable without becoming trusted client-domain codes.
+- Corrected phone-link routes to canonical `/me/phone/otp/request|verify`;
+  centralized OTP challenge schema; preferred nested error envelope with legacy
+  flat compatibility, known domain-code whitelist and safe Retry-After handling;
+  rejected contradictory none/non-null reward results. Privacy/Terms configuration
+  requires HTTPS and fails safely on missing/malformed input. No UI layout change.
+- Replay contract preserves durable feedback keys and exact payloads after lost
+  responses, atomic stored backend responses, unique claims/rewards and ledger
+  source accounting. Fixed reward funding, spending, confirmation/expiry,
+  regulation/POS and deletion-balance decisions remain explicitly open, not coded.
+  **LIVE BACKEND CONTRACT VERIFICATION PENDING.** Backend teammate sign-off,
+  real ownership/concurrency/idempotency and staging behavior remain unverified.
+- STEP 27 preparation complete: updated `DATA_INVENTORY.md`; added
+  `LEGAL_TODO.md`, `PRIVACY_POLICY_DRAFT.md`, `TERMS_DRAFT.md`,
+  `REWARDS_TERMS_DRAFT.md`, `INCIDENT_RESPONSE.md` and `STORE_READINESS.md`.
+  The latter includes AZ/EN/RU listing drafts, real-build screenshot plan,
+  provisional store data mapping, private reviewer access and a public deletion
+  page specification. Current Google/Apple guidance is linked and dated.
+- **LEGAL REVIEW REQUIRED BEFORE PUBLICATION.** O1-O8 in LEGAL_TODO.md are the
+  consolidated owner input register: entity/contact/HTTPS resources, program
+  rules, processors/hosting/retention, incident owners, store assets/reviewer
+  access and real production integrations. Counsel must assess Azerbaijan
+  financial/personal-data rules, transfers, minors/age, consumer wording, UGC,
+  agreements, vendor/license/trademark obligations and deletion/retention.
+  No entity, legal basis, retention period, final rating or approval was invented.
+- **ACCOUNT DELETION BACKEND VERIFICATION PENDING.** Existing re-authentication,
+  confirmation and backend-first local cleanup are preserved. No public web page
+  was deployed, reviewer credentials provisioned, external handoff sent, store
+  form submitted or production publishing/credential operation performed.
+- Final local gate: 88 suites / 536 tests; coverage lines 85.84%, statements
+  83.28%, branches 74.08%, functions 79.08%; all thresholds unchanged and green.
+  Lint, strict TypeScript, all 337 AZ/EN/RU keys, formatting, production,
+  supply-chain, Android configuration, workflow and contract checks pass. Tests
+  cover nested/unknown errors, safe retry headers, canonical protected phone
+  routes, malformed rewards, HTTPS legal config and generated mock responses.
+- Production audit remains zero high/critical, 1 low / 32 moderate; Expo
+  compatibility and redacted history/staged secret scans pass. No dependency
+  addition or license-exception expansion. Existing approved exceptions remain.
+- Final Android no-map Hermes export: 6,107,845 bytes vs 6,106,790 (+0.02%), below
+  the unchanged 10% budget using the established SDK 58 settings. No APK/AAB,
+  cold-start, physical-device, optimized-release or legal-compliance claim.
+- Implementation checkpoint `f3c7cb6` is pushed; GitHub Actions run `41308780454`
+  was observed successful for both required jobs. Final handoff clarification and
+  documentation commit are verified again after push; hosted results are not
+  inferred from local checks.
+- No new/materially changed user-facing screen; existing Epsilon Design System
+  - Unslop is preserved without an invented redesign. Full legal translations,
+    hosted legal/support/deletion URLs, native/client rebuild, physical QA/Maestro,
+    cold starts and live backend/Google/push/Sentry/OTA prerequisites remain pending.
+    Animated logo/splash is still postponed. STEP 28-29 work is untouched.
+- Ready for contract/legal preparation merge review, with the above owner/legal/
+  backend decisions and external validation limits; not a public-launch approval.
