@@ -1,7 +1,7 @@
 # Epsilon progress
 
-Scope: STEP 21-23 implementation complete; native/device/startup verification remains pending. STEP 00-20 are merged into `main`.
-Branch: `step/21-23-hardening`, based on verified `main` merge commit `e263782`.
+Scope: STEP 24-25 implementation complete; device/native/live-service verification remains pending. STEP 00-23 are merged into `main`.
+Branch: `step/24-25-quality-ci`, based on verified `main` merge commit `1ef24e3`.
 
 A checked item is complete only after its commit reaches GitHub.
 
@@ -12,7 +12,7 @@ commit before creating this batch branch. Older uncommitted STEP 01 work on this
 PC was inspected and preserved, including untracked files, in the named stash
 `main-pc-preservation-step01-before-github-recovery-2026-10-31`. It was not merged.
 
-Current authorization: merge STEP 17-20 into main, then implement STEP 21-23 as one continuous batch with a final quality gate/push, overriding the per-micro-step loop. Keep this batch on its own branch; STOP before STEP 24.
+Current authorization: merge STEP 21-23 into main, then implement STEP 24-25 continuously with one final comprehensive gate and logical recovery checkpoints. Keep this batch separate from main; STOP before STEP 26.
 Animated logo/splash work is explicitly postponed.
 Manual Android/device checks remain pending and do not block implementation.
 
@@ -274,21 +274,21 @@ merged manifest/device behavior remains STEP 22/manual verification.
 
 ## STEP 24
 
-- [ ] 24.a — missing unit tests per the list
-- [ ] 24.b — coverage thresholds in CI
-- [ ] 24.c — Maestro setup + flow 1
-- [ ] 24.d — flows 2–5
-- [ ] 24.e — scenario table in `docs/QA_CHECKLIST.md`.
+- [x] 24.a — missing unit tests per the list
+- [x] 24.b — coverage thresholds in CI
+- [x] 24.c — Maestro setup + flow 1
+- [x] 24.d — flows 2–5
+- [x] 24.e — scenario table in `docs/QA_CHECKLIST.md`.
 
 ## STEP 25
 
-- [ ] 25.a — PR workflow
-- [ ] 25.b — audit/license/secret scan
-- [ ] 25.c — guard script (+ test)
-- [ ] 25.d — bundle report
-- [ ] 25.e — Dependabot + PR template + CHANGELOG
-- [ ] 25.f — manual EAS workflows
-- [ ] 25.g — docs.
+- [x] 25.a — PR workflow
+- [x] 25.b — audit/license/secret scan
+- [x] 25.c — guard script (+ test)
+- [x] 25.d — bundle report
+- [x] 25.e — Dependabot + PR template + CHANGELOG
+- [x] 25.f — manual EAS workflows
+- [x] 25.g — docs.
 
 ## STEP 26
 
@@ -700,3 +700,69 @@ branch. STEP 13 onward remains specification-only.
   Update the hosted privacy disclosure and vendor retention/access configuration
   before production enablement. Implementation is ready for preview review with
   these explicit verification limits; no native/performance pass is fabricated.
+
+## STEP 24–25 batch verification (2026-11-01)
+
+- Recovered all remote branches; no newer implementation existed beyond
+  `d185565`. Merged STEP 21–23 cleanly into main at `1ef24e3` and verified the
+  pushed tree. That merge's GitHub CI passed. The preservation stash is untouched.
+- STEP 24: reviewed existing high-risk coverage and retained useful tests.
+  Added account-switch refresh overlap, delayed old-token 401, logout/late OTP
+  lock, committed-but-lost feedback response with stable replay key, one server
+  ledger result and real universal-wallet query invalidation. Fixed the two
+  refresh races exposed by these tests. No new financial or eligibility logic.
+- Coverage now collects unimported services/lib and explicit auth/scan state
+  machines, with per-group minimums enforced in `npm run check` and CI. Scan
+  thresholds name the machine and hook, not UI animation callbacks. No important
+  module is excluded; the native SDK adapter remains an explicit preview QA gap.
+  Overall: lines 83.11%, statements 80.68%, branches 71.69%, functions 76.61%.
+  Services lines 75.04%; lib lines 91.99%; auth challenge store 100%.
+- Five Maestro flows are authored and YAML-validated: mock Google onboarding to
+  feedback/wallet/logout; wrong/expired/correct OTP; scan errors/permissions;
+  offline kill/replay; reauthenticated deletion. Device execution is NOT VERIFIED.
+  The opt-in seam requires development + mock + **DEV**; installed-release
+  exclusion is tested. Mock wallet values are fixed server projections, never
+  calculated rewards. Mock-server process-memory limits are documented. Real
+  idempotency/ownership/two-device behavior remains backend verification.
+- STEP 25: read-only PR/push CI, exact SHA action pins, deterministic npm ci,
+  coverage and production guards, production high/critical audit, lockfile
+  origin/integrity/license checks, checksum-pinned MIT gitleaks, Android export
+  and strict 10% bundle gate. A separate bounded-data-only commenter never checks
+  out/executes PR code. Its PR behavior requires reaching main and a real PR run.
+  Weekly npm/action Dependabot, PR checklist and changelog are configured.
+- Manual EAS builds and preview-only OTA require reviewed main/protected
+  environments. No build, OTA, signing-key change, credential creation or store
+  submission was triggered. Production is explicitly live/production; an EAS
+  post-install hook validates actual production API values. Unknown server-side
+  EAS configuration is not falsely certified by PR profile checks.
+- Owner-approved CI-only eas-cli 27.2.0 is pinned; no application npm dependency
+  was added. Exact existing non-allowlist license exceptions are recorded by
+  lockfile path/version/license. The separate Sentry FSL build-tool exception is
+  preserved. New/changed incompatible licenses fail. Production audit: zero
+  high/critical, existing 1 low / 32 moderate remain; Expo compatibility passes.
+- Final local gate: 87 suites / 527 tests, zero-warning lint, strict TypeScript,
+  337 base keys in AZ/EN/RU, formatting, production/supply-chain/Android config
+  and workflow checks pass. Gitleaks history and staged-change scans pass with
+  full redaction. Workflow validation is not native/device execution.
+- Final no-map Android Hermes export: 6,106,790 bytes vs 6,104,882 (+0.03%), below
+  10%. Existing SDK 58 optimizer/tree-shaking settings remain consistent across
+  exports/CI/EAS. No APK/AAB, startup or 60fps claim is made.
+- Implementation checkpoint `8987b91` is pushed. GitHub Actions run
+  `41287573728` was observed successful for both Quality and supply chain and
+  Android export and bundle budget. The final documentation commit is verified
+  separately after push; these are observed hosted results, not YAML inference.
+- QA_CHECKLIST.md maps critical scenarios and external responsibilities.
+  DEV_SETUP.md documents protected main/environments, secrets/signing backups,
+  appVersion runtime policy and the prohibition on OTA requiring native changes.
+  Those GitHub/EAS server settings are owner tasks, not claimed configured.
+- Preview OTA intentionally fails closed until expo-updates and the real EAS
+  project/update URL are configured in an approved native build. Maestro/device,
+  accessibility, native manifest/client rebuild, camera/SMS/Back/keyboard/insets,
+  cold starts, backend/Google/push credentials and live Sentry ingestion remain
+  pending. Older 22.c/23.f checks remain unchecked. Production branding and hosted
+  legal disclosure/vendor retention verification remain pending.
+- No user-facing layout was changed, so no new screen redesign/Unslop audit was
+  manufactured. The permanent Epsilon Design System + Unslop rule is preserved.
+  Animated logo/splash work remains postponed. STEP 26 is untouched. This branch
+  is ready for merge review with the documented external validation limits and
+  is not merged into main.
