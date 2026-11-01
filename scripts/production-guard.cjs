@@ -52,6 +52,31 @@ function validateProduction(
       /AUTH_TOKEN|PRIVATE|PASSWORD|SECRET|SERVICE_ACCOUNT/.test(name)
     )
       failures.push('Private secret must not use a public variable');
+  for (const name of ['EXPO_PUBLIC_PRIVACY_URL', 'EXPO_PUBLIC_TERMS_URL'])
+    if (
+      (values[name] || requireEnvironment) &&
+      !exportsObject.isProductionApiUrl(values[name] ?? '')
+    )
+      failures.push(`${name} requires an owner-approved public HTTPS URL`);
+  if (
+    (values.EXPO_PUBLIC_SUPPORT_EMAIL || requireEnvironment) &&
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.EXPO_PUBLIC_SUPPORT_EMAIL ?? '')
+  )
+    failures.push('Production support email is required');
+  if (
+    (values.EXPO_PUBLIC_ANDROID_PACKAGE || requireEnvironment) &&
+    !/^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*){2,}$/.test(
+      values.EXPO_PUBLIC_ANDROID_PACKAGE ?? '',
+    )
+  )
+    failures.push('Explicit approved Android application ID is required');
+  if (
+    values.ENABLE_GOOGLE_SIGNIN === 'true' &&
+    !/^[\w-]+\.apps\.googleusercontent\.com$/.test(
+      values.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ?? '',
+    )
+  )
+    failures.push('Enabled Google sign-in requires a web OAuth client ID');
   return failures;
 }
 module.exports = { validateProduction };

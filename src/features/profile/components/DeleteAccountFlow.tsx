@@ -18,9 +18,11 @@ import { generateIdempotencyKey } from '@/services/http/idempotency';
 export function DeleteAccountFlow({
   user,
   onClose,
+  onBusyChange,
 }: {
   user: User;
   onClose: () => void;
+  onBusyChange?: (busy: boolean) => void;
 }) {
   const { t } = useTranslation();
   const router = useRouter();
@@ -54,6 +56,7 @@ export function DeleteAccountFlow({
   const run = async (operation: () => Promise<void>) => {
     if (lock.current) return;
     lock.current = true;
+    onBusyChange?.(true);
     setBusy(true);
     setError(undefined);
     try {
@@ -63,6 +66,7 @@ export function DeleteAccountFlow({
         setError(t('profile.deleteError'));
     } finally {
       lock.current = false;
+      onBusyChange?.(false);
       setBusy(false);
     }
   };

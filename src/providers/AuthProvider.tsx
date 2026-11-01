@@ -136,7 +136,7 @@ export function AuthProvider({
     const config = await queryClient.fetchQuery({
       gcTime: 0,
       queryKey: queryKeys.config.current(),
-      queryFn: () => services.config.get(),
+      queryFn: ({ signal }) => services.config.get({ signal }),
     });
     if (authOperation.current(epoch))
       publish({

@@ -5,6 +5,7 @@ function manifest() {
   return {
     manifest: {
       $: { package: 'com.epsilonup.app' },
+      'uses-sdk': [{ $: { 'android:targetSdkVersion': '36' } }],
       'uses-permission': [
         { $: { 'android:name': 'android.permission.INTERNET' } },
         { $: { 'android:name': 'android.permission.CAMERA' } },
@@ -51,6 +52,21 @@ test('configuration/assets audit passes without claiming a native-build result',
       (check) => check.status === 'pass',
     ),
   ).toBe(true);
+});
+test('actual manifest must declare a current Play target API, not infer it from Expo', () => {
+  const old = manifest();
+  old.manifest['uses-sdk'][0].$['android:targetSdkVersion'] = '35';
+  expect(
+    auditManifest(old).find(
+      (check) => check.check === 'merged-manifest-target-api',
+    ).status,
+  ).toBe('fail');
+  delete old.manifest['uses-sdk'];
+  expect(
+    auditManifest(old).find(
+      (check) => check.check === 'merged-manifest-target-api',
+    ).status,
+  ).toBe('fail');
 });
 test('merged manifest rejects unexpected permissions, exported receivers and unsafe app flags', () => {
   expect(

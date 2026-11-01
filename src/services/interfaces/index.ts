@@ -39,7 +39,7 @@ export interface AuthService {
 }
 
 export interface UserService {
-  me(): Promise<User>;
+  me(options?: ReadOptions): Promise<User>;
   updateProfile(input: {
     firstName?: string;
     lastName?: string;
@@ -50,7 +50,7 @@ export interface UserService {
 }
 
 export interface ConfigService {
-  get(): Promise<Config>;
+  get(options?: ReadOptions): Promise<Config>;
 }
 
 export interface RestaurantService {

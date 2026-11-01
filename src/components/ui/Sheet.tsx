@@ -1,9 +1,17 @@
 /* eslint-disable react-hooks/immutability -- Reanimated shared values require .value mutation */
 /* eslint-disable react-hooks/refs -- Reanimated gesture worklets capture refs by design */
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ComponentRef,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   BackHandler,
+  AccessibilityInfo,
+  findNodeHandle,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -17,6 +25,7 @@ import {
   GestureHandlerRootView,
 } from 'react-native-gesture-handler';
 import Animated, {
+  cancelAnimation,
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
@@ -42,7 +51,10 @@ export type SheetProps = {
   accessibilityLabel?: string;
 };
 
-export function Sheet({
+export function Sheet(props: SheetProps) {
+  return props.visible === false ? null : <SheetBody {...props} />;
+}
+function SheetBody({
   children,
   onClose,
   onBeforeClose,
@@ -54,9 +66,27 @@ export function Sheet({
   const { reduceMotion } = useMotion();
   const [sheetHeight, setSheetHeight] = useState(360);
   const closingRef = useRef(false);
+  const mounted = useRef(true);
+  const handle = useRef<ComponentRef<typeof View>>(null);
 
   const opacity = useSharedValue(0);
   const translateY = useSharedValue(sheetHeight);
+  const finishClose = useCallback(() => {
+    if (mounted.current) onClose();
+  }, [onClose]);
+  useEffect(() => {
+    mounted.current = true;
+    const frame = requestAnimationFrame(() => {
+      const tag = findNodeHandle(handle.current);
+      if (tag) AccessibilityInfo.setAccessibilityFocus(tag);
+    });
+    return () => {
+      mounted.current = false;
+      cancelAnimationFrame(frame);
+      cancelAnimation(opacity);
+      cancelAnimation(translateY);
+    };
+  }, [opacity, translateY]);
 
   const dismiss = useCallback(() => {
     if (closingRef.current) return;
@@ -70,7 +100,7 @@ export function Sheet({
         0,
         { duration: motionTokens.duration.normal },
         () => {
-          runOnJS(onClose)();
+          runOnJS(finishClose)();
         },
       );
     } else {
@@ -79,11 +109,18 @@ export function Sheet({
         sheetHeight,
         { duration: motionTokens.duration.normal },
         () => {
-          runOnJS(onClose)();
+          runOnJS(finishClose)();
         },
       );
     }
-  }, [onClose, onBeforeClose, reduceMotion, sheetHeight, opacity, translateY]);
+  }, [
+    finishClose,
+    onBeforeClose,
+    reduceMotion,
+    sheetHeight,
+    opacity,
+    translateY,
+  ]);
 
   useEffect(() => {
     if (visible) {
@@ -163,8 +200,8 @@ export function Sheet({
     >
       <Animated.View style={[styles.backdrop, overlayStyle]}>
         <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={t('navigation.close')}
+          accessible={false}
+          importantForAccessibility="no-hide-descendants"
           style={StyleSheet.absoluteFill}
           onPress={dismiss}
         />
@@ -183,9 +220,15 @@ export function Sheet({
               sheetAnimatedStyle,
             ]}
           >
-            <View style={styles.handleContainer}>
+            <Pressable
+              ref={handle}
+              accessibilityRole="button"
+              accessibilityLabel={t('navigation.close')}
+              onPress={dismiss}
+              style={styles.handleContainer}
+            >
               <View style={styles.handle} />
-            </View>
+            </Pressable>
             <View style={styles.content}>{children}</View>
           </Animated.View>
         </GestureDetector>
@@ -223,6 +266,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.screenMargin,
   },
   handleContainer: {
+    minHeight: layout.tapTarget,
     alignItems: 'center',
     paddingVertical: spacing[12],
   },

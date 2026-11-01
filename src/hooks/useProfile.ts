@@ -4,7 +4,7 @@ import { queryKeys } from '@/services/query';
 export function useProfile() {
   return useQuery({
     queryKey: queryKeys.user.profile(),
-    queryFn: () => services.user.me(),
+    queryFn: ({ signal }) => services.user.me({ signal }),
   });
 }
 export const reviewsKey = [...queryKeys.feedback.all, 'reviews'] as const;

@@ -13,6 +13,17 @@ const initialMetrics = {
   frame: { x: 0, y: 0, width: 360, height: 640 },
   insets: { top: 24, bottom: 24, left: 0, right: 0 },
 };
+test('hidden sheets render no content and register no Android Back handler', async () => {
+  const listener = jest.spyOn(BackHandler, 'addEventListener');
+  await render(
+    <Sheet visible={false} onClose={jest.fn()}>
+      <Text>Hidden content</Text>
+    </Sheet>,
+  );
+  expect(screen.queryByText('Hidden content')).toBeNull();
+  expect(listener).not.toHaveBeenCalled();
+  listener.mockRestore();
+});
 
 test('Sheet renders children and dismisses via backdrop press or Android Back', async () => {
   await initializeI18n();

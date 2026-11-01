@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { safeIdSchema } from '@/lib/deep-link';
 import { useReceipt } from '@/hooks/useReceipt';
 import { useFeedback } from '@/providers/FeedbackProvider';
-import { receiptSchema } from '@/services/contracts';
+import type { Receipt } from '@/services/contracts';
 import { queryKeys } from '@/services/query';
 import { generateIdempotencyKey } from '@/services/http/idempotency';
 import { trustedServerTime } from '@/lib/server-clock';
@@ -31,13 +31,9 @@ export function RateScreen() {
   const { t } = useTranslation();
   const feedback = useFeedback();
   const cached = client
-    .getQueriesData({ queryKey: queryKeys.receipt.all })
+    .getQueriesData<Receipt>({ queryKey: queryKeys.receipt.all })
     .flatMap(([, data]) => {
-      const parsed = receiptSchema.safeParse(data);
-      return parsed.success &&
-        parsed.data.items.some((item) => item.id === itemId)
-        ? [parsed.data]
-        : [];
+      return data?.items.some((item) => item.id === itemId) ? [data] : [];
     })[0];
   const receiptId =
     typeof params.receiptId === 'string'

@@ -26,6 +26,9 @@ Missing native evidence fails this strict command rather than silently passing.
 The manifest audit permits necessary normal/signature network SDK permissions
 alongside the two feature permissions. Any exported SDK component outside the
 launcher requires explicit security review; the script does not waive it.
+The final STEP 29 manifest check also requires an explicit target SDK >=36,
+matching the current Play policy linked in RELEASE_ANDROID.md. This validates a
+supplied artifact manifest; it does not establish native ABI/16 KB compatibility.
 
 Owner follow-up: rebuild the development client and preview APK, install on the
 target phone, perform the device rows above and attach actual results. Record

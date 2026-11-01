@@ -98,8 +98,8 @@ export const httpAuthService: AuthService = {
 };
 
 export const httpUserService: UserService = {
-  async me() {
-    return requestWithAuth('GET', '/me', userSchema);
+  async me(options) {
+    return requestWithAuth('GET', '/me', userSchema, undefined, options);
   },
 
   async updateProfile(input) {
@@ -118,8 +118,8 @@ export const httpUserService: UserService = {
 };
 
 export const httpConfigService: ConfigService = {
-  async get() {
-    return request('GET', '/config', configSchema);
+  async get(options) {
+    return request('GET', '/config', configSchema, undefined, options);
   },
 };
 

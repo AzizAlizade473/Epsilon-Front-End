@@ -100,6 +100,10 @@ function FeedbackRuntime({
     [engine],
   );
   useEffect(() => {
+    void engine?.start().catch(() => undefined);
+    return () => engine?.stop();
+  }, [engine]);
+  useEffect(() => {
     if (!engine) return;
     const retry = () => {
       if (onlineManager.isOnline()) void engine.flush().catch(() => undefined);
@@ -116,7 +120,7 @@ function FeedbackRuntime({
       }
     });
     void engine
-      .start()
+      .load()
       .then(retry)
       .catch(() => undefined);
     const foreground = AppState.addEventListener('change', (state) => {
@@ -129,7 +133,6 @@ function FeedbackRuntime({
       unsubscribe();
       foreground.remove();
       reconnect();
-      engine.stop();
     };
   }, [engine, client, toast, t]);
   const submit: FeedbackState['submit'] = async (input, itemName) => {
@@ -141,7 +144,7 @@ function FeedbackRuntime({
         .snapshot()
         .find((saved) => saved.receiptItemId === input.receiptItemId) ?? input;
     await engine.enqueue(entry);
-    await engine.flush();
+    if (onlineManager.isOnline()) await engine.flush();
     if (!authOperation.current(epoch)) throw new Error('Session unavailable');
     const outcome = engine.outcome(entry.idempotencyKey);
     if (outcome?.kind === 'sent') {

@@ -9,24 +9,34 @@
 
 import { env } from '@/lib/env';
 import { httpServices } from './http/services';
-import { mockServices } from './mock/services';
 import type { ServiceContainer } from './interfaces';
 
 let _services: ServiceContainer | undefined;
 
+/** Development fixtures are not imported/evaluated by release startup. */
+export async function initializeServices(): Promise<void> {
+  if (
+    __DEV__ &&
+    env.EXPO_PUBLIC_APP_ENV !== 'production' &&
+    env.EXPO_PUBLIC_API_MODE === 'mock'
+  ) {
+    const { mockServices } = await import('./mock/services');
+    _services ??= mockServices;
+  }
+}
+
 export function setServiceContainer(container: ServiceContainer): void {
-  if (env.EXPO_PUBLIC_APP_ENV === 'production') {
+  if (!__DEV__ || env.EXPO_PUBLIC_APP_ENV === 'production') {
     throw new Error('Overriding services is forbidden in production (SEC-9)');
   }
   _services = container;
 }
 
 export function getServices(): ServiceContainer {
-  return (_services ??=
-    env.EXPO_PUBLIC_APP_ENV !== 'production' &&
-    env.EXPO_PUBLIC_API_MODE === 'mock'
-      ? mockServices
-      : httpServices);
+  if (_services) return _services;
+  if (env.EXPO_PUBLIC_API_MODE === 'mock')
+    throw new Error('Mock services require initialized development mode');
+  return (_services = httpServices);
 }
 
 export const services = {

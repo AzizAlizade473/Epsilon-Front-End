@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "evidence": [
+    {
+      "id": "backend",
+      "priority": "P0",
+      "status": "BLOCKED",
+      "proof": "No staging backend ownership, isolation, rate-limit or contract verification supplied."
+    },
+    {
+      "id": "auth",
+      "priority": "P0",
+      "status": "BLOCKED",
+      "proof": "Real SMS delivery, expiry/abuse controls, refresh/revocation and Google OAuth signing verification required."
+    },
+    {
+      "id": "ledger",
+      "priority": "P0",
+      "status": "BLOCKED",
+      "proof": "Backend atomic claim, durable replay, unique rewards, reconciliation, refund and source accounting evidence required."
+    },
+    {
+      "id": "deletion",
+      "priority": "P0",
+      "status": "BLOCKED",
+      "proof": "Backend deletion, session/device revocation, retention and public deletion request workflow unverified."
+    },
+    {
+      "id": "legal",
+      "priority": "P0",
+      "status": "BLOCKED",
+      "proof": "Owner O1-O8 inputs, Azerbaijan counsel review and approved program rules/hosted translations required."
+    },
+    {
+      "id": "store",
+      "priority": "P0",
+      "status": "BLOCKED",
+      "proof": "Verified Play account/app, final identity/assets/listing/data safety, reviewer access and signing/build artifact required."
+    },
+    {
+      "id": "android",
+      "priority": "P0",
+      "status": "NOT TESTED",
+      "proof": "Installed Play internal AAB: complete journey, merged manifest, API target/native compatibility, accessibility and lifecycle not tested."
+    },
+    {
+      "id": "performance",
+      "priority": "P0",
+      "status": "NOT TESTED",
+      "proof": "Low-end release and Aziz phone: cold start <2.5s, tab <150ms, 60fps, memory/battery and long-session evidence absent."
+    },
+    {
+      "id": "operations",
+      "priority": "P0",
+      "status": "BLOCKED",
+      "proof": "Named incident owners, support/reconciliation procedures, backup restore, rollout halt and rollback drill required."
+    },
+    {
+      "id": "monitoring",
+      "priority": "P0",
+      "status": "BLOCKED",
+      "proof": "Consent-gated real Sentry event, private source maps, scrub verification and alert ownership not verified."
+    },
+    {
+      "id": "push",
+      "priority": "P1",
+      "status": "BLOCKED",
+      "proof": "Real device permission/channel/token/send/revocation verification requires credentials and backend."
+    },
+    {
+      "id": "ota",
+      "priority": "P1",
+      "status": "NOT TESTED",
+      "proof": "OTA remains unconfigured; no update delivery or rollback drill performed. Keep disabled until verified."
+    },
+    {
+      "id": "ios",
+      "priority": "P2",
+      "status": "NOT TESTED",
+      "proof": "Android-first release scope; iOS native signing, camera, safe areas and VoiceOver verification deferred."
+    }
+  ]
+}

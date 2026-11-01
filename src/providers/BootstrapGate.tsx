@@ -11,9 +11,14 @@ import { Skeleton } from '@/components/feedback/Skeleton';
 import { colors, layout, spacing } from '@/design';
 import { bootStorage, type BootData } from '@/lib/bootstrap';
 import { i18n, initializeI18n } from '@/lib/i18n';
+import { initializeServices } from '@/services';
 
 async function loadBootData(): Promise<BootData> {
-  const [, boot] = await Promise.all([initializeI18n(), bootStorage.read()]);
+  const [, boot] = await Promise.all([
+    initializeI18n(),
+    bootStorage.read(),
+    initializeServices(),
+  ]);
   return boot;
 }
 

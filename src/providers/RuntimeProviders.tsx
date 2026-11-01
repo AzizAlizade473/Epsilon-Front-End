@@ -1,4 +1,8 @@
-import { focusManager, QueryClientProvider } from '@tanstack/react-query';
+import {
+  focusManager,
+  onlineManager,
+  QueryClientProvider,
+} from '@tanstack/react-query';
 import { AppState } from 'react-native';
 import { createQueryClient } from '@/services/query';
 import { DefaultTheme, ThemeProvider } from 'expo-router';
@@ -8,6 +12,7 @@ import { I18nextProvider } from 'react-i18next';
 import { ToastProvider } from './ToastProvider';
 import { FeedbackProvider } from './FeedbackProvider';
 import { CrashRuntime } from './CrashRuntime';
+import { WalletCacheRuntime } from './WalletCacheRuntime';
 import { AuthProvider, useAuth as useAuthState } from './AuthProvider';
 
 import { colors } from '@/design';
@@ -17,6 +22,7 @@ import { AppErrorBoundary } from '@/components/feedback/AppErrorBoundary';
 import type { BootData } from '@/lib/bootstrap';
 import { i18n, onLanguageChange } from '@/lib/i18n';
 import { setLocaleAccessor } from '@/services/http/client';
+import { refetchStaleActive } from '@/services/query/freshness';
 
 export type { AuthState, NavigationUser } from '@/lib/bootstrap';
 export function useAuth() {
@@ -47,15 +53,15 @@ export function RuntimeProviders({
   const [queryClient] = useState(() => createQueryClient());
 
   useEffect(() => {
+    const reconnect = onlineManager.subscribe((online) => {
+      if (online) void refetchStaleActive(queryClient);
+    });
     const subscription = AppState.addEventListener('change', (state) => {
       focusManager.setFocused(state === 'active');
-      if (state === 'active')
-        void queryClient.refetchQueries(
-          { type: 'active' },
-          { cancelRefetch: false },
-        );
+      if (state === 'active') void refetchStaleActive(queryClient);
     });
     return () => {
+      reconnect();
       subscription.remove();
       focusManager.setFocused(undefined);
     };
@@ -75,6 +81,7 @@ export function RuntimeProviders({
           <AuthProvider boot={boot} onBootConsumed={onBootConsumed}>
             <ToastProvider>
               <CrashRuntime />
+              <WalletCacheRuntime />
               <OfflineBanner>
                 <UpdateGate>
                   <FeedbackProvider>

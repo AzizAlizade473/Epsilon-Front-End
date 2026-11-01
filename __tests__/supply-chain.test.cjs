@@ -30,6 +30,26 @@ const profile = {
   env: { EXPO_PUBLIC_APP_ENV: 'production', EXPO_PUBLIC_API_MODE: 'live' },
 };
 describe('production build guard', () => {
+  it('requires explicit application identity, legal resources and valid OAuth configuration', () => {
+    const failures = validateProduction(
+      profile,
+      {
+        ENABLE_GOOGLE_SIGNIN: 'true',
+        EXPO_PUBLIC_PRIVACY_URL: 'http://localhost/privacy',
+      },
+      true,
+    );
+    expect(failures).toContain(
+      'Explicit approved Android application ID is required',
+    );
+    expect(failures).toContain(
+      'EXPO_PUBLIC_PRIVACY_URL requires an owner-approved public HTTPS URL',
+    );
+    expect(failures).toContain(
+      'Enabled Google sign-in requires a web OAuth client ID',
+    );
+    expect(failures).toContain('Production support email is required');
+  });
   it('requires owner configuration for actual build-time validation', () => {
     expect(validateProduction(profile)).toEqual([]);
     expect(validateProduction(profile, {}, true)).toContain(

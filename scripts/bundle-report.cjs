@@ -12,6 +12,15 @@ function measure(directory, baseline) {
   )
     throw new Error('Expected an Android Hermes bundle within the export');
   const bytes = fs.statSync(file).size;
+  const bundle = fs.readFileSync(file).toString('latin1');
+  if (
+    ['mock_access_token_123', 'mock_google_access_token'].some((marker) =>
+      bundle.includes(marker),
+    )
+  )
+    throw new Error(
+      'Development credentials/fixtures leaked into the release bundle',
+    );
   return { bytes, baseline, growthPercent: (bytes / baseline - 1) * 100 };
 }
 module.exports = { measure };

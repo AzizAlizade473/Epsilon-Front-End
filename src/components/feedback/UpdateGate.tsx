@@ -32,7 +32,7 @@ export function UpdateGate({
   const query = useQuery({
     gcTime: 0,
     queryKey: queryKeys.config.current(),
-    queryFn: () => services.config.get(),
+    queryFn: ({ signal }) => services.config.get({ signal }),
     enabled: ready,
   });
   const required = Boolean(

@@ -10,23 +10,28 @@
  */
 
 import { QueryClient } from '@tanstack/react-query';
+import { trackQueryFreshness } from './freshness';
 
 export const QUERY_DEFAULT_STALE_TIME = 30_000; // 30 seconds
 export const QUERY_DEFAULT_GC_TIME = 5 * 60 * 1000; // 5 minutes
 
 export function createQueryClient(): QueryClient {
-  return new QueryClient({
+  const client = new QueryClient({
     defaultOptions: {
       queries: {
         staleTime: QUERY_DEFAULT_STALE_TIME,
         gcTime: QUERY_DEFAULT_GC_TIME,
         retry: false,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
       },
       mutations: {
         retry: false,
       },
     },
   });
+  trackQueryFreshness(client);
+  return client;
 }
 
 /**

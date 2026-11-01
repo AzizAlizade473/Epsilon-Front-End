@@ -6,6 +6,8 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 import { QueryClientProvider } from '@tanstack/react-query';
+import PrivacyScreen from '@/features/profile/screens/PrivacyScreen';
+import { maskedPhone } from '@/lib/profile';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as SecureStore from 'expo-secure-store';
 import PersonalInfoScreen from '@/features/profile/screens/PersonalInfoScreen';
@@ -29,6 +31,10 @@ const mockUpdate =
   >();
 const mockUpdateUser = jest.fn();
 const mockToast = jest.fn();
+jest.mock('@/lib/env', () => ({ env: { ENABLE_GOOGLE_SIGNIN: false } }));
+const mockRequestOtp = jest
+  .fn<() => Promise<void>>()
+  .mockResolvedValue(undefined);
 const mockPreferences =
   jest.fn<
     (input: NotificationPreferences) => Promise<NotificationPreferences>
@@ -42,6 +48,7 @@ jest.mock('expo-router', () => ({
 }));
 jest.mock('@/services', () => ({
   services: {
+    auth: { requestOtp: () => mockRequestOtp() },
     user: {
       me: async () => mockUser,
       updateProfile: (input: { firstName?: string; language?: string }) =>
@@ -62,8 +69,47 @@ beforeEach(async () => {
   client.setQueryData(queryKeys.user.profile(), mockUser);
   mockUpdate.mockReset().mockResolvedValue({ user: mockUser, nextStep: null });
   mockPreferences.mockReset().mockImplementation(async (input) => input);
+  mockRequestOtp.mockReset().mockResolvedValue(undefined);
   await initializeI18n();
   await i18n.changeLanguage('az');
+});
+it('native deletion-modal Back closes idle flow but preserves an active reauthentication request', async () => {
+  let finish: (() => void) | undefined;
+  mockRequestOtp.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      }),
+  );
+  await page(<PrivacyScreen />);
+  await fireEvent.press(
+    screen.getByRole('button', { name: az.profile.deleteAccount }),
+  );
+  expect(screen.getByTestId('account-deletion-modal').props.visible).toBe(true);
+  await fireEvent(screen.getByTestId('account-deletion-modal'), 'requestClose');
+  expect(screen.queryByTestId('account-deletion-modal')).toBeNull();
+  await fireEvent.press(
+    screen.getByRole('button', { name: az.profile.deleteAccount }),
+  );
+  await fireEvent.press(
+    screen.getByRole('button', { name: az.common.continue }),
+  );
+  await fireEvent.press(
+    screen.getByRole('button', {
+      name: i18n.t('profile.reauthPhone', {
+        phone: maskedPhone(mockUser.phone!),
+      }),
+    }),
+  );
+  expect(mockRequestOtp).toHaveBeenCalledTimes(1);
+  await fireEvent(screen.getByTestId('account-deletion-modal'), 'requestClose');
+  expect(screen.getByTestId('account-deletion-modal').props.visible).toBe(true);
+  finish?.();
+  await waitFor(() =>
+    expect(screen.getByLabelText(az.profile.smsCode)).toBeOnTheScreen(),
+  );
+  await fireEvent(screen.getByTestId('account-deletion-modal'), 'requestClose');
+  expect(screen.queryByTestId('account-deletion-modal')).toBeNull();
 });
 afterEach(() => client.clear());
 async function page(child: React.ReactNode) {

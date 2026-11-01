@@ -94,6 +94,9 @@ function auditConfig(config, root = process.cwd()) {
 }
 function auditManifest(document) {
   const manifest = document.manifest ?? {};
+  const targetSdk = Number(
+    manifest['uses-sdk']?.[0]?.$?.['android:targetSdkVersion'],
+  );
   const application = manifest.application?.[0] ?? {};
   const attrs = application.$ ?? {};
   const packageName = manifest.$?.package ?? '';
@@ -131,6 +134,11 @@ function auditManifest(document) {
       ),
     );
   return [
+    result(
+      'merged-manifest-target-api',
+      Number.isInteger(targetSdk) && targetSdk >= 36,
+      'Google Play new apps/updates require API 36+ as checked 2026-11-01; verify current policy before submission.',
+    ),
     result(
       'merged-manifest-crash-auto-init',
       nativeCrashInit === 'false',

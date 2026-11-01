@@ -23,6 +23,7 @@ export default function PrivacyScreen() {
   const [busy, setBusy] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const lock = useRef(false);
+  const deletionBusy = useRef(false);
   useEffect(() => {
     let active = true;
     if (user.data)
@@ -92,10 +93,20 @@ export default function PrivacyScreen() {
         disabled={!user.data}
         onPress={() => setDeleting(true)}
       />
-      <Modal transparent visible={deleting} onRequestClose={() => undefined}>
+      <Modal
+        testID="account-deletion-modal"
+        transparent
+        visible={deleting}
+        onRequestClose={() => {
+          if (!deletionBusy.current) setDeleting(false);
+        }}
+      >
         {user.data && deleting && (
           <DeleteAccountFlow
             user={user.data}
+            onBusyChange={(value) => {
+              deletionBusy.current = value;
+            }}
             onClose={() => setDeleting(false)}
           />
         )}

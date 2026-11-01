@@ -1,5 +1,4 @@
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Keyboard, Platform, StyleSheet, View } from 'react-native';
 import { Button } from '@/components/ui/Button';
@@ -7,6 +6,9 @@ import { PressSurface } from '@/components/ui/PressSurface';
 import { Text } from '@/components/ui/Text';
 import { colors, layout, radius, spacing } from '@/design';
 import { dateOnly, parseBirthDate } from '../profile-schema';
+const DateTimePicker = lazy(
+  () => import('@react-native-community/datetimepicker'),
+);
 
 export function BirthDateField({
   value,
@@ -51,17 +53,19 @@ export function BirthDateField({
       )}
       {open && (
         <>
-          <DateTimePicker
-            value={date}
-            mode="date"
-            maximumDate={maximumDate}
-            display="default"
-            onChange={(event, selected) => {
-              if (Platform.OS === 'android') setOpen(false);
-              if (event.type === 'set' && selected)
-                onChange(dateOnly(selected));
-            }}
-          />
+          <Suspense fallback={<Text>{t('common.loading')}</Text>}>
+            <DateTimePicker
+              value={date}
+              mode="date"
+              maximumDate={maximumDate}
+              display="default"
+              onChange={(event, selected) => {
+                if (Platform.OS === 'android') setOpen(false);
+                if (event.type === 'set' && selected)
+                  onChange(dateOnly(selected));
+              }}
+            />
+          </Suspense>
           {Platform.OS === 'ios' && (
             <Button
               variant="ghost"

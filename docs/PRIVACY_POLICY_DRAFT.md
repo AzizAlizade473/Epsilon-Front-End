@@ -44,7 +44,14 @@ retention and real ingestion must be verified before enabling production reporti
 
 The technical inventory in `DATA_INVENTORY.md` records current client storage:
 SecureStore for session credentials, memory for query projections and verification
-input, and account-scoped AsyncStorage for feedback retry and crash consent.
+input, and account-scoped AsyncStorage for feedback retry, crash consent and a
+bounded wallet/transaction display cache. The latter contains server balances and
+transaction metadata (including purchase/restaurant references), at most 12 query
+records, three history pages and 250,000 serialized characters per account. It is
+stale display data, cannot authenticate a user or authorize a financial action,
+and is cleared on logout/deletion. AsyncStorage is app-local sandbox storage;
+application-level encryption is not claimed. No profile, receipt, comment, OTP
+or session query is persisted by the wallet cache. Backend retention is separate.
 An offline feedback queue is bounded to 20 entries and pruned using trusted time;
 this does not define backend retention. Logout/deletion clears known account
 storage. Copying a transaction reference is an explicit user action into the OS

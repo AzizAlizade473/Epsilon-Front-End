@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, expect, it, jest } from '@jest/globals';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { QueryClientProvider } from '@tanstack/react-query';
+import { onlineManager, QueryClientProvider } from '@tanstack/react-query';
 import { AppState } from 'react-native';
 import type { ReactNode } from 'react';
 import { FeedbackProvider, useFeedback } from '@/providers/FeedbackProvider';
@@ -11,7 +11,7 @@ import {
   type OutboxEntry,
 } from '@/services/feedback-outbox';
 import { clearAuthFlows } from '@/lib/auth-lifecycle';
-import { initializeI18n } from '@/lib/i18n';
+import { i18n, initializeI18n } from '@/lib/i18n';
 import { ApiError } from '@/services/http/errors';
 import type { FeedbackInput, FeedbackResult } from '@/services/contracts';
 import type { MutationOptions } from '@/services/interfaces';
@@ -62,8 +62,23 @@ beforeEach(async () => {
   await initializeI18n();
 });
 afterEach(() => {
+  onlineManager.setOnline(true);
   client.clear();
   jest.restoreAllMocks();
+});
+it('queues without contacting the backend while offline and sends once on reconnect', async () => {
+  onlineManager.setOnline(false);
+  const hook = await renderHook(useFeedback, { wrapper });
+  await act(async () => {
+    expect(await hook.result.current.submit(payload, 'Dish')).toBe('queued');
+  });
+  expect(mockSubmit).not.toHaveBeenCalled();
+  expect(hook.result.current.entries).toEqual([payload]);
+  await act(async () => {
+    onlineManager.setOnline(true);
+  });
+  await waitFor(() => expect(mockSubmit).toHaveBeenCalledTimes(1));
+  await waitFor(() => expect(hook.result.current.entries).toEqual([]));
 });
 it('replays after login/start and invalidates server data without presenting a background reward', async () => {
   await AsyncStorage.setItem(
@@ -141,4 +156,33 @@ it('never carries confirmation or pending work into another account', async () =
   await hook.rerender(undefined);
   expect(hook.result.current.completion).toBeNull();
   expect(hook.result.current.completedIds).toEqual([]);
+});
+it('does not abort an in-flight durable send when the language changes', async () => {
+  let finish: ((result: FeedbackResult) => void) | undefined;
+  mockSubmit.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      }),
+  );
+  const hook = await renderHook(useFeedback, { wrapper });
+  let pending: Promise<string> | undefined;
+  await act(async () => {
+    pending = hook.result.current.submit(payload, 'Dish');
+  });
+  await waitFor(() => expect(mockSubmit).toHaveBeenCalledTimes(1));
+  const signal = mockSubmit.mock.calls[0]?.[1]?.signal;
+  await act(async () => {
+    await i18n.changeLanguage('en');
+  });
+  expect(signal?.aborted).toBe(false);
+  await act(async () => {
+    finish?.(result);
+    await pending;
+  });
+  expect(mockSubmit).toHaveBeenCalledTimes(1);
+  expect(hook.result.current.entries).toEqual([]);
+  await act(async () => {
+    await i18n.changeLanguage('az');
+  });
 });

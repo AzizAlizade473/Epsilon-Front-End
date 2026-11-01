@@ -43,6 +43,16 @@ module.exports = {
         'src/features/auth/store.ts',
       ],
       preset: 'jest-expo',
+      transform: {
+        '\\.[jt]sx?$': [
+          'babel-jest',
+          {
+            presets: ['expo/internal/babel-preset'],
+            plugins: [require.resolve('./scripts/jest-dynamic-import.cjs')],
+            caller: { name: 'metro', bundler: 'jest', platform: 'ios' },
+          },
+        ],
+      },
       resolver: 'react-native-reanimated/jest/resolver.js',
       setupFilesAfterEnv: ['<rootDir>/scripts/jest-app-setup.ts'],
       testMatch: [

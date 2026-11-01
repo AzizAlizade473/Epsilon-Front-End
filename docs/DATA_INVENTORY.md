@@ -1,6 +1,6 @@
 # Data inventory — client evidence and backend handoff
 
-Recorded 2026-11-01, through STEP 27. **LIVE BACKEND CONTRACT VERIFICATION PENDING.**
+Recorded 2026-11-01, through STEP 29 source preparation. **LIVE BACKEND CONTRACT VERIFICATION PENDING.**
 This covers actual mobile processing and required backend responsibilities, not
 invented backend controls. O4/O5 in LEGAL_TODO.md must supply access roles,
 processors/locations, retention and deletion/backup policies before publication.
@@ -22,7 +22,7 @@ processors/locations, retention and deletion/backup policies before publication.
 | Feedback rating/reasons/comment/item IDs / member     | Dish feedback via POST; history via GET                                                            | Query/form memory and account-scoped AsyncStorage outbox; backend                 | Up to 20 queued entries; trusted-time seven-day TTL; removed on accepted/terminal result or logout/deletion | App-local unencrypted AsyncStorage is not SecureStore; OS sandbox only. Backend must minimize restaurant access and moderate; not verified |
 | Feedback idempotency key / client                     | Stable retry after ambiguous outcome                                                               | Same outbox row; backend idempotency table                                        | Persists with pending payload; backend window must cover replay horizon                                     | No tokens/raw purchase reference in queue; no invented reconciliation API                                                                  |
 | Review history / backend                              | Own submitted dish feedback display                                                                | Authenticated query memory and backend records                                    | Client cleared on logout/deletion; backend/vendor O5                                                        | No public social feed implemented; future restaurant views must omit phone/name                                                            |
-| Wallet/ledger/transaction identifiers / backend       | Universal confirmed/pending balance and history                                                    | Query memory; backend append-only ledger/accounting                               | Client cleared on logout/deletion; backend financial retention O5                                           | Signed safe-integer qəpik; no local reward/balance computation; pending/deletion policy unapproved                                         |
+| Wallet/ledger/transaction identifiers / backend       | Universal confirmed/pending balance and history                                                    | Memory + bounded wallet AsyncStorage; backend ledger                              | Client cleared on logout/deletion; backend financial retention O5                                           | Signed safe-integer qəpik; no local reward/balance computation; pending/deletion policy unapproved                                         |
 | Copied transaction/receipt reference / explicit tap   | User-requested copy                                                                                | OS clipboard; other OS-managed access depends on platform                         | OS managed; application does not promise clipboard purge                                                    | Only selected reference copied; verify device behavior                                                                                     |
 | Notification preferences / member/backend             | Cashback/partner-update settings, explicit permission flow                                         | Server-confirmed query state and backend profile                                  | Local state cleared on logout; server O5                                                                    | No invented marketing campaigns; live permission/channel/token tests pending                                                               |
 | Expo push token / Expo/native OS                      | Register device with backend POST `/devices` after opt-in                                          | Transient app value; backend device association; Expo/Android push infrastructure | Not persisted by app code; backend must unlink/revoke on logout/deletion, O5                                | No sensitive push payloads; provider credentials/retention/access pending                                                                  |
@@ -37,6 +37,22 @@ at first trusted server time; wall-clock seven-day expiry is not guaranteed whil
 fully offline. Tokens never enter AsyncStorage. Logout/deletion clear known
 SecureStore keys, queries, outbox, preferences and Google application session.
 Backend/vendor account deletion and financial retention are separate responsibilities.
+
+## Bounded wallet display cache (STEP 28)
+
+`epsilon.wallet-cache.<account-id>` stores validated server wallet summary,
+transaction pages/details and up to three history pages in existing AsyncStorage.
+Maximum: 12 records, 50 items per page, 250,000 serialized characters per account.
+It can include restaurant/branch/item names, timestamps, purchase references and
+integer-qepik amounts. It excludes profile/auth/config/receipt/comment queries,
+tokens and OTPs. Strict schemas, owner matching and transaction-ID matching are
+enforced on read/write. Hydrated data is stale, never replaces newer memory data
+and never enables offline authentication or financial mutations. No expiry or
+current balance guarantee is invented. Logout/deletion stops pending writes and
+clears all wallet-cache accounts after queued writes finish. The sandbox does
+not establish application-level encryption; native backup/restore controls still
+require artifact/device verification. Owner/counsel must include this storage in
+final policy/Data safety answers. Other query projections remain memory-only.
 
 ## Processor and access review
 

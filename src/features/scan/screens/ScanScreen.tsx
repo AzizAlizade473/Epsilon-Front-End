@@ -288,39 +288,43 @@ export default function ScanScreen() {
           />
         </Animated.View>
       )}
-      <Modal
-        visible={manual}
-        transparent
-        onRequestClose={() =>
-          event(permission?.granted ? 'close-manual' : 'denied')
-        }
-      >
-        <Sheet
-          onClose={() => event(permission?.granted ? 'close-manual' : 'denied')}
-          accessibilityLabel={t('scan.manual')}
+      {manual && (
+        <Modal
+          visible={manual}
+          transparent
+          onRequestClose={() =>
+            event(permission?.granted ? 'close-manual' : 'denied')
+          }
         >
-          <View style={styles.form}>
-            <Input
-              label={t('scan.code')}
-              value={code}
-              autoFocus
-              autoCapitalize="characters"
-              autoCorrect={false}
-              onChangeText={(value) =>
-                setCode(value.replace(/\s/g, '').toUpperCase())
-              }
-              maxLength={32}
-            />
-            <Button
-              label={t('common.continue')}
-              disabled={!parsed.success}
-              onPress={() => {
-                if (parsed.success) void resolve('code', parsed.data);
-              }}
-            />
-          </View>
-        </Sheet>
-      </Modal>
+          <Sheet
+            onClose={() =>
+              event(permission?.granted ? 'close-manual' : 'denied')
+            }
+            accessibilityLabel={t('scan.manual')}
+          >
+            <View style={styles.form}>
+              <Input
+                label={t('scan.code')}
+                value={code}
+                autoFocus
+                autoCapitalize="characters"
+                autoCorrect={false}
+                onChangeText={(value) =>
+                  setCode(value.replace(/\s/g, '').toUpperCase())
+                }
+                maxLength={32}
+              />
+              <Button
+                label={t('common.continue')}
+                disabled={!parsed.success}
+                onPress={() => {
+                  if (parsed.success) void resolve('code', parsed.data);
+                }}
+              />
+            </View>
+          </Sheet>
+        </Modal>
+      )}
     </>
   );
 }

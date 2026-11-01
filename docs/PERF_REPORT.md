@@ -68,3 +68,56 @@ STEP 24-25 baseline **6,106,790 bytes** (+0.02%). The unchanged 10% budget passe
 The same SDK 58 export settings are used; no runtime dependency or performance
 optimization was added. Contract/error/HTTPS validation accounts for the small
 code change. This is not an APK, native-device or cold-start measurement.
+
+## STEP 28 final performance pass (2026-11-01)
+
+| Comparable no-map Android Hermes export                |     Bytes |           Change |
+| ------------------------------------------------------ | --------: | ---------------: |
+| Recovered STEP 26-27 `054f3df` (`dist/contract-legal`) | 6,107,845 |         Baseline |
+| Final STEP 28-29 (`dist/final-release-verified`)       | 6,095,278 | -12,567 / -0.21% |
+
+`npm run export:android -- --output-dir dist/final-release-verified --max-workers 2` and
+`npm run bundle:check -- dist/final-release-verified` completed successfully with the same
+SDK 58 optimizer flags and no source maps. The unchanged growth limit is <10%.
+The checker also rejects known development mock-credential markers in the actual
+Hermes artifact; they are absent. No package was added, removed or upgraded.
+This is total bytecode size, not APK/AAB size, startup latency or a per-change
+causal estimate. Route code remains in the package even when evaluated lazily.
+
+Structural findings/fixes: Hermes confirmed in the installed Expo native template
+(`hermesEnabled=true`) and actual `.hbc` export; development service fixtures imported
+only by the development initializer; camera route/date picker/clipboard deferred
+until use; wallet-only disk persistence deferred after first frame; active query
+refetch uses monotonic 30s freshness and skips in-flight work; profile/config GET
+signals propagate; duplicate response parsing removed from rating renders. Paged
+lists retain FlashList v2 keys/types (v2 does not use estimatedItemSize), fixed
+expo-image logo dimensions/flat fallback and no animated list layout properties.
+No speculative memoization or replacement animation framework was introduced.
+
+Lifecycle findings/fixes: invisible sheets/manual scanner overlays unmount,
+sheet animations/focus callbacks cancel, camera unmounts on blur/background and
+outside scanning, feedback engine lifetime no longer follows language callbacks,
+offline submit preserves the queue without a network send, wallet disk writes
+serialize with logout/deletion and reject stale account epochs. Tests exercise
+these boundaries; they are not a ten-minute profiler result.
+
+| Required release-device metric                                | Before       | After        | Status            |
+| ------------------------------------------------------------- | ------------ | ------------ | ----------------- |
+| Low-end and Aziz phone cold start <2.5s                       | Unavailable  | Unavailable  | NOT TESTED        |
+| Crash-report integration startup regression <=100ms           | Unavailable  | Unavailable  | NOT TESTED        |
+| Tab switch <150ms                                             | Unavailable  | Unavailable  | NOT TESTED        |
+| Lists/sheet drag and Scan -> Receipt -> Rate -> Done at 60fps | Unavailable  | Unavailable  | NOT TESTED        |
+| Ten-minute memory, retained camera/overlays, battery/network  | Unavailable  | Unavailable  | NOT TESTED        |
+| Background/foreground/kill/relaunch with offline draft        | Test doubles | Test doubles | Device NOT TESTED |
+
+Repeatable owner protocol: install comparable baseline/candidate release builds
+on the same low-end phone and Aziz's phone, same backend/data/network and build
+settings. Record device/model/RAM/OS/build/SHA/runtime; use at least five force-stop
+cold launches (median/worst), both consent off/on, timing to usable first screen;
+measure tab interaction to presented frame, capture frame traces while scrolling,
+dragging the sheet and completing scan/rating. Run a ten-minute mixed session,
+repeat background/foreground/permission revocation/kill, inspect retained native
+camera/overlays, memory before/after, CPU/battery and request counts. Include
+offline, high latency, empty/long lists and large fonts. Keep raw traces and
+screenshots, not invented numbers. Investigate measured regressions before
+changing these pending rows to PASS. No adb/Maestro/device was available here.

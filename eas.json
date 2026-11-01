@@ -5,6 +5,7 @@
   },
   "build": {
     "development": {
+      "environment": "development",
       "developmentClient": true,
       "distribution": "internal",
       "channel": "development",
@@ -13,6 +14,7 @@
       }
     },
     "preview": {
+      "environment": "preview",
       "env": {
         "EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH": "1",
         "EXPO_UNSTABLE_TREE_SHAKING": "1"
@@ -40,6 +42,8 @@
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "android": { "track": "internal", "releaseStatus": "draft" }
+    }
   }
 }

@@ -74,8 +74,9 @@ guard duplicate requests and handle asynchronous errors in their hooks (REL-1).
 All monetary formatting goes through `lib/money`: integer division/remainder,
 fixed two decimals, Unicode minus, e.g. `formatMoney(-320)` → `−3.20 ₼`.
 Unsafe integers/fractions are rejected. Formatting never decides eligibility or
-computes balances. Amount currently renders values directly; optional Home
-value-change/count-up integration belongs to STEP 11.e.
+computes balances. `Amount` renders values directly; Home's `BalanceAmount`
+provides the implemented UI-thread count-up presentation with a stable final
+screen-reader value and reduced-motion behavior.
 
 ## Motion and accessibility
 
@@ -94,11 +95,11 @@ Device TalkBack, 1.3× font scale and 60 fps are pending manual verification.
 After rebuilding the native development client, run `npx expo start --dev-client`.
 Development startup opens `/_design-gallery`. The gallery has AZ/EN/RU switching,
 all primitive samples and typography; preview choices are intentionally not saved.
-Resources live in `locales/{az,en,ru}.json`; production i18next/persistence and the
-full i18n checker remain STEP 04. Current `i18n:check` is its documented placeholder.
+Resources live in `locales/{az,en,ru}.json`; production i18next, persisted language
+and the full key/interpolation/plural checker have been implemented in STEP 04.
 The gallery route redirects in production; release bytecode excludes gallery copy/data.
 
-## Verification and manual gate
+## Historical STEP 01 verification and manual gate
 
 - `npm run check`: 144 tests in 25 suites, strict types, zero lint warnings, formatting.
 - Expo native dependency validation and development Android export pass.
@@ -111,4 +112,6 @@ On Android, open the gallery at normal and 1.3× font scale on a 360 dp screen.
 Check title collapse, keyboard/footer visibility, long AZ/EN/RU labels, 44-point
 controls, TalkBack roles/errors, disabled/loading behavior, ripple/haptics and
 Reduce Motion. Scroll at 60 fps on a real device. Record results before merging.
-New native SVG/haptics require a rebuilt development client; no merge is authorized yet.
+Native dependency/configuration changes require a rebuilt development client.
+For current whole-app evidence and release status, see FINAL_AUDIT.md and
+QA_MATRIX.md; the figures in this historical section describe STEP 01 only.
