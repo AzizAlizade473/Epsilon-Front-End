@@ -24,6 +24,14 @@ const production = {
 };
 
 describe('environment schema', () => {
+  test.each(['EXPO_PUBLIC_PRIVACY_URL', 'EXPO_PUBLIC_TERMS_URL'])(
+    'rejects missing, malformed or insecure legal configuration for %s without echoing its value',
+    (key) => {
+      for (const value of ['', 'http://legal.example.test', 'not-a-url']) {
+        expect(() => parseEnv({ ...development, [key]: value })).toThrow(key);
+      }
+    },
+  );
   test('permits explicit dev/mock configuration and safe defaults', () => {
     expect(parseEnv(development)).toMatchObject({
       EXPO_PUBLIC_MIN_AGE: 16,

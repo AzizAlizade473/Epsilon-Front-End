@@ -51,12 +51,20 @@ off and on with a configured DSN. Record device/OS, bootstrap-ready timing,
 median and worst case. If the regression exceeds 100ms, defer more or remove the
 integration; do not mark this check passed from JavaScript timing alone.
 
-## STEP 24�25 quality batch (2026-11-01)
+## STEP 24–25 quality batch (2026-11-01)
 
 Final no-map Hermes export: **6,106,790 bytes**, versus the verified hardening
 baseline **6,104,882** (+0.03%). `npm run bundle:check -- dist/quality-ci-final`
 passes the unchanged 10% budget. The same Expo SDK 58 optimization flags remain
 in use. The release export includes no new npm runtime dependency; developer-only
-Maestro seams are gated by **DEV**, explicit opt-in, development and mock mode.
+Maestro seams are gated by the development-build flag, explicit opt-in, development and mock mode.
 This is a JavaScript export measurement, not an APK or cold-start result.
 Low-end physical startup measurements above remain NOT VERIFIED.
+
+## STEP 26-27 contract/legal batch (2026-11-01)
+
+Final no-map Hermes export: **6,107,845 bytes**, compared with the verified
+STEP 24-25 baseline **6,106,790 bytes** (+0.02%). The unchanged 10% budget passes.
+The same SDK 58 export settings are used; no runtime dependency or performance
+optimization was added. Contract/error/HTTPS validation accounts for the small
+code change. This is not an APK, native-device or cold-start measurement.

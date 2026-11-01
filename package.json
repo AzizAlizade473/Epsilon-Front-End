@@ -15,14 +15,16 @@
     "supply-chain:check": "node scripts/check-supply-chain.cjs",
     "bundle:check": "node scripts/bundle-report.cjs",
     "i18n:check": "node scripts/check-i18n.cjs",
-    "check": "npm run lint && npm run typecheck && npm run test:coverage && npm run i18n:check && npm run format:check && npm run guard:production && npm run supply-chain:check && npm run android:audit && npm run workflows:check",
+    "check": "npm run lint && npm run typecheck && npm run test:coverage && npm run i18n:check && npm run format:check && npm run guard:production && npm run supply-chain:check && npm run android:audit && npm run workflows:check && npm run contract:check",
     "prepare": "husky",
     "android:audit": "node scripts/audit-android.cjs",
     "crash:sourcemaps": "node scripts/upload-sourcemaps.cjs",
     "export:android": "node scripts/export-android.cjs",
     "secrets:check": "node scripts/scan-secrets.cjs",
     "workflows:check": "node scripts/check-workflows.cjs",
-    "eas-build-post-install": "node scripts/eas-preflight.cjs"
+    "eas-build-post-install": "node scripts/eas-preflight.cjs",
+    "contract:generate": "node scripts/generate-openapi.cjs",
+    "contract:check": "node scripts/generate-openapi.cjs --check"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",

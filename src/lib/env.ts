@@ -22,8 +22,14 @@ const schema = z
     EXPO_PUBLIC_APP_ENV: z.enum(['development', 'staging', 'production']),
     EXPO_PUBLIC_MIN_AGE: z.coerce.number().int().positive().default(16),
     EXPO_PUBLIC_SUPPORT_EMAIL: z.email(),
-    EXPO_PUBLIC_PRIVACY_URL: webUrl,
-    EXPO_PUBLIC_TERMS_URL: webUrl,
+    EXPO_PUBLIC_PRIVACY_URL: webUrl.refine(
+      (value) => /^https:\/\//i.test(value),
+      'Legal URLs require HTTPS',
+    ),
+    EXPO_PUBLIC_TERMS_URL: webUrl.refine(
+      (value) => /^https:\/\//i.test(value),
+      'Legal URLs require HTTPS',
+    ),
     EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID: z.string().trim().default(''),
     ENABLE_GOOGLE_SIGNIN: flag,
     ENABLE_APPLE_SIGNIN: flag,
