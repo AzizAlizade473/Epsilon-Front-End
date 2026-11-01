@@ -1,0 +1,31 @@
+appId: com.epsilonup.app
+name: Mock Google onboarding through purchase feedback and logout
+---
+- launchApp:
+    clearState: true
+- tapOn: Google ilə davam et
+- tapOn: Ad
+- inputText: Maestro
+- tapOn: Soyad
+- inputText: Tester
+- hideKeyboard
+- tapOn: Davam et
+- tapOn: Telefon nömrəsi
+- inputText: '501234567'
+- hideKeyboard
+- tapOn: Kod göndər
+- tapOn: 6 rəqəmli SMS kodu
+- inputText: '123456'
+- assertVisible: '34.50 ₼'
+- runFlow: subflows/resolve.yaml
+- runFlow: subflows/rate.yaml
+- assertVisible: Keşbek balansınıza əlavə olundu
+- tapOn: Ana səhifəyə keç
+- assertVisible: '37.00 ₼'
+- openLink: epsilon://profile
+- scrollUntilVisible:
+    element:
+      text: Hesabdan çıx
+- tapOn: Hesabdan çıx
+- tapOn: Çıx
+- assertVisible: Telefon nömrəsi ilə davam et

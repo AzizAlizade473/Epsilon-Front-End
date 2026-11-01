@@ -32,6 +32,7 @@ import {
   mockWallet,
 } from './fixtures';
 import { checkMockScenario, getMockScenario, simulateDelay } from './scenario';
+import { isE2E } from '@/lib/e2e-mode';
 
 let _currentUser: User = { ...mockUser };
 const mockRatings = new Map<string, number>();
@@ -72,9 +73,15 @@ export const mockAuthService: AuthService = {
     };
   },
 
-  async verifyOtp() {
+  async verifyOtp(input) {
     await simulateDelay();
     checkMockScenario('auth');
+    if (isE2E() && ['000000', '111111'].includes(input.code))
+      throw new ApiError({
+        code: input.code === '000000' ? 'OTP_INVALID' : 'OTP_EXPIRED',
+        message: 'Maestro fixture',
+        status: 400,
+      });
     return {
       session: {
         accessToken: 'mock_access_token_123',
@@ -90,6 +97,14 @@ export const mockAuthService: AuthService = {
   async signInWithGoogle() {
     await simulateDelay();
     checkMockScenario('auth');
+    if (isE2E())
+      _currentUser = {
+        ...mockUser,
+        firstName: null,
+        lastName: null,
+        birthDate: null,
+        phoneVerified: false,
+      };
     return {
       session: {
         accessToken: 'mock_google_access_token',
@@ -97,8 +112,8 @@ export const mockAuthService: AuthService = {
         expiresAt: new Date(Date.now() + 3600_000).toISOString(),
       },
       user: _currentUser,
-      isNewUser: false,
-      nextStep: 'home',
+      isNewUser: isE2E(),
+      nextStep: isE2E() ? 'profile' : 'home',
     };
   },
 
@@ -211,6 +226,27 @@ export const mockReceiptService: ReceiptService = {
     await simulateDelay();
     checkMockScenario('receipt');
     purchaseReferenceSchema.parse(input);
+    if (isE2E()) {
+      const codes: Record<
+        string,
+        | 'RECEIPT_UNSUPPORTED'
+        | 'RECEIPT_ALREADY_CLAIMED'
+        | 'RECEIPT_EXPIRED'
+        | 'NETWORK'
+      > = {
+        E2E_UNSUPPORTED: 'RECEIPT_UNSUPPORTED',
+        E2E_CLAIMED: 'RECEIPT_ALREADY_CLAIMED',
+        E2E_EXPIRED: 'RECEIPT_EXPIRED',
+        E2E_NETWORK: 'NETWORK',
+      };
+      const code = codes[input.value];
+      if (code)
+        throw new ApiError({
+          code,
+          message: 'Maestro fixture',
+          status: code === 'NETWORK' ? 0 : 400,
+        });
+    }
     return currentReceipt();
   },
 
@@ -308,7 +344,10 @@ export const mockWalletService: WalletService = {
     if (getMockScenario() === 'empty') {
       return { balanceMinor: 0, pendingMinor: 0, currency: 'AZN' };
     }
-    return mockWallet;
+    // Fixed mock-server projection, never a balance computed by the application.
+    return isE2E() && mockRatings.size > 0
+      ? { ...mockWallet, balanceMinor: 3700 }
+      : mockWallet;
   },
 
   async transactions(params) {

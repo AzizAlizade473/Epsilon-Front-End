@@ -1,0 +1,36 @@
+name: Manual preview OTA
+on:
+  workflow_dispatch:
+    inputs:
+      native_compatible:
+        description: I verified this JS-only update matches the installed preview native runtime
+        required: true
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  update:
+    if: github.ref == 'refs/heads/main' && inputs.native_compatible
+    environment: eas-preview
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.22.1
+          cache: npm
+      - run: npm ci
+      - name: Verify update infrastructure was configured in a reviewed native build
+        run: node -e "require.resolve('expo-updates/package.json'); const c=require('./eas.json'); if(c.build.preview.channel!=='preview')throw new Error('Preview channel required');"
+      - name: Publish only to preview
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH: '1'
+          EXPO_UNSTABLE_TREE_SHAKING: '1'
+        run: |
+          test -n "$EXPO_TOKEN" || { echo 'Configure the protected preview environment EXPO_TOKEN secret'; exit 1; }
+          npx --yes eas-cli@27.2.0 update --channel preview --environment preview --platform android --message "Reviewed preview ${GITHUB_SHA}" --non-interactive

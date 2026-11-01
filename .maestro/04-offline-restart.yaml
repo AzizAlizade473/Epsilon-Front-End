@@ -1,0 +1,27 @@
+appId: com.epsilonup.app
+name: Durable offline feedback across process death
+---
+- runFlow: subflows/phone-login.yaml
+- runFlow: subflows/resolve.yaml
+- tapOn: Kapuçino — qiymətləndir
+- tapOn: 5 ulduz — Əla
+- setAirplaneMode: enabled
+- assertVisible: İnternet bağlantısı yoxdur
+- tapOn: Rəyi göndər
+- assertVisible: Rəyiniz bu cihazda saxlanılıb və avtomatik yenidən göndəriləcək.
+- killApp
+- setAirplaneMode: disabled
+- launchApp
+- extendedWaitUntil:
+    visible: Ana səhifə
+    timeout: 20000
+- extendedWaitUntil:
+    visible: '37.00 ₼'
+    timeout: 20000
+- openLink: epsilon://receipt/rcpt_789456
+- assertVisible: Qiymətləndirilib
+- launchApp
+- assertVisible: '34.50 ₼'
+# Mock server memory resets on process restart. Exact once-only ambiguous replay
+# is asserted against a persistent server double in feedback-replay-integrity.test.ts.
+# This final launch verifies local outbox removal, not real backend reward accounting.

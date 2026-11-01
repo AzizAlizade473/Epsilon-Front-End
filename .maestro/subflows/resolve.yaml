@@ -1,0 +1,10 @@
+appId: com.epsilonup.app
+env:
+  REFERENCE: E2E_SUCCESS
+---
+- openLink: epsilon://scan
+- tapOn: Kodu əl ilə daxil et
+- tapOn: Qəbz kodu
+- inputText: ${REFERENCE}
+- hideKeyboard
+- tapOn: Davam et

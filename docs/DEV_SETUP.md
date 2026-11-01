@@ -303,3 +303,69 @@ Then opt out and verify no further events; measure low-end cold starts before
 and after. No real event, upload, dashboard verification or device result is
 claimed from this PC. Opt-out disables the client immediately but cannot unsend
 an already permitted in-flight request.
+
+## STEP 24�25 quality and CI
+
+`npm run check` now enforces coverage for services, lib and state machines,
+production-profile checks, exact production licenses/approved exceptions,
+lockfile registry integrity, Android configuration and workflow security checks,
+as well as lint, strict types, Jest, i18n and formatting. `npm run secrets:check`
+uses checksum-pinned MIT gitleaks 8.30.1 against all fetched history with full
+redaction; `npm run secrets:check -- --staged` checks pending staged changes.
+CI separately runs the production high/critical vulnerability gate and Expo
+compatibility check. Known low/moderate advisories remain documented; do not
+force an incompatible Expo downgrade to eliminate their count.
+
+The owner approved eas-cli 27.2.0 (MIT) as an ephemeral CI-only tool, plus exact
+existing lockfile license exceptions. `scripts/license-exceptions.json` records
+individual paths, versions and licenses. Sentry's FSL-1.1-MIT CLI/platform binaries
+remain a separate approved build-tool exception. Existing exceptions include
+BlueOak-1.0.0, Python-2.0, Unlicense, CC0-1.0, CC-BY-4.0 browser data and MPL-2.0
+Lightning CSS tooling; none are represented as MIT. Any changed or new disallowed
+license fails the gate. OR expressions pass only with an allowed alternative.
+The app has no new npm dependency from STEP 24�25.
+
+PR CI uses read-only permissions, credential-free fixture Android exports and
+immutable action SHAs. Bundle comparison uses the recorded no-map Hermes
+baseline in `docs/bundle-baseline.json`, not the smaller source-map export.
+Only the numeric report is uploaded, with seven-day retention; no bundles,
+source maps, env dumps or signing files are artifacts. A separate workflow_run
+commenter has PR-comment permission and no checkout/PR-code execution. It accepts
+one bounded numeric artifact from that run and checks the originating PR SHA.
+It becomes active after its workflow reaches the default branch; no test PR or
+remote run is implied by local workflow/YAML validation.
+
+Owner repository setup: protect `main` with PR review and required **Quality and
+supply chain** and **Android export and bundle budget** checks; disallow force
+pushes/deletions and bypasses. Keep signing credentials backed up securely and
+access limited. Store secrets only in GitHub protected environments/EAS, never
+in git or EXPO_PUBLIC variables. Protect environments `eas-development`,
+`eas-preview`, `eas-production` and `sentry` with main-only deployment branches
+and appropriate required reviewers. Configure the EXPO_TOKEN secret only there.
+These server settings have NOT been changed from this PC.
+
+Manual EAS build accepts only development/preview/production from reviewed main,
+uses --freeze-credentials and never submits to a store. Owner must link the real
+EAS project and provide existing signing/build settings. Production explicitly
+uses the production environment/channel and live mode; the post-install EAS hook
+validates the actual API environment with the app's shared SEC-9 URL validator.
+The PR profile guard validates configured values; it does not claim unknown EAS
+server variables are safe. Missing real production API configuration fails the
+build-time guard. No backend domain or project ID is fabricated.
+
+Manual OTA is restricted to **preview** and requires explicit native-compatibility
+attestation. It fails closed until expo-updates and the real project/update URL
+have been configured in a separately approved native build; that package is not
+currently installed. No deployment or native package addition is performed just
+to test this workflow. Existing `runtimeVersion: { policy: 'appVersion' }` means
+all native changes require a new app version and rebuilt installed binary.
+**Never ship an OTA requiring a new native module or native configuration.**
+JS-only preview updates must target the installed runtime; production OTA/store
+release remains outside this batch (STEP 29 gate).
+
+Maestro setup and the five authored mock journeys are in `.maestro/README.md`.
+Device execution, offline dev-client startup, accessibility, native manifests,
+cold starts, backend/Google/push integration and live Sentry ingestion remain
+NOT VERIFIED. `QA_CHECKLIST.md` maps critical scenarios to automated evidence
+and pending backend/device responsibilities. No customer-facing layout changed;
+Epsilon + Unslop remains the standing design requirement.

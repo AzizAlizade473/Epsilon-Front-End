@@ -24,7 +24,11 @@
       }
     },
     "production": {
+      "environment": "production",
       "env": {
+        "EXPO_PUBLIC_APP_ENV": "production",
+        "EXPO_PUBLIC_API_MODE": "live",
+        "ENABLE_CRASH_REPORTING_DEV": "false",
         "EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH": "1",
         "EXPO_UNSTABLE_TREE_SHAKING": "1"
       },

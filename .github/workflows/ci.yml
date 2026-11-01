@@ -1,27 +1,59 @@
 name: CI
-
 on:
   push:
-    branches: ['main', 'step/**']
+    branches: [main, 'step/**']
   pull_request:
-    branches: ['main']
-
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   check:
-    name: Lint, Types, Tests, and Format
+    name: Quality and supply chain
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22.22.1
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run verification checks
-        run: npm run check
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm audit --omit=dev --audit-level=high
+      - run: npx --no-install expo install --check
+      - run: npm run secrets:check
+  android:
+    name: Android export and bundle budget
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # Credential-free fixture export; not a production/native build claim.
+      EXPO_PUBLIC_APP_ENV: development
+      EXPO_PUBLIC_API_MODE: mock
+      EXPO_PUBLIC_API_URL: http://10.0.2.2:3000/v1
+      EXPO_PUBLIC_SUPPORT_EMAIL: support@epsilonup.app
+      EXPO_PUBLIC_PRIVACY_URL: https://epsilonup.app/privacy
+      EXPO_PUBLIC_TERMS_URL: https://epsilonup.app/terms
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.22.1
+          cache: npm
+      - run: npm ci
+      - run: npm run export:android -- --output-dir dist/ci --max-workers 2
+      - run: npm run bundle:check -- dist/ci
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: bundle-report-${{ github.sha }}
+          path: reports/bundle.json
+          if-no-files-found: error
+          retention-days: 7

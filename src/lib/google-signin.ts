@@ -3,6 +3,7 @@ import type {
   SignInResponse,
 } from '@react-native-google-signin/google-signin';
 import { env } from './env';
+import { isE2E } from './e2e-mode';
 import { registerAuthCleanup } from './auth-lifecycle';
 
 export type GoogleSdk = {
@@ -57,6 +58,7 @@ export function createGoogleDriver(
   return {
     prepare,
     async exchange<T>(send: (token: string) => Promise<T>): Promise<T | null> {
+      if (isE2E()) return send('maestro-fixture');
       const module = await prepare();
       if (!module) throw new GoogleFlowError('googleFailed');
       let response: SignInResponse;
@@ -113,5 +115,6 @@ export const googleDriver = createGoogleDriver(
   () => env.ENABLE_GOOGLE_SIGNIN,
   () => env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
 );
-export const initializeGoogle = () => googleDriver.prepare();
+export const initializeGoogle = () =>
+  isE2E() ? Promise.resolve(null) : googleDriver.prepare();
 registerAuthCleanup(() => googleDriver.signOut());

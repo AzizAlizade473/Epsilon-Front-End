@@ -1,4 +1,32 @@
 module.exports = {
+  coverageReporters: ['text-summary', 'json-summary', 'lcov'],
+  coverageThreshold: {
+    './src/services/': {
+      statements: 65,
+      branches: 50,
+      functions: 60,
+      lines: 65,
+    },
+    './src/lib/': { statements: 70, branches: 65, functions: 70, lines: 75 },
+    './src/features/scan/machine.ts': {
+      statements: 85,
+      branches: 75,
+      functions: 80,
+      lines: 85,
+    },
+    './src/features/scan/hooks/useScanMachine.ts': {
+      statements: 85,
+      branches: 75,
+      functions: 80,
+      lines: 85,
+    },
+    './src/features/auth/store.ts': {
+      statements: 80,
+      branches: 70,
+      functions: 80,
+      lines: 80,
+    },
+  },
   projects: [
     {
       displayName: 'tooling',
@@ -7,6 +35,13 @@ module.exports = {
     },
     {
       displayName: 'app',
+      collectCoverageFrom: [
+        'src/lib/**/*.{ts,tsx}',
+        'src/services/**/*.{ts,tsx}',
+        'src/features/scan/machine.ts',
+        'src/features/scan/hooks/useScanMachine.ts',
+        'src/features/auth/store.ts',
+      ],
       preset: 'jest-expo',
       resolver: 'react-native-reanimated/jest/resolver.js',
       setupFilesAfterEnv: ['<rootDir>/scripts/jest-app-setup.ts'],
