@@ -1,3 +1,4 @@
+import { decorativeSvgProps } from '@/lib/decorative-svg';
 import type { LucideIcon } from 'lucide-react-native';
 import { View, type ColorValue } from 'react-native';
 
@@ -33,8 +34,7 @@ export function Icon({
         size={sizes[size]}
         strokeWidth={layout.iconStrokeWidth}
         color={color}
-        accessible={false}
-        focusable={false}
+        {...decorativeSvgProps}
       />
     </View>
   );

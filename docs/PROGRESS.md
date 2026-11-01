@@ -1,5 +1,11 @@
 # Epsilon progress
 
+- [x] web.svg.1 (2026-11-01) — fixed native SVG accessibility props leaking into
+      browser DOM across shared icons, rating/review stars and Google artwork.
+      Browser uses `aria-hidden`; native hidden/focus semantics remain unchanged.
+      Actual React DOM regression passes without console warnings; complete quality
+      gate: 94 suites / 563 tests. Local web bundle resolves the browser adapter.
+
 Scope: **30 / 30 STEPS IMPLEMENTED — 100% engineering implementation.** STEP 00-27 are merged into `main`; STEP 28-29 repository work and whole-app audit are complete on the final branch. External/manual verification is separate and remains honestly unchecked below.
 Branch: `step/28-29-final-release`, based on verified `main` merge `08c734fc3513df1c05680e474b7afa42156b1968`.
 Release readiness/public launch approval: **NO-GO**; ten P0 evidence groups remain unresolved. See `FINAL_AUDIT.md`, `QA_MATRIX.md`, `RELEASE_GATE.md` and `release-evidence.json`.

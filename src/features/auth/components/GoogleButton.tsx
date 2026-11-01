@@ -1,3 +1,4 @@
+import { decorativeSvgProps } from '@/lib/decorative-svg';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { SvgXml } from 'react-native-svg';
@@ -30,7 +31,7 @@ export function GoogleButton({
           xml={googleG}
           width={spacing[20]}
           height={spacing[20]}
-          accessible={false}
+          {...decorativeSvgProps}
         />
         <Text variant="headline" style={styles.label}>
           {t('auth.continueGoogle')}

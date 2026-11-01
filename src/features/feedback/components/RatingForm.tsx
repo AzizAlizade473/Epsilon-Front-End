@@ -1,3 +1,4 @@
+import { decorativeSvgProps } from '@/lib/decorative-svg';
 import Star from 'lucide-react-native/icons/star';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -108,7 +109,7 @@ export function RatingForm({
                   ? colors.brand.primary
                   : colors.transparent
               }
-              accessible={false}
+              {...decorativeSvgProps}
             />
           </PressSurface>
         ))}

@@ -1,3 +1,4 @@
+import { decorativeSvgProps } from '@/lib/decorative-svg';
 import { FlashList } from '@shopify/flash-list';
 import { Image } from 'expo-image';
 import Store from 'lucide-react-native/icons/store';
@@ -119,7 +120,7 @@ export function ReceiptContent({
                               ? colors.ink
                               : colors.transparent
                           }
-                          accessible={false}
+                          {...decorativeSvgProps}
                         />
                       ))}
                     </View>

@@ -1,3 +1,4 @@
+import { decorativeSvgProps } from '@/lib/decorative-svg';
 import { FlashList } from '@shopify/flash-list';
 import MessageSquare from 'lucide-react-native/icons/message-square';
 import Star from 'lucide-react-native/icons/star';
@@ -91,7 +92,7 @@ export default function ReviewsScreen() {
                 {[1, 2, 3, 4, 5].map((score) => (
                   <Star
                     key={score}
-                    accessible={false}
+                    {...decorativeSvgProps}
                     size={spacing[16]}
                     strokeWidth={layout.iconStrokeWidth}
                     color={colors.ink}
