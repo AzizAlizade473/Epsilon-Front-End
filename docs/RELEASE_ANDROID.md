@@ -38,8 +38,17 @@ and an environment approval. Merge this final branch only after review. They are
 not automatically invoked. Do not run builds/submission merely to finish a checklist.
 
 After separate owner authorization and prerequisites, use the approved pinned
-EAS CLI version from the existing workflows. Build the production AAB from the
-reviewed SHA, without automatic submission. Before sharing, inspect the signed
+EAS CLI version from the existing workflows. `internal-testing` prepares a live
+**staging AAB** using the preview environment/channel, with E2E/mock mode off;
+`preview` remains an installable APK. After separately authorizing a build, the
+owner can select `--profile internal-testing` with the pinned CLI; it is not an
+automatic workflow action. Supply the real staging HTTPS API, approved package,
+OAuth identity and private build credentials in EAS preview settings first.
+Verify the backend's identity and isolated staging purchases; do not put a staging
+API into the production profile to bypass SEC-9. After staging validation, build
+the production AAB against the approved production environment and repeat the
+candidate checks. Both use the reviewed SHA, without automatic submission.
+Before sharing, inspect the signed
 artifact's application ID, version code, Hermes/native libraries, merged manifest
 (backup disabled, no cleartext, only justified permissions), target API, supported
 ABIs and 16 KB page compatibility. `npm run android:audit -- --manifest PATH --require-native`
@@ -66,6 +75,8 @@ Google may require the initial upload to be done manually before API submissions
 public production default, but an upload still requires explicit authorization.
 Confirm the chosen artifact, app and track before any submission. Never use
 automatic production submission for a first candidate.
+The submit profile selects the Play track/status, not the binary's API environment;
+verify the exact staging/production artifact ID before selecting it for upload.
 
 Install via the Play internal-testing invitation, not a sideloaded APK. Record
 tester/device/OS/build and evidence for Google sign-in -> staging purchase QR ->
@@ -100,9 +111,9 @@ owners, escalation contacts and a staffed observation window. Choose a small
 owner-approved initial cohort/percentage and explicit observation duration,
 then expand only after checking crash/ANR, auth, duplicate claims/rewards,
 reconciliation, failed writes and support signals against approved thresholds.
-Do not invent business thresholds in the client. First production releases may
-have different Console rollout controls; use controlled testing until those are
-confirmed. See [Google staged rollout controls](https://support.google.com/googleplay/android-developer/answer/6346149?hl=en).
+Do not invent business thresholds in the client. Percentage staged rollouts are
+for app updates, **not first publication**; use controlled testing before the first
+public release. See [Google staged rollout controls](https://support.google.com/googleplay/android-developer/answer/6346149?hl=en).
 
 On security exposure, wrong money, lost writes or critical crashes: halt further
 rollout, disable affected mutations on the server under incident authority,

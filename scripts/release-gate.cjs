@@ -53,6 +53,20 @@ function assess(document, config) {
   for (const id of Object.keys(required))
     if (!seen.has(id)) errors.push(`Missing evidence: ${id}`);
   const production = config?.build?.production;
+  const internal = config?.build?.['internal-testing'];
+  if (
+    internal?.environment !== 'preview' ||
+    internal?.channel !== 'preview' ||
+    internal?.distribution !== 'store' ||
+    internal?.android?.buildType !== 'app-bundle' ||
+    internal?.autoIncrement !== true ||
+    internal?.env?.EXPO_PUBLIC_APP_ENV !== 'staging' ||
+    internal?.env?.EXPO_PUBLIC_API_MODE !== 'live' ||
+    internal?.env?.EXPO_PUBLIC_E2E !== 'false'
+  )
+    errors.push(
+      'Play staging verification requires a live staging AAB isolated from the production environment/channel',
+    );
   const submit = config?.submit?.production?.android;
   if (
     production?.android?.buildType !== 'app-bundle' ||

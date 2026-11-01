@@ -25,6 +25,21 @@
         "buildType": "apk"
       }
     },
+    "internal-testing": {
+      "environment": "preview",
+      "distribution": "store",
+      "channel": "preview",
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_APP_ENV": "staging",
+        "EXPO_PUBLIC_API_MODE": "live",
+        "EXPO_PUBLIC_E2E": "false",
+        "ENABLE_CRASH_REPORTING_DEV": "false",
+        "EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH": "1",
+        "EXPO_UNSTABLE_TREE_SHAKING": "1"
+      },
+      "android": { "buildType": "app-bundle" }
+    },
     "production": {
       "environment": "production",
       "env": {

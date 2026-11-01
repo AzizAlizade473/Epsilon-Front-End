@@ -33,6 +33,15 @@ test('rejects public or completed submission defaults and repository credential 
   };
   expect(assess(evidence, altered).errors).toHaveLength(2);
 });
+test('rejects a mock/APK or production-channel staging Play candidate', () => {
+  const altered = structuredClone(config);
+  altered.build['internal-testing'].env.EXPO_PUBLIC_API_MODE = 'mock';
+  altered.build['internal-testing'].android.buildType = 'apk';
+  altered.build['internal-testing'].channel = 'production';
+  expect(assess(evidence, altered).errors).toContain(
+    'Play staging verification requires a live staging AAB isolated from the production environment/channel',
+  );
+});
 test('complete attributed evidence allows only conditional readiness, never automatic public approval', () => {
   const document = structuredClone(evidence);
   document.evidence.forEach((row) =>

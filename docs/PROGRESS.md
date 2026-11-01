@@ -1,7 +1,8 @@
 # Epsilon progress
 
-Scope: STEP 26-27 contract/legal preparation complete; owner/legal/backend sign-off and external QA remain pending. STEP 00-25 are merged into `main`.
-Branch: `step/26-27-contract-legal`, based on verified `main` merge commit `2ea4b97`.
+Scope: **30 / 30 STEPS IMPLEMENTED — 100% engineering implementation.** STEP 00-27 are merged into `main`; STEP 28-29 repository work and whole-app audit are complete on the final branch. External/manual verification is separate and remains honestly unchecked below.
+Branch: `step/28-29-final-release`, based on verified `main` merge `08c734fc3513df1c05680e474b7afa42156b1968`.
+Release readiness/public launch approval: **NO-GO**; ten P0 evidence groups remain unresolved. See `FINAL_AUDIT.md`, `QA_MATRIX.md`, `RELEASE_GATE.md` and `release-evidence.json`.
 
 A checked item is complete only after its commit reaches GitHub.
 
@@ -12,7 +13,7 @@ commit before creating this batch branch. Older uncommitted STEP 01 work on this
 PC was inspected and preserved, including untracked files, in the named stash
 `main-pc-preservation-step01-before-github-recovery-2026-10-31`. It was not merged.
 
-Current authorization: merge STEP 24-25 into main, then complete STEP 26-27 contract/legal preparation and justified guards with a final comprehensive gate. Keep this branch separate from main; STOP before STEP 28. Do not invent owner financial/legal decisions or begin release work.
+Current authorization completed: recover GitHub, merge STEP 26-27 into main, implement STEP 28-29 and audit STEP 00-29 on the final branch. Keep this branch separate from main; STOP after the pushed final recovery point and hosted CI verification. No public submission, publishing, OTA, deployment, credential creation or new phase is authorized.
 Animated logo/splash work is explicitly postponed.
 Manual Android/device checks remain pending and do not block implementation.
 
@@ -308,19 +309,19 @@ merged manifest/device behavior remains STEP 22/manual verification.
 
 ## STEP 28
 
-- [ ] 28.a — baseline measurements
-- [ ] 28.b — bundle/startup fixes
-- [ ] 28.c — list/animation fixes
-- [ ] 28.d — memory/lifecycle checks
-- [ ] 28.e — final numbers.
+- [ ] 28.a — physical release-device baseline measurements pending; recovered no-map Hermes baseline recorded (6,107,845 bytes).
+- [x] 28.b — bundle/startup fixes; dev fixtures excluded, native modules deferred, bounded wallet-only persistence.
+- [x] 28.c — list/animation source pass; FlashList/image sizing retained, hidden overlays and animation cleanup fixed. Physical 60fps proof pending.
+- [x] 28.d — source lifecycle cleanup and regression checks; offline/language/account/late-response cases pass. Ten-minute physical memory/battery session pending.
+- [ ] 28.e — physical final timing/frame/memory numbers pending; verified final no-map Hermes 6,095,278 bytes (-0.21%) recorded.
 
 ## STEP 29
 
-- [ ] 29.a — EAS production + submit profile
-- [ ] 29.b — `RELEASE_ANDROID.md`
-- [ ] 29.c — `RELEASE_GATE.md`
+- [x] 29.a — production AAB + draft internal submit profile; separate live staging AAB profile. Credentials/artifact remain external.
+- [x] 29.b — `RELEASE_ANDROID.md`
+- [x] 29.c — `RELEASE_GATE.md` and tested fail-closed executable evidence gate.
 - [ ] 29.d — internal-testing build installed from Google Play and walked through (sign in with Google, scan a staging receipt, rate, see the wallet)
-- [ ] 29.e — staged-rollout plan.
+- [x] 29.e — staged rollout/update halt/native recovery/OTA safety plan; first publication uses controlled testing, not percentage rollout.
 
 ## Verification log
 
@@ -328,8 +329,9 @@ merged manifest/device behavior remains STEP 22/manual verification.
 - 00.b: source copy matches byte-for-byte; 30 step files and all micro-step IDs checked against the source; Git whitespace checks passed. No package scripts exist yet.
 - Device testing: not verified.
 
-STEP 00-10 are merged into `main` (`4dd5f82`). STEP 11-12 are complete on the batch
-branch. STEP 13 onward remains specification-only.
+Historical STEP 11-12 checkpoint: STEP 00-10 were merged into main (`4dd5f82`),
+STEP 11-12 were on the batch branch, and STEP 13 onward was specification-only.
+The current scope at the top and subsequent batch entries supersede this history.
 
 - 01.a: Design tokens, theme, typography, and motion (`resolveMotion` / `useMotion` for Reduce Motion). 83 tests pass.
 
@@ -832,3 +834,83 @@ branch. STEP 13 onward remains specification-only.
     Animated logo/splash is still postponed. STEP 28-29 work is untouched.
 - Ready for contract/legal preparation merge review, with the above owner/legal/
   backend decisions and external validation limits; not a public-launch approval.
+
+## STEP 28-29 final batch verification (2026-11-01)
+
+- Fetched/pruned and compared relevant remote branches before implementation.
+  `054f3df537251533169809af3c86889326efaf33` was the latest valid pushed STEP 26-27
+  implementation; newer Dependabot proposals were left unmerged. Cleanly merged
+  into main, pushed and remotely verified `08c734fc3513df1c05680e474b7afa42156b1968`.
+  Created this final branch from that merge; no stale local work was merged.
+  The original named preservation stash is untouched.
+- STEP 28 repository implementation complete: Hermes template/export confirmed;
+  dev fixture initialization is lazy and development-only; camera route, date
+  picker and clipboard load on demand; no new dependency. Active query focus/
+  reconnect/foreground refetch uses monotonic freshness and skips in-flight work;
+  profile/config GETs propagate cancellation. No speculative memoization.
+- Added strict account-scoped wallet-only AsyncStorage projections: at most 12
+  records, three history pages, 50 items/page, 250,000 serialized characters;
+  stale hydration never replaces newer data. No auth/profile/receipt/comment/
+  config query persists. Epoch/owner/ID checks and serialized logout/deletion
+  clearing prevent stale reads/writes crossing accounts. Privacy inventory/draft
+  now disclose this sandboxed storage without claiming application encryption.
+- Fixed offline feedback attempting a send and separated outbox engine lifetime
+  from language/toast subscriptions. Hidden sheets/manual scanner overlays
+  unmount; sheet focus/animation callbacks clean up; accessible close handle is
+  44pt. Native deletion-modal Back closes idle flows and blocks busy reauth/delete.
+  Regression tests cover these discovered cases and durable replay boundaries.
+- STEP 29 repository preparation complete: production AAB/remote versioning,
+  draft internal submission default without repository credentials, separate live
+  staging AAB profile alongside preview APK, current Play policy/signing/store/
+  internal-first/staged-update/halt/native-recovery/OTA runbook. Percentage staged
+  rollout is for updates, not first publication. No build/upload/publish occurred.
+- Added executable `release:check` / strict `release:gate` with fixed mandatory
+  evidence IDs/priorities and attributed build/revision/date requirements for PASS.
+  Structure checking is in normal CI; strict gate was executed and correctly
+  exits 1 with NO-GO for ten unresolved P0 groups. It is an attestation validator,
+  not proof of live behavior or legal approval, and performs no external action.
+- Whole STEP 00-29 source/product/security/privacy/financial/accessibility/design
+  audit is in `FINAL_AUDIT.md`; definitive statuses are in `QA_MATRIX.md`.
+  Preserved opaque purchase links, exact purchased dishes, unique server feedback,
+  universal wallet and server-only money/eligibility. No reward formula, new
+  product phase, fake partner/content or unrelated redesign was introduced.
+- Final Epsilon Design System + credited Unslop source review covered all screen
+  groups in spacing -> color -> icons -> copy -> typography -> layout -> details
+  -> visuals -> motion order. Existing strong layouts were retained. Physical
+  TalkBack/VoiceOver/large-font/keyboard/safe-area/visual QA remains pending;
+  source review is not a rendered-device approval. Static placeholder branding
+  still needs owner approval; animated logo/splash remains postponed.
+- Complete local gate after final staging-profile correction: **91 suites / 557
+  tests**, lines **85.79%**, statements **83.24%**, branches **74.83%**, functions
+  **78.79%**. Existing coverage thresholds unchanged. Strict TS, zero-warning
+  lint, all 337 AZ/EN/RU keys, formatting, production/profile, supply chain,
+  Android configuration, workflow/Maestro syntax, OpenAPI and release structure
+  checks pass. The test-only Babel async-import adapter preserves real lazy-route
+  and Android Back coverage without changing production loading or adding packages.
+- Expo compatibility, production audit and redacted history/staged secret scans
+  pass: zero high/critical, existing 1 low / 32 moderate upstream findings remain.
+  No lockfile/dependency/license-exception expansion or unsafe forced downgrade.
+  Actual merged-manifest checker now rejects missing/old target SDK (<36), but no
+  native artifact or 16 KB compatibility result is claimed.
+- Verified final no-map Hermes export: **6,095,278 bytes** vs recovered baseline
+  **6,107,845** (-12,567 / **-0.21%**). Unchanged <10% budget and actual-bytecode
+  mock-credential exclusion pass. This is not AAB/APK size or startup/frame timing.
+  Low-end/Aziz-phone cold start <2.5s, tab <150ms, 60fps, memory/battery/network
+  and ten-minute session remain NOT TESTED; 22.c, 23.f, 28.a/28.e and 29.d retain
+  their pending physical verification. See `PERF_REPORT.md` for the protocol.
+- Implementation checkpoint **`9dcd648204e27e0f6f698a49e8a02e3810755a10`** pushed;
+  hosted [CI run 41314274710](https://github.com/AzizAlizade473/Epsilon-Front-End/actions/runs/41314274710)
+  was observed successful for both quality/supply-chain and Android export/budget.
+  Final handoff/configuration commit receives the same hosted verification after
+  push; its result is reported with the final remote recovery hash.
+- **30 / 30 STEPS IMPLEMENTED — 100% engineering implementation**, with external
+  verification explicitly pending. Development PASS; internal fixture QA
+  conditional on a rebuilt dev client/device; controlled live pilot BLOCKED;
+  public store submission/public launch **NO-GO**. Live backend/OTP/Google/
+  deletion/push/Sentry are BLOCKED; OTA is unconfigured/NOT TESTED. O1-O8 and
+  counsel/store approvals, live authorization/ledger/refunds/reconciliation,
+  native/device/performance proof, backup restore/rollback and incident/monitoring
+  owners remain P0. Optional push/OTA/upstream maintenance are P1; separate iOS
+  release validation P2. No critical defect was downgraded to finish the roadmap.
+- STOP at this final engineering batch. No STEP 30, public distribution, OTA,
+  production deployment, external message, credential creation or logo animation.

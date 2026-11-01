@@ -108,8 +108,8 @@ execution has not occurred. Android remains first; no iOS release approval.
 
 ## Automated evidence
 
-The complete local `npm run check` passed: 91 suites / 556 tests; coverage lines
-85.78%, statements 83.22%, branches 74.74%, functions 78.79%, with all existing
+The complete local `npm run check` passed: 91 suites / 557 tests; coverage lines
+85.79%, statements 83.24%, branches 74.83%, functions 78.79%, with all existing
 thresholds unchanged. Strict types, zero-warning lint, 337 AZ/EN/RU base keys,
 formatting, production/profile, license/pin/integrity, Android configuration,
 workflow/Maestro syntax, generated OpenAPI and evidence-register checks passed.
@@ -125,7 +125,12 @@ dependency addition, lockfile change or license-exception expansion was made.
 Existing lower-severity upstream toolchain findings require normal maintenance.
 `release:gate` was run and correctly exited 1 with ten unresolved P0 evidence
 groups and NO-GO; `release:check` passed structure with no errors. Hosted CI must
-still be observed after push and is recorded separately in PROGRESS.md.
+be verified again for the final recovery commit. Implementation checkpoint
+`9dcd648204e27e0f6f698a49e8a02e3810755a10` passed both hosted jobs in
+[run 41314274710](https://github.com/AzizAlizade473/Epsilon-Front-End/actions/runs/41314274710).
+Final handoff also adds a live staging AAB profile for the Play walkthrough,
+separate from the production environment and existing preview APK, with a
+regression rejecting mock/APK/production-channel staging configuration.
 
 Source checks cannot certify live
 authorization, native performance, legal compliance or launch approval. No

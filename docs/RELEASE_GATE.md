@@ -32,8 +32,9 @@ release reviewers must verify those attestations; the script cannot verify them.
 
 ## Reliability
 
-- [ ] Final local and hosted automated gates green for reviewed revision
-      (record actual results in FINAL_AUDIT.md / PROGRESS.md).
+- [x] Complete local automated gate green; both hosted jobs green for implementation
+      checkpoint `9dcd648`. Final handoff/configuration commit is verified again
+      after push; record its exact recovery hash and CI result separately.
 - [x] Source/test doubles cover offline retry, malformed responses, auth races,
       bounded wallet cache and server-committed/lost-response replay.
 - [ ] Native/Maestro E2E and real-device matrix (small/normal/large/low-end) pass.
@@ -54,7 +55,8 @@ release reviewers must verify those attestations; the script cannot verify them.
 
 ## Operations
 
-- [ ] Required hosted CI green for the exact final recovery commit.
+- [ ] Required hosted CI green for the exact final recovery commit (implementation
+      checkpoint is verified; final handoff result is reported after push).
 - [ ] Consent-gated scrubbed Sentry ingestion/symbolication and alert ownership live.
 - [ ] Rollout halt, native recovery and any enabled OTA rollback tested.
 - [ ] Incident/support/financial roles and escalation contacts assigned.
