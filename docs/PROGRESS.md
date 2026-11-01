@@ -943,3 +943,5 @@ The current scope at the top and subsequent batch entries supersede this history
   pre-preview 6,095,278 (-0.012% total; not an isolated package-size estimate).
   Budget/mock-marker checks pass and the browser session implementation is absent
   from Android bytecode. No launch-readiness/manual gate changes; NO-GO remains.
+
+- [x] UI.welcome.1 ? Reference-inspired centered welcome card, transparent existing Epsilon placeholder mark, preserved phone/Google flow. Checks: 93 suites / 561 tests; mobile browser phone navigation verified; native visual QA pending.
