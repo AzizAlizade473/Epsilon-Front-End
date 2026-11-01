@@ -48,6 +48,37 @@ beforeEach(() => {
   };
 });
 describe('durable feedback outbox', () => {
+  it('retains undated drafts across restart and anchors expiry only to trusted time', async () => {
+    let trusted: number | null = null;
+    const first = createFeedbackOutbox(
+      'account',
+      storage,
+      async () => result,
+      () => trusted,
+    );
+    await first.enqueue({ ...entry(), createdAt: null });
+    first.stop();
+    trusted = now;
+    const restarted = createFeedbackOutbox(
+      'account',
+      storage,
+      async () => result,
+      () => trusted,
+    );
+    await restarted.load();
+    expect(restarted.snapshot()).toEqual([{ ...entry(), createdAt: now }]);
+    restarted.stop();
+    trusted = now + 8 * 24 * 60 * 60 * 1000;
+    const expired = createFeedbackOutbox(
+      'account',
+      storage,
+      async () => result,
+      () => trusted,
+    );
+    await expired.load();
+    expect(expired.snapshot()).toEqual([]);
+    expired.stop();
+  });
   it('persists before sending and replays exact payload/key after process recreation', async () => {
     const firstSend = jest.fn(async () => {
       expect(disk.size).toBe(1);

@@ -7,6 +7,8 @@ import {
 import { motionTokens } from '@/design';
 import { BootstrapGate } from '@/providers/BootstrapGate';
 import { RootNavigator } from '@/components/navigation/RootNavigator';
+import { AppErrorBoundary } from '@/components/feedback/AppErrorBoundary';
+import { SessionExpiryNavigation } from '@/components/navigation/SessionExpiryNavigation';
 
 void Splash.preventAutoHideAsync().catch(() => undefined);
 Splash.setOptions({ duration: motionTokens.duration.normal, fade: true });
@@ -14,9 +16,12 @@ Splash.setOptions({ duration: motionTokens.duration.normal, fade: true });
 export default function RootLayout() {
   return (
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-      <BootstrapGate>
-        <RootNavigator />
-      </BootstrapGate>
+      <AppErrorBoundary>
+        <BootstrapGate>
+          <SessionExpiryNavigation />
+          <RootNavigator />
+        </BootstrapGate>
+      </AppErrorBoundary>
     </SafeAreaProvider>
   );
 }

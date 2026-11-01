@@ -76,6 +76,8 @@ export const layout = {
   currencyScale: 0.6,
   skeletonMinOpacity: 0.5,
   skeletonPulseDuration: 900,
+  toastDuration: 4000,
+  reconnectDuration: 1500,
   otpBusyOpacity: 0.6,
   otpShakeDistance: 8,
   otpShakeDuration: 240,

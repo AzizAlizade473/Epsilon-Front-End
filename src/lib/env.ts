@@ -28,6 +28,29 @@ const schema = z
     ENABLE_GOOGLE_SIGNIN: flag,
     ENABLE_APPLE_SIGNIN: flag,
     NON_PRODUCTION_API_URLS: z.string().default(''),
+    EXPO_PUBLIC_SENTRY_DSN: z
+      .string()
+      .default('')
+      .refine((value) => {
+        if (!value) return true;
+        try {
+          const url = new URL(value);
+          const key = url.username;
+          if (
+            !key ||
+            url.password ||
+            url.search ||
+            url.hash ||
+            !/^\/[\w/-]*\d+$/.test(url.pathname)
+          )
+            return false;
+          url.username = '';
+          return isProductionApiUrl(url.toString());
+        } catch {
+          return false;
+        }
+      }),
+    ENABLE_CRASH_REPORTING_DEV: flag,
   })
   .superRefine((env, context) => {
     if (
@@ -98,7 +121,11 @@ export function validateEnv(
 export function getEnv(): Environment {
   if (!cachedEnv) {
     const flags = z
-      .object({ google: z.boolean(), apple: z.boolean() })
+      .object({
+        google: z.boolean(),
+        apple: z.boolean(),
+        crashDevelopment: z.boolean().optional(),
+      })
       .safeParse(Constants.expoConfig?.extra?.epsilonFlags);
     const source = process.env;
     cachedEnv = validateEnv({
@@ -120,10 +147,14 @@ export function getEnv(): Environment {
         process.env.EXPO_PUBLIC_TERMS_URL ?? source.EXPO_PUBLIC_TERMS_URL,
       EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID:
         process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+      EXPO_PUBLIC_SENTRY_DSN: process.env.EXPO_PUBLIC_SENTRY_DSN,
       ...(flags.success
         ? {
             ENABLE_GOOGLE_SIGNIN: String(flags.data.google),
             ENABLE_APPLE_SIGNIN: String(flags.data.apple),
+            ENABLE_CRASH_REPORTING_DEV: String(
+              flags.data.crashDevelopment ?? false,
+            ),
           }
         : {}),
     });

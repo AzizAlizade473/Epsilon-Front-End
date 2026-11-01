@@ -5,6 +5,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   name: 'Epsilon',
   slug: 'epsilon',
   version: '0.1.0',
+  icon: './assets/brand/app-icon-flat.png',
   scheme: 'epsilon',
   orientation: 'portrait',
   userInterfaceStyle: 'light',
@@ -14,6 +15,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     epsilonFlags: {
       google: process.env.ENABLE_GOOGLE_SIGNIN === 'true',
       apple: false,
+      crashDevelopment: process.env.ENABLE_CRASH_REPORTING_DEV === 'true',
     },
   },
   android: {
@@ -21,7 +23,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     adaptiveIcon: {
       foregroundImage: './assets/brand/app-icon.png',
       backgroundColor: '#FFFFFF',
-      monochromeImage: './assets/brand/app-icon.png',
+      monochromeImage: './assets/brand/app-icon-monochrome.png',
     },
     softwareKeyboardLayoutMode: 'resize',
     allowBackup: false,
@@ -47,6 +49,18 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   plugins: [
     [
+      '@sentry/react-native/expo',
+      {
+        organization: process.env.SENTRY_ORG,
+        project: process.env.SENTRY_PROJECT,
+        useNativeInit: false,
+        disableAutoUpload: !(
+          (process.env.EAS_BUILD === 'true' || process.env.CI === 'true') &&
+          process.env.SENTRY_AUTH_TOKEN
+        ),
+      },
+    ],
+    [
       './plugins/with-google-signin.cjs',
       {
         enabled: process.env.ENABLE_GOOGLE_SIGNIN === 'true',
@@ -65,7 +79,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-web-browser',
     ['expo-notifications', { defaultChannel: 'cashback-updates' }],
     'expo-localization',
-    'expo-splash-screen',
+    [
+      'expo-splash-screen',
+      {
+        image: './assets/brand/app-icon.png',
+        imageWidth: 120,
+        backgroundColor: '#FFFFFF',
+      },
+    ],
     [
       'expo-build-properties',
       {

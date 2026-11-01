@@ -12,13 +12,17 @@
     "test": "jest --runInBand",
     "i18n:check": "node scripts/check-i18n.cjs",
     "check": "npm run lint && npm run typecheck && npm test && npm run i18n:check && npm run format:check",
-    "prepare": "husky"
+    "prepare": "husky",
+    "android:audit": "node scripts/audit-android.cjs",
+    "crash:sourcemaps": "node scripts/upload-sourcemaps.cjs",
+    "export:android": "node scripts/export-android.cjs"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/datetimepicker": "9.2.1",
     "@react-native-community/netinfo": "12.0.1",
     "@react-native-google-signin/google-signin": "17.0.0",
+    "@sentry/react-native": "8.28.0",
     "@shopify/flash-list": "2.3.2",
     "@tanstack/react-query": "5.105.0",
     "expo": "58.0.22",

@@ -1,3 +1,4 @@
+import { monotonicNow } from '@/lib/server-clock';
 import { useSyncExternalStore } from 'react';
 import { authOperation, registerAuthCleanup } from '@/lib/auth-lifecycle';
 export { authOperation };
@@ -26,14 +27,14 @@ export const otpChallenge = {
     challenge = {
       phone,
       mode,
-      resendAt: Date.now() + retryAfterSeconds * 1000,
+      resendAt: monotonicNow() + retryAfterSeconds * 1000,
       lockedUntil: 0,
     };
     emit();
   },
   lock(seconds: number) {
     if (!challenge) return;
-    const until = Date.now() + seconds * 1000;
+    const until = monotonicNow() + seconds * 1000;
     challenge = {
       ...challenge,
       lockedUntil: until,

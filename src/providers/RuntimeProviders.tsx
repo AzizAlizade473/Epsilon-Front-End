@@ -7,10 +7,13 @@ import { I18nextProvider } from 'react-i18next';
 
 import { ToastProvider } from './ToastProvider';
 import { FeedbackProvider } from './FeedbackProvider';
+import { CrashRuntime } from './CrashRuntime';
 import { AuthProvider, useAuth as useAuthState } from './AuthProvider';
 
 import { colors } from '@/design';
 import { OfflineBanner } from '@/components/feedback/OfflineBanner';
+import { UpdateGate } from '@/components/feedback/UpdateGate';
+import { AppErrorBoundary } from '@/components/feedback/AppErrorBoundary';
 import type { BootData } from '@/lib/bootstrap';
 import { i18n, onLanguageChange } from '@/lib/i18n';
 import { setLocaleAccessor } from '@/services/http/client';
@@ -44,14 +47,19 @@ export function RuntimeProviders({
   const [queryClient] = useState(() => createQueryClient());
 
   useEffect(() => {
-    const subscription = AppState.addEventListener('change', (state) =>
-      focusManager.setFocused(state === 'active'),
-    );
+    const subscription = AppState.addEventListener('change', (state) => {
+      focusManager.setFocused(state === 'active');
+      if (state === 'active')
+        void queryClient.refetchQueries(
+          { type: 'active' },
+          { cancelRefetch: false },
+        );
+    });
     return () => {
       subscription.remove();
       focusManager.setFocused(undefined);
     };
-  }, []);
+  }, [queryClient]);
 
   useEffect(() => {
     setLocaleAccessor(() => i18n.language ?? 'az');
@@ -66,9 +74,14 @@ export function RuntimeProviders({
         <QueryClientProvider client={queryClient}>
           <AuthProvider boot={boot} onBootConsumed={onBootConsumed}>
             <ToastProvider>
-              <FeedbackProvider>
-                <OfflineBanner>{children}</OfflineBanner>
-              </FeedbackProvider>
+              <CrashRuntime />
+              <OfflineBanner>
+                <UpdateGate>
+                  <FeedbackProvider>
+                    <AppErrorBoundary>{children}</AppErrorBoundary>
+                  </FeedbackProvider>
+                </UpdateGate>
+              </OfflineBanner>
             </ToastProvider>
           </AuthProvider>
         </QueryClientProvider>

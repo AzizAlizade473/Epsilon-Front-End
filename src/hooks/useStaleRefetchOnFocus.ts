@@ -7,7 +7,7 @@ export function useStaleRefetchOnFocus(queryKey: QueryKey) {
   useFocusEffect(
     useCallback(() => {
       void client.refetchQueries(
-        { queryKey, type: 'active', stale: true },
+        { queryKey, type: 'active' },
         { cancelRefetch: false },
       );
     }, [client, queryKey]),

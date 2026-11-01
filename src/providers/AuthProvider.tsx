@@ -1,5 +1,6 @@
 import * as SecureStore from 'expo-secure-store';
 import '@/lib/preferences';
+import { notifySessionExpired } from '@/lib/runtime-notices';
 import {
   createContext,
   useCallback,
@@ -132,14 +133,18 @@ export function AuthProvider({
   }, [persist, publish, queryClient]);
   const loadConfig = useCallback(async () => {
     const epoch = authOperation.epoch();
-    const config = await services.config.get();
+    const config = await queryClient.fetchQuery({
+      gcTime: 0,
+      queryKey: queryKeys.config.current(),
+      queryFn: () => services.config.get(),
+    });
     if (authOperation.current(epoch))
       publish({
         requirePhoneVerification: config.requirePhoneVerification,
         minimumAge: config.minAge,
       });
     return config;
-  }, [publish]);
+  }, [publish, queryClient]);
   const updateUser = useCallback(
     (user: User, nextStep?: NextStep | null) => {
       publish({ user, nextStep: nextStep ?? undefined });
@@ -169,7 +174,10 @@ export function AuthProvider({
         await saveSession(next, epoch);
         return next.accessToken;
       },
-      onLogout: clearSession,
+      onLogout: async () => {
+        await clearSession();
+        notifySessionExpired();
+      },
     });
     return () => {
       cancelAnimationFrame(frame);

@@ -260,7 +260,46 @@ persistence and account switches. Test deletion warnings, wrong Google account,
 fresh OTP/Google, typed confirmation, backend rejection and successful cleanup.
 Verify real backend rewards/ledger/retention and push association removal.
 
-Crash reporting remains STEP 23. This batch only stores an account-scoped consent
-boolean, cleared on logout/deletion; no crash-report SDK or analytics is enabled.
+Crash reporting is implemented in STEP 23 as opt-in, scrubbed JavaScript error
+reporting. Consent remains account-scoped and is cleared on logout/deletion.
 The profile avatar uses a text epsilon placeholder while production branding
 assets remain pending. No postponed logo/splash motion was added.
+
+## STEP 21–23 verification and crash configuration
+
+See `ANDROID_AUDIT.md` and `PERF_REPORT.md` for source/test results and explicit
+native/device/startup checks still NOT VERIFIED. Rebuild the native client after
+adding Sentry and changing icon/splash plugins. Use `npm run export:android --
+--output-dir dist/preview --max-workers 2` for the release compiler settings;
+preview/production EAS profiles use the same experimental Expo optimizer flags.
+
+Sentry is pinned to Expo SDK 58's supported **8.28.0**, correcting the initially
+approved 8.33.0 after the compatibility check. The SDK is MIT. The owner approved
+an explicit DEP-1 build-tool license exception for transitive Sentry CLIs under
+FSL-1.1-MIT (installed versions 3.8.0 and 2.58.6; initial 8.33.0 used 3.8.2).
+No source-map upload has been run locally.
+
+Set the public `EXPO_PUBLIC_SENTRY_DSN` only for the intended project. Empty DSN
+disables reporting. Development also requires `ENABLE_CRASH_REPORTING_DEV=true`;
+account consent is always required. SDK import starts after the first frame.
+Only allowlisted error type, normalized bundle frames/debug IDs and release,
+dist, environment and app-version metadata survive the scrubber. Messages,
+user data, requests, breadcrumbs and arbitrary payloads are discarded. Native
+fatal crashes/caching are disabled because they bypass the JavaScript consent
+and scrubber boundary. Tracing, replay, profiling and screenshots are disabled.
+
+Configure **private** `SENTRY_AUTH_TOKEN` in CI/EAS secrets, with `SENTRY_ORG` and
+`SENTRY_PROJECT` build variables. Never use an EXPO_PUBLIC upload token. The Expo
+plugin handles native-build source maps only in CI/EAS when configured. The
+manual `Upload crash source maps` workflow requires owner-provided secrets and
+public production configuration, exports maps using the release compiler and
+runs the guarded `npm run crash:sourcemaps -- dist/sentry` command. Do not upload
+an unrelated export as proof that an installed release is symbolicated.
+
+Owner must update the hosted privacy policy before enabling production reports,
+confirm vendor retention/access settings, build preview, opt in, trigger a test
+JavaScript error and verify symbolication and payloads in the actual dashboard.
+Then opt out and verify no further events; measure low-end cold starts before
+and after. No real event, upload, dashboard verification or device result is
+claimed from this PC. Opt-out disables the client immediately but cannot unsend
+an already permitted in-flight request.

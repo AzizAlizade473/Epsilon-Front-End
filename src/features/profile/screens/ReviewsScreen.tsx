@@ -8,6 +8,7 @@ import { Screen } from '@/components/ui/Screen';
 import { BackButton } from '@/components/navigation/BackButton';
 import { useRouter } from 'expo-router';
 import { Text } from '@/components/ui/Text';
+import { PullToRefresh } from '@/components/ui/PullToRefresh';
 import { Button } from '@/components/ui/Button';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { ErrorState } from '@/components/feedback/ErrorState';
@@ -61,6 +62,14 @@ export default function ReviewsScreen() {
             void next();
           }}
           refreshing={query.isRefetching && !query.isFetchingNextPage}
+          refreshControl={
+            <PullToRefresh
+              refreshing={query.isRefetching && !query.isFetchingNextPage}
+              onRefresh={() => {
+                void query.refetch();
+              }}
+            />
+          }
           onRefresh={() => {
             void query.refetch();
           }}

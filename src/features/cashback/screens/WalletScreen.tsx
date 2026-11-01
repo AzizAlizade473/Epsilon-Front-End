@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
+import { PullToRefresh } from '@/components/ui/PullToRefresh';
 import { Amount } from '@/components/ui/Amount';
 import { Chip } from '@/components/ui/Chip';
 import { Button } from '@/components/ui/Button';
@@ -114,6 +115,17 @@ export default function WalletScreen() {
           keyExtractor={(item) => item.key}
           getItemType={(item) => item.kind}
           stickyHeaderIndices={grouped.stickyHeaderIndices}
+          refreshControl={
+            <PullToRefresh
+              refreshing={
+                (history.isRefetching && !history.isFetchingNextPage) ||
+                wallet.isRefetching
+              }
+              onRefresh={() => {
+                void refresh();
+              }}
+            />
+          }
           refreshing={
             (history.isRefetching && !history.isFetchingNextPage) ||
             wallet.isRefetching

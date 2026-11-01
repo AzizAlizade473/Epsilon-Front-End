@@ -12,6 +12,7 @@ import { Icon } from '@/components/ui/Icon';
 import { IconButton } from '@/components/ui/IconButton';
 import { Button } from '@/components/ui/Button';
 import { Text } from '@/components/ui/Text';
+import { PullToRefresh } from '@/components/ui/PullToRefresh';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { ErrorState } from '@/components/feedback/ErrorState';
 import { MockDataNotice } from '@/components/feedback/MockDataNotice';
@@ -163,6 +164,14 @@ export default function RestaurantsScreen() {
           ListHeaderComponent={header}
           ListEmptyComponent={empty}
           refreshing={pulling}
+          refreshControl={
+            <PullToRefresh
+              refreshing={pulling}
+              onRefresh={() => {
+                void refresh();
+              }}
+            />
+          }
           onRefresh={() => {
             void refresh();
           }}

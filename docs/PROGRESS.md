@@ -1,7 +1,7 @@
 # Epsilon progress
 
-Scope: STEP 17-20 Wallet/Profile batch complete. STEP 00-16 are merged into `main`.
-Branch: `step/17-20-wallet-profile`, based on verified `main` merge commit `4582fe1`.
+Scope: STEP 21-23 implementation complete; native/device/startup verification remains pending. STEP 00-20 are merged into `main`.
+Branch: `step/21-23-hardening`, based on verified `main` merge commit `e263782`.
 
 A checked item is complete only after its commit reaches GitHub.
 
@@ -12,9 +12,7 @@ commit before creating this batch branch. Older uncommitted STEP 01 work on this
 PC was inspected and preserved, including untracked files, in the named stash
 `main-pc-preservation-step01-before-github-recovery-2026-10-31`. It was not merged.
 
-Current authorization: merge STEP 13-16 and complete STEP 17-20 as one continuous
-batch with a final quality gate/push, overriding the per-micro-step loop. STEP 21
-is untouched. STEP 17-20 must not be merged into main without authorization.
+Current authorization: merge STEP 17-20 into main, then implement STEP 21-23 as one continuous batch with a final quality gate/push, overriding the per-micro-step loop. Keep this batch on its own branch; STOP before STEP 24.
 Animated logo/splash work is explicitly postponed.
 Manual Android/device checks remain pending and do not block implementation.
 
@@ -251,27 +249,27 @@ merged manifest/device behavior remains STEP 22/manual verification.
 
 ## STEP 21
 
-- [ ] 21.a — OfflineBanner + online manager
-- [ ] 21.b — ErrorBoundary + test (throw in a child)
-- [ ] 21.c — toast queue
-- [ ] 21.d — not-found + session expiry
-- [ ] 21.e — update gate
-- [ ] 21.f — BAD_RESPONSE + clock tests.
+- [x] 21.a — OfflineBanner + online manager
+- [x] 21.b — ErrorBoundary + test (throw in a child)
+- [x] 21.c — toast queue
+- [x] 21.d — not-found + session expiry
+- [x] 21.e — update gate
+- [x] 21.f — BAD_RESPONSE + clock tests.
 
 ## STEP 22
 
-- [ ] 22.a — manifest/permission audit script + result
-- [ ] 22.b — fixes found
+- [x] 22.a — manifest/permission audit script + result
+- [x] 22.b — fixes found
 - [ ] 22.c — TalkBack and font-scale pass with fixes
-- [ ] 22.d — write `docs/ANDROID_AUDIT.md`.
+- [x] 22.d — write `docs/ANDROID_AUDIT.md`.
 
 ## STEP 23
 
-- [ ] 23.a — decision + install + config plugin
-- [ ] 23.b — deferred init + env gating
-- [ ] 23.c — scrubber (+ tests)
-- [ ] 23.d — toggle integration
-- [ ] 23.e — source map upload in EAS
+- [x] 23.a — decision + install + config plugin
+- [x] 23.b — deferred init + env gating
+- [x] 23.c — scrubber (+ tests)
+- [x] 23.d — toggle integration
+- [x] 23.e — source map upload in EAS
 - [ ] 23.f — startup measurement recorded in `docs/PERF_REPORT.md`.
 
 ## STEP 24
@@ -651,3 +649,54 @@ branch. STEP 13 onward remains specification-only.
   current storage/cleanup boundaries. Earlier camera/device checks remain pending.
 - Ready for merge review with the stated manual/native/backend verification
   pending. The batch is pushed separately and is not merged into main.
+
+## STEP 21–23 batch verification (2026-11-01)
+
+- Fetched the authoritative remote state and merged completed STEP 17–20 into
+  main with no conflicts. `origin/main` is verified at `e263782`. This hardening
+  batch remains separate; STEP 24 is untouched. The older preservation stash is
+  unchanged and was not merged.
+- STEP 21: nonblocking offline/reconnect status, FIFO toast queue, recoverable
+  error boundary, not-found and single session-expiry navigation; strict semantic
+  minimum-version gate and trusted Play Store action. Shared pull-to-refresh
+  styling, malformed-response handling, monotonic OTP/rate-limit timing and
+  server-anchored outbox TTL protect against a wrong device date. Foreground
+  refetch does not rely on device-clock freshness.
+- STEP 22: seven configuration checks pass; audit script also accepts a real
+  release merged manifest and fails strict native mode without that evidence.
+  Missing configured PNG assets were repaired with documented static epsilon
+  placeholders, including a monochrome mask and plain-white static splash.
+  No approved production logo or postponed logo animation is claimed.
+- STEP 23: approved Sentry integration is exactly pinned to Expo-compatible
+  8.28.0 (the initially approved 8.33.0 failed Expo compatibility). MIT SDK;
+  owner-approved DEP-1 FSL-1.1-MIT build-tool exception covers transitive CLIs
+  3.8.0 and 2.58.6. SDK import waits for the first frame, consent and configuration;
+  development defaults off. Strict allowlist removes arbitrary payloads and PII.
+  Consent revocation/logout disable immediately; only scrubbed JavaScript errors
+  are collected. Native fatal capture/caching, replay, tracing and profiling are
+  disabled. No actual crash event or source-map upload has run.
+- Source-map CI/EAS plumbing and manual upload workflow are configured; final
+  Android export produces a valid Debug ID and external map. Live dashboard and
+  installed-build symbolication still need owner credentials and preview QA.
+- Final code checks: zero-warning lint, strict TypeScript, 82 suites / 510 tests,
+  all 337 locale base keys. Formatting is checked after this final documentation
+  update. Expo dependency compatibility passes; production audit reports zero
+  high/critical, 1 low / 32 moderate. No forced dependency upgrades.
+- Bundle limit passes after removing unused SDK entry-point modules and enabling
+  Expo's experimental optimizer/tree shaking consistently for release exports,
+  CI and preview/production EAS: 6,104,882 Hermes bytes vs 5,922,377 (+3.08%).
+  Initial full-entry export failed (+29.60%); no-map final comparison includes
+  SDK code even with an empty DSN. Source-map export also passes. See
+  PERF_REPORT.md for all measurements and compiler caveats.
+- Epsilon Design System + Unslop source/component review completed for modified
+  states: spacing → color → icons → copy → typography → layout → details → visuals
+  → motion. Existing tokens, accessible controls, localized copy and restrained
+  status motion are retained. Permanent requirement remains in DESIGN_SYSTEM.md.
+- **22.c and 23.f remain unchecked intentionally:** real 360dp/1.3x-font/TalkBack
+  passes and before/after low-end cold-start measurements are NOT VERIFIED.
+  ANDROID_AUDIT.md and PERF_REPORT.md record exact remaining checks. No Android
+  SDK/adb/phone is available here. Native merged-manifest, keyboard/back/insets,
+  SMS autofill, notification and live Sentry dashboard tests remain pending.
+  Update the hosted privacy disclosure and vendor retention/access configuration
+  before production enablement. Implementation is ready for preview review with
+  these explicit verification limits; no native/performance pass is fabricated.
