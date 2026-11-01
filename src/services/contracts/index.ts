@@ -100,6 +100,13 @@ export const authResultSchema = z
 
 export type AuthResult = z.infer<typeof authResultSchema>;
 
+export const otpChallengeSchema = z
+  .object({
+    expiresAt: isoDate,
+    retryAfterSeconds: z.number().int().safe().nonnegative(),
+  })
+  .strict();
+
 /** Canonical onboarding envelope; legacy User-only APIs remain supported explicitly. */
 export const profileUpdateResultSchema = z.union([
   z.object({ user: userSchema, nextStep: nextStepSchema }).strict(),
@@ -237,8 +244,10 @@ export const feedbackResultSchema = z
       .strict()
       .refine(
         (reward) =>
-          reward.status !== 'confirmed' || reward.amountMinor !== null,
-        'Confirmed reward requires a server amount',
+          reward.status === 'none'
+            ? reward.amountMinor === null
+            : reward.status !== 'confirmed' || reward.amountMinor !== null,
+        'None requires a null amount; confirmed requires a server amount',
       ),
   })
   .strict();

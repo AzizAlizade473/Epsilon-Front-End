@@ -6,6 +6,7 @@
 
 import {
   authResultSchema,
+  otpChallengeSchema,
   configSchema,
   feedbackResultSchema,
   feedbackReviewSchema,
@@ -37,13 +38,6 @@ import type {
 } from '../interfaces';
 import { z } from 'zod';
 
-const otpRequestResponseSchema = z
-  .object({
-    expiresAt: z.string().datetime({ offset: true }),
-    retryAfterSeconds: z.number().int().safe().nonnegative(),
-  })
-  .strict();
-
 const voidSchema = z
   .null()
   .or(z.undefined())
@@ -51,15 +45,9 @@ const voidSchema = z
 
 export const httpAuthService: AuthService = {
   async requestOtp(input) {
-    return request(
-      'POST',
-      '/auth/otp/request',
-      otpRequestResponseSchema,
-      input,
-      {
-        idempotencyKey: generateIdempotencyKey('otp-req'),
-      },
-    );
+    return request('POST', '/auth/otp/request', otpChallengeSchema, input, {
+      idempotencyKey: generateIdempotencyKey('otp-req'),
+    });
   },
 
   async verifyOtp(input) {
@@ -81,8 +69,8 @@ export const httpAuthService: AuthService = {
   async requestPhoneLinkOtp(input) {
     return requestWithAuth(
       'POST',
-      '/auth/phone/link/request',
-      otpRequestResponseSchema,
+      '/me/phone/otp/request',
+      otpChallengeSchema,
       input,
       {
         idempotencyKey: generateIdempotencyKey('link-req'),
@@ -91,15 +79,9 @@ export const httpAuthService: AuthService = {
   },
 
   async verifyPhoneLink(input) {
-    return requestWithAuth(
-      'POST',
-      '/auth/phone/link/verify',
-      userSchema,
-      input,
-      {
-        idempotencyKey: generateIdempotencyKey('link-ver'),
-      },
-    );
+    return requestWithAuth('POST', '/me/phone/otp/verify', userSchema, input, {
+      idempotencyKey: generateIdempotencyKey('link-ver'),
+    });
   },
 
   async refresh(input) {

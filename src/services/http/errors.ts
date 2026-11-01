@@ -4,36 +4,30 @@
  * Client-side codes (NETWORK, TIMEOUT, BAD_RESPONSE, UNKNOWN) are generated
  * locally; all other codes come from the server.
  */
+export const serverErrorCodes = [
+  'UNAUTHORIZED',
+  'SOCIAL_TOKEN_INVALID',
+  'SOCIAL_EMAIL_UNVERIFIED',
+  'OTP_INVALID',
+  'OTP_EXPIRED',
+  'OTP_TOO_MANY',
+  'PHONE_IN_USE',
+  'IDENTITY_ALREADY_LINKED',
+  'RECEIPT_UNSUPPORTED',
+  'RECEIPT_NOT_FOUND',
+  'RECEIPT_ALREADY_CLAIMED',
+  'RECEIPT_EXPIRED',
+  'FEEDBACK_ALREADY_SUBMITTED',
+  'AGE_RESTRICTED',
+  'VALIDATION_FAILED',
+  'RATE_LIMITED',
+] as const;
 export type ApiErrorCode =
-  // Auth
-  | 'UNAUTHORIZED'
-  | 'SOCIAL_TOKEN_INVALID'
-  | 'SOCIAL_EMAIL_UNVERIFIED'
-  // OTP
-  | 'OTP_INVALID'
-  | 'OTP_EXPIRED'
-  | 'OTP_TOO_MANY'
-  // Phone / identity
-  | 'PHONE_IN_USE'
-  | 'IDENTITY_ALREADY_LINKED'
-  // Receipt
-  | 'RECEIPT_UNSUPPORTED'
-  | 'RECEIPT_NOT_FOUND'
-  | 'RECEIPT_ALREADY_CLAIMED'
-  | 'RECEIPT_EXPIRED'
-  // Feedback
-  | 'FEEDBACK_ALREADY_SUBMITTED'
-  // Eligibility
-  | 'AGE_RESTRICTED'
-  // Validation
-  | 'VALIDATION_FAILED'
-  | 'RATE_LIMITED'
-  // Client-side
+  | (typeof serverErrorCodes)[number]
   | 'BAD_RESPONSE'
   | 'NETWORK'
   | 'TIMEOUT'
   | 'UNKNOWN';
-
 /**
  * Structured API error thrown by the HTTP client.
  *

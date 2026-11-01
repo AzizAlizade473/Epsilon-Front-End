@@ -304,7 +304,7 @@ and after. No real event, upload, dashboard verification or device result is
 claimed from this PC. Opt-out disables the client immediately but cannot unsend
 an already permitted in-flight request.
 
-## STEP 24�25 quality and CI
+## STEP 24–25 quality and CI
 
 `npm run check` now enforces coverage for services, lib and state machines,
 production-profile checks, exact production licenses/approved exceptions,
@@ -323,7 +323,7 @@ remain a separate approved build-tool exception. Existing exceptions include
 BlueOak-1.0.0, Python-2.0, Unlicense, CC0-1.0, CC-BY-4.0 browser data and MPL-2.0
 Lightning CSS tooling; none are represented as MIT. Any changed or new disallowed
 license fails the gate. OR expressions pass only with an allowed alternative.
-The app has no new npm dependency from STEP 24�25.
+The app has no new npm dependency from STEP 24–25.
 
 PR CI uses read-only permissions, credential-free fixture Android exports and
 immutable action SHAs. Bundle comparison uses the recorded no-map Hermes
@@ -369,3 +369,32 @@ cold starts, backend/Google/push integration and live Sentry ingestion remain
 NOT VERIFIED. `QA_CHECKLIST.md` maps critical scenarios to automated evidence
 and pending backend/device responsibilities. No customer-facing layout changed;
 Epsilon + Unslop remains the standing design requirement.
+
+## STEP 26–27 backend and legal handoff
+
+The backend handoff is `API_CONTRACT.md`, generated `openapi.yaml` and
+`BUSINESS_RULES.md`. Run `npm run contract:generate` after intentional schema/
+operation changes, review the result, then `npm run contract:check` (included in
+`npm run check`). It compares actual Zod schemas and HTTP-adapter path inventory;
+backend business/authorization/ledger enforcement still requires staging proof.
+Canonical phone linking uses `/me/phone/otp/request` and `/me/phone/otp/verify`.
+Errors prefer the canonical nested envelope; flat legacy errors remain decoded,
+and unknown/client-only response codes safely fall back by HTTP status.
+
+`LEGAL_TODO.md` is the single owner/legal input checklist. `DATA_INVENTORY.md`,
+`PRIVACY_POLICY_DRAFT.md`, `TERMS_DRAFT.md`, `REWARDS_TERMS_DRAFT.md`,
+`INCIDENT_RESPONSE.md` and `STORE_READINESS.md` are review inputs, not approved
+legal texts, hosted resources, store submissions or backend acceptance. Do not
+publish drafts or configure example URLs as if ownership/content were verified.
+Privacy/Terms URLs must be configured HTTPS resources without credentials/query/
+fragment; missing or invalid configuration fails validation rather than opening
+an unsafe fallback. Existing browser-failure handling remains localized.
+
+Owner must review the inventory, resolve the six business decisions, send the
+handoff to the backend teammate, obtain legal/translation approval, host verified
+legal/deletion resources and prove recentAuth/deletion/retention in staging.
+Review credentials/fixed OTP/demo purchase values belong only in restricted
+store-review configuration, never this repository. No live credentials, provider
+configuration, publishing or external messages were used for this handoff.
+Existing Android/native/device/cold-start/Google/push/Sentry/OTA prerequisites
+remain unchanged; STEP 28–29 optimization/release work is not started here.

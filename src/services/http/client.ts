@@ -17,15 +17,19 @@ import { z } from 'zod';
 
 import { env } from '@/lib/env';
 import { observeServerDate } from '@/lib/server-clock';
-import { ApiError, type ApiErrorCode, codeFromStatus } from './errors';
+import {
+  ApiError,
+  type ApiErrorCode,
+  codeFromStatus,
+  serverErrorCodes,
+} from './errors';
 
 // ---------------------------------------------------------------------------
 // UUID helper — uses global Web Crypto (available in Node 20+ and Hermes)
 // ---------------------------------------------------------------------------
 
 function newRequestId(): string {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (globalThis as any).crypto?.randomUUID?.() ?? fallbackId();
+  return globalThis.crypto?.randomUUID?.() ?? fallbackId();
 }
 
 let _idCounter = 0;
@@ -78,13 +82,19 @@ export interface RequestOptions {
 // Server error body schema
 // ---------------------------------------------------------------------------
 
-const serverErrorBodySchema = z
+const serverErrorDetailSchema = z
   .object({
-    code: z.string(),
+    code: z.enum(serverErrorCodes),
     message: z.string().optional(),
-    retryAfterSeconds: z.number().int().nonnegative().optional(),
+    requestId: z.string().min(1).max(128).optional(),
+    retryAfterSeconds: z.number().int().safe().nonnegative().optional(),
   })
   .passthrough();
+// Canonical envelope; retain the previously accepted flat shape during handoff.
+const serverErrorBodySchema = z.union([
+  z.object({ error: serverErrorDetailSchema }).transform(({ error }) => error),
+  serverErrorDetailSchema,
+]);
 
 // ---------------------------------------------------------------------------
 // Jitter helper for GET retries (NET-2)
@@ -229,7 +239,7 @@ async function executeRequest<T>(
     options?.signal?.removeEventListener('abort', onAbort);
   }
 
-  const serverRequestId = response.headers.get('X-Request-Id') ?? requestId;
+  let serverRequestId = response.headers.get('X-Request-Id') ?? requestId;
   observeServerDate(response.headers.get('Date'));
 
   // ---------------------------------------------------------------------------
@@ -242,13 +252,18 @@ async function executeRequest<T>(
     const retryHeader = response.headers.get('Retry-After');
     let retryAfterSeconds: number | null =
       retryHeader && /^\d+$/.test(retryHeader) ? Number(retryHeader) : null;
+    if (!Number.isSafeInteger(retryAfterSeconds)) retryAfterSeconds = null;
 
     try {
       const errorJson: unknown = await response.json();
       const parsed = serverErrorBodySchema.safeParse(errorJson);
       if (parsed.success) {
-        code = parsed.data.code as ApiErrorCode;
+        code = parsed.data.code;
         message = parsed.data.message ?? message;
+        serverRequestId =
+          response.headers.get('X-Request-Id') ??
+          parsed.data.requestId ??
+          requestId;
         retryAfterSeconds = parsed.data.retryAfterSeconds ?? retryAfterSeconds;
       }
     } catch {
