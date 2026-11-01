@@ -1,0 +1,35 @@
+name: Manual EAS Android build
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: Reviewed EAS build profile (never submits to a store)
+        required: true
+        type: choice
+        options: [development, preview, production]
+permissions:
+  contents: read
+jobs:
+  build:
+    if: github.ref == 'refs/heads/main'
+    environment: eas-${{ inputs.profile }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.22.1
+          cache: npm
+      - run: npm ci
+      - run: npm run guard:production
+      - name: Request reviewed Android build
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          BUILD_PROFILE: ${{ inputs.profile }}
+        run: |
+          test -n "$EXPO_TOKEN" || { echo 'Configure the protected environment EXPO_TOKEN secret'; exit 1; }
+          case "$BUILD_PROFILE" in development|preview|production) ;; *) exit 1 ;; esac
+          npx --yes eas-cli@27.2.0 build --platform android --profile "$BUILD_PROFILE" --non-interactive --freeze-credentials --no-wait

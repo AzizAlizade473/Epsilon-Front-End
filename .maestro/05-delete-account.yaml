@@ -1,0 +1,21 @@
+appId: com.epsilonup.app
+name: Account deletion requires fresh OTP and typed confirmation
+---
+- runFlow: subflows/phone-login.yaml
+- openLink: epsilon://profile
+- tapOn: Məxfilik və təhlükəsizlik
+- scrollUntilVisible:
+    element:
+      text: Hesabı sil
+- tapOn: Hesabı sil
+- tapOn: Davam et
+- tapOn: '.*nömrəsinə kod göndər'
+- tapOn: SMS kodu
+- inputText: '123456'
+- hideKeyboard
+- tapOn: Davam et
+- tapOn: Silmənin təsdiqi
+- inputText: SİL
+- hideKeyboard
+- tapOn: Hesabı sil
+- assertVisible: Telefon nömrəsi ilə davam et

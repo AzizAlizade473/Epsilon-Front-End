@@ -1,0 +1,47 @@
+name: Bundle report comment
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+permissions:
+  actions: read
+  pull-requests: write
+jobs:
+  comment:
+    if: github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # No checkout or execution of PR code; consume only bounded numeric data.
+      - uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        with:
+          script: |
+            const result = await github.rest.actions.listWorkflowRunArtifacts({...context.repo, run_id: context.payload.workflow_run.id});
+            const reports = result.data.artifacts.filter(a => a.name.startsWith('bundle-report-'));
+            if (reports.length !== 1 || reports[0].size_in_bytes > 16384 || reports[0].expired) throw new Error('Expected one small numeric report artifact');
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+          pattern: bundle-report-*
+          merge-multiple: true
+          path: bundle-data
+      - uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        with:
+          script: |
+            const fs = require('node:fs');
+            const file = 'bundle-data/bundle.json';
+            if (!fs.lstatSync(file).isFile() || fs.lstatSync(file).isSymbolicLink()) throw new Error('Expected regular report file');
+            if (fs.statSync(file).size > 1024) throw new Error('Oversized report');
+            const report = JSON.parse(fs.readFileSync(file, 'utf8'));
+            for (const key of ['bytes', 'baseline', 'growthPercent']) {
+              if (typeof report[key] !== 'number' || !Number.isFinite(report[key])) throw new Error('Invalid numeric report');
+            }
+            if (report.bytes <= 0 || report.baseline <= 0 || report.bytes > 1e9) throw new Error('Invalid bundle size');
+            report.growthPercent = (report.bytes / report.baseline - 1) * 100;
+            const prs = context.payload.workflow_run.pull_requests;
+            if (!prs?.length) throw new Error('No originating PR association');
+            const pr = await github.rest.pulls.get({...context.repo, pull_number: prs[0].number});
+            if (pr.data.head.sha !== context.payload.workflow_run.head_sha) return;
+            await github.rest.issues.createComment({...context.repo, issue_number: pr.data.number,
+              body: `Android Hermes: **${report.bytes.toLocaleString('en-US')} bytes**, growth **${report.growthPercent.toFixed(2)}%** from ${report.baseline.toLocaleString('en-US')} bytes. Limit 10%. Credential-free JS export; native/device checks remain separate.`});

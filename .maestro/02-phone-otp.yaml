@@ -1,0 +1,19 @@
+appId: com.epsilonup.app
+name: Wrong, expired and correct mock OTP
+---
+- launchApp:
+    clearState: true
+- tapOn: Telefon nömrəsi ilə davam et
+- tapOn: Telefon nömrəsi
+- inputText: '501234567'
+- hideKeyboard
+- tapOn: Kod göndər
+- tapOn: 6 rəqəmli SMS kodu
+- inputText: '000000'
+- assertVisible: Kod yanlışdır. Yenidən cəhd edin.
+- tapOn: 6 rəqəmli SMS kodu
+- inputText: '111111'
+- assertVisible: Kodun müddəti bitib. Yeni kod göndərin.
+- tapOn: 6 rəqəmli SMS kodu
+- inputText: '123456'
+- assertVisible: Ana səhifə

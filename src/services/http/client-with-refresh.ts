@@ -14,6 +14,7 @@ import { authOperation } from '@/lib/auth-lifecycle';
 
 import {
   request,
+  getAccessToken,
   setAccessToken,
   type HttpMethod,
   type RequestOptions,
@@ -53,7 +54,7 @@ async function triggerSingleFlightRefresh(): Promise<string> {
 
   if (!_inflightRefresh) {
     const epoch = authOperation.epoch();
-    _inflightRefresh = _refreshFn()
+    const pending = _refreshFn()
       .then((newAccessToken) => {
         if (!authOperation.current(epoch))
           throw new ApiError({
@@ -77,8 +78,9 @@ async function triggerSingleFlightRefresh(): Promise<string> {
         throw err;
       })
       .finally(() => {
-        _inflightRefresh = null;
+        if (_inflightRefresh === pending) _inflightRefresh = null;
       });
+    _inflightRefresh = pending;
   }
 
   return _inflightRefresh;
@@ -92,6 +94,7 @@ export async function requestWithAuth<T>(
   options?: RequestOptions,
 ): Promise<T> {
   const epoch = authOperation.epoch();
+  const tokenAtStart = getAccessToken();
   try {
     return await request(method, path, schema, body, options);
   } catch (err) {
@@ -104,13 +107,16 @@ export async function requestWithAuth<T>(
 
     // Attempt single-flight refresh
     try {
-      await triggerSingleFlightRefresh();
+      // A delayed 401 may belong to the token that another request already
+      // refreshed. Reuse the rotated token instead of starting a second refresh.
+      if (getAccessToken() === tokenAtStart) await triggerSingleFlightRefresh();
     } catch {
       // Refresh failed; error already triggered onLogout and was thrown
       throw err;
     }
 
     // Retry once with new token
+    if (!authOperation.current(epoch)) throw err;
     try {
       return await request(method, path, schema, body, options);
     } catch (retryErr) {

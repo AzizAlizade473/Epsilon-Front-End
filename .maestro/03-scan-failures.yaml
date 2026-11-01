@@ -1,0 +1,38 @@
+appId: com.epsilonup.app
+name: Receipt failures and camera permission recovery
+---
+- runFlow: subflows/phone-login.yaml
+- launchApp:
+    permissions:
+      camera: deny
+- runFlow:
+    file: subflows/resolve.yaml
+    env:
+      REFERENCE: E2E_UNSUPPORTED
+- assertVisible: Kod dəstəklənmir
+- back
+- runFlow:
+    file: subflows/resolve.yaml
+    env:
+      REFERENCE: E2E_CLAIMED
+- assertVisible: Qəbz artıq istifadə edilib
+- back
+- runFlow:
+    file: subflows/resolve.yaml
+    env:
+      REFERENCE: E2E_EXPIRED
+- assertVisible: Qəbzin vaxtı bitib
+- back
+- runFlow:
+    file: subflows/resolve.yaml
+    env:
+      REFERENCE: E2E_NETWORK
+- assertVisible: Bağlantı alınmadı
+- back
+- launchApp:
+    permissions:
+      camera: allow
+- openLink: epsilon://scan
+- assertVisible: Qəbzdəki QR kodu çərçivəyə yerləşdirin
+- back
+- assertVisible: Ana səhifə

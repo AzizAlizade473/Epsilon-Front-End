@@ -1,0 +1,14 @@
+appId: com.epsilonup.app
+---
+- launchApp:
+    clearState: true
+- tapOn: Telefon nömrəsi ilə davam et
+- tapOn: Telefon nömrəsi
+- inputText: '501234567'
+- hideKeyboard
+- tapOn: Kod göndər
+- tapOn: 6 rəqəmli SMS kodu
+- inputText: '123456'
+- extendedWaitUntil:
+    visible: Ana səhifə
+    timeout: 15000
