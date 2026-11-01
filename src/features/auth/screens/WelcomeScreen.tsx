@@ -44,7 +44,7 @@ export default function WelcomeScreen() {
           <FadeUp order={0}>
             <View style={styles.brand}>
               <Image
-                source={require('../../../../assets/brand/app-icon.png')}
+                source={require('../../../../assets/brand/epsilon-logo.png')}
                 style={styles.logo}
                 contentFit="contain"
                 accessibilityLabel={t('auth.brand')}

@@ -944,4 +944,6 @@ The current scope at the top and subsequent batch entries supersede this history
   Budget/mock-marker checks pass and the browser session implementation is absent
   from Android bytecode. No launch-readiness/manual gate changes; NO-GO remains.
 
-- [x] UI.welcome.1 ? Reference-inspired centered welcome card, transparent existing Epsilon placeholder mark, preserved phone/Google flow. Checks: 93 suites / 561 tests; mobile browser phone navigation verified; native visual QA pending.
+- [x] UI.welcome.1 - Reference-inspired centered welcome card, transparent existing Epsilon placeholder mark, preserved phone/Google flow. Checks: 93 suites / 561 tests; mobile browser phone navigation verified; native visual QA pending.
+
+- [x] UI.welcome.2 - Use owner-supplied PDF logo with transparent background in welcome card; browser asset/alpha verified. Full check passes: 94 suites / 563 tests. Native visual QA pending.
