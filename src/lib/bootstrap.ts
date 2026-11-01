@@ -1,4 +1,4 @@
-import * as SecureStore from 'expo-secure-store';
+import * as SecureStore from './session-storage';
 import { z } from 'zod';
 
 export const storageKeys = {

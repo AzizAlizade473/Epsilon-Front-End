@@ -1,5 +1,5 @@
 import * as Localization from 'expo-localization';
-import * as SecureStore from 'expo-secure-store';
+import * as SecureStore from './session-storage';
 import { createInstance } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 

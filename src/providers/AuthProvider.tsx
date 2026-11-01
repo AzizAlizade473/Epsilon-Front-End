@@ -1,4 +1,4 @@
-import * as SecureStore from 'expo-secure-store';
+import * as SecureStore from '@/lib/session-storage';
 import '@/lib/preferences';
 import { notifySessionExpired } from '@/lib/runtime-notices';
 import {

@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import * as SecureStore from 'expo-secure-store';
+import * as SecureStore from '@/lib/session-storage';
 import { storageKeys } from '@/lib/bootstrap';
 import { useTranslation } from 'react-i18next';
 import { PressSurface } from '@/components/ui/PressSurface';

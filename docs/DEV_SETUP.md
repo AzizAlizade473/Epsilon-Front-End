@@ -1,5 +1,28 @@
 # Windows & Android Development Setup
 
+## Local browser review
+
+User-approved `react-native-web` 0.21.4 (MIT) matches Expo SDK 58's supported
+version. Install the pinned lockfile with `npm ci`. Copy `.env.example` to an
+ignored `.env.local` if absent, retaining development/mock mode and Google/E2E
+flags off. Run `npm start -- --web --localhost --port 8081 --max-workers 2` and
+open `http://localhost:8081/welcome`.
+
+For the fixture journey, use a sample Azerbaijani phone number such as
+`+994501234567` and six-digit code `123456`. Mock services do not send SMS or
+authenticate real accounts. Refresh starts a new session: the browser-only
+session adapter keeps fixture credentials in memory, never localStorage/cookies,
+and rejects live/production mode. Android continues using Expo SecureStore.
+Shared animation controls use a platform hook because react-native-web does not
+export native `useAnimatedValue`; browser uses stable `Animated.Value`, native
+re-exports the existing hook. No visual redesign is introduced.
+
+Use Ctrl+R after compatibility fixes to clear a stale development error overlay.
+The local server and compiled web bundle can be checked independently of rendered
+UI; a successful compilation is not visual/device QA. Native Google, permissions,
+push and camera behavior still require Android testing. This review server is
+not a production website, deployment or public-launch approval.
+
 This document describes setting up a Windows workstation for developing and testing Epsilon on Android (Android-first platform target).
 
 ---

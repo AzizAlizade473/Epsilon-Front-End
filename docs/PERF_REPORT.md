@@ -121,3 +121,15 @@ camera/overlays, memory before/after, CPU/battery and request counts. Include
 offline, high latency, empty/long lists and large fonts. Keep raw traces and
 screenshots, not invented numbers. Investigate measured regressions before
 changing these pending rows to PASS. No adb/Maestro/device was available here.
+
+## Approved local browser review follow-up
+
+User approved `react-native-web` 0.21.4 (MIT, Expo-supported). Native delegates
+still use SecureStore and native useAnimatedValue; browser-only adapters enable
+mock review without persistent session credentials. Verified Android no-map export
+`dist/web-preview-fixed`: **6,094,528 bytes** vs pre-preview **6,095,278** (-0.012%
+total), under the unchanged budget. The web session guard is absent from native
+bytecode. This comparison includes adapter/environment changes and is not an
+isolated dependency-size attribution. The served development web entry compiled
+and returned HTTP 200; development JS size is not a production website measurement.
+Device timing/frame/memory and rendered-browser QA remain separate requirements.

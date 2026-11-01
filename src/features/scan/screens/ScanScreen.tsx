@@ -11,8 +11,8 @@ import {
   Platform,
   StyleSheet,
   View,
-  useAnimatedValue,
 } from 'react-native';
+import { useAnimatedValue } from '@/hooks/useAnimatedValue';
 import {
   SafeAreaView,
   useSafeAreaInsets,

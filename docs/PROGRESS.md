@@ -914,3 +914,32 @@ The current scope at the top and subsequent batch entries supersede this history
   release validation P2. No critical defect was downgraded to finish the roadmap.
 - STOP at this final engineering batch. No STEP 30, public distribution, OTA,
   production deployment, external message, credential creation or logo animation.
+
+## Local browser review follow-up (2026-11-01)
+
+- User requested a website preview and explicitly approved exactly pinned
+  `react-native-web` 0.21.4 (MIT), matching the installed Expo SDK compatibility
+  declaration. Lockfile, integrity and license checks pass without new exceptions.
+- Started the localhost-only Expo web development server on port 8081 using an
+  ignored `.env.local` copied from the development/mock example. Added Expo's
+  generated web type include/ignore entry. No public deployment or live backend.
+- Added platform session storage: native delegates to existing SecureStore;
+  browser mock credentials stay in memory and reject live/production mode.
+  No credentials enter localStorage/cookies; refreshing starts a fresh session.
+- Fixed the user-reported PressSurface crash: react-native-web lacks the native
+  `useAnimatedValue` export. All shared consumers now use a platform hook; web
+  retains one Animated.Value across renders and native re-exports the existing
+  hook. Native animation behavior and Epsilon styling are preserved.
+- Complete `npm run check` passes: **93 suites / 561 tests**, unchanged thresholds,
+  strict types, zero lint warnings, locale/format/config/contracts/supply-chain
+  checks. Regression tests cover transient session deletion, live/production
+  rejection and stable browser animation values. Expo compatibility and production
+  audit pass: existing 1 low / 32 moderate, zero high/critical vulnerabilities.
+- Actual development web entry returns HTTP 200 and resolves both `.web` adapters.
+  Browser automation could not verify the current URL, so no rendered visual QA
+  claim is made. User should refresh the preview to clear the stale error overlay.
+  See DEV_SETUP.md for mock phone/OTP instructions and native-feature limitations.
+- Android no-map export `dist/web-preview-fixed`: **6,094,528 bytes**, versus
+  pre-preview 6,095,278 (-0.012% total; not an isolated package-size estimate).
+  Budget/mock-marker checks pass and the browser session implementation is absent
+  from Android bytecode. No launch-readiness/manual gate changes; NO-GO remains.

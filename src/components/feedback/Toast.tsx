@@ -1,6 +1,7 @@
 import X from 'lucide-react-native/icons/x';
 import { useEffect } from 'react';
-import { Animated, StyleSheet, useAnimatedValue } from 'react-native';
+import { Animated, StyleSheet } from 'react-native';
+import { useAnimatedValue } from '@/hooks/useAnimatedValue';
 
 import { IconButton } from '@/components/ui/IconButton';
 import { Text } from '@/components/ui/Text';

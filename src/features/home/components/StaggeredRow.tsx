@@ -1,5 +1,6 @@
 import { useEffect, useRef, type ReactNode } from 'react';
-import { Animated, useAnimatedValue } from 'react-native';
+import { Animated } from 'react-native';
+import { useAnimatedValue } from '@/hooks/useAnimatedValue';
 import { useMotion } from '@/design';
 
 export function StaggeredRow({

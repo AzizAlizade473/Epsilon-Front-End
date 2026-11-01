@@ -2,7 +2,8 @@ import NetInfo from '@react-native-community/netinfo';
 import { onlineManager } from '@tanstack/react-query';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, StyleSheet, View, useAnimatedValue } from 'react-native';
+import { Animated, StyleSheet, View } from 'react-native';
+import { useAnimatedValue } from '@/hooks/useAnimatedValue';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Text } from '@/components/ui/Text';

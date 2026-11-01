@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { Animated, StyleSheet, View, useAnimatedValue } from 'react-native';
+import { Animated, StyleSheet, View } from 'react-native';
+import { useAnimatedValue } from '@/hooks/useAnimatedValue';
 import Check from 'lucide-react-native/icons/check';
 import { Icon } from '@/components/ui/Icon';
 import { colors, layout, motionTokens, spacing, useMotion } from '@/design';

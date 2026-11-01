@@ -1,7 +1,8 @@
 import Star from 'lucide-react-native/icons/star';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, StyleSheet, View, useAnimatedValue } from 'react-native';
+import { Animated, StyleSheet, View } from 'react-native';
+import { useAnimatedValue } from '@/hooks/useAnimatedValue';
 import { Button } from '@/components/ui/Button';
 import { Chip } from '@/components/ui/Chip';
 import { Input } from '@/components/ui/Input';

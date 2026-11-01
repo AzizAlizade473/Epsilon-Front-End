@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { Animated, useAnimatedValue, type DimensionValue } from 'react-native';
+import { Animated, type DimensionValue } from 'react-native';
+import { useAnimatedValue } from '@/hooks/useAnimatedValue';
 
 import { colors, layout, radius, useMotion } from '@/design';
 

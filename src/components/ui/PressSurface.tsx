@@ -9,12 +9,12 @@ import {
   Platform,
   Pressable,
   StyleSheet,
-  useAnimatedValue,
   type PressableProps,
   type ColorValue,
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
+import { useAnimatedValue } from '@/hooks/useAnimatedValue';
 
 import { colors, layout, useMotion } from '@/design';
 

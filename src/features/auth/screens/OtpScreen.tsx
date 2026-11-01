@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Redirect, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Animated, Platform, StyleSheet, useAnimatedValue } from 'react-native';
+import { Animated, Platform, StyleSheet } from 'react-native';
+import { useAnimatedValue } from '@/hooks/useAnimatedValue';
 import {
   AndroidHaptics,
   NotificationFeedbackType,
