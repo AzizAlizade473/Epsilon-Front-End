@@ -404,5 +404,15 @@
       }
     },
     "deleteKeyword": "DELETE"
+  },
+  "resilience": {
+    "errorTitle": "Something went wrong",
+    "reload": "Reload",
+    "reconnected": "Connection restored",
+    "sessionExpired": "Your session expired. Sign in again.",
+    "updateTitle": "Update required",
+    "updateBody": "Install the latest version of Epsilon to continue.",
+    "updateAction": "Update on Play Store",
+    "notFoundBody": "This page is unavailable. You can return home."
   }
 }

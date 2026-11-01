@@ -1,3 +1,4 @@
+import { monotonicNow } from '@/lib/server-clock';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/providers/ToastProvider';
@@ -60,7 +61,7 @@ export function usePhoneAuth(mode: 'signIn' | 'link' = 'signIn') {
 
   const requestCode = async (phone: string) => {
     if (gate.current) return false;
-    if (authOperation.retryAt() > Date.now()) return false;
+    if (authOperation.retryAt() > monotonicNow()) return false;
     const parsed = phoneSchema.safeParse(phone);
     if (!parsed.success) {
       setError(t('auth.invalidPhone'));
@@ -70,7 +71,7 @@ export function usePhoneAuth(mode: 'signIn' | 'link' = 'signIn') {
     if (
       current?.mode === mode &&
       current.phone === parsed.data &&
-      Math.max(current.resendAt, current.lockedUntil) > Date.now()
+      Math.max(current.resendAt, current.lockedUntil) > monotonicNow()
     )
       return false;
     if (!authOperation.acquire()) return false;
@@ -101,7 +102,7 @@ export function usePhoneAuth(mode: 'signIn' | 'link' = 'signIn') {
       gate.current ||
       !current ||
       current.mode !== mode ||
-      current.lockedUntil > Date.now() ||
+      current.lockedUntil > monotonicNow() ||
       !otpSchema.safeParse(code).success
     )
       return null;

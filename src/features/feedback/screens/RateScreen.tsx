@@ -12,6 +12,7 @@ import { useFeedback } from '@/providers/FeedbackProvider';
 import { receiptSchema } from '@/services/contracts';
 import { queryKeys } from '@/services/query';
 import { generateIdempotencyKey } from '@/services/http/idempotency';
+import { trustedServerTime } from '@/lib/server-clock';
 import { OutboxFullError } from '@/services/feedback-outbox';
 import { RatingForm, type RatingDraft } from '../components/RatingForm';
 
@@ -109,7 +110,10 @@ export function RateScreen() {
           comment: draft.comment,
           reasonCodes: draft.reasonCodes,
           idempotencyKey: key,
-          createdAt: Date.now(),
+          createdAt: (() => {
+            const now = trustedServerTime();
+            return now === null ? null : Math.floor(now);
+          })(),
         },
         item.name,
       );

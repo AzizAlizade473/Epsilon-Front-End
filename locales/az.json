@@ -404,5 +404,15 @@
       }
     },
     "deleteKeyword": "SİL"
+  },
+  "resilience": {
+    "errorTitle": "Nəsə səhv getdi",
+    "reload": "Yenidən yüklə",
+    "reconnected": "Bağlantı bərpa olundu",
+    "sessionExpired": "Sessiyanız bitdi. Yenidən daxil olun.",
+    "updateTitle": "Yeniləmə tələb olunur",
+    "updateBody": "Davam etmək üçün Epsilon-un yeni versiyasını quraşdırın.",
+    "updateAction": "Play Store-da yenilə",
+    "notFoundBody": "Bu səhifə mövcud deyil. Ana səhifəyə qayıda bilərsiniz."
   }
 }

@@ -32,7 +32,7 @@ it('resend deadline survives remount and recalculates after backgrounding', asyn
   jest.useFakeTimers();
   const onResend = jest.fn();
   const listener = jest.spyOn(AppState, 'addEventListener');
-  const deadline = Date.now() + 60000;
+  const deadline = performance.now() + 60000;
   const view = await render(
     <ResendTimer deadline={deadline} onResend={onResend} />,
   );
@@ -41,7 +41,7 @@ it('resend deadline survives remount and recalculates after backgrounding', asyn
   expect(onResend).not.toHaveBeenCalled();
   await view.unmount();
   await act(async () => {
-    jest.setSystemTime(Date.now() + 61000);
+    jest.advanceTimersByTime(61000);
   });
   await render(<ResendTimer deadline={deadline} onResend={onResend} />);
   const callback = listener.mock.calls.at(-1)?.[1];

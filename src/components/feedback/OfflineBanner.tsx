@@ -1,15 +1,22 @@
 import NetInfo from '@react-native-community/netinfo';
 import { onlineManager } from '@tanstack/react-query';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
+import { Animated, StyleSheet, View, useAnimatedValue } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Text } from '@/components/ui/Text';
-import { colors, spacing, typography } from '@/design';
+import { colors, layout, spacing, typography, useMotion } from '@/design';
 
 export function OfflineBanner({ children }: { children: ReactNode }) {
-  const [offline, setOffline] = useState(false);
+  const [status, setStatus] = useState<'online' | 'offline' | 'reconnected'>(
+    'online',
+  );
+  const wasOffline = useRef(false);
+  const reconnectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const translate = useAnimatedValue(0);
+  const motion = useMotion();
+  const visible = status !== 'online';
   const [height, setHeight] = useState<number>(
     typography.caption.lineHeight + spacing[16],
   );
@@ -26,30 +33,75 @@ export function OfflineBanner({ children }: { children: ReactNode }) {
         const disconnected =
           state.isConnected === false || state.isInternetReachable === false;
         onlineManager.setOnline(!disconnected);
-        setOffline(disconnected);
+        if (disconnected) {
+          if (reconnectTimer.current) clearTimeout(reconnectTimer.current);
+          wasOffline.current = true;
+          setStatus('offline');
+        } else if (wasOffline.current) {
+          if (reconnectTimer.current) clearTimeout(reconnectTimer.current);
+          wasOffline.current = false;
+          setStatus('reconnected');
+          reconnectTimer.current = setTimeout(
+            () => setStatus('online'),
+            layout.reconnectDuration,
+          );
+        }
       });
     });
     return () => {
       cancelAnimationFrame(frame);
       unsubscribe();
+      if (reconnectTimer.current) clearTimeout(reconnectTimer.current);
+      onlineManager.setOnline(true);
     };
   }, []);
+  useEffect(() => {
+    if (!visible) return;
+    translate.setValue(motion.reduceMotion ? 0 : -height);
+    const animation = Animated.timing(translate, {
+      toValue: 0,
+      duration: motion.duration.normal,
+      useNativeDriver: true,
+    });
+    animation.start();
+    return () => animation.stop();
+  }, [visible, translate, height, motion.reduceMotion, motion.duration.normal]);
   return (
-    <View style={[styles.fill, { paddingTop: offline ? height : 0 }]}>
+    <View style={[styles.fill, { paddingTop: visible ? height : 0 }]}>
       {children}
-      {offline && (
-        <View
-          style={[styles.banner, { top: insets.top }]}
+      {visible && (
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            styles.banner,
+            {
+              top: insets.top,
+              transform: [{ translateY: translate }],
+              backgroundColor:
+                status === 'reconnected'
+                  ? colors.successTint
+                  : colors.warningTint,
+            },
+          ]}
           onLayout={(event) => setHeight(event.nativeEvent.layout.height)}
         >
           <Text
             variant="caption"
             accessibilityRole="alert"
             accessibilityLiveRegion="polite"
+            style={
+              status === 'reconnected'
+                ? { color: colors.successInk }
+                : undefined
+            }
           >
-            {t('navigation.offline')}
+            {t(
+              status === 'offline'
+                ? 'navigation.offline'
+                : 'resilience.reconnected',
+            )}
           </Text>
-        </View>
+        </Animated.View>
       )}
     </View>
   );

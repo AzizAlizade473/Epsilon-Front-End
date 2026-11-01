@@ -9,6 +9,7 @@
  */
 
 import { z } from 'zod';
+import { isAppVersion } from '@/lib/app-version';
 
 // ---------------------------------------------------------------------------
 // Primitives
@@ -113,7 +114,7 @@ export type ProfileUpdateResult = z.infer<typeof profileUpdateResultSchema>;
 export const configSchema = z
   .object({
     /** Minimum app version the server accepts (semver string, e.g. "1.2.0"). */
-    minAppVersion: z.string().min(1),
+    minAppVersion: z.string().refine(isAppVersion),
     /** Minimum age for account creation; mirrors EXPO_PUBLIC_MIN_AGE but authoritative from server. */
     minAge: z.number().int().positive(),
     /** When true, every account must verify a phone number before reaching home. */

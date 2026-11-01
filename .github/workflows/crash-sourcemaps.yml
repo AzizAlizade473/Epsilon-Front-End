@@ -1,0 +1,33 @@
+name: Upload crash source maps
+on:
+  workflow_dispatch:
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      SENTRY_ORG: ${{ vars.SENTRY_ORG }}
+      SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
+      EXPO_PUBLIC_APP_ENV: production
+      EXPO_PUBLIC_API_MODE: live
+      EXPO_PUBLIC_API_URL: ${{ vars.EXPO_PUBLIC_API_URL }}
+      EXPO_PUBLIC_SUPPORT_EMAIL: ${{ vars.EXPO_PUBLIC_SUPPORT_EMAIL }}
+      EXPO_PUBLIC_PRIVACY_URL: ${{ vars.EXPO_PUBLIC_PRIVACY_URL }}
+      EXPO_PUBLIC_TERMS_URL: ${{ vars.EXPO_PUBLIC_TERMS_URL }}
+      EXPO_PUBLIC_SENTRY_DSN: ${{ vars.EXPO_PUBLIC_SENTRY_DSN }}
+      EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID: ${{ vars.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID }}
+      ENABLE_GOOGLE_SIGNIN: ${{ vars.ENABLE_GOOGLE_SIGNIN || 'false' }}
+      ENABLE_APPLE_SIGNIN: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.22.1
+          cache: npm
+      - name: Require owner-provided configuration
+        run: node -e "const keys=['SENTRY_AUTH_TOKEN','SENTRY_ORG','SENTRY_PROJECT','EXPO_PUBLIC_API_URL','EXPO_PUBLIC_SUPPORT_EMAIL','EXPO_PUBLIC_PRIVACY_URL','EXPO_PUBLIC_TERMS_URL','EXPO_PUBLIC_SENTRY_DSN']; if(keys.some(k=>!process.env[k]))throw new Error('Configure required CI variables and Sentry secret before uploading');"
+      - run: npm ci
+      - run: npm run export:android -- --source-maps --output-dir dist/sentry --max-workers 2
+      - run: npm run crash:sourcemaps -- dist/sentry

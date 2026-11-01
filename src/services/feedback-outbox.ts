@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { authOperation } from '@/lib/auth-lifecycle';
+import { trustedServerTime } from '@/lib/server-clock';
 import { feedbackInputSchema, type FeedbackResult } from './contracts';
 import { isApiError } from './http/errors';
 
@@ -8,7 +9,7 @@ export const outboxEntrySchema = feedbackInputSchema
   .extend({
     receiptId: z.string().min(1),
     idempotencyKey: z.string().min(1),
-    createdAt: z.number().int().safe().nonnegative(),
+    createdAt: z.number().int().safe().nonnegative().nullable(),
   })
   .strict();
 export type OutboxEntry = z.infer<typeof outboxEntrySchema>;
@@ -44,7 +45,7 @@ export function createFeedbackOutbox(
   owner: string,
   storage: OutboxStorage,
   send: (entry: OutboxEntry, signal: AbortSignal) => Promise<FeedbackResult>,
-  now = Date.now,
+  now: () => number | null = trustedServerTime,
 ) {
   const key = feedbackOutboxPrefix + owner;
   const epoch = authOperation.epoch();
@@ -72,9 +73,20 @@ export function createFeedbackOutbox(
     return values
       .flatMap((value: unknown) => {
         const parsed = outboxEntrySchema.safeParse(value);
-        return parsed.success &&
-          now() - parsed.data.createdAt <= MAX_AGE &&
-          parsed.data.createdAt <= now()
+        const instant = now();
+        if (!parsed.success) return [];
+        const createdAt = parsed.data.createdAt;
+        // Without a server anchor, retain bounded drafts instead of guessing
+        // their age from the device date. Start the TTL at first trusted time.
+        if (createdAt === null)
+          return [
+            {
+              ...parsed.data,
+              createdAt: instant === null ? null : Math.floor(instant),
+            },
+          ];
+        return instant === null ||
+          (instant - createdAt <= MAX_AGE && createdAt <= instant)
           ? [parsed.data]
           : [];
       })

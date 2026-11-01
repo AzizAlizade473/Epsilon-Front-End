@@ -1,3 +1,4 @@
+import { monotonicNow } from './server-clock';
 const cleanups = new Set<() => void | Promise<void>>();
 let epoch = 0;
 let pending = false;
@@ -17,7 +18,7 @@ export const authOperation = {
   current: (expected: number) => expected === epoch,
   retryAt: () => retryAt,
   limit(seconds: number) {
-    retryAt = Date.now() + seconds * 1000;
+    retryAt = monotonicNow() + seconds * 1000;
   },
 };
 export function registerAuthCleanup(cleanup: () => void | Promise<void>) {

@@ -2,7 +2,8 @@ import { useCallback, useRef, useState } from 'react';
 import { useFocusEffect, useRouter } from 'expo-router';
 import Bell from 'lucide-react-native/icons/bell';
 import { useTranslation } from 'react-i18next';
-import { RefreshControl, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { PullToRefresh } from '@/components/ui/PullToRefresh';
 import { Button } from '@/components/ui/Button';
 import { Chip } from '@/components/ui/Chip';
 import { IconButton } from '@/components/ui/IconButton';
@@ -80,14 +81,12 @@ export default function HomeScreen() {
         />
       }
       refreshControl={
-        <RefreshControl
+        <PullToRefresh
           testID="home-refresh"
           refreshing={pulling}
           onRefresh={() => {
             void refresh();
           }}
-          tintColor={colors.brand.primary}
-          colors={[colors.brand.primary]}
         />
       }
     >
