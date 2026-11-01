@@ -270,7 +270,7 @@ async function executeRequest<T>(
 
   let json: unknown;
   try {
-    json = await response.json();
+    json = response.status === 204 ? undefined : await response.json();
   } catch {
     throw new ApiError({
       code: 'BAD_RESPONSE',

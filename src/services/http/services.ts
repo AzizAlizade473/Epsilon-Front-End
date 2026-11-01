@@ -8,6 +8,8 @@ import {
   authResultSchema,
   configSchema,
   feedbackResultSchema,
+  feedbackReviewSchema,
+  notificationPreferencesSchema,
   paginatedSchema,
   profileUpdateResultSchema,
   receiptSchema,
@@ -41,10 +43,6 @@ const otpRequestResponseSchema = z
     retryAfterSeconds: z.number().int().safe().nonnegative(),
   })
   .strict();
-
-const notificationSettingsSchema = z.object({
-  pushEnabled: z.boolean(),
-});
 
 const voidSchema = z
   .null()
@@ -119,24 +117,20 @@ export const httpAuthService: AuthService = {
 
 export const httpUserService: UserService = {
   async me() {
-    return requestWithAuth('GET', '/users/me', userSchema);
+    return requestWithAuth('GET', '/me', userSchema);
   },
 
   async updateProfile(input) {
-    return requestWithAuth(
-      'PATCH',
-      '/users/me',
-      profileUpdateResultSchema,
-      input,
-      {
-        idempotencyKey: generateIdempotencyKey('profile-update'),
-      },
-    );
+    return requestWithAuth('PATCH', '/me', profileUpdateResultSchema, input, {
+      idempotencyKey: generateIdempotencyKey('profile-update'),
+    });
   },
 
-  async deleteAccount() {
-    await requestWithAuth('DELETE', '/users/me', voidSchema, undefined, {
-      idempotencyKey: generateIdempotencyKey('delete-acc'),
+  async deleteAccount(options) {
+    await requestWithAuth('DELETE', '/me', voidSchema, undefined, {
+      ...options,
+      idempotencyKey:
+        options?.idempotencyKey ?? generateIdempotencyKey('delete-acc'),
     });
   },
 };
@@ -197,13 +191,19 @@ export const httpFeedbackService: FeedbackService = {
     });
   },
 
-  async list(params) {
+  async list(params, options) {
     const query = new URLSearchParams();
     if (params?.cursor) query.set('cursor', params.cursor);
     if (params?.limit) query.set('limit', String(params.limit));
     const qs = query.toString();
     const path = qs ? `/feedback?${qs}` : '/feedback';
-    return requestWithAuth('GET', path, paginatedSchema(feedbackResultSchema));
+    return requestWithAuth(
+      'GET',
+      path,
+      paginatedSchema(feedbackReviewSchema),
+      undefined,
+      options,
+    );
   },
 };
 
@@ -227,28 +227,44 @@ export const httpWalletService: WalletService = {
     );
   },
 
-  async transaction(id) {
+  async transaction(id, options) {
     return requestWithAuth(
       'GET',
       `/wallet/transactions/${id}`,
       walletTransactionSchema,
+      undefined,
+      options,
     );
   },
 };
 
 export const httpNotificationService: NotificationService = {
-  async settings() {
+  async settings(options) {
     return requestWithAuth(
       'GET',
-      '/notifications/settings',
-      notificationSettingsSchema,
+      '/me/notification-settings',
+      notificationPreferencesSchema,
+      undefined,
+      options,
     );
   },
-
+  async updatePreferences(input, options) {
+    return requestWithAuth(
+      'PUT',
+      '/me/notification-settings',
+      notificationPreferencesSchema,
+      input,
+      {
+        ...options,
+        idempotencyKey:
+          options?.idempotencyKey ?? generateIdempotencyKey('notifications'),
+      },
+    );
+  },
   async registerDevice(token) {
     await requestWithAuth(
       'POST',
-      '/notifications/devices',
+      '/devices',
       voidSchema,
       { token },
       {

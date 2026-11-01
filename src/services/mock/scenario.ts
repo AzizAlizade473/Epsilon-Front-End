@@ -18,6 +18,7 @@ export type MockScenario =
   | 'feedback_pending'
   | 'feedback_none'
   | 'feedback_validation'
+  | 'wallet_long_history'
   | 'feedback_already_submitted';
 
 let _activeScenario: MockScenario = 'success';

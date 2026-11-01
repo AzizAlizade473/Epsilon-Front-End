@@ -10,6 +10,8 @@ import type {
   Config,
   FeedbackInput,
   FeedbackResult,
+  FeedbackReview,
+  NotificationPreferences,
   Paginated,
   ProfileUpdateResult,
   PurchaseReference,
@@ -44,7 +46,7 @@ export interface UserService {
     birthDate?: string;
     language?: string;
   }): Promise<ProfileUpdateResult>;
-  deleteAccount(): Promise<void>;
+  deleteAccount(options?: MutationOptions): Promise<void>;
 }
 
 export interface ConfigService {
@@ -72,10 +74,13 @@ export interface FeedbackService {
     input: FeedbackInput,
     options?: MutationOptions,
   ): Promise<FeedbackResult>;
-  list(params?: {
-    cursor?: string;
-    limit?: number;
-  }): Promise<Paginated<FeedbackResult>>;
+  list(
+    params?: {
+      cursor?: string;
+      limit?: number;
+    },
+    options?: ReadOptions,
+  ): Promise<Paginated<FeedbackReview>>;
 }
 
 export interface WalletService {
@@ -87,13 +92,17 @@ export interface WalletService {
     },
     options?: ReadOptions,
   ): Promise<Paginated<WalletTransaction>>;
-  transaction(id: string): Promise<WalletTransaction>;
+  transaction(id: string, options?: ReadOptions): Promise<WalletTransaction>;
 }
 export type ReadOptions = { signal?: AbortSignal };
 export type MutationOptions = ReadOptions & { idempotencyKey?: string };
 
 export interface NotificationService {
-  settings(): Promise<{ pushEnabled: boolean }>;
+  settings(options?: ReadOptions): Promise<NotificationPreferences>;
+  updatePreferences(
+    input: NotificationPreferences,
+    options?: MutationOptions,
+  ): Promise<NotificationPreferences>;
   registerDevice(token: string): Promise<void>;
 }
 

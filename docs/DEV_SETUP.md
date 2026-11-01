@@ -223,3 +223,44 @@ verify the original key is replayed once against an idempotent backend. Confirm
 all three reward variants and receipt/home/hardware Back without stale sheets.
 This PC has no adb/Android SDK; JavaScript export does not verify native behavior,
 APK size, cold-start timing or the deployed backend's financial integrity.
+
+## Wallet and Profile (STEP 17-20)
+
+Rebuild the Android dev client for expo-clipboard 58.0.4 and expo-notifications
+58.1.7. CAMERA and POST_NOTIFICATIONS are the only requested feature permissions;
+unused boot/exact-alarm permissions are blocked. Verify the merged manifest on a
+native build; JavaScript export does not prove manifest or device behavior.
+
+Notification setup needs the real EAS project ID and Android push credentials.
+No credential or project identifier is fabricated. The client defers the SDK to
+Notifications, asks OS permission only after opt-in/explanation, creates one
+`cashback-updates` channel and sends the Expo push token in authenticated
+`POST /devices`. Missing configuration and failed registration show an error;
+preferences are not falsely marked saved. Backend logout/deletion must unlink
+account/device associations and all push payloads must exclude sensitive data.
+STEP 21 notification routing/foreground UX is deliberately not implemented.
+
+Live backend contracts to verify (not claimed deployed):
+
+- `GET/PATCH/DELETE /me`: validated User/profile envelope; optional User
+  `deletionWarning`; DELETE requires backend-enforced recent authentication.
+  The client accepts a schema-valid empty 204 deletion response.
+- `GET /feedback`: cursor pages of review records with `feedbackId`,
+  `dishName`, `restaurantName`, `rating`, nullable `comment`, `createdAt`.
+  Reward mutation results cannot supply review content and fail validation here.
+- `GET/PUT /me/notification-settings`: `cashbackUpdates` and `partnerUpdates`
+  booleans; PUT must return the saved settings. Device registration uses the
+  existing `{token}` POST body. No fake local server-write success.
+
+**MANUAL DEVICE QA PENDING:** test pull-to-refresh, signed statuses, cached-detail
+refresh/copy and TalkBack label/value order; select the development long-history
+scenario for the 1000-row/60fps check. Test profile name-save failures, all language
+choices/relaunch, notifications denied/granted/revoked in Settings, crash-consent
+persistence and account switches. Test deletion warnings, wrong Google account,
+fresh OTP/Google, typed confirmation, backend rejection and successful cleanup.
+Verify real backend rewards/ledger/retention and push association removal.
+
+Crash reporting remains STEP 23. This batch only stores an account-scoped consent
+boolean, cleared on logout/deletion; no crash-report SDK or analytics is enabled.
+The profile avatar uses a text epsilon placeholder while production branding
+assets remain pending. No postponed logo/splash motion was added.

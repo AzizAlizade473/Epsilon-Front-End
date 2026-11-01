@@ -1,3 +1,9 @@
-import { createStubScreen } from '@/components/navigation/StubScreen';
-
-export default createStubScreen('reviews');
+import { AuthBoundary } from '@/features/auth/components/AuthBoundary';
+import ReviewsScreen from '@/features/profile/screens/ReviewsScreen';
+export default function Route() {
+  return (
+    <AuthBoundary mode="complete">
+      <ReviewsScreen />
+    </AuthBoundary>
+  );
+}

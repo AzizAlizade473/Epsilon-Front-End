@@ -1,3 +1,9 @@
-import { createStubScreen } from '@/components/navigation/StubScreen';
-
-export default createStubScreen('language');
+import { AuthBoundary } from '@/features/auth/components/AuthBoundary';
+import LanguageScreen from '@/features/profile/screens/LanguageScreen';
+export default function Route() {
+  return (
+    <AuthBoundary mode="complete">
+      <LanguageScreen />
+    </AuthBoundary>
+  );
+}

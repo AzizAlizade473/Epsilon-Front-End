@@ -7,6 +7,9 @@ import {
   purchaseReferenceSchema,
   type User,
   type FeedbackResult,
+  type FeedbackReview,
+  type NotificationPreferences,
+  type WalletTransaction,
 } from '../contracts';
 import { ApiError } from '../http/errors';
 import type {
@@ -33,9 +36,15 @@ import { checkMockScenario, getMockScenario, simulateDelay } from './scenario';
 let _currentUser: User = { ...mockUser };
 const mockRatings = new Map<string, number>();
 const mockFeedbackResults = new Map<string, FeedbackResult>();
+const mockReviews: FeedbackReview[] = [];
+let mockPreferences: NotificationPreferences = {
+  cashbackUpdates: true,
+  partnerUpdates: false,
+};
 export function resetMockFeedback() {
   mockRatings.clear();
   mockFeedbackResults.clear();
+  mockReviews.splice(0);
 }
 const currentReceipt = () => ({
   ...mockReceipt,
@@ -44,6 +53,14 @@ const currentReceipt = () => ({
     rating: mockRatings.get(item.id) ?? item.rating,
   })),
 });
+function walletFixture(): WalletTransaction[] {
+  if (getMockScenario() !== 'wallet_long_history') return mockTransactions;
+  return Array.from({ length: 1000 }, (_, index) => ({
+    ...mockTransactions[index % mockTransactions.length]!,
+    id: `tx_long_${index}`,
+    createdAt: new Date(Date.now() - index * 3600000).toISOString(),
+  }));
+}
 
 export const mockAuthService: AuthService = {
   async requestOtp() {
@@ -150,6 +167,8 @@ export const mockUserService: UserService = {
     await simulateDelay();
     checkMockScenario();
     _currentUser = { ...mockUser };
+    resetMockFeedback();
+    mockPreferences = { cashbackUpdates: true, partnerUpdates: false };
   },
 };
 
@@ -253,28 +272,31 @@ export const mockFeedbackService: FeedbackService = {
       reward: { status, amountMinor: status === 'confirmed' ? 250 : null },
     };
     mockRatings.set(item.id, input.rating);
+    mockReviews.unshift({
+      feedbackId: result.feedbackId,
+      dishName: item.name,
+      restaurantName: mockReceipt.restaurant.name,
+      rating: input.rating,
+      comment: input.comment ?? null,
+      createdAt: new Date().toISOString(),
+    });
     if (options?.idempotencyKey)
       mockFeedbackResults.set(options.idempotencyKey, result);
     return result;
   },
 
-  async list() {
+  async list(params) {
     await simulateDelay();
     checkMockScenario();
     if (getMockScenario() === 'empty') {
       return { items: [], nextCursor: null };
     }
+    const start = Math.max(0, Number(params?.cursor ?? 0) || 0);
+    const limit = params?.limit ?? 20;
     return {
-      items: [
-        {
-          feedbackId: 'fb_mock_123',
-          reward: {
-            status: 'confirmed',
-            amountMinor: 250,
-          },
-        },
-      ],
-      nextCursor: null,
+      items: mockReviews.slice(start, start + limit),
+      nextCursor:
+        start + limit < mockReviews.length ? String(start + limit) : null,
     };
   },
 };
@@ -295,29 +317,41 @@ export const mockWalletService: WalletService = {
     if (getMockScenario() === 'empty') {
       return { items: [], nextCursor: null };
     }
+    const all = walletFixture();
+    const start = Math.max(0, Number(params?.cursor ?? 0) || 0);
+    const limit = params?.limit ?? 20;
     return {
-      items: mockTransactions.slice(
-        0,
-        params?.limit ?? mockTransactions.length,
-      ),
-      nextCursor: null,
+      items: all.slice(start, start + limit),
+      nextCursor: start + limit < all.length ? String(start + limit) : null,
     };
   },
 
   async transaction(id) {
     await simulateDelay();
     checkMockScenario();
-    const found = mockTransactions.find((t) => t.id === id);
-    return found ?? mockTransactions[0]!;
+    const found = walletFixture().find((t) => t.id === id);
+    if (!found)
+      throw new ApiError({
+        code: 'UNKNOWN',
+        message: 'Transaction not found',
+        status: 404,
+      });
+    return found;
   },
 };
 
 export const mockNotificationService: NotificationService = {
   async settings() {
     await simulateDelay();
-    return { pushEnabled: true };
+    checkMockScenario();
+    return { ...mockPreferences };
   },
-
+  async updatePreferences(input) {
+    await simulateDelay();
+    checkMockScenario();
+    mockPreferences = { ...input };
+    return { ...mockPreferences };
+  },
   async registerDevice() {
     await simulateDelay();
   },

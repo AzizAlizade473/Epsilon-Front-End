@@ -58,6 +58,7 @@ export const userSchema = z
     birthDate: z.string().nullable(), // ISO-8601 date "YYYY-MM-DD"
     language: z.string().min(2).max(10),
     identities: z.array(identitySchema),
+    deletionWarning: z.string().min(1).optional(),
     createdAt: isoDate,
   })
   .strict();
@@ -242,6 +243,25 @@ export const feedbackResultSchema = z
   .strict();
 
 export type FeedbackResult = z.infer<typeof feedbackResultSchema>;
+
+/** Read model required by My reviews; reward mutation results are not review records. */
+export const feedbackReviewSchema = z
+  .object({
+    feedbackId: z.string().min(1),
+    dishName: z.string().min(1),
+    restaurantName: z.string().min(1),
+    rating: z.number().int().min(1).max(5),
+    comment: z.string().max(500).nullable(),
+    createdAt: isoDate,
+  })
+  .strict();
+export type FeedbackReview = z.infer<typeof feedbackReviewSchema>;
+export const notificationPreferencesSchema = z
+  .object({ cashbackUpdates: z.boolean(), partnerUpdates: z.boolean() })
+  .strict();
+export type NotificationPreferences = z.infer<
+  typeof notificationPreferencesSchema
+>;
 
 // ---------------------------------------------------------------------------
 // Wallet
