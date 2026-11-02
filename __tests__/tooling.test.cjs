@@ -135,7 +135,7 @@ test('docs/DEV_SETUP.md documents Windows, emulator, USB debugging, EAS dev clie
 test('.github/workflows/ci.yml runs npm ci and npm run check on push and PR', () => {
   const content = fs.readFileSync('.github/workflows/ci.yml', 'utf-8');
   const workflow = require('yaml').parse(content);
-  expect(workflow.on.push.branches).toEqual(['main', 'step/**']);
+  expect(workflow.on.push.branches).toEqual(['main', 'step/**', 'design/**']);
   expect(workflow.on).toHaveProperty('pull_request');
   const commands = workflow.jobs.check.steps.map((step) => step.run);
   expect(commands).toEqual(expect.arrayContaining(['npm ci', 'npm run check']));

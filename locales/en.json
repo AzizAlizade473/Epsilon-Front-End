@@ -6,10 +6,6 @@
     "register": "Sign up",
     "loginHelper": "Verify your phone number to access your account.",
     "registerHelper": "Verify your phone number, then complete your profile.",
-    "method": "Continue with",
-    "phone": "Phone",
-    "email": "Email",
-    "emailUnavailable": "Email sign-in is not supported yet. Continue with your phone number.",
     "googleUnavailable": "Google sign-in is not enabled in this version.",
     "noAccount": "Don't have an account?",
     "hasAccount": "Already have an account?"

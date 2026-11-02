@@ -6,10 +6,6 @@
     "register": "Qeydiyyatdan keç",
     "loginHelper": "Telefon nömrəni təsdiqləyərək hesabına daxil ol.",
     "registerHelper": "Telefon nömrəni təsdiqlə, sonra profilini tamamla.",
-    "method": "Davam etmə üsulu",
-    "phone": "Telefon",
-    "email": "E-poçt",
-    "emailUnavailable": "E-poçt ilə giriş hələ dəstəklənmir. Telefon nömrəsi ilə davam et.",
     "googleUnavailable": "Google ilə giriş bu versiyada aktiv deyil.",
     "noAccount": "Hesabın yoxdur?",
     "hasAccount": "Hesabın var?"
