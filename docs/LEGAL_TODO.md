@@ -1,5 +1,25 @@
 # Legal and owner launch inputs
 
+## Bundled legal-screen draft gates
+
+**LEGAL REVIEW REQUIRED BEFORE PUBLIC RELEASE** — the AZ/EN/RU app texts are
+readable drafts based on TERMS_DRAFT.md, PRIVACY_POLICY_DRAFT.md, DATA_INVENTORY.md
+and BUSINESS_RULES.md. They are not counsel-approved or an operative policy.
+
+- **AGE REQUIREMENT — LEGAL DECISION REQUIRED**: owner retains the existing
+  technical birth-date/minimum-age gate; legal eligibility is not implied.
+- **GOVERNING LAW / DISPUTE CLAUSE — LEGAL REVIEW REQUIRED**.
+- **RETENTION SCHEDULE — LEGAL/OPERATIONAL DECISION REQUIRED**.
+- O1 verified operator/contact details, O3 reward conditions, O4 processor/location
+  register and O5 rights/deletion handling remain unresolved; no facts are invented.
+- **ACCOUNT DELETION BACKEND VERIFICATION REQUIRED** remains separate from logout.
+- Bundled version identifies a draft, not a historical effective policy. Any future
+  acceptance evidence needs an approved backend version/event contract.
+
+Reference: [Google Play User Data](https://support.google.com/googleplay/android-developer/answer/10144311?hl=en).
+Bundled offline readability does not replace the verified public privacy/deletion
+resources required by the existing store-readiness gate.
+
 **LEGAL REVIEW REQUIRED BEFORE PUBLICATION.** Technical drafts do not establish
 legal approval, store approval or compliance with any jurisdiction. This file
 is the single owner-input register; other drafts reference these IDs.
