@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   button: {
-    borderRadius: radius.pill,
+    borderRadius: radius[12],
     borderWidth: layout.hairlineWidth,
     borderColor: colors.border,
     backgroundColor: colors.surface,

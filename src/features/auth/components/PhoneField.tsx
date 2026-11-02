@@ -12,12 +12,14 @@ export function PhoneField({
   disabled,
   error,
   onSubmit,
+  autoFocus = true,
 }: {
   value: string;
   onChange: (value: string) => void;
   disabled?: boolean;
   error?: string;
   onSubmit: () => void;
+  autoFocus?: boolean;
 }) {
   const { t } = useTranslation();
   return (
@@ -33,7 +35,7 @@ export function PhoneField({
           error={error}
           editable={!disabled}
           keyboardType="phone-pad"
-          autoFocus
+          autoFocus={autoFocus}
           autoComplete="tel-national"
           textContentType="telephoneNumber"
           onSubmitEditing={onSubmit}

@@ -1,13 +1,12 @@
-import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Keyboard } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { BackButton } from '@/components/navigation/BackButton';
 import { Button } from '@/components/ui/Button';
 import { Screen } from '@/components/ui/Screen';
-import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { Text } from '@/components/ui/Text';
 import { env } from '@/lib/env';
+import { colors, spacing } from '@/design';
 import {
   AuthEntrySwitch,
   GoogleEntry,
@@ -21,17 +20,15 @@ import { usePhoneEntry } from '../hooks/usePhoneEntry';
 export default function AuthEntryScreen({ intent }: { intent: AuthIntent }) {
   const { t } = useTranslation();
   const router = useRouter();
-  const [method, setMethod] = useState<'phone' | 'email'>('phone');
   const phone = usePhoneEntry();
   const google = useGoogleSignIn();
   const busy = phone.busy || google.busy;
   const submit = () => {
-    if (!busy && method === 'phone') void phone.submit();
+    if (!busy) void phone.submit();
   };
   return (
     <Screen
       surface="surface"
-      title={t(`authEntry.${intent}`)}
       leading={
         <BackButton
           onPress={() => {
@@ -44,47 +41,35 @@ export default function AuthEntryScreen({ intent }: { intent: AuthIntent }) {
       }
       footer={<AuthEntrySwitch intent={intent} disabled={busy} />}
     >
-      <Text>
-        {t(
-          intent === 'login'
-            ? 'authEntry.loginHelper'
-            : 'authEntry.registerHelper',
-        )}
-      </Text>
-      <SegmentedControl
-        label={t('authEntry.method')}
-        options={[
-          { value: 'phone', label: t('authEntry.phone') },
-          { value: 'email', label: t('authEntry.email') },
-        ]}
-        value={method}
-        disabled={busy}
-        onValueChange={(value) => {
-          Keyboard.dismiss();
-          setMethod(value);
-        }}
-      />
-      {method === 'phone' ? (
-        <>
-          <PhoneField
-            value={phone.phone}
-            onChange={phone.onChange}
-            disabled={busy}
-            error={phone.error}
-            onSubmit={submit}
-          />
-          <Button
-            label={t(phone.hasCode ? 'auth.enterCode' : 'common.continue')}
-            loading={phone.busy}
-            disabled={phone.disabled || google.busy}
-            onPress={submit}
-          />
-        </>
-      ) : (
-        <Text accessibilityRole="alert" accessibilityLiveRegion="polite">
-          {t('authEntry.emailUnavailable')}
+      <View style={styles.heading}>
+        <Text variant="title1" accessibilityRole="header" style={styles.title}>
+          {t(`authEntry.${intent}`)}
         </Text>
-      )}
+        <Text style={styles.helper}>
+          {t(
+            intent === 'login'
+              ? 'authEntry.loginHelper'
+              : 'authEntry.registerHelper',
+          )}
+        </Text>
+      </View>
+      <View style={styles.form}>
+        <PhoneField
+          autoFocus={false}
+          value={phone.phone}
+          onChange={phone.onChange}
+          disabled={busy}
+          error={phone.error}
+          onSubmit={submit}
+        />
+        <Button
+          shape="rounded"
+          label={t(phone.hasCode ? 'auth.enterCode' : 'common.continue')}
+          loading={phone.busy}
+          disabled={phone.disabled || google.busy}
+          onPress={submit}
+        />
+      </View>
       <GoogleEntry
         busy={busy}
         loading={google.busy}
@@ -100,3 +85,10 @@ export default function AuthEntryScreen({ intent }: { intent: AuthIntent }) {
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  heading: { gap: spacing[16], paddingVertical: spacing[32] },
+  title: { color: colors.brand.primary, textAlign: 'center' },
+  helper: { textAlign: 'center' },
+  form: { gap: spacing[24], paddingVertical: spacing[16] },
+});

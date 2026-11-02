@@ -81,24 +81,13 @@ it.each(['login', 'register'] as const)(
   },
 );
 it.each(['login', 'register'] as const)(
-  '%s email state cannot submit or request authentication',
+  '%s omits unsupported email authentication',
   async (intent) => {
     await entry(intent);
-    await fireEvent.press(
-      screen.getByRole('radio', { name: az.authEntry.email }),
-    );
-    expect(screen.getByRole('alert')).toHaveTextContent(
-      az.authEntry.emailUnavailable,
-    );
-    expect(screen.queryByLabelText(az.auth.phoneLabel)).toBeNull();
-    expect(
-      screen.queryByRole('button', { name: az.common.continue }),
-    ).toBeNull();
+    expect(screen.queryByText('Email')).toBeNull();
+    expect(screen.queryAllByRole('radio')).toHaveLength(0);
     expect(mockRequest).not.toHaveBeenCalled();
     expect(mockGoogle).not.toHaveBeenCalled();
-    await fireEvent.press(
-      screen.getByRole('radio', { name: az.authEntry.phone }),
-    );
     expect(screen.getByLabelText(az.auth.phoneLabel)).toBeOnTheScreen();
   },
 );
