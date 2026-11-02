@@ -20,7 +20,7 @@ Owner workflow: targeted checks per unit, full unchanged quality gate at complet
   - [x] auth.3.1 — Removed enclosing Welcome card and generic feature rows; real logo and concise localized headline. Three Welcome tests pass.
   - [x] auth.3.2 — Welcome Login/Sign Up choices, blue headline and rounded primary/neutral secondary controls; nine Welcome/Button tests pass.
   - [x] auth.3.3 — Real-router Welcome/Login/Sign Up/Back and legacy phone redirect tests pass (4 tests); new entry links are scheme-validated.
-- [ ] auth.4 — Restrained offline banner and reconnect verification.
+- [x] auth.4 — Restrained offline banner and reconnect verification. Three tests pass, including unknown connectivity, online manager recovery and timed dismissal.
 - [ ] auth.5 — Visual/accessibility audit, full gate, Android export and remote verification.
 
 Email: **EMAIL AUTH BACKEND SUPPORT REQUIRED**. The canonical OpenAPI and

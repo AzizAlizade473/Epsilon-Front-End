@@ -5,9 +5,19 @@ import { useTranslation } from 'react-i18next';
 import { Animated, StyleSheet, View } from 'react-native';
 import { useAnimatedValue } from '@/hooks/useAnimatedValue';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Wifi from 'lucide-react-native/icons/wifi';
+import WifiOff from 'lucide-react-native/icons/wifi-off';
 
 import { Text } from '@/components/ui/Text';
-import { colors, layout, spacing, typography, useMotion } from '@/design';
+import { Icon } from '@/components/ui/Icon';
+import {
+  colors,
+  layout,
+  radius,
+  spacing,
+  typography,
+  useMotion,
+} from '@/design';
 
 export function OfflineBanner({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<'online' | 'offline' | 'reconnected'>(
@@ -33,12 +43,14 @@ export function OfflineBanner({ children }: { children: ReactNode }) {
       unsubscribe = NetInfo.addEventListener((state) => {
         const disconnected =
           state.isConnected === false || state.isInternetReachable === false;
-        onlineManager.setOnline(!disconnected);
         if (disconnected) {
+          onlineManager.setOnline(false);
           if (reconnectTimer.current) clearTimeout(reconnectTimer.current);
           wasOffline.current = true;
           setStatus('offline');
-        } else if (wasOffline.current) {
+        } else if (state.isConnected === true) {
+          onlineManager.setOnline(true);
+          if (!wasOffline.current) return;
           if (reconnectTimer.current) clearTimeout(reconnectTimer.current);
           wasOffline.current = false;
           setStatus('reconnected');
@@ -68,7 +80,9 @@ export function OfflineBanner({ children }: { children: ReactNode }) {
     return () => animation.stop();
   }, [visible, translate, height, motion.reduceMotion, motion.duration.normal]);
   return (
-    <View style={[styles.fill, { paddingTop: visible ? height : 0 }]}>
+    <View
+      style={[styles.fill, { paddingTop: visible ? height + spacing[16] : 0 }]}
+    >
       {children}
       {visible && (
         <Animated.View
@@ -76,25 +90,28 @@ export function OfflineBanner({ children }: { children: ReactNode }) {
           style={[
             styles.banner,
             {
-              top: insets.top,
+              top: insets.top + spacing[8],
               transform: [{ translateY: translate }],
-              backgroundColor:
-                status === 'reconnected'
-                  ? colors.successTint
-                  : colors.warningTint,
             },
           ]}
           onLayout={(event) => setHeight(event.nativeEvent.layout.height)}
         >
+          <Icon
+            icon={status === 'reconnected' ? Wifi : WifiOff}
+            size="small"
+            decorative
+            color={
+              status === 'reconnected' ? colors.successInk : colors.inkSecondary
+            }
+          />
           <Text
             variant="caption"
             accessibilityRole="alert"
             accessibilityLiveRegion="polite"
-            style={
-              status === 'reconnected'
-                ? { color: colors.successInk }
-                : undefined
-            }
+            style={[
+              styles.message,
+              status === 'reconnected' && { color: colors.successInk },
+            ]}
           >
             {t(
               status === 'offline'
@@ -112,10 +129,17 @@ const styles = StyleSheet.create({
   fill: { flex: 1 },
   banner: {
     position: 'absolute',
-    left: 0,
-    right: 0,
-    paddingHorizontal: spacing.screenMargin,
+    left: spacing.screenMargin,
+    right: spacing.screenMargin,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[8],
+    paddingHorizontal: spacing[12],
     paddingVertical: spacing[8],
-    backgroundColor: colors.warningTint,
+    backgroundColor: colors.surface,
+    borderWidth: layout.hairlineWidth,
+    borderColor: colors.border,
+    borderRadius: radius[12],
   },
+  message: { flex: 1, color: colors.inkSecondary },
 });

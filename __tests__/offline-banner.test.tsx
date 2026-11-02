@@ -1,6 +1,11 @@
-import NetInfo, { NetInfoStateType } from '@react-native-community/netinfo';
+import NetInfo, {
+  NetInfoStateType,
+  type NetInfoState,
+} from '@react-native-community/netinfo';
 import { afterEach, expect, jest, test } from '@jest/globals';
-import { render, screen } from '@testing-library/react-native';
+import { act, render, screen } from '@testing-library/react-native';
+import { onlineManager } from '@tanstack/react-query';
+import { layout } from '@/design';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import az from '../locales/az.json';
@@ -10,6 +15,7 @@ import { Text } from '@/components/ui/Text';
 import { initializeI18n } from '@/lib/i18n';
 
 afterEach(() => {
+  jest.useRealTimers();
   jest.restoreAllMocks();
 });
 test.each([false, true])(
@@ -46,3 +52,51 @@ test.each([false, true])(
     expect(Boolean(screen.queryByText(az.navigation.offline))).toBe(offline);
   },
 );
+
+test('unknown connectivity does not hide offline status; recovery is announced then dismissed', async () => {
+  await initializeI18n();
+  jest.useFakeTimers();
+  jest
+    .spyOn(globalThis, 'requestAnimationFrame')
+    .mockImplementation((callback) => {
+      callback(0);
+      return 1;
+    });
+  let notify: (state: NetInfoState) => void = () => {};
+  jest.spyOn(NetInfo, 'addEventListener').mockImplementation((listener) => {
+    notify = listener;
+    return () => {};
+  });
+  await render(
+    <SafeAreaProvider
+      initialMetrics={{
+        frame: { x: 0, y: 0, width: 360, height: 640 },
+        insets: { top: 24, bottom: 24, left: 0, right: 0 },
+      }}
+    >
+      <OfflineBanner>
+        <Text>Content</Text>
+      </OfflineBanner>
+    </SafeAreaProvider>,
+  );
+  const state = (connected: boolean | null): NetInfoState => ({
+    type: NetInfoStateType.unknown,
+    isConnected: connected,
+    isInternetReachable: null,
+    details: null,
+  });
+  await act(() => notify(state(false)));
+  expect(screen.getByRole('alert')).toHaveTextContent(az.navigation.offline);
+  expect(onlineManager.isOnline()).toBe(false);
+  await act(() => notify(state(null)));
+  expect(screen.getByRole('alert')).toHaveTextContent(az.navigation.offline);
+  expect(onlineManager.isOnline()).toBe(false);
+  await act(() => notify(state(true)));
+  expect(screen.getByRole('alert')).toHaveTextContent(
+    az.resilience.reconnected,
+  );
+  expect(onlineManager.isOnline()).toBe(true);
+  await act(() => jest.advanceTimersByTime(layout.reconnectDuration));
+  expect(screen.queryByRole('alert')).toBeNull();
+  expect(screen.getByText('Content')).toBeOnTheScreen();
+});
