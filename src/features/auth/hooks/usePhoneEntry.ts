@@ -5,17 +5,21 @@ import { useSecondsUntil } from '../components/ResendTimer';
 import { phoneSchema } from '../schemas';
 import { useOtpChallenge } from '../store';
 import { usePhoneAuth } from './usePhoneAuth';
+import type { AuthIntent } from '@/lib/auth-intent';
 
 /** Reuses the canonical OTP operation; entry intent never creates an account. */
-export function usePhoneEntry() {
+export function usePhoneEntry(intent?: AuthIntent) {
   const { t } = useTranslation();
   const router = useRouter();
   const [phone, setPhone] = useState('');
   const [touched, setTouched] = useState(false);
-  const auth = usePhoneAuth();
+  const auth = usePhoneAuth('signIn', intent);
   const challenge = useOtpChallenge();
   const valid = phoneSchema.safeParse(phone);
-  const samePhone = valid.success && valid.data === challenge?.phone;
+  const samePhone =
+    valid.success &&
+    valid.data === challenge?.phone &&
+    challenge.intent === intent;
   const cooldown = useSecondsUntil(
     samePhone
       ? Math.max(challenge?.resendAt ?? 0, challenge?.lockedUntil ?? 0)

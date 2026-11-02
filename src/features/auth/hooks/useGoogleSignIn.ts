@@ -6,12 +6,18 @@ import { useAuthActions } from '@/providers/AuthProvider';
 import { services } from '@/services';
 import { isApiError } from '@/services/http/errors';
 import { routeForNextStep } from './usePhoneAuth';
+import {
+  AuthIntentError,
+  requireAuthIntentSupport,
+  type AuthIntent,
+} from '@/lib/auth-intent';
 
-export function useGoogleSignIn() {
+export function useGoogleSignIn(intent?: AuthIntent) {
   const { t } = useTranslation();
   const { completeSignIn } = useAuthActions();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
+  const [conflict, setConflict] = useState<AuthIntentError['reason']>();
   const active = useRef(true);
   useEffect(() => {
     active.current = true;
@@ -25,10 +31,14 @@ export function useGoogleSignIn() {
     setBusy(true);
     setError(undefined);
     try {
+      requireAuthIntentSupport(intent, services.auth.supportsAuthIntent);
       const result = await googleDriver.exchange((idToken) => {
         if (!active.current || !authOperation.current(epoch))
           throw new Error('Obsolete authentication');
-        return services.auth.signInWithGoogle({ idToken });
+        return services.auth.signInWithGoogle({
+          idToken,
+          ...(intent ? { intent } : {}),
+        });
       });
       if (!result || !active.current || !authOperation.current(epoch))
         return null;
@@ -39,15 +49,18 @@ export function useGoogleSignIn() {
     } catch (cause) {
       if (active.current && authOperation.current(epoch)) {
         const key =
-          cause instanceof GoogleFlowError
-            ? `onboarding.${cause.key}`
-            : isApiError(cause) && cause.code === 'SOCIAL_EMAIL_UNVERIFIED'
-              ? 'onboarding.googleUnverified'
-              : isApiError(cause) &&
-                  (cause.code === 'NETWORK' || cause.code === 'TIMEOUT')
-                ? 'onboarding.googleNetwork'
-                : 'onboarding.googleFailed';
+          cause instanceof AuthIntentError
+            ? `authFlow.${cause.reason}`
+            : cause instanceof GoogleFlowError
+              ? `onboarding.${cause.key}`
+              : isApiError(cause) && cause.code === 'SOCIAL_EMAIL_UNVERIFIED'
+                ? 'onboarding.googleUnverified'
+                : isApiError(cause) &&
+                    (cause.code === 'NETWORK' || cause.code === 'TIMEOUT')
+                  ? 'onboarding.googleNetwork'
+                  : 'onboarding.googleFailed';
         setError(t(key));
+        if (cause instanceof AuthIntentError) setConflict(cause.reason);
       }
       return null;
     } finally {
@@ -55,5 +68,5 @@ export function useGoogleSignIn() {
       if (active.current) setBusy(false);
     }
   };
-  return { busy, error, signIn };
+  return { busy, error, conflict, signIn };
 }

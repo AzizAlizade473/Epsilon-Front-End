@@ -7,6 +7,7 @@ import { isApiError } from '@/services/http/errors';
 import { useAuthActions } from '@/providers/AuthProvider';
 import { authOperation, otpChallenge } from '../store';
 import { otpSchema, phoneSchema } from '../schemas';
+import { AuthIntentError, type AuthIntent } from '@/lib/auth-intent';
 
 export function routeForNextStep(nextStep: NextStep) {
   return { profile: '/profile-setup', phone: '/phone-verify', home: '/home' }[
@@ -15,7 +16,10 @@ export function routeForNextStep(nextStep: NextStep) {
 }
 
 /** Async service calls are kept outside the query cache to avoid retaining OTP/PII. */
-export function usePhoneAuth(mode: 'signIn' | 'link' = 'signIn') {
+export function usePhoneAuth(
+  mode: 'signIn' | 'link' = 'signIn',
+  intent?: AuthIntent,
+) {
   const { t } = useTranslation();
   const toast = useToast();
   const { completeSignIn, updateUser } = useAuthActions();
@@ -29,11 +33,17 @@ export function usePhoneAuth(mode: 'signIn' | 'link' = 'signIn') {
   }, []);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
+  const [conflict, setConflict] = useState<AuthIntentError['reason']>();
   const [invalidAttempt, setInvalidAttempt] = useState(0);
   const [requestRetryAt, setRequestRetryAt] = useState(authOperation.retryAt);
   const [phoneInUse, setPhoneInUse] = useState(false);
 
   const handleError = (cause: unknown) => {
+    if (cause instanceof AuthIntentError) {
+      setConflict(cause.reason);
+      setError(t(`authFlow.${cause.reason}`));
+      return;
+    }
     const code = isApiError(cause) ? cause.code : 'UNKNOWN';
     if (code === 'PHONE_IN_USE') {
       setPhoneInUse(true);
@@ -68,8 +78,11 @@ export function usePhoneAuth(mode: 'signIn' | 'link' = 'signIn') {
       return false;
     }
     const current = otpChallenge.get();
+    const activeIntent =
+      intent ?? (current?.phone === parsed.data ? current.intent : undefined);
     if (
       current?.mode === mode &&
+      current.intent === activeIntent &&
       current.phone === parsed.data &&
       Math.max(current.resendAt, current.lockedUntil) > monotonicNow()
     )
@@ -82,9 +95,17 @@ export function usePhoneAuth(mode: 'signIn' | 'link' = 'signIn') {
     try {
       const result = await (mode === 'link'
         ? services.auth.requestPhoneLinkOtp({ phone: parsed.data })
-        : services.auth.requestOtp({ phone: parsed.data }));
+        : services.auth.requestOtp({
+            phone: parsed.data,
+            ...(activeIntent ? { intent: activeIntent } : {}),
+          }));
       if (!authOperation.current(epoch)) return false;
-      otpChallenge.set(parsed.data, result.retryAfterSeconds, mode);
+      otpChallenge.set(
+        parsed.data,
+        result.retryAfterSeconds,
+        mode,
+        activeIntent,
+      );
       return active.current;
     } catch (cause) {
       if (active.current && authOperation.current(epoch)) handleError(cause);
@@ -124,6 +145,7 @@ export function usePhoneAuth(mode: 'signIn' | 'link' = 'signIn') {
       const result = await services.auth.verifyOtp({
         phone: current.phone,
         code,
+        ...(current.intent ? { intent: current.intent } : {}),
       });
       if (!active.current || !authOperation.current(epoch)) return null;
       await completeSignIn(result);
@@ -143,6 +165,7 @@ export function usePhoneAuth(mode: 'signIn' | 'link' = 'signIn') {
   return {
     busy,
     error,
+    conflict,
     invalidAttempt,
     requestRetryAt,
     phoneInUse,

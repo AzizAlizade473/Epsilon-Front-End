@@ -1,4 +1,12 @@
 {
+  "authFlow": {
+    "unavailable": "This sign-in method is currently unavailable. Please try again later.",
+    "notFound": "No account was found for this sign-in method. Sign up to continue.",
+    "exists": "This account already exists. Log in to continue.",
+    "conflict": "This sign-in method belongs to another account. Use your existing sign-in method.",
+    "googleNativeOnly": "Google sign-in works in configured Android builds. This browser preview does not sign in to Google.",
+    "googleSetupRequired": "Google sign-in is not configured in this build. Continue with your phone number."
+  },
   "authEntry": {
     "headline": "Rate your meal. Earn cashback.",
     "description": "Scan your receipt, rate the dishes you bought and earn cashback on eligible purchases.",

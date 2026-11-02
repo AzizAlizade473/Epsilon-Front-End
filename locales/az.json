@@ -1,4 +1,12 @@
 {
+  "authFlow": {
+    "unavailable": "Bu giriş üsulu hazırda əlçatan deyil. Daha sonra yenidən cəhd et.",
+    "notFound": "Bu üsulla bağlı hesab tapılmadı. Davam etmək üçün qeydiyyatdan keç.",
+    "exists": "Bu hesab artıq mövcuddur. Davam etmək üçün daxil ol.",
+    "conflict": "Bu giriş üsulu başqa hesabla bağlıdır. Mövcud giriş üsulundan istifadə et.",
+    "googleNativeOnly": "Google ilə giriş sazlanmış Android tətbiqində işləyir. Brauzer önbaxışı Google hesabına daxil olmur.",
+    "googleSetupRequired": "Google ilə giriş bu versiyada sazlanmayıb. Telefon nömrəsi ilə davam et."
+  },
   "authEntry": {
     "headline": "Yeməyini qiymətləndir, keşbek qazan",
     "description": "Çekini skan et, aldığın yeməkləri qiymətləndir və uyğun alışlardan keşbek qazan.",

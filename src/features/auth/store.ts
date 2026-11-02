@@ -1,6 +1,7 @@
 import { monotonicNow } from '@/lib/server-clock';
 import { useSyncExternalStore } from 'react';
 import { authOperation, registerAuthCleanup } from '@/lib/auth-lifecycle';
+import type { AuthIntent } from '@/lib/auth-intent';
 export { authOperation };
 
 export type OtpChallenge = {
@@ -8,6 +9,7 @@ export type OtpChallenge = {
   resendAt: number;
   lockedUntil: number;
   mode: 'signIn' | 'link';
+  intent?: AuthIntent;
 };
 
 let challenge: OtpChallenge | null = null;
@@ -23,10 +25,12 @@ export const otpChallenge = {
     phone: string,
     retryAfterSeconds: number,
     mode: 'signIn' | 'link' = 'signIn',
+    intent?: AuthIntent,
   ) {
     challenge = {
       phone,
       mode,
+      ...(intent ? { intent } : {}),
       resendAt: monotonicNow() + retryAfterSeconds * 1000,
       lockedUntil: 0,
     };

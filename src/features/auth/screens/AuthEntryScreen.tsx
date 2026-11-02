@@ -20,8 +20,8 @@ import { usePhoneEntry } from '../hooks/usePhoneEntry';
 export default function AuthEntryScreen({ intent }: { intent: AuthIntent }) {
   const { t } = useTranslation();
   const router = useRouter();
-  const phone = usePhoneEntry();
-  const google = useGoogleSignIn();
+  const phone = usePhoneEntry(intent);
+  const google = useGoogleSignIn(intent);
   const busy = phone.busy || google.busy;
   const submit = () => {
     if (!busy) void phone.submit();
