@@ -6,8 +6,10 @@ import { otpChallenge } from '../store';
 
 export function AuthConflictAction({
   reason,
+  onNavigate,
 }: {
   reason?: AuthIntentError['reason'];
+  onNavigate?: () => void;
 }) {
   const router = useRouter();
   const { t } = useTranslation();
@@ -18,6 +20,7 @@ export function AuthConflictAction({
       variant="ghost"
       label={t(`authEntry.${target}`)}
       onPress={() => {
+        onNavigate?.();
         otpChallenge.clear();
         router.replace(target === 'register' ? '/register' : '/login');
       }}

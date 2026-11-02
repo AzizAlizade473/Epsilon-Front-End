@@ -8,12 +8,13 @@ offline Terms/Privacy drafts and a restrained animated Welcome illustration.
 Continue on `design/auth-completion`; no deployment or main merge is authorized.
 
 - [x] flow.1 — Confirmed browser crash before logout: Sheet used native findNodeHandle. Platform focus adapter fixes DOM focus while retaining native accessibility focus. Full check: 97 suites / 580 tests pass.
-- [ ] flow.2 — Intent contract boundary and strict development account fixtures.
+- [x] flow.2 — Intent contract boundary and strict development account fixtures.
   - [x] flow.2.b — Development account registry distinguishes new/existing identities, preserves completed profiles and rejects duplicate registration; verified phone linking records its destination without stealing another account's phone. Full check: 99 suites / 585 tests pass.
   - [x] flow.2.a — Explicit local auth-intent capability boundary; unsupported live requests reject before network I/O. Backend/email/deletion handoff documented. Full check: 98 suites / 583 tests pass.
-- [ ] flow.3 — Entry/OTP/Google intent handoff and localized capability errors.
+- [x] flow.3 — Entry/OTP/Google intent handoff and localized capability errors.
   - [x] flow.3.a — Entry intent survives OTP/resend in memory and reaches both phone/Google adapters; unsupported live provisioning fails closed with localized errors. Full check: 99 suites / 585 tests pass.
   - [x] flow.3.b — Explicit conflict navigation, browser/native Google availability explanation and editable browser birth date without importing a native picker. Full check: 99 suites / 585 tests pass.
+  - [x] flow.3.c — Conflict navigation regression, browser controls, fixture deletion and cross-account phone-link protection. Full check: 100 suites / 589 tests pass; OTP visual layout preserved.
 - [ ] flow.4 — Bundled legal content, metadata and translation coverage.
 - [ ] flow.5 — Legal routes/links and state-preserving navigation tests.
 - [ ] flow.6 — Welcome illustration/motion and Google availability explanation.

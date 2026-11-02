@@ -41,6 +41,16 @@ test('fixture registration verifies first, asks for profile, then returns the sa
   await expect(
     mockAuthService.verifyOtp({ phone, code: '000000', intent: 'login' }),
   ).rejects.toMatchObject({ code: 'OTP_INVALID' });
+  await mockUserService.deleteAccount();
+  await expect(
+    mockAuthService.verifyOtp({ phone, code: '123456', intent: 'login' }),
+  ).rejects.toMatchObject({ reason: 'notFound' });
+  const replacement = await mockAuthService.verifyOtp({
+    phone,
+    code: '123456',
+    intent: 'register',
+  });
+  expect(replacement.user.id).not.toBe(created.user.id);
 });
 test('Google fixture intent does not silently provision during Login', async () => {
   await expect(
@@ -61,4 +71,11 @@ test('Google fixture intent does not silently provision during Login', async () 
       intent: 'register',
     }),
   ).rejects.toMatchObject({ reason: 'exists' });
+  await expect(
+    mockAuthService.verifyPhoneLink({ phone: '+994501234567', code: '123456' }),
+  ).rejects.toMatchObject({ code: 'PHONE_IN_USE' });
+  await expect(mockUserService.me()).resolves.toMatchObject({ phone: null });
+  await expect(
+    mockAuthService.verifyPhoneLink({ phone: '+994509876545', code: '123456' }),
+  ).resolves.toMatchObject({ phone: '+994509876545', phoneVerified: true });
 });

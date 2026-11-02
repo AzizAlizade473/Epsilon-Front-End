@@ -141,7 +141,10 @@ export default function OtpScreen({
       {locked && (
         <Text accessibilityLiveRegion="polite">{t('auth.tooMany')}</Text>
       )}
-      <AuthConflictAction reason={auth.conflict} />
+      <AuthConflictAction
+        reason={auth.conflict}
+        onNavigate={() => setCompleted(true)}
+      />
       <Button
         label={t('auth.verifyCode')}
         disabled={code.length !== 6 || locked || completed}

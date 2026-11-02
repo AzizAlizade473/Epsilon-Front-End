@@ -33,7 +33,12 @@ import {
 } from './fixtures';
 import { checkMockScenario, getMockScenario, simulateDelay } from './scenario';
 import { isE2E } from '@/lib/e2e-mode';
-import { mockAccount, mockAccountStep, rememberMockAccount } from './accounts';
+import {
+  mockAccount,
+  mockAccountStep,
+  rememberMockAccount,
+  forgetMockAccount,
+} from './accounts';
 
 let _currentUser: User = { ...mockUser };
 const mockRatings = new Map<string, number>();
@@ -211,6 +216,7 @@ export const mockUserService: UserService = {
   async deleteAccount() {
     await simulateDelay();
     checkMockScenario();
+    forgetMockAccount(_currentUser);
     _currentUser = { ...mockUser };
     resetMockFeedback();
     mockPreferences = { cashbackUpdates: true, partnerUpdates: false };

@@ -7,6 +7,7 @@ const accounts = new Map<string, User>([
   [`phone:${mockUser.phone}`, { ...mockUser }],
   ['google:existing', { ...mockUser }],
 ]);
+let nextAccountId = 0;
 export function mockAccount(key: string, intent: AuthIntent, profile: User) {
   const existing = accounts.get(key);
   if (intent === 'login') {
@@ -16,7 +17,7 @@ export function mockAccount(key: string, intent: AuthIntent, profile: User) {
   if (existing) throw new AuthIntentError('exists');
   const user = {
     ...profile,
-    id: `usr_fixture_${accounts.size}`,
+    id: `usr_fixture_${++nextAccountId}`,
     firstName: null,
     lastName: null,
     birthDate: null,
@@ -43,4 +44,8 @@ export function mockAccountStep(user: User): NextStep {
   return mockConfig.requirePhoneVerification && !user.phoneVerified
     ? 'phone'
     : 'home';
+}
+export function forgetMockAccount(user: User) {
+  for (const [key, account] of accounts)
+    if (account.id === user.id) accounts.delete(key);
 }

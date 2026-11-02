@@ -30,6 +30,7 @@ import { createQueryClient } from '@/services/query';
 import { mockUser } from '@/services/mock/fixtures';
 import type { AuthResult, NextStep } from '@/services/contracts';
 import { SessionRestore } from '@/components/navigation/SessionRestore';
+import { AuthIntentError } from '@/lib/auth-intent';
 
 const mockPush = jest.fn();
 const mockReplace = jest.fn();
@@ -151,6 +152,35 @@ beforeEach(async () => {
 });
 
 describe('Phone → OTP → session', () => {
+  it.each(['notFound', 'exists'] as const)(
+    'offers safe counterpart navigation after %s without persisting a session',
+    async (reason) => {
+      mockVerify.mockRejectedValue(new AuthIntentError(reason));
+      otpChallenge.set(
+        '+994501234567',
+        60,
+        'signIn',
+        reason === 'notFound' ? 'login' : 'register',
+      );
+      await render(<OtpScreen />, { wrapper: Wrapper });
+      await fireEvent.changeText(
+        screen.getByLabelText(az.auth.codeLabel),
+        '123456',
+      );
+      await waitFor(() =>
+        expect(screen.getByRole('alert')).toHaveTextContent(
+          az.authFlow[reason],
+        ),
+      );
+      const target = reason === 'notFound' ? 'register' : 'login';
+      await fireEvent.press(
+        screen.getByRole('button', { name: az.authEntry[target] }),
+      );
+      expect(mockReplace).toHaveBeenLastCalledWith(`/${target}`);
+      expect(SecureStore.setItemAsync).not.toHaveBeenCalled();
+      expect(otpChallenge.get()).toBeNull();
+    },
+  );
   it('logout deletes the secure session and clears auth state and registered provider/OTP state', async () => {
     const cleanup = jest.fn<() => void>();
     const unregister = registerAuthCleanup(cleanup);
