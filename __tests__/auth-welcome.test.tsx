@@ -1,12 +1,6 @@
 import { beforeEach, expect, it, jest } from '@jest/globals';
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from '@testing-library/react-native';
+import { fireEvent, render, screen } from '@testing-library/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import * as WebBrowser from 'expo-web-browser';
 import az from '../locales/az.json';
 import WelcomeScreen from '@/features/auth/screens/WelcomeScreen';
 import { env } from '@/lib/env';
@@ -69,19 +63,17 @@ it.each(['login', 'register'] as const)(
     expect(mockPush).toHaveBeenCalledWith(`/${intent}`);
   },
 );
-it('opens only configured legal links through the system browser surface', async () => {
-  await welcome();
-  await fireEvent.press(screen.getByRole('link', { name: az.auth.terms }));
-  await waitFor(() =>
-    expect(WebBrowser.openBrowserAsync).toHaveBeenCalledWith(
-      env.EXPO_PUBLIC_TERMS_URL,
-    ),
-  );
-  await fireEvent.press(screen.getByRole('link', { name: az.auth.privacy }));
-  expect(WebBrowser.openBrowserAsync).toHaveBeenCalledWith(
-    env.EXPO_PUBLIC_PRIVACY_URL,
-  );
-});
+it.each(['terms', 'privacy'] as const)(
+  'opens bundled %s without launching an external browser',
+  async (type) => {
+    await welcome();
+    const link = screen.getByRole('link', { name: az.auth[type] });
+    await fireEvent.press(link);
+    await fireEvent.press(link);
+    expect(mockPush).toHaveBeenCalledTimes(1);
+    expect(mockPush).toHaveBeenCalledWith(`/legal/${type}`);
+  },
+);
 it('keeps Google on dedicated entry screens even when enabled', async () => {
   env.ENABLE_GOOGLE_SIGNIN = true;
   await welcome();

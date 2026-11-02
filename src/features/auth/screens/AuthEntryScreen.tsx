@@ -83,7 +83,7 @@ export default function AuthEntryScreen({ intent }: { intent: AuthIntent }) {
         }}
       />
       <AuthConflictAction reason={google.conflict} />
-      {intent === 'register' && <LegalLinks />}
+      <LegalLinks showCaption={intent === 'register'} />
     </Screen>
   );
 }

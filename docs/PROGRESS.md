@@ -20,6 +20,7 @@ Continue on `design/auth-completion`; no deployment or main merge is authorized.
   - [x] flow.4.b — Separate 16-section Privacy draft in AZ/EN/RU, grounded in data inventory; explicit legal/retention/age/deletion release decisions remain unapproved. Full check: 100 suites / 589 tests pass.
   - [x] flow.4.c — Public legal readers, draft/version/date metadata and complete ordered-section guards in every locale. Full check: 101 suites / 592 tests pass.
 - [ ] flow.5 — Legal routes/links and state-preserving navigation tests.
+  - [x] flow.5.a — Welcome/Login/Sign Up/Profile links now open bundled readers with repeat-tap guards, keyboard dismissal and normal Back. Full check: 101 suites / 593 tests pass.
 - [ ] flow.6 — Welcome illustration/motion and Google availability explanation.
 - [ ] flow.7 — Full gate, Android export, audit, documentation and hosted CI.
 

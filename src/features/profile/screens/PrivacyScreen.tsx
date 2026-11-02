@@ -1,4 +1,4 @@
-import * as WebBrowser from 'expo-web-browser';
+import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, View } from 'react-native';
@@ -6,7 +6,6 @@ import { ListRow } from '@/components/ui/ListRow';
 import { Switch } from '@/components/ui/Switch';
 import { Text } from '@/components/ui/Text';
 import { Button } from '@/components/ui/Button';
-import { env } from '@/lib/env';
 import { authOperation } from '@/lib/auth-lifecycle';
 import { readCrashConsent, saveCrashConsent } from '@/lib/preferences';
 import { useProfile } from '@/hooks/useProfile';
@@ -15,6 +14,7 @@ import { spacing } from '@/design';
 import { ProfilePage } from '../components/ProfilePage';
 import { DeleteAccountFlow } from '../components/DeleteAccountFlow';
 export default function PrivacyScreen() {
+  const router = useRouter();
   const { t } = useTranslation();
   const user = useProfile();
   const toast = useToast();
@@ -56,20 +56,15 @@ export default function PrivacyScreen() {
       setBusy(false);
     }
   };
-  const open = (url: string) => {
-    void WebBrowser.openBrowserAsync(url).catch(() =>
-      toast(t('errors.generic')),
-    );
-  };
   return (
     <ProfilePage title={t('profile.privacy')}>
       <ListRow
         title={t('profile.privacyPolicy')}
-        onPress={() => open(env.EXPO_PUBLIC_PRIVACY_URL)}
+        onPress={() => router.push('/legal/privacy')}
       />
       <ListRow
         title={t('profile.terms')}
-        onPress={() => open(env.EXPO_PUBLIC_TERMS_URL)}
+        onPress={() => router.push('/legal/terms')}
       />
       <Text variant="headline" accessibilityRole="header">
         {t('profile.dataTitle')}

@@ -70,7 +70,7 @@ export default function WelcomeScreen() {
                 disabled={busy}
                 onPress={() => open('/register')}
               />
-              <LegalLinks />
+              <LegalLinks showCaption={false} />
             </View>
           </FadeUp>
         </View>

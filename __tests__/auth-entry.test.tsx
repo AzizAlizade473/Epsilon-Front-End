@@ -18,13 +18,18 @@ const mockReplace = jest.fn();
 const mockGoogle = jest.fn<() => Promise<'/profile-setup' | null>>();
 const mockRequest =
   jest.fn<() => Promise<{ expiresAt: string; retryAfterSeconds: number }>>();
-jest.mock('expo-router', () => ({
-  useRouter: () => ({
-    push: mockPush,
-    replace: mockReplace,
-    canGoBack: () => false,
-  }),
-}));
+jest.mock('expo-router', () => {
+  const React = jest.requireActual<typeof import('react')>('react');
+  return {
+    useFocusEffect: (callback: () => void) =>
+      React.useEffect(callback, [callback]),
+    useRouter: () => ({
+      push: mockPush,
+      replace: mockReplace,
+      canGoBack: () => false,
+    }),
+  };
+});
 jest.mock('@/providers/AuthProvider', () => ({ useAuthActions: () => ({}) }));
 jest.mock('@/providers/ToastProvider', () => ({ useToast: () => jest.fn() }));
 jest.mock('@/services', () => ({

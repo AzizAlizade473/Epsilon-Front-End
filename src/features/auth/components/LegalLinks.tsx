@@ -1,49 +1,38 @@
-import { useRef, useState } from 'react';
+import { useCallback, useRef } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { openBrowserAsync } from 'expo-web-browser';
-import { StyleSheet, View } from 'react-native';
+import { Keyboard, StyleSheet, View } from 'react-native';
 import { PressSurface } from '@/components/ui/PressSurface';
 import { Text } from '@/components/ui/Text';
 import { colors, spacing } from '@/design';
-import { env } from '@/lib/env';
-import { useToast } from '@/providers/ToastProvider';
 
-export function LegalLinks() {
+export function LegalLinks({ showCaption = true }: { showCaption?: boolean }) {
   const { t } = useTranslation();
-  const toast = useToast();
+  const router = useRouter();
   const gate = useRef(false);
-  const [busy, setBusy] = useState(false);
-  const open = async (url: string) => {
-    if (gate.current) return;
-    gate.current = true;
-    setBusy(true);
-    try {
-      await openBrowserAsync(url);
-    } catch {
-      toast(t('errors.generic'));
-    } finally {
+  useFocusEffect(
+    useCallback(() => {
       gate.current = false;
-      setBusy(false);
-    }
-  };
+    }, []),
+  );
   return (
     <View style={styles.group}>
-      <Text variant="caption" style={styles.caption}>
-        {t('auth.legal')}
-      </Text>
+      {showCaption && (
+        <Text variant="caption" style={styles.caption}>
+          {t('auth.legal')}
+        </Text>
+      )}
       <View style={styles.links}>
         {(['terms', 'privacy'] as const).map((key) => (
           <PressSurface
             key={key}
             accessibilityRole="link"
             accessibilityLabel={t(`auth.${key}`)}
-            disabled={busy}
             onPress={() => {
-              void open(
-                key === 'terms'
-                  ? env.EXPO_PUBLIC_TERMS_URL
-                  : env.EXPO_PUBLIC_PRIVACY_URL,
-              );
+              if (gate.current) return;
+              gate.current = true;
+              Keyboard.dismiss();
+              router.push(key === 'terms' ? '/legal/terms' : '/legal/privacy');
             }}
             contentStyle={styles.link}
           >
