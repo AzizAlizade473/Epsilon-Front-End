@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { AccessibilityInfo, Easing } from 'react-native';
 
 export const motionTokens = {
+  welcomeIntroDuration: 600,
+  welcomeIntroRotation: '-6deg',
   tabFadeDuration: 150,
   scanPressScale: 0.94,
   scanLineDuration: 1800,

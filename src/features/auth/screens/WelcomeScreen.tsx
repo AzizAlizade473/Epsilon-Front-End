@@ -10,6 +10,7 @@ import { colors, layout, spacing } from '@/design';
 import { authOperation } from '@/lib/auth-lifecycle';
 import { FadeUp } from '../components/FadeUp';
 import { LegalLinks } from '../components/LegalLinks';
+import { WelcomeArtwork } from '../components/WelcomeArtwork';
 
 export default function WelcomeScreen() {
   const { t } = useTranslation();
@@ -30,7 +31,7 @@ export default function WelcomeScreen() {
     authOperation.release();
   };
   return (
-    <Screen surface="surface">
+    <Screen surface="brandTint">
       <View style={styles.stage}>
         <View style={styles.content}>
           <FadeUp order={0}>
@@ -55,6 +56,7 @@ export default function WelcomeScreen() {
               <Text style={styles.center}>{t('authEntry.description')}</Text>
             </View>
           </FadeUp>
+          <WelcomeArtwork />
           <FadeUp order={2}>
             <View style={styles.actions}>
               <Button
@@ -83,15 +85,15 @@ const styles = StyleSheet.create({
   stage: {
     flexGrow: 1,
     justifyContent: 'center',
-    paddingVertical: spacing[24],
+    paddingVertical: spacing[16],
   },
   content: {
     flexGrow: 1,
     justifyContent: 'space-between',
-    gap: spacing[32],
+    gap: spacing[24],
   },
   brand: { alignItems: 'center' },
-  logo: { width: layout.authLogoSize, height: layout.authLogoSize },
+  logo: { width: layout.welcomeLogoSize, height: layout.welcomeLogoSize },
   heading: { gap: spacing[16] },
   title: { color: colors.brand.primary },
   actions: { gap: spacing[12] },

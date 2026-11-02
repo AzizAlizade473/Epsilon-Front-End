@@ -22,7 +22,7 @@ Continue on `design/auth-completion`; no deployment or main merge is authorized.
 - [x] flow.5 — Legal routes/links and state-preserving navigation tests.
   - [x] flow.5.a — Welcome/Login/Sign Up/Profile links now open bundled readers with repeat-tap guards, keyboard dismissal and normal Back. Full check: 101 suites / 593 tests pass.
   - [x] flow.5.b — Real-router Login/Sign Up tests preserve phone input through both documents and Back; only named legal deep links resolve. Full check: 101 suites / 596 tests pass.
-- [ ] flow.6 — Welcome illustration/motion and Google availability explanation.
+- [x] flow.6 — Welcome receipt/rating illustration, light-blue canvas and native-driver entrance with Reduce Motion guards; browser render reviewed. Full check: 102 suites / 598 tests pass. Google browser/native limitations remain explicit.
 - [ ] flow.7 — Full gate, Android export, audit, documentation and hosted CI.
 
 ## Auth entry completion — 2026-11-02

@@ -22,7 +22,7 @@ export type ScreenProps = Pick<HeaderProps, 'leading' | 'trailing'> & {
   footer?: ReactNode;
   edges?: Edges;
   refreshControl?: ReactElement<RefreshControlProps>;
-  surface?: 'background' | 'surface';
+  surface?: 'background' | 'surface' | 'brandTint';
 };
 
 export function Screen({
@@ -62,7 +62,13 @@ export function Screen({
   );
   return (
     <SafeAreaView
-      style={[styles.root, { backgroundColor: colors[surface] }]}
+      style={[
+        styles.root,
+        {
+          backgroundColor:
+            surface === 'brandTint' ? colors.brand.tint : colors[surface],
+        },
+      ]}
       edges={edges}
     >
       <StatusBar style={theme.statusBarStyle} />
