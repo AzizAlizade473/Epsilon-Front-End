@@ -16,6 +16,7 @@ Continue on `design/auth-completion`; no deployment or main merge is authorized.
   - [x] flow.3.b — Explicit conflict navigation, browser/native Google availability explanation and editable browser birth date without importing a native picker. Full check: 99 suites / 585 tests pass.
   - [x] flow.3.c — Conflict navigation regression, browser controls, fixture deletion and cross-account phone-link protection. Full check: 100 suites / 589 tests pass; OTP visual layout preserved.
 - [ ] flow.4 — Bundled legal content, metadata and translation coverage.
+  - [x] flow.4.a — Epsilon-specific 18-section Terms draft and draft/date/version labels in AZ/EN/RU, with no invented legal contacts or reward entitlements. Full check: 100 suites / 589 tests pass.
 - [ ] flow.5 — Legal routes/links and state-preserving navigation tests.
 - [ ] flow.6 — Welcome illustration/motion and Google availability explanation.
 - [ ] flow.7 — Full gate, Android export, audit, documentation and hosted CI.
