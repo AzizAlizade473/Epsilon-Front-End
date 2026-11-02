@@ -1,5 +1,8 @@
 # Authentication entry review — 2026-11-02
 
+Historical entry review; see [the expanded workflow review](AUTH_WORKFLOW_REVIEW.md)
+for the subsequent auth, browser, Welcome and bundled legal changes.
+
 Recovered source: `origin/step/28-29-final-release` at
 `f7999c611ab4a96744cace1ab6cb57e374f4fe46`, newer than `a25d1f0`.
 Its [GitHub CI passed](https://github.com/AzizAlizade473/Epsilon-Front-End/actions/runs/41319891935).

@@ -421,3 +421,20 @@ store-review configuration, never this repository. No live credentials, provider
 configuration, publishing or external messages were used for this handoff.
 Existing Android/native/device/cold-start/Google/push/Sentry/OTA prerequisites
 remain unchanged; STEP 28–29 optimization/release work is not started here.
+
+## Auth workflow preview (2026-11-02)
+
+The newer [workflow review](AUTH_WORKFLOW_REVIEW.md) supersedes historical auth/legal
+preview instructions above. In-app legal links now open bundled `/legal/terms` and
+`/legal/privacy` readers; public store resources still need legal approval and hosting.
+
+In development-fixture mode only, Login with `+994501234567` and OTP `123456`
+returns the seeded completed account. Sign Up with an unused phone such as
+`+994509876543` and the fixture OTP opens name/surname/birth-date setup after verification.
+Registering the seeded number instead shows the existing-account action.
+The fixture identity registry is in memory and resets on full reload. It sends no SMS
+and creates no real account. Never use these fixture codes in production configuration.
+
+Google is native-only and requires genuine provider configuration. Strict live
+Login/Sign Up and email OTP need the [backend contract work](AUTH_WORKFLOW_BACKEND.md);
+do not enable a mock driver or invent endpoints to make them appear operational.

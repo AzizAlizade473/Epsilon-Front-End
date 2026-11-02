@@ -23,8 +23,9 @@ Continue on `design/auth-completion`; no deployment or main merge is authorized.
   - [x] flow.5.a — Welcome/Login/Sign Up/Profile links now open bundled readers with repeat-tap guards, keyboard dismissal and normal Back. Full check: 101 suites / 593 tests pass.
   - [x] flow.5.b — Real-router Login/Sign Up tests preserve phone input through both documents and Back; only named legal deep links resolve. Full check: 101 suites / 596 tests pass.
 - [x] flow.6 — Welcome receipt/rating illustration, light-blue canvas and native-driver entrance with Reduce Motion guards; browser render reviewed. Full check: 102 suites / 598 tests pass. Google browser/native limitations remain explicit.
-- [ ] flow.7 — Full gate, Android export, audit, documentation and hosted CI.
+- [x] flow.7 — Full gate, Android export, audit, documentation and hosted CI.
   - [x] flow.7.a — Browser journey exposed and fixed synthetic web offline status and a self-waiting config query. Fresh/cached server rules now publish correctly without changing native reachability or production cache TTL. Full check: 103 suites / 601 tests; browser fixture Signup → OTP → name/surname/date → Home → logout passes.
+  - [x] flow.7.b — Final full check: 103 suites / 601 tests; coverage 86.61% lines, 75.71% branches. Android Hermes 6,162,572 bytes (+0.90% against unchanged baseline; 10% limit). Expo compatibility, production audit (zero high/critical) and pinned secret scan pass. Implementation CI at 2592b0c passes both required jobs; final documentation CI is verified at handoff. See AUTH_WORKFLOW_REVIEW.md for exact evidence, fixture preview instructions and backend/legal/device limits. Main and deployment unchanged.
 
 ## Auth entry completion — 2026-11-02
 
