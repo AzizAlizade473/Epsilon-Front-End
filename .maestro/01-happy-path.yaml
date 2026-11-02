@@ -12,7 +12,7 @@ name: Mock Google onboarding through purchase feedback and logout
 - hideKeyboard
 - tapOn: Davam et
 - tapOn: Telefon nömrəsi
-- inputText: '501234567'
+- inputText: '509876541'
 - hideKeyboard
 - tapOn: Kod göndər
 - tapOn: 6 rəqəmli SMS kodu

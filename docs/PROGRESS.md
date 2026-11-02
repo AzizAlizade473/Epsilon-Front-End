@@ -9,6 +9,7 @@ Continue on `design/auth-completion`; no deployment or main merge is authorized.
 
 - [x] flow.1 — Confirmed browser crash before logout: Sheet used native findNodeHandle. Platform focus adapter fixes DOM focus while retaining native accessibility focus. Full check: 97 suites / 580 tests pass.
 - [ ] flow.2 — Intent contract boundary and strict development account fixtures.
+  - [x] flow.2.b — Development account registry distinguishes new/existing identities, preserves completed profiles and rejects duplicate registration; verified phone linking records its destination without stealing another account's phone. Full check: 99 suites / 585 tests pass.
   - [x] flow.2.a — Explicit local auth-intent capability boundary; unsupported live requests reject before network I/O. Backend/email/deletion handoff documented. Full check: 98 suites / 583 tests pass.
 - [ ] flow.3 — Entry/OTP/Google intent handoff and localized capability errors.
 - [ ] flow.4 — Bundled legal content, metadata and translation coverage.

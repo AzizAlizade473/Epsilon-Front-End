@@ -33,6 +33,7 @@ import {
 } from './fixtures';
 import { checkMockScenario, getMockScenario, simulateDelay } from './scenario';
 import { isE2E } from '@/lib/e2e-mode';
+import { mockAccount, mockAccountStep, rememberMockAccount } from './accounts';
 
 let _currentUser: User = { ...mockUser };
 const mockRatings = new Map<string, number>();
@@ -64,6 +65,7 @@ function walletFixture(): WalletTransaction[] {
 }
 
 export const mockAuthService: AuthService = {
+  supportsAuthIntent: true,
   async requestOtp() {
     await simulateDelay();
     checkMockScenario('auth');
@@ -76,11 +78,19 @@ export const mockAuthService: AuthService = {
   async verifyOtp(input) {
     await simulateDelay();
     checkMockScenario('auth');
-    if (isE2E() && ['000000', '111111'].includes(input.code))
+    if ((isE2E() || input.intent) && ['000000', '111111'].includes(input.code))
       throw new ApiError({
         code: input.code === '000000' ? 'OTP_INVALID' : 'OTP_EXPIRED',
         message: 'Maestro fixture',
         status: 400,
+      });
+    if (input.intent)
+      _currentUser = mockAccount(`phone:${input.phone}`, input.intent, {
+        ...mockUser,
+        phone: input.phone,
+        email: null,
+        phoneVerified: true,
+        identities: [mockUser.identities[0]!],
       });
     return {
       session: {
@@ -89,12 +99,12 @@ export const mockAuthService: AuthService = {
         expiresAt: new Date(Date.now() + 3600_000).toISOString(),
       },
       user: _currentUser,
-      isNewUser: false,
-      nextStep: 'home',
+      isNewUser: input.intent === 'register',
+      nextStep: input.intent ? mockAccountStep(_currentUser) : 'home',
     };
   },
 
-  async signInWithGoogle() {
+  async signInWithGoogle(input) {
     await simulateDelay();
     checkMockScenario('auth');
     if (isE2E())
@@ -105,6 +115,19 @@ export const mockAuthService: AuthService = {
         birthDate: null,
         phoneVerified: false,
       };
+    if (input.intent)
+      _currentUser = mockAccount(
+        input.idToken === 'fixture-new-google' || isE2E()
+          ? 'google:new'
+          : 'google:existing',
+        input.intent,
+        {
+          ...mockUser,
+          phone: null,
+          phoneVerified: false,
+          identities: [mockUser.identities[1]!],
+        },
+      );
     return {
       session: {
         accessToken: 'mock_google_access_token',
@@ -112,8 +135,12 @@ export const mockAuthService: AuthService = {
         expiresAt: new Date(Date.now() + 3600_000).toISOString(),
       },
       user: _currentUser,
-      isNewUser: isE2E(),
-      nextStep: isE2E() ? 'profile' : 'home',
+      isNewUser: input.intent ? input.intent === 'register' : isE2E(),
+      nextStep: input.intent
+        ? mockAccountStep(_currentUser)
+        : isE2E()
+          ? 'profile'
+          : 'home',
     };
   },
 
@@ -130,10 +157,12 @@ export const mockAuthService: AuthService = {
     };
   },
 
-  async verifyPhoneLink() {
+  async verifyPhoneLink(input) {
     await simulateDelay();
     checkMockScenario('auth');
-    _currentUser = { ..._currentUser, phoneVerified: true };
+    const linked = { ..._currentUser, phone: input.phone, phoneVerified: true };
+    rememberMockAccount(linked);
+    _currentUser = linked;
     return _currentUser;
   },
 
@@ -169,6 +198,7 @@ export const mockUserService: UserService = {
       ...(input.birthDate !== undefined ? { birthDate: input.birthDate } : {}),
       ...(input.language !== undefined ? { language: input.language } : {}),
     };
+    rememberMockAccount(_currentUser);
     return {
       user: _currentUser,
       nextStep:
