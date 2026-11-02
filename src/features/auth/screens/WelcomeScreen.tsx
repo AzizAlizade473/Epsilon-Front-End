@@ -6,18 +6,14 @@ import { StyleSheet, View } from 'react-native';
 import { Button } from '@/components/ui/Button';
 import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
-import { layout, spacing } from '@/design';
-import { env } from '@/lib/env';
-import { useGoogleSignIn } from '../hooks/useGoogleSignIn';
+import { colors, layout, spacing } from '@/design';
 import { authOperation } from '@/lib/auth-lifecycle';
 import { FadeUp } from '../components/FadeUp';
 import { LegalLinks } from '../components/LegalLinks';
-import { GoogleButton } from '../components/GoogleButton';
 
 export default function WelcomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const google = useGoogleSignIn();
   const gate = useRef(false);
   const [busy, setBusy] = useState(false);
   useFocusEffect(
@@ -26,11 +22,11 @@ export default function WelcomeScreen() {
       setBusy(false);
     }, []),
   );
-  const phone = () => {
-    if (gate.current || google.busy || !authOperation.acquire()) return;
+  const open = (route: '/login' | '/register') => {
+    if (gate.current || !authOperation.acquire()) return;
     gate.current = true;
     setBusy(true);
-    router.push('/phone');
+    router.push(route);
     authOperation.release();
   };
   return (
@@ -52,45 +48,27 @@ export default function WelcomeScreen() {
               <Text
                 variant="title1"
                 accessibilityRole="header"
-                style={styles.center}
+                style={[styles.center, styles.title]}
               >
                 {t('authEntry.headline')}
               </Text>
               <Text style={styles.center}>{t('authEntry.description')}</Text>
             </View>
           </FadeUp>
-          <FadeUp order={4}>
+          <FadeUp order={2}>
             <View style={styles.actions}>
-              {google.error && (
-                <Text
-                  accessibilityRole="alert"
-                  accessibilityLiveRegion="polite"
-                  tone="danger"
-                >
-                  {google.error}
-                </Text>
-              )}
-              {env.ENABLE_GOOGLE_SIGNIN && (
-                <>
-                  <GoogleButton
-                    disabled={busy || google.busy}
-                    loading={google.busy}
-                    onPress={() => {
-                      void google.signIn().then((route) => {
-                        if (route) router.replace(route);
-                      });
-                    }}
-                  />
-                  <Text variant="caption" style={styles.center}>
-                    {t('auth.or')}
-                  </Text>
-                </>
-              )}
               <Button
-                label={t('auth.continuePhone')}
-                loading={busy}
-                disabled={google.busy}
-                onPress={phone}
+                label={t('authEntry.login')}
+                shape="rounded"
+                disabled={busy}
+                onPress={() => open('/login')}
+              />
+              <Button
+                label={t('authEntry.register')}
+                variant="outline"
+                shape="rounded"
+                disabled={busy}
+                onPress={() => open('/register')}
               />
               <LegalLinks />
             </View>
@@ -114,7 +92,8 @@ const styles = StyleSheet.create({
   },
   brand: { alignItems: 'center' },
   logo: { width: layout.authLogoSize, height: layout.authLogoSize },
-  heading: { gap: spacing[12] },
+  heading: { gap: spacing[16] },
+  title: { color: colors.brand.primary },
   actions: { gap: spacing[12] },
   center: { textAlign: 'center' },
 });

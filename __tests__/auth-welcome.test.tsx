@@ -55,17 +55,20 @@ async function welcome() {
     </SafeAreaProvider>,
   );
 }
-it('hides disabled providers and prevents duplicate phone navigation', async () => {
-  await welcome();
-  expect(
-    screen.queryByRole('button', { name: az.auth.continueGoogle }),
-  ).toBeNull();
-  const phone = screen.getByRole('button', { name: az.auth.continuePhone });
-  await fireEvent.press(phone);
-  await fireEvent.press(phone);
-  expect(mockPush).toHaveBeenCalledTimes(1);
-  expect(mockPush).toHaveBeenCalledWith('/phone');
-});
+it.each(['login', 'register'] as const)(
+  'opens %s once from Welcome',
+  async (intent) => {
+    await welcome();
+    expect(
+      screen.queryByRole('button', { name: az.auth.continueGoogle }),
+    ).toBeNull();
+    const phone = screen.getByRole('button', { name: az.authEntry[intent] });
+    await fireEvent.press(phone);
+    await fireEvent.press(phone);
+    expect(mockPush).toHaveBeenCalledTimes(1);
+    expect(mockPush).toHaveBeenCalledWith(`/${intent}`);
+  },
+);
 it('opens only configured legal links through the system browser surface', async () => {
   await welcome();
   await fireEvent.press(screen.getByRole('link', { name: az.auth.terms }));
@@ -79,12 +82,18 @@ it('opens only configured legal links through the system browser surface', async
     env.EXPO_PUBLIC_PRIVACY_URL,
   );
 });
-it('shows the flagged Google option and starts the shared sign-in flow', async () => {
+it('keeps Google on dedicated entry screens even when enabled', async () => {
   env.ENABLE_GOOGLE_SIGNIN = true;
   await welcome();
-  await fireEvent.press(
-    screen.getByRole('button', { name: az.auth.continueGoogle }),
-  );
-  expect(mockSignIn).toHaveBeenCalledTimes(1);
+  expect(
+    screen.queryByRole('button', { name: az.auth.continueGoogle }),
+  ).toBeNull();
+  expect(
+    screen.getByRole('button', { name: az.authEntry.login }),
+  ).toBeOnTheScreen();
+  expect(
+    screen.getByRole('button', { name: az.authEntry.register }),
+  ).toBeOnTheScreen();
+  expect(mockSignIn).not.toHaveBeenCalled();
   expect(mockPush).not.toHaveBeenCalled();
 });

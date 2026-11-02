@@ -21,6 +21,11 @@ const variants = {
     foreground: colors.ink,
     pressed: colors.divider,
   },
+  outline: {
+    background: colors.surface,
+    foreground: colors.ink,
+    pressed: colors.divider,
+  },
   destructive: {
     background: colors.danger,
     foreground: colors.surface,
@@ -35,6 +40,7 @@ export type ButtonProps = Pick<
   label: string;
   accessibilityLabel?: string;
   variant?: keyof typeof variants;
+  shape?: 'pill' | 'rounded';
 };
 
 export function Button({
@@ -42,6 +48,7 @@ export function Button({
   accessibilityLabel = label,
   variant = 'primary',
   loading = false,
+  shape = 'pill',
   ...props
 }: ButtonProps) {
   const palette = variants[variant];
@@ -51,7 +58,15 @@ export function Button({
       loading={loading}
       accessibilityLabel={accessibilityLabel}
       pressedColor={palette.pressed}
-      style={[styles.button, { backgroundColor: palette.background }]}
+      style={[
+        styles.button,
+        { backgroundColor: palette.background },
+        shape === 'rounded' && { borderRadius: radius[12] },
+        variant === 'outline' && {
+          borderWidth: layout.hairlineWidth,
+          borderColor: colors.border,
+        },
+      ]}
       contentStyle={styles.content}
     >
       <View style={{ opacity: loading ? 0 : 1 }}>
