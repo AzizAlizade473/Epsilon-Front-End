@@ -37,6 +37,8 @@ export type DeepLinkResult =
         | '/phone'
         | '/login'
         | '/register'
+        | '/legal/terms'
+        | '/legal/privacy'
         | `/receipt/${string}`
         | `/rate/${string}`
         | `/cashback/transaction/${string}`;
@@ -80,6 +82,11 @@ export function resolveDeepLink(rawUrl: string): DeepLinkResult {
 
   const rawPath = (url.host ? `/${url.host}` : '') + url.pathname;
   const segments = rawPath.split('/').filter(Boolean);
+  if (segments.length === 2 && segments[0] === 'legal') {
+    if (segments[1] === 'terms') return { valid: true, path: '/legal/terms' };
+    if (segments[1] === 'privacy')
+      return { valid: true, path: '/legal/privacy' };
+  }
 
   if (segments.length === 1 && segments[0] && staticRoutes.has(segments[0])) {
     return {

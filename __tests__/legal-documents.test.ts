@@ -1,5 +1,18 @@
 import { expect, test } from '@jest/globals';
 import { getLegalDocument } from '@/lib/legal-documents';
+import { resolveDeepLink } from '@/lib/deep-link';
+
+test('only the two named legal documents accept Epsilon deep links', () => {
+  expect(resolveDeepLink('epsilon://legal/terms')).toMatchObject({
+    valid: true,
+    path: '/legal/terms',
+  });
+  expect(resolveDeepLink('epsilon://legal/privacy')).toMatchObject({
+    valid: true,
+    path: '/legal/privacy',
+  });
+  expect(resolveDeepLink('epsilon://legal/unknown').valid).toBe(false);
+});
 
 test.each(['az', 'en', 'ru'] as const)(
   '%s drafts have complete ordered sections and honest version metadata',
