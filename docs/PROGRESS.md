@@ -22,6 +22,7 @@ Owner workflow: targeted checks per unit, full unchanged quality gate at complet
   - [x] auth.3.3 — Real-router Welcome/Login/Sign Up/Back and legacy phone redirect tests pass (4 tests); new entry links are scheme-validated.
 - [x] auth.4 — Restrained offline banner and reconnect verification. Three tests pass, including unknown connectivity, online manager recovery and timed dismissal.
 - [ ] auth.5 — Visual/accessibility audit, full gate, Android export and remote verification.
+  - [x] auth.5.1 — Updated Maestro entry paths and enabled unchanged CI gates for design branches; pending-request locking test passes. Browser AZ/EN/RU review has no horizontal overflow or controls below 44pt; device testing remains pending.
 
 Email: **EMAIL AUTH BACKEND SUPPORT REQUIRED**. The canonical OpenAPI and
 `AuthService` expose phone OTP and Google, with no email authentication operation.

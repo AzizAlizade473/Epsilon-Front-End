@@ -3,11 +3,11 @@ name: Wrong, expired and correct mock OTP
 ---
 - launchApp:
     clearState: true
-- tapOn: Telefon nömrəsi ilə davam et
+- tapOn: Daxil ol
 - tapOn: Telefon nömrəsi
 - inputText: '501234567'
 - hideKeyboard
-- tapOn: Kod göndər
+- tapOn: Davam et
 - tapOn: 6 rəqəmli SMS kodu
 - inputText: '000000'
 - assertVisible: Kod yanlışdır. Yenidən cəhd edin.

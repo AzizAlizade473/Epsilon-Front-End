@@ -1,5 +1,6 @@
 import { beforeEach, expect, it, jest } from '@jest/globals';
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -135,4 +136,43 @@ it('represents disabled Google honestly and direct-entry Back returns to Welcome
   );
   expect(mockReplace).toHaveBeenCalledWith('/welcome');
   expect(mockGoogle).not.toHaveBeenCalled();
+});
+
+it('locks phone, Google and entry switching during a pending phone request', async () => {
+  let finish: (value: {
+    expiresAt: string;
+    retryAfterSeconds: number;
+  }) => void = () => {};
+  mockRequest.mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      }),
+  );
+  await entry('register');
+  await fireEvent.changeText(
+    screen.getByLabelText(az.auth.phoneLabel),
+    '+994501234567',
+  );
+  const submit = screen.getByRole('button', { name: az.common.continue });
+  await fireEvent.press(submit);
+  await fireEvent.press(submit);
+  expect(mockRequest).toHaveBeenCalledTimes(1);
+  expect(submit).toHaveProp(
+    'accessibilityState',
+    expect.objectContaining({ busy: true }),
+  );
+  expect(screen.getByLabelText(az.auth.phoneLabel)).toHaveProp(
+    'editable',
+    false,
+  );
+  expect(
+    screen.getByRole('button', { name: az.auth.continueGoogle }),
+  ).toBeDisabled();
+  expect(screen.getByRole('link', { name: az.authEntry.login })).toBeDisabled();
+  await act(() =>
+    finish({ expiresAt: '2027-01-01T00:00:00Z', retryAfterSeconds: 60 }),
+  );
+  await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/otp'));
+  expect(mockPush).toHaveBeenCalledTimes(1);
 });

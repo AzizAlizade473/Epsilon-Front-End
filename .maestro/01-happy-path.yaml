@@ -3,6 +3,7 @@ name: Mock Google onboarding through purchase feedback and logout
 ---
 - launchApp:
     clearState: true
+- tapOn: Qeydiyyatdan keç
 - tapOn: Google ilə davam et
 - tapOn: Ad
 - inputText: Maestro
@@ -28,4 +29,4 @@ name: Mock Google onboarding through purchase feedback and logout
       text: Hesabdan çıx
 - tapOn: Hesabdan çıx
 - tapOn: Çıx
-- assertVisible: Telefon nömrəsi ilə davam et
+- assertVisible: Daxil ol
