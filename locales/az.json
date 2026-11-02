@@ -1,4 +1,19 @@
 {
+  "authEntry": {
+    "headline": "Yeməyini qiymətləndir, keşbek qazan",
+    "description": "Çekini skan et, aldığın yeməkləri qiymətləndir və uyğun alışlardan keşbek qazan.",
+    "login": "Daxil ol",
+    "register": "Qeydiyyatdan keç",
+    "loginHelper": "Telefon nömrəni təsdiqləyərək hesabına daxil ol.",
+    "registerHelper": "Telefon nömrəni təsdiqlə, sonra profilini tamamla.",
+    "method": "Davam etmə üsulu",
+    "phone": "Telefon",
+    "email": "E-poçt",
+    "emailUnavailable": "E-poçt ilə giriş hələ dəstəklənmir. Telefon nömrəsi ilə davam et.",
+    "googleUnavailable": "Google ilə giriş bu versiyada aktiv deyil.",
+    "noAccount": "Hesabın yoxdur?",
+    "hasAccount": "Hesabın var?"
+  },
   "navigation": {
     "welcome": "Xoş gəlmisiniz",
     "phone": "Telefon nömrənizi daxil edin",

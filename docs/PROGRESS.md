@@ -1,5 +1,25 @@
 # Epsilon progress
 
+## Auth entry completion — 2026-11-02
+
+Scope: Welcome, dedicated Login/Sign Up, existing Phone/OTP/Google connections,
+and the shared offline banner. Completed roadmap history remains preserved.
+Branch: `design/auth-completion`, recovered from remote
+`step/28-29-final-release` at `f7999c6` (newer than `a25d1f0`).
+The clean local main was behind; no local work was overwritten or reset.
+Owner workflow: targeted checks per unit, full unchanged quality gate at completion.
+
+- [x] auth.1 — Recovery, contract review and localized entry copy. Baseline lint/strict TypeScript and 20 targeted phone/component tests pass; source CI green.
+- [ ] auth.2 — Dedicated Login/Sign Up connected to existing auth operations.
+- [ ] auth.3 — Open-canvas Welcome and entry navigation tests.
+- [ ] auth.4 — Restrained offline banner and reconnect verification.
+- [ ] auth.5 — Visual/accessibility audit, full gate, Android export and remote verification.
+
+Email: **EMAIL AUTH BACKEND SUPPORT REQUIRED**. The canonical OpenAPI and
+`AuthService` expose phone OTP and Google, with no email authentication operation.
+Login and Sign Up express intent; account identity/provisioning and `nextStep`
+remain server-owned. No invented endpoint, password or client account creation.
+
 - [x] web.svg.1 (2026-11-01) — fixed native SVG accessibility props leaking into
       browser DOM across shared icons, rating/review stars and Google artwork.
       Browser uses `aria-hidden`; native hidden/focus semantics remain unchanged.

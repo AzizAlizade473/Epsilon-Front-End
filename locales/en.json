@@ -1,4 +1,19 @@
 {
+  "authEntry": {
+    "headline": "Rate your meal. Earn cashback.",
+    "description": "Scan your receipt, rate the dishes you bought and earn cashback on eligible purchases.",
+    "login": "Log in",
+    "register": "Sign up",
+    "loginHelper": "Verify your phone number to access your account.",
+    "registerHelper": "Verify your phone number, then complete your profile.",
+    "method": "Continue with",
+    "phone": "Phone",
+    "email": "Email",
+    "emailUnavailable": "Email sign-in is not supported yet. Continue with your phone number.",
+    "googleUnavailable": "Google sign-in is not enabled in this version.",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?"
+  },
   "navigation": {
     "welcome": "Welcome",
     "phone": "Enter your phone number",
