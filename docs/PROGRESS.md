@@ -16,9 +16,10 @@ Owner workflow: targeted checks per unit, full unchanged quality gate at complet
   - [x] auth.2.3 — Distinct entry screens and fail-closed email state; strict TypeScript and 22 existing auth/Google tests pass. Remote push retry pending transient connectivity.
   - [x] auth.2.4 — Nine new entry tests cover both intents, phone/Google routing, cross-links, disabled Google, direct Back and fail-closed email.
   - [x] auth.2.5 — Owner's attached reference: centered blue headings, rounded controls, deliberate form spacing; unsupported email controls removed. Phone/OTP/Google unchanged; 23 targeted tests and strict TypeScript pass.
-- [ ] auth.3 — Open-canvas Welcome and entry navigation tests.
+- [x] auth.3 — Open-canvas Welcome and entry navigation tests.
   - [x] auth.3.1 — Removed enclosing Welcome card and generic feature rows; real logo and concise localized headline. Three Welcome tests pass.
   - [x] auth.3.2 — Welcome Login/Sign Up choices, blue headline and rounded primary/neutral secondary controls; nine Welcome/Button tests pass.
+  - [x] auth.3.3 — Real-router Welcome/Login/Sign Up/Back and legacy phone redirect tests pass (4 tests); new entry links are scheme-validated.
 - [ ] auth.4 — Restrained offline banner and reconnect verification.
 - [ ] auth.5 — Visual/accessibility audit, full gate, Android export and remote verification.
 

@@ -35,6 +35,8 @@ export type DeepLinkResult =
         | '/scan'
         | '/welcome'
         | '/phone'
+        | '/login'
+        | '/register'
         | `/receipt/${string}`
         | `/rate/${string}`
         | `/cashback/transaction/${string}`;
@@ -54,6 +56,8 @@ const staticRoutes = new Set([
   'scan',
   'welcome',
   'phone',
+  'login',
+  'register',
 ]);
 
 /**
