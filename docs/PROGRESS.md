@@ -1,5 +1,20 @@
 # Epsilon progress
 
+## Auth workflow and bundled legal documents — 2026-11-02
+
+Owner scope: diagnose Google/logout/profile behavior; preserve OTP and existing
+age gate (explicit owner reply); distinguish Login/Sign Up safely; add readable
+offline Terms/Privacy drafts and a restrained animated Welcome illustration.
+Continue on `design/auth-completion`; no deployment or main merge is authorized.
+
+- [x] flow.1 — Confirmed browser crash before logout: Sheet used native findNodeHandle. Platform focus adapter fixes DOM focus while retaining native accessibility focus. Full check: 97 suites / 580 tests pass.
+- [ ] flow.2 — Intent contract boundary and strict development account fixtures.
+- [ ] flow.3 — Entry/OTP/Google intent handoff and localized capability errors.
+- [ ] flow.4 — Bundled legal content, metadata and translation coverage.
+- [ ] flow.5 — Legal routes/links and state-preserving navigation tests.
+- [ ] flow.6 — Welcome illustration/motion and Google availability explanation.
+- [ ] flow.7 — Full gate, Android export, audit, documentation and hosted CI.
+
 ## Auth entry completion — 2026-11-02
 
 Scope: Welcome, dedicated Login/Sign Up, existing Phone/OTP/Google connections,

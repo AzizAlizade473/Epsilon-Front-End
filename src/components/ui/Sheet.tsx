@@ -10,8 +10,6 @@ import {
 import { useTranslation } from 'react-i18next';
 import {
   BackHandler,
-  AccessibilityInfo,
-  findNodeHandle,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -33,6 +31,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { focusAccessible } from '@/lib/focus-accessible';
 
 import {
   colors,
@@ -77,8 +76,7 @@ function SheetBody({
   useEffect(() => {
     mounted.current = true;
     const frame = requestAnimationFrame(() => {
-      const tag = findNodeHandle(handle.current);
-      if (tag) AccessibilityInfo.setAccessibilityFocus(tag);
+      focusAccessible(handle.current);
     });
     return () => {
       mounted.current = false;
