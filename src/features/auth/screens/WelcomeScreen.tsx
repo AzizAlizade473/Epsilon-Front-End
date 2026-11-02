@@ -1,16 +1,12 @@
 import { Image } from 'expo-image';
 import { useCallback, useRef, useState } from 'react';
 import { useFocusEffect, useRouter } from 'expo-router';
-import ScanLine from 'lucide-react-native/icons/scan-line';
-import Star from 'lucide-react-native/icons/star';
-import Wallet from 'lucide-react-native/icons/wallet';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { Button } from '@/components/ui/Button';
-import { ListRow } from '@/components/ui/ListRow';
 import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
-import { colors, layout, radius, spacing } from '@/design';
+import { layout, spacing } from '@/design';
 import { env } from '@/lib/env';
 import { useGoogleSignIn } from '../hooks/useGoogleSignIn';
 import { authOperation } from '@/lib/auth-lifecycle';
@@ -38,9 +34,9 @@ export default function WelcomeScreen() {
     authOperation.release();
   };
   return (
-    <Screen>
+    <Screen surface="surface">
       <View style={styles.stage}>
-        <View style={styles.card}>
+        <View style={styles.content}>
           <FadeUp order={0}>
             <View style={styles.brand}>
               <Image
@@ -54,28 +50,13 @@ export default function WelcomeScreen() {
           <FadeUp order={1}>
             <View style={styles.heading}>
               <Text
-                variant="title2"
+                variant="title1"
                 accessibilityRole="header"
                 style={styles.center}
               >
-                {t('auth.welcomeTitle')}
+                {t('authEntry.headline')}
               </Text>
-              <Text style={styles.center}>{t('auth.welcomeBody')}</Text>
-            </View>
-          </FadeUp>
-          <FadeUp order={2}>
-            <View>
-              <ListRow
-                title={t('auth.scanStep')}
-                icon={ScanLine}
-                divider={false}
-              />
-              <ListRow title={t('auth.rateStep')} icon={Star} divider={false} />
-              <ListRow
-                title={t('auth.rewardStep')}
-                icon={Wallet}
-                divider={false}
-              />
+              <Text style={styles.center}>{t('authEntry.description')}</Text>
             </View>
           </FadeUp>
           <FadeUp order={4}>
@@ -126,16 +107,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: spacing[24],
   },
-  card: {
-    backgroundColor: colors.surface,
-    borderRadius: radius[24],
-    padding: spacing[24],
-    gap: spacing[24],
-    borderWidth: layout.hairlineWidth,
-    borderColor: colors.border,
+  content: {
+    flexGrow: 1,
+    justifyContent: 'space-between',
+    gap: spacing[32],
   },
   brand: { alignItems: 'center' },
-  logo: { width: layout.successMarkSize, height: layout.successMarkSize },
+  logo: { width: layout.authLogoSize, height: layout.authLogoSize },
   heading: { gap: spacing[12] },
   actions: { gap: spacing[12] },
   center: { textAlign: 'center' },

@@ -70,6 +70,7 @@ export const layout = {
   scanLineWidth: 1,
   receiptLogoSize: 48,
   successMarkSize: 72,
+  authLogoSize: 120,
   ratingStarSize: 48,
   leadingIconSize: 40,
   disabledOpacity: 0.5,
