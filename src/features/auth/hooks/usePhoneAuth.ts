@@ -170,7 +170,10 @@ export function usePhoneAuth(
     requestRetryAt,
     phoneInUse,
     dismissPhoneInUse: () => setPhoneInUse(false),
-    clearError: () => setError(undefined),
+    clearError: () => {
+      setError(undefined);
+      setConflict(undefined);
+    },
     requestCode,
     verifyCode,
   };

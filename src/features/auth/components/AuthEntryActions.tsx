@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { PressSurface } from '@/components/ui/PressSurface';
 import { Text } from '@/components/ui/Text';
 import { colors, layout, spacing } from '@/design';
@@ -61,12 +61,18 @@ export function GoogleEntry({
         <View style={styles.line} />
       </View>
       <GoogleButton
-        disabled={busy || !env.ENABLE_GOOGLE_SIGNIN}
+        disabled={busy || !env.ENABLE_GOOGLE_SIGNIN || Platform.OS === 'web'}
         loading={loading}
         onPress={onPress}
       />
-      {!env.ENABLE_GOOGLE_SIGNIN && (
-        <Text variant="caption">{t('authEntry.googleUnavailable')}</Text>
+      {(!env.ENABLE_GOOGLE_SIGNIN || Platform.OS === 'web') && (
+        <Text variant="caption">
+          {t(
+            Platform.OS === 'web'
+              ? 'authFlow.googleNativeOnly'
+              : 'authFlow.googleSetupRequired',
+          )}
+        </Text>
       )}
       {error && (
         <Text

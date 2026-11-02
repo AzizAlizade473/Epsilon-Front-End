@@ -30,6 +30,7 @@ export function useGoogleSignIn(intent?: AuthIntent) {
     const epoch = authOperation.epoch();
     setBusy(true);
     setError(undefined);
+    setConflict(undefined);
     try {
       requireAuthIntentSupport(intent, services.auth.supportsAuthIntent);
       const result = await googleDriver.exchange((idToken) => {

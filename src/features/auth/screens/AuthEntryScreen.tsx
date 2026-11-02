@@ -16,6 +16,7 @@ import { LegalLinks } from '../components/LegalLinks';
 import { PhoneField } from '../components/PhoneField';
 import { useGoogleSignIn } from '../hooks/useGoogleSignIn';
 import { usePhoneEntry } from '../hooks/usePhoneEntry';
+import { AuthConflictAction } from '../components/AuthConflictAction';
 
 export default function AuthEntryScreen({ intent }: { intent: AuthIntent }) {
   const { t } = useTranslation();
@@ -81,6 +82,7 @@ export default function AuthEntryScreen({ intent }: { intent: AuthIntent }) {
             });
         }}
       />
+      <AuthConflictAction reason={google.conflict} />
       {intent === 'register' && <LegalLinks />}
     </Screen>
   );

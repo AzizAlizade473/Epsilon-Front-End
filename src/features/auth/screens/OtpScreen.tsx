@@ -20,6 +20,7 @@ import { usePhoneAuth } from '../hooks/usePhoneAuth';
 import { maskPhone } from '../schemas';
 import { otpChallenge, useOtpChallenge } from '../store';
 import { PhoneInUseSheet } from '../components/PhoneInUseSheet';
+import { AuthConflictAction } from '../components/AuthConflictAction';
 
 export default function OtpScreen({
   mode = 'signIn',
@@ -140,6 +141,7 @@ export default function OtpScreen({
       {locked && (
         <Text accessibilityLiveRegion="polite">{t('auth.tooMany')}</Text>
       )}
+      <AuthConflictAction reason={auth.conflict} />
       <Button
         label={t('auth.verifyCode')}
         disabled={code.length !== 6 || locked || completed}

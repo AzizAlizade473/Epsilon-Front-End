@@ -130,7 +130,7 @@ it('represents disabled Google honestly and direct-entry Back returns to Welcome
   expect(
     screen.getByRole('button', { name: az.auth.continueGoogle }),
   ).toBeDisabled();
-  expect(screen.getByText(az.authEntry.googleUnavailable)).toBeOnTheScreen();
+  expect(screen.getByText(az.authFlow.googleSetupRequired)).toBeOnTheScreen();
   await fireEvent.press(
     screen.getByRole('button', { name: az.navigation.back }),
   );

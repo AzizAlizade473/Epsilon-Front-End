@@ -1,5 +1,6 @@
 {
   "authFlow": {
+    "birthDateFormat": "Year-month-day: YYYY-MM-DD",
     "unavailable": "This sign-in method is currently unavailable. Please try again later.",
     "notFound": "No account was found for this sign-in method. Sign up to continue.",
     "exists": "This account already exists. Log in to continue.",

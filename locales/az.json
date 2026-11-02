@@ -1,5 +1,6 @@
 {
   "authFlow": {
+    "birthDateFormat": "İl-ay-gün: YYYY-MM-DD",
     "unavailable": "Bu giriş üsulu hazırda əlçatan deyil. Daha sonra yenidən cəhd et.",
     "notFound": "Bu üsulla bağlı hesab tapılmadı. Davam etmək üçün qeydiyyatdan keç.",
     "exists": "Bu hesab artıq mövcuddur. Davam etmək üçün daxil ol.",

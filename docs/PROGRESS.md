@@ -13,6 +13,7 @@ Continue on `design/auth-completion`; no deployment or main merge is authorized.
   - [x] flow.2.a — Explicit local auth-intent capability boundary; unsupported live requests reject before network I/O. Backend/email/deletion handoff documented. Full check: 98 suites / 583 tests pass.
 - [ ] flow.3 — Entry/OTP/Google intent handoff and localized capability errors.
   - [x] flow.3.a — Entry intent survives OTP/resend in memory and reaches both phone/Google adapters; unsupported live provisioning fails closed with localized errors. Full check: 99 suites / 585 tests pass.
+  - [x] flow.3.b — Explicit conflict navigation, browser/native Google availability explanation and editable browser birth date without importing a native picker. Full check: 99 suites / 585 tests pass.
 - [ ] flow.4 — Bundled legal content, metadata and translation coverage.
 - [ ] flow.5 — Legal routes/links and state-preserving navigation tests.
 - [ ] flow.6 — Welcome illustration/motion and Google availability explanation.
