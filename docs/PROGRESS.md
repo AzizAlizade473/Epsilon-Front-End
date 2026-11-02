@@ -8,24 +8,25 @@ Branch: `design/auth-completion`, recovered from remote
 `step/28-29-final-release` at `f7999c6` (newer than `a25d1f0`).
 The clean local main was behind; no local work was overwritten or reset.
 Owner workflow: targeted checks per unit, full unchanged quality gate at completion.
-Auth implementation is committed locally. GitHub connections began failing after
-recovery; these boxes remain unchecked until publishing is verified, as required
-by this file's completion rule. No local commit has been discarded.
+GitHub connectivity recovered on resume. All implementation commits through
+`2fd5b40` are pushed and the remote commit is verified. Pinned Gitleaks passes
+across 113 commits with no leaks. Implementation CI is green:
+https://github.com/AzizAlizade473/Epsilon-Front-End/actions/runs/41431457279
 
-- [ ] auth.1 — Recovery, contract review and localized entry copy. Baseline lint/strict TypeScript and 20 targeted phone/component tests pass; source CI green.
-- [ ] auth.2 — Dedicated Login/Sign Up connected to existing auth operations.
-  - [ ] auth.2.1 — Reuse the existing phone entry logic; 14 auth journey tests pass.
-  - [ ] auth.2.2 — Guarded entry routes, shared Google/link controls and auth surface support; strict TypeScript and 11 Screen/Google tests pass. Browser uses system typography.
-  - [ ] auth.2.3 — Distinct entry screens and fail-closed email state; strict TypeScript and 22 existing auth/Google tests pass. Remote push retry pending connectivity.
-  - [ ] auth.2.4 — Nine initial entry tests cover both intents, phone/Google routing, cross-links, disabled Google, direct Back and fail-closed email.
-  - [ ] auth.2.5 — Owner's attached reference: centered blue headings, rounded controls, deliberate form spacing; unsupported email controls removed. Phone/OTP/Google unchanged; 23 targeted tests and strict TypeScript pass.
-- [ ] auth.3 — Open-canvas Welcome and entry navigation tests.
-  - [ ] auth.3.1 — Removed enclosing Welcome card and generic feature rows; real logo and concise localized headline. Three Welcome tests pass.
-  - [ ] auth.3.2 — Welcome Login/Sign Up choices, blue headline and rounded primary/neutral secondary controls; nine Welcome/Button tests pass.
-  - [ ] auth.3.3 — Real-router Welcome/Login/Sign Up/Back and legacy phone redirect tests pass (4 tests); new entry links are scheme-validated.
-- [ ] auth.4 — Restrained offline banner and reconnect verification. Three tests pass, including unknown connectivity, online manager recovery and timed dismissal.
-- [ ] auth.5 — Visual/accessibility audit, full gate, Android export and remote verification.
-  - [ ] auth.5.1 — Updated Maestro entry paths and enabled unchanged CI gates for design branches; pending-request locking test passes. Browser AZ/EN/RU review has no horizontal overflow or controls below 44pt; device testing remains pending.
+- [x] auth.1 — Recovery, contract review and localized entry copy. Baseline lint/strict TypeScript and 20 targeted phone/component tests pass; source CI green.
+- [x] auth.2 — Dedicated Login/Sign Up connected to existing auth operations.
+  - [x] auth.2.1 — Reuse the existing phone entry logic; 14 auth journey tests pass.
+  - [x] auth.2.2 — Guarded entry routes, shared Google/link controls and auth surface support; strict TypeScript and 11 Screen/Google tests pass. Browser uses system typography.
+  - [x] auth.2.3 — Distinct entry screens and fail-closed email state; strict TypeScript and 22 existing auth/Google tests pass. Implementation pushed and verified.
+  - [x] auth.2.4 — Nine initial entry tests cover both intents, phone/Google routing, cross-links, disabled Google, direct Back and fail-closed email.
+  - [x] auth.2.5 — Owner's attached reference: centered blue headings, rounded controls, deliberate form spacing; unsupported email controls removed. Phone/OTP/Google unchanged; 23 targeted tests and strict TypeScript pass.
+- [x] auth.3 — Open-canvas Welcome and entry navigation tests.
+  - [x] auth.3.1 — Removed enclosing Welcome card and generic feature rows; real logo and concise localized headline. Three Welcome tests pass.
+  - [x] auth.3.2 — Welcome Login/Sign Up choices, blue headline and rounded primary/neutral secondary controls; nine Welcome/Button tests pass.
+  - [x] auth.3.3 — Real-router Welcome/Login/Sign Up/Back and legacy phone redirect tests pass (4 tests); new entry links are scheme-validated.
+- [x] auth.4 — Restrained offline banner and reconnect verification. Three tests pass, including unknown connectivity, online manager recovery and timed dismissal.
+- [x] auth.5 — Visual/accessibility audit, full gate, Android export and remote verification. Implementation CI passes both quality/supply-chain and Android export/bundle jobs.
+  - [x] auth.5.1 — Updated Maestro entry paths and enabled unchanged CI gates for design branches; pending-request locking test passes. Browser AZ/EN/RU review has no horizontal overflow or controls below 44pt; device testing remains pending.
 
 Local evidence: Android Hermes export passes at 6,104,076 bytes; committed budget
 baseline 6,107,845 bytes (-0.06%, unchanged 10% limit). Compared with the supplied
@@ -38,10 +39,10 @@ Lint, strict TypeScript, 346 AZ/EN/RU base keys, formatting, production guard,
 supply-chain licenses/integrity, Android configuration audit, workflow validation,
 OpenAPI consistency and release-evidence validation pass. The existing release
 classification remains NO-GO; this task does not supply external release evidence.
-Pinned Gitleaks download, push/synchronization and branch CI remain blocked by
-GitHub DNS/connection timeouts. The scanner refuses a passing result; no check
-has been bypassed. Local work is reviewable and committed, but publication is not
-complete. See `AUTH_ENTRY_REVIEW.md` and local `reports/auth-review/`.
+Pinned Gitleaks passes with no leaks; implementation is pushed and synchronized.
+No check was bypassed. Hosted implementation CI passes both required jobs at
+`2fd5b40`; the final progress-record commit is also checked before handoff.
+See `AUTH_ENTRY_REVIEW.md` and local `reports/auth-review/`.
 
 Email: **EMAIL AUTH BACKEND SUPPORT REQUIRED**. The canonical OpenAPI and
 `AuthService` expose phone OTP and Google, with no email authentication operation.
