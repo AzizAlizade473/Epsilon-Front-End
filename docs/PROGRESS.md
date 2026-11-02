@@ -11,6 +11,7 @@ Owner workflow: targeted checks per unit, full unchanged quality gate at complet
 
 - [x] auth.1 — Recovery, contract review and localized entry copy. Baseline lint/strict TypeScript and 20 targeted phone/component tests pass; source CI green.
 - [ ] auth.2 — Dedicated Login/Sign Up connected to existing auth operations.
+  - [x] auth.2.1 — Reuse the existing phone entry logic; 14 auth journey tests pass.
 - [ ] auth.3 — Open-canvas Welcome and entry navigation tests.
 - [ ] auth.4 — Restrained offline banner and reconnect verification.
 - [ ] auth.5 — Visual/accessibility audit, full gate, Android export and remote verification.
