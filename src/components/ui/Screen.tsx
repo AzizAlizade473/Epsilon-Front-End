@@ -22,6 +22,7 @@ export type ScreenProps = Pick<HeaderProps, 'leading' | 'trailing'> & {
   footer?: ReactNode;
   edges?: Edges;
   refreshControl?: ReactElement<RefreshControlProps>;
+  surface?: 'background' | 'surface';
 };
 
 export function Screen({
@@ -33,6 +34,7 @@ export function Screen({
   footer,
   edges,
   refreshControl,
+  surface = 'background',
 }: ScreenProps) {
   const [collapsed, setCollapsed] = useState(false);
   const collapsedRef = useRef(false);
@@ -59,7 +61,10 @@ export function Screen({
     </>
   );
   return (
-    <SafeAreaView style={styles.root} edges={edges}>
+    <SafeAreaView
+      style={[styles.root, { backgroundColor: colors[surface] }]}
+      edges={edges}
+    >
       <StatusBar style={theme.statusBarStyle} />
       <KeyboardAvoidingView
         style={styles.fill}

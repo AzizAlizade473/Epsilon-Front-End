@@ -1,10 +1,10 @@
-import type { TextStyle } from 'react-native';
+import { Platform, type TextStyle } from 'react-native';
 
 /**
  * Platform system font (Roboto on Android). No custom font families in v1.
  * Tab is the only size allowed below 13 (tab labels only).
  */
-export const fontFamily = undefined;
+export const fontFamily = Platform.OS === 'web' ? 'system-ui' : undefined;
 
 export const typography = {
   display: {
