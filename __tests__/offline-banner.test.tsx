@@ -6,6 +6,7 @@ import { afterEach, expect, jest, test } from '@jest/globals';
 import { act, render, screen } from '@testing-library/react-native';
 import { onlineManager } from '@tanstack/react-query';
 import { layout } from '@/design';
+import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import az from '../locales/az.json';
@@ -17,6 +18,40 @@ import { initializeI18n } from '@/lib/i18n';
 afterEach(() => {
   jest.useRealTimers();
   jest.restoreAllMocks();
+});
+
+test('web connection stays online when unsupported reachability is synthetic false', async () => {
+  await initializeI18n();
+  jest.replaceProperty(Platform, 'OS', 'web');
+  jest
+    .spyOn(globalThis, 'requestAnimationFrame')
+    .mockImplementation((callback) => {
+      callback(0);
+      return 1;
+    });
+  jest.spyOn(NetInfo, 'addEventListener').mockImplementation((listener) => {
+    listener({
+      type: NetInfoStateType.other,
+      isConnected: true,
+      isInternetReachable: false,
+      details: { isConnectionExpensive: false },
+    });
+    return () => {};
+  });
+  await render(
+    <SafeAreaProvider
+      initialMetrics={{
+        frame: { x: 0, y: 0, width: 390, height: 844 },
+        insets: { top: 0, bottom: 0, left: 0, right: 0 },
+      }}
+    >
+      <OfflineBanner>
+        <Text>Content</Text>
+      </OfflineBanner>
+    </SafeAreaProvider>,
+  );
+  expect(screen.queryByRole('alert')).toBeNull();
+  expect(onlineManager.isOnline()).toBe(true);
 });
 test.each([false, true])(
   'network state offline=%s leaves screen content usable',

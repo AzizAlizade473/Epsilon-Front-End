@@ -24,6 +24,7 @@ Continue on `design/auth-completion`; no deployment or main merge is authorized.
   - [x] flow.5.b — Real-router Login/Sign Up tests preserve phone input through both documents and Back; only named legal deep links resolve. Full check: 101 suites / 596 tests pass.
 - [x] flow.6 — Welcome receipt/rating illustration, light-blue canvas and native-driver entrance with Reduce Motion guards; browser render reviewed. Full check: 102 suites / 598 tests pass. Google browser/native limitations remain explicit.
 - [ ] flow.7 — Full gate, Android export, audit, documentation and hosted CI.
+  - [x] flow.7.a — Browser journey exposed and fixed synthetic web offline status and a self-waiting config query. Fresh/cached server rules now publish correctly without changing native reachability or production cache TTL. Full check: 103 suites / 601 tests; browser fixture Signup → OTP → name/surname/date → Home → logout passes.
 
 ## Auth entry completion — 2026-11-02
 

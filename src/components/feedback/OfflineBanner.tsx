@@ -2,7 +2,7 @@ import NetInfo from '@react-native-community/netinfo';
 import { onlineManager } from '@tanstack/react-query';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, StyleSheet, View } from 'react-native';
+import { Animated, Platform, StyleSheet, View } from 'react-native';
 import { useAnimatedValue } from '@/hooks/useAnimatedValue';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Wifi from 'lucide-react-native/icons/wifi';
@@ -42,7 +42,8 @@ export function OfflineBanner({ children }: { children: ReactNode }) {
       });
       unsubscribe = NetInfo.addEventListener((state) => {
         const disconnected =
-          state.isConnected === false || state.isInternetReachable === false;
+          state.isConnected === false ||
+          (Platform.OS !== 'web' && state.isInternetReachable === false);
         if (disconnected) {
           onlineManager.setOnline(false);
           if (reconnectTimer.current) clearTimeout(reconnectTimer.current);

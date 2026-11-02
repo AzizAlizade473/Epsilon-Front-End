@@ -44,6 +44,7 @@ type AuthActions = {
     nextStep?: NextStep | null,
   ) => ReturnType<typeof resolveBootstrapRoute>;
   loadConfig: () => Promise<Config>;
+  applyConfig: (config: Config) => void;
   logout: () => Promise<void>;
   skipPhone: () => void;
 };
@@ -131,6 +132,15 @@ export function AuthProvider({
     });
     await cleanup;
   }, [persist, publish, queryClient]);
+  const applyConfig = useCallback(
+    (config: Config) => {
+      publish({
+        requirePhoneVerification: config.requirePhoneVerification,
+        minimumAge: config.minAge,
+      });
+    },
+    [publish],
+  );
   const loadConfig = useCallback(async () => {
     const epoch = authOperation.epoch();
     const config = await queryClient.fetchQuery({
@@ -138,13 +148,9 @@ export function AuthProvider({
       queryKey: queryKeys.config.current(),
       queryFn: ({ signal }) => services.config.get({ signal }),
     });
-    if (authOperation.current(epoch))
-      publish({
-        requirePhoneVerification: config.requirePhoneVerification,
-        minimumAge: config.minAge,
-      });
+    if (authOperation.current(epoch)) applyConfig(config);
     return config;
-  }, [publish, queryClient]);
+  }, [applyConfig, queryClient]);
   const updateUser = useCallback(
     (user: User, nextStep?: NextStep | null) => {
       publish({ user, nextStep: nextStep ?? undefined });
@@ -256,6 +262,7 @@ export function AuthProvider({
           },
           updateUser,
           loadConfig,
+          applyConfig,
           logout,
           skipPhone: () => {
             if (session.current && !snapshot.current.requirePhoneVerification)
