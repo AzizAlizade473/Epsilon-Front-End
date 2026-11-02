@@ -37,6 +37,7 @@ import type {
   WalletService,
 } from '../interfaces';
 import { z } from 'zod';
+import { requireAuthIntentSupport } from '@/lib/auth-intent';
 
 const voidSchema = z
   .null()
@@ -45,18 +46,21 @@ const voidSchema = z
 
 export const httpAuthService: AuthService = {
   async requestOtp(input) {
+    requireAuthIntentSupport(input.intent);
     return request('POST', '/auth/otp/request', otpChallengeSchema, input, {
       idempotencyKey: generateIdempotencyKey('otp-req'),
     });
   },
 
   async verifyOtp(input) {
+    requireAuthIntentSupport(input.intent);
     return request('POST', '/auth/otp/verify', authResultSchema, input, {
       idempotencyKey: generateIdempotencyKey('otp-ver'),
     });
   },
 
   async signInWithGoogle(input) {
+    requireAuthIntentSupport(input.intent);
     return request('POST', '/auth/google', authResultSchema, input, {
       idempotencyKey: generateIdempotencyKey('google-auth'),
     });

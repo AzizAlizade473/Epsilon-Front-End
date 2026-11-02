@@ -22,13 +22,23 @@ import type {
   Wallet,
   WalletTransaction,
 } from '../contracts';
+import type { AuthIntent } from '@/lib/auth-intent';
 
 export interface AuthService {
+  readonly supportsAuthIntent?: boolean;
   requestOtp(input: {
     phone: string;
+    intent?: AuthIntent;
   }): Promise<{ expiresAt: string; retryAfterSeconds: number }>;
-  verifyOtp(input: { phone: string; code: string }): Promise<AuthResult>;
-  signInWithGoogle(input: { idToken: string }): Promise<AuthResult>;
+  verifyOtp(input: {
+    phone: string;
+    code: string;
+    intent?: AuthIntent;
+  }): Promise<AuthResult>;
+  signInWithGoogle(input: {
+    idToken: string;
+    intent?: AuthIntent;
+  }): Promise<AuthResult>;
   signInWithApple(input: { identityToken: string }): Promise<AuthResult>;
   requestPhoneLinkOtp(input: {
     phone: string;
