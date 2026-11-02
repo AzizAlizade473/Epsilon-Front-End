@@ -10,10 +10,11 @@ The clean local main was behind; no local work was overwritten or reset.
 Owner workflow: targeted checks per unit, full unchanged quality gate at completion.
 
 - [x] auth.1 — Recovery, contract review and localized entry copy. Baseline lint/strict TypeScript and 20 targeted phone/component tests pass; source CI green.
-- [ ] auth.2 — Dedicated Login/Sign Up connected to existing auth operations.
+- [x] auth.2 — Dedicated Login/Sign Up connected to existing auth operations.
   - [x] auth.2.1 — Reuse the existing phone entry logic; 14 auth journey tests pass.
   - [x] auth.2.2 — Guarded entry routes, shared Google/link controls and auth surface support; strict TypeScript and 11 Screen/Google tests pass. Browser uses system typography.
   - [x] auth.2.3 — Distinct entry screens and fail-closed email state; strict TypeScript and 22 existing auth/Google tests pass. Remote push retry pending transient connectivity.
+  - [x] auth.2.4 — Nine new entry tests cover both intents, phone/Google routing, cross-links, disabled Google, direct Back and fail-closed email.
 - [ ] auth.3 — Open-canvas Welcome and entry navigation tests.
 - [ ] auth.4 — Restrained offline banner and reconnect verification.
 - [ ] auth.5 — Visual/accessibility audit, full gate, Android export and remote verification.
