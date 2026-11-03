@@ -5,11 +5,11 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { PullToRefresh } from '@/components/ui/PullToRefresh';
 import { Button } from '@/components/ui/Button';
-import ScanLine from 'lucide-react-native/icons/scan-line';
 import ArrowUpRight from 'lucide-react-native/icons/arrow-up-right';
 import { Icon } from '@/components/ui/Icon';
 import { Brand } from '@/components/ui/Brand';
-import { WalletSurface } from '@/components/wallet/WalletSurface';
+import { PurchaseAmount } from '@/components/purchase/PurchaseAmount';
+import { ScanLead } from '../components/ScanLead';
 import { IconButton } from '@/components/ui/IconButton';
 import { Screen } from '@/components/ui/Screen';
 import { PressSurface } from '@/components/ui/PressSurface';
@@ -18,9 +18,9 @@ import { Text } from '@/components/ui/Text';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { DetailRowSkeleton } from '@/components/feedback/DetailRowSkeleton';
 import { MockDataNotice } from '@/components/feedback/MockDataNotice';
-import { BalanceAmount } from '@/components/wallet/BalanceAmount';
+import { formatMoney } from '@/lib/money';
 import { TransactionRow } from '@/components/wallet/TransactionRow';
-import { colors, layout, radius, spacing } from '@/design';
+import { colors, layout, spacing } from '@/design';
 import { useStaleRefetchOnFocus } from '@/hooks/useStaleRefetchOnFocus';
 import { useWallet, useWalletTransactions } from '@/hooks/useWallet';
 import { useAuth } from '@/providers/AuthProvider';
@@ -70,6 +70,7 @@ export default function HomeScreen() {
         });
   return (
     <Screen
+      surface="surface"
       edges={['top', 'left', 'right']}
       leading={<Brand />}
       trailing={
@@ -89,13 +90,21 @@ export default function HomeScreen() {
         />
       }
     >
-      <Text variant="title2">
+      <Text variant="callout" tone="secondary">
         {t('home.greeting', { firstName: auth.user?.firstName ?? '' })}
       </Text>
-      <WalletSurface pendingMinor={wallet.data?.pendingMinor}>
+      <ScanLead onPress={scan} />
+      <PressSurface
+        accessibilityLabel={speech || t('home.balance')}
+        onPress={() => router.navigate('/cashback')}
+        contentStyle={styles.walletStrip}
+      >
         <View style={styles.balanceValue}>
+          <Text variant="caption" tone="secondary">
+            {t('home.balance')}
+          </Text>
           {minor !== undefined ? (
-            <BalanceAmount minor={minor} accessibilityLabel={speech} inverse />
+            <PurchaseAmount minor={minor} compact />
           ) : wallet.isPending ? (
             <Skeleton
               width={layout.balanceSkeletonWidth}
@@ -103,12 +112,22 @@ export default function HomeScreen() {
               accessibilityLabel={t('common.loading')}
             />
           ) : (
-            <Text tone="inverse" accessibilityRole="alert">
+            <Text accessibilityRole="alert">
               {t('home.balanceUnavailable')}
             </Text>
           )}
         </View>
-      </WalletSurface>
+        <View style={styles.walletEnd}>
+          <Icon icon={ArrowUpRight} color={colors.brand.primary} decorative />
+          {wallet.data && wallet.data.pendingMinor > 0 && (
+            <Text variant="caption" tone="secondary">
+              {t('home.pending', {
+                amount: formatMoney(wallet.data.pendingMinor),
+              })}
+            </Text>
+          )}
+        </View>
+      </PressSurface>
       {wallet.isError && (
         <View>
           {wallet.data && (
@@ -124,27 +143,6 @@ export default function HomeScreen() {
           />
         </View>
       )}
-      <PressSurface
-        accessibilityLabel={t('home.scan')}
-        onPress={scan}
-        contentStyle={styles.action}
-      >
-        <View style={styles.scanMark}>
-          <Icon
-            icon={ScanLine}
-            color={colors.brand.primary}
-            size="large"
-            decorative
-          />
-        </View>
-        <View style={styles.actionCopy}>
-          <Text variant="headline">{t('home.scan')}</Text>
-          <Text variant="caption" tone="secondary">
-            {t('home.scanHelper')}
-          </Text>
-        </View>
-        <Icon icon={ArrowUpRight} color={colors.brand.primary} decorative />
-      </PressSurface>
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Text
@@ -209,25 +207,21 @@ const styles = StyleSheet.create({
     minHeight: layout.controlHeight,
     justifyContent: 'center',
   },
-  action: {
+  walletStrip: {
     flexDirection: 'row',
-    gap: spacing[12],
     alignItems: 'center',
-    padding: spacing[16],
-    borderRadius: radius[20],
-    backgroundColor: colors.surface,
-    borderWidth: layout.borderWidth,
-    borderColor: colors.border,
+    justifyContent: 'space-between',
+    gap: spacing[16],
+    paddingVertical: spacing[20],
+    borderBottomWidth: layout.borderWidth,
+    borderBottomColor: colors.brand.border,
   },
-  scanMark: {
-    width: layout.controlHeight,
-    height: layout.controlHeight,
-    backgroundColor: colors.brand.tint,
-    borderRadius: radius[16],
-    alignItems: 'center',
-    justifyContent: 'center',
+  walletEnd: {
+    alignItems: 'flex-end',
+    gap: spacing[8],
+    flexShrink: 1,
+    maxWidth: '45%',
   },
-  actionCopy: { flex: 1, gap: spacing[4] },
   section: { gap: spacing[12] },
   sectionHeader: {
     flexDirection: 'row',

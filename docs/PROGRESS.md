@@ -1,5 +1,20 @@
 # Epsilon progress
 
+## Focused purchase direction — 2026-11-03
+
+Review branch: `design/receipt-wallet-direction`, based on `3aad358`. Scope is
+Home, Cashback and Receipt → Rating → Confirmation only. Official website CSS
+rechecked; Unslop applied. Scan-led Home, separate wallet passport, numbered dish
+slips, actual rating progress, interactive feedback and stamped reward receipt.
+No service/contracts/dependencies or other screens changed. Browser fixture journey
+passes; eight phone captures and comparison in ignored reports/purchase-direction.
+
+- [x] purchase.1 — Final quality stages pass: 103 suites / 607 tests, strict TS,
+      zero-warning lint, formatting, 382 localization keys and existing security/
+      contract/release guards. Eight phone captures include selected reasons and
+      updated receipt progress. One review commit/push; no build or deployment.
+- [ ] Owner visual approval before extending this direction to other screens.
+
 ## Full visual redesign — 2026-11-03
 
 Owner overrides per-screen micro-step gates: one continuous UI batch, final

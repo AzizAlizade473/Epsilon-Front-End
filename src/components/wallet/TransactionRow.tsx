@@ -4,7 +4,11 @@ import { PressSurface } from '@/components/ui/PressSurface';
 import { Text } from '@/components/ui/Text';
 import { colors, layout, spacing } from '@/design';
 import { formatDate, formatTime } from '@/lib/date';
-import { TransactionTypeIcon } from './TransactionTypeIcon';
+import { Icon } from '@/components/ui/Icon';
+import ArrowDownLeft from 'lucide-react-native/icons/arrow-down-left';
+import ArrowUpRight from 'lucide-react-native/icons/arrow-up-right';
+import RotateCcw from 'lucide-react-native/icons/rotate-ccw';
+import Clock from 'lucide-react-native/icons/clock';
 import { formatMoney } from '@/lib/money';
 import type { WalletTransaction } from '@/services/contracts';
 
@@ -27,10 +31,23 @@ export function TransactionRow({
     .join(', ');
   const content = (
     <>
-      <TransactionTypeIcon type={transaction.type} />
+      <View style={styles.proof}>
+        <Icon
+          icon={
+            {
+              earned: ArrowDownLeft,
+              redeemed: ArrowUpRight,
+              reversed: RotateCcw,
+              expired: Clock,
+            }[transaction.type]
+          }
+          color={colors.brand.primary}
+          decorative
+        />
+      </View>
       <View style={styles.copy}>
         <Text variant="callout">{title}</Text>
-        {!history && transaction.itemName && (
+        {transaction.itemName && (
           <Text variant="caption" tone="secondary">
             {transaction.itemName}
           </Text>
@@ -40,8 +57,14 @@ export function TransactionRow({
             ? `${t(`wallet.type.${transaction.type}`)} · ${formatTime(transaction.createdAt)}`
             : `${status} · ${date}`}
         </Text>
-        {history && transaction.status !== 'confirmed' && (
-          <Text variant="caption" style={styles.status}>
+        {history && (
+          <Text
+            variant="caption"
+            style={[
+              styles.status,
+              transaction.status === 'confirmed' && styles.confirmed,
+            ]}
+          >
             {status}
           </Text>
         )}
@@ -84,6 +107,16 @@ export function TransactionRow({
   );
 }
 const styles = StyleSheet.create({
+  proof: {
+    width: layout.leadingIconSize,
+    height: layout.leadingIconSize,
+    borderWidth: layout.borderWidth,
+    borderColor: colors.brand.border,
+    borderRadius: spacing[4],
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  confirmed: { color: colors.successInk, backgroundColor: colors.successTint },
   status: {
     color: colors.inkSecondary,
     alignSelf: 'flex-start',
@@ -93,7 +126,7 @@ const styles = StyleSheet.create({
   },
   border: {
     borderBottomWidth: layout.hairlineWidth,
-    borderBottomColor: colors.border,
+    borderBottomColor: colors.brand.tint,
   },
   row: {
     flexDirection: 'row',

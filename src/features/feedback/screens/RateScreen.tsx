@@ -145,6 +145,25 @@ export function RateScreen() {
           <ActivityIndicator accessibilityLabel={t('common.loading')} />
         ) : eligible && item && receipt ? (
           <RatingForm
+            position={
+              receipt.items.findIndex((entry) => entry.id === item.id) + 1
+            }
+            total={receipt.items.length}
+            progressTotal={
+              receipt.items.filter(
+                (entry) =>
+                  entry.canRate ||
+                  entry.rating !== null ||
+                  feedback.completedIds.includes(entry.id),
+              ).length
+            }
+            ratedCount={
+              receipt.items.filter(
+                (entry) =>
+                  entry.rating !== null ||
+                  feedback.completedIds.includes(entry.id),
+              ).length
+            }
             itemName={item.name}
             restaurantName={receipt.restaurant.name}
             draft={

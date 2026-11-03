@@ -453,5 +453,21 @@
     "profileSetup": "A few details to make Epsilon yours.",
     "profileNote": "Your meals. Your feedback. Your Epsilon.",
     "ratingHint": "A little feedback goes a long way."
+  },
+  "purchaseDirection": {
+    "startHere": "Start with your receipt",
+    "scanHeadline": "A receipt.\nA little more.",
+    "scanSequence": "Scan your receipt  ·  Rate your dishes  ·  Earn cashback",
+    "pendingBalance": "Pending cashback",
+    "pendingHint": "Awaiting confirmation. Rewards are confirmed by Epsilon.",
+    "ratingProgress": "Your feedback",
+    "progress": "{{done}} of {{total}} rated",
+    "dishPosition": "Dish {{position}} of {{total}}",
+    "receiptIntro": "A real purchase. An honest opinion.",
+    "receiptTotal": "Your purchase",
+    "ratingTitle": "Make your meal count.",
+    "reasonTitle": "What could be better?",
+    "confirmationNote": "Your experience makes a difference.",
+    "walletCaption": "Every reward, together."
   }
 }

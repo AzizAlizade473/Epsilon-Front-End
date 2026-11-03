@@ -18,6 +18,7 @@ export function ReceiptScreen() {
   const feedback = useFeedback();
   return (
     <Screen
+      surface="surface"
       scroll={false}
       title={t('navigation.receipt')}
       leading={

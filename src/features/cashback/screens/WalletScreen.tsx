@@ -3,12 +3,12 @@ import Wallet from 'lucide-react-native/icons/wallet';
 import { useRouter } from 'expo-router';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
 import { PullToRefresh } from '@/components/ui/PullToRefresh';
-import { Amount } from '@/components/ui/Amount';
-import { WalletSurface } from '@/components/wallet/WalletSurface';
+import { PurchaseAmount } from '@/components/purchase/PurchaseAmount';
+import { WalletPassport } from '../components/WalletPassport';
 import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/feedback/ErrorState';
 import { EmptyState } from '@/components/feedback/EmptyState';
@@ -51,14 +51,14 @@ export default function WalletScreen() {
     }
   };
   return (
-    <Screen scroll={false} edges={['top', 'left', 'right']}>
+    <Screen surface="surface" scroll={false} edges={['top', 'left', 'right']}>
       <View style={styles.hero}>
         <Text variant="title1" accessibilityRole="header">
           {t('navigation.cashback')}
         </Text>
-        <WalletSurface pendingMinor={wallet.data?.pendingMinor}>
+        <WalletPassport pendingMinor={wallet.data?.pendingMinor}>
           {wallet.data ? (
-            <Amount minor={wallet.data.balanceMinor} tone="inverse" />
+            <PurchaseAmount minor={wallet.data.balanceMinor} />
           ) : wallet.isLoading ? (
             <Skeleton
               width={layout.balanceSkeletonWidth}
@@ -66,8 +66,7 @@ export default function WalletScreen() {
               accessibilityLabel={t('common.loading')}
             />
           ) : null}
-        </WalletSurface>
-        <MockDataNotice />
+        </WalletPassport>
         <Text variant="headline">{t('visual.history')}</Text>
         {wallet.isError && (
           <Text tone="danger" accessibilityRole="alert">
@@ -102,6 +101,7 @@ export default function WalletScreen() {
         />
       ) : (
         <FlashList
+          contentContainerStyle={styles.listContent}
           data={grouped.rows}
           keyExtractor={(item) => item.key}
           getItemType={(item) => item.kind}
@@ -160,6 +160,7 @@ export default function WalletScreen() {
           }
           ListFooterComponent={
             <View style={styles.footer}>
+              <MockDataNotice />
               {history.isError && (
                 <Text tone="danger" accessibilityRole="alert">
                   {t('wallet.loadError')}
@@ -189,7 +190,8 @@ export default function WalletScreen() {
   );
 }
 const styles = StyleSheet.create({
+  listContent: { paddingRight: Platform.OS === 'web' ? spacing[16] : 0 },
   hero: { gap: spacing[12], paddingBottom: spacing[16] },
-  date: { backgroundColor: colors.background, paddingVertical: spacing[12] },
+  date: { backgroundColor: colors.surface, paddingVertical: spacing[12] },
   footer: { paddingVertical: spacing[20], gap: spacing[12] },
 });

@@ -1,6 +1,9 @@
 import { decorativeSvgProps } from '@/lib/decorative-svg';
 import Star from 'lucide-react-native/icons/star';
-import Utensils from 'lucide-react-native/icons/utensils';
+import Check from 'lucide-react-native/icons/check';
+import { PurchaseArtwork } from '@/components/purchase/PurchaseArtwork';
+import { RatingProgress } from '@/components/purchase/RatingProgress';
+import { purchaseDesign as p } from '@/design/purchase';
 import { Icon } from '@/components/ui/Icon';
 import { ReceiptRule } from '@/components/ui/ReceiptRule';
 import { useEffect } from 'react';
@@ -8,7 +11,6 @@ import { useTranslation } from 'react-i18next';
 import { Animated, StyleSheet, View } from 'react-native';
 import { useAnimatedValue } from '@/hooks/useAnimatedValue';
 import { Button } from '@/components/ui/Button';
-import { Chip } from '@/components/ui/Chip';
 import { Input } from '@/components/ui/Input';
 import { PressSurface } from '@/components/ui/PressSurface';
 import { Text } from '@/components/ui/Text';
@@ -44,6 +46,10 @@ export function RatingForm({
   busy,
   error,
   queued,
+  position,
+  total,
+  ratedCount = 0,
+  progressTotal,
 }: {
   itemName: string;
   restaurantName: string;
@@ -54,6 +60,10 @@ export function RatingForm({
   busy: boolean;
   error?: string;
   queued: boolean;
+  position?: number;
+  total?: number;
+  ratedCount?: number;
+  progressTotal?: number;
 }) {
   const { t } = useTranslation();
   const motion = useMotion();
@@ -75,26 +85,28 @@ export function RatingForm({
   }, [showReasons, opacity, motion.reduceMotion, motion.duration.normal]);
   return (
     <View style={styles.form}>
-      <View style={styles.dishHero}>
-        <View style={styles.plate}>
-          <Icon
-            icon={Utensils}
-            size="large"
-            color={colors.brand.primary}
-            decorative
-          />
-        </View>
-        <Text variant="title2" accessibilityRole="header" style={styles.center}>
-          {itemName}
-        </Text>
+      {position !== undefined && total !== undefined && (
         <Text variant="caption" tone="secondary">
-          {restaurantName}
+          {t('purchaseDirection.dishPosition', { position, total })}
         </Text>
+      )}
+      <View style={styles.dishHero}>
+        <PurchaseArtwork kind="dish" />
+        <View style={styles.dishCopy}>
+          <Text variant="caption" tone="secondary">
+            {restaurantName}
+          </Text>
+          <Text accessibilityRole="header" style={[p.headline, styles.ink]}>
+            {itemName}
+          </Text>
+        </View>
       </View>
-      <Text variant="caption" tone="secondary">
-        {t('visual.ratingHint')}
+      {total !== undefined && (
+        <RatingProgress done={ratedCount} total={progressTotal ?? total} />
+      )}
+      <Text variant="title2" style={styles.ink}>
+        {t('feedback.question')}
       </Text>
-      <Text>{t('feedback.question')}</Text>
       <View
         style={styles.stars}
         accessibilityRole="radiogroup"
@@ -110,7 +122,10 @@ export function RatingForm({
             })}
             accessibilityState={{ checked: draft.rating === rating }}
             disabled={disabled}
-            contentStyle={styles.starTarget}
+            contentStyle={[
+              styles.starTarget,
+              rating <= draft.rating && styles.starSelected,
+            ]}
             spring
             pressScale={motionTokens.starPressScale}
             onPress={() =>
@@ -122,17 +137,13 @@ export function RatingForm({
             }
           >
             <Star
-              size={layout.ratingStarSize}
+              size={spacing[32]}
               strokeWidth={layout.iconStrokeWidth}
               color={
-                rating <= draft.rating
-                  ? colors.brand.secondary
-                  : colors.inkSecondary
+                rating <= draft.rating ? colors.surface : colors.brand.primary
               }
               fill={
-                rating <= draft.rating
-                  ? colors.brand.primary
-                  : colors.transparent
+                rating <= draft.rating ? colors.surface : colors.transparent
               }
               {...decorativeSvgProps}
             />
@@ -146,11 +157,20 @@ export function RatingForm({
       )}
       {showReasons && (
         <Animated.View style={[styles.reasons, { opacity }]}>
+          <Text variant="callout" style={styles.reasonHeading}>
+            {t('purchaseDirection.reasonTitle')}
+          </Text>
           {reasonCodes.map((code) => (
-            <Chip
+            <PressSurface
               key={code}
-              label={t(`feedback.reasons.${code}`)}
-              selected={draft.reasonCodes.includes(code)}
+              accessibilityLabel={t('feedback.reasons.' + code)}
+              accessibilityState={{
+                selected: draft.reasonCodes.includes(code),
+              }}
+              contentStyle={[
+                styles.reason,
+                draft.reasonCodes.includes(code) && styles.reasonSelected,
+              ]}
               disabled={
                 disabled ||
                 (draft.reasonCodes.length >= 3 &&
@@ -164,7 +184,26 @@ export function RatingForm({
                     : [...draft.reasonCodes, code],
                 })
               }
-            />
+            >
+              <View
+                style={[
+                  styles.reasonCheck,
+                  draft.reasonCodes.includes(code) && styles.checked,
+                ]}
+              >
+                {draft.reasonCodes.includes(code) && (
+                  <Icon
+                    icon={Check}
+                    size="small"
+                    color={colors.surface}
+                    decorative
+                  />
+                )}
+              </View>
+              <Text variant="callout" style={styles.ink}>
+                {t('feedback.reasons.' + code)}
+              </Text>
+            </PressSurface>
           ))}
         </Animated.View>
       )}
@@ -205,34 +244,57 @@ export function RatingForm({
 }
 const styles = StyleSheet.create({
   dishHero: {
-    backgroundColor: colors.brand.tint,
-    padding: spacing[24],
-    borderRadius: radius[24],
+    flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing[12],
+    gap: spacing[16],
+    paddingVertical: spacing[12],
   },
-  plate: {
-    width: layout.successMarkSize,
-    height: layout.successMarkSize,
-    borderRadius: radius.pill,
+  dishCopy: { flex: 1, minWidth: 0, gap: spacing[8] },
+  ink: { color: colors.brand.primary },
+  reasonHeading: {
+    width: '100%',
+    color: colors.brand.primary,
+    paddingBottom: spacing[4],
+  },
+  reason: {
+    flexDirection: 'row',
+    gap: spacing[8],
+    paddingHorizontal: spacing[12],
+    paddingVertical: spacing[12],
+    borderWidth: layout.borderWidth,
+    borderColor: colors.border,
+    borderRadius: radius[12],
+  },
+  reasonSelected: {
+    borderColor: colors.brand.primary,
+    backgroundColor: colors.brand.tint,
+  },
+  reasonCheck: {
+    width: spacing[20],
+    height: spacing[20],
     borderWidth: layout.borderWidth,
     borderColor: colors.brand.border,
-    backgroundColor: colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderRadius: spacing[4],
   },
-  center: { textAlign: 'center' },
+  checked: {
+    backgroundColor: colors.brand.primary,
+    borderColor: colors.brand.primary,
+  },
   form: { gap: spacing[16] },
   stars: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    gap: spacing[4],
+    gap: spacing[8],
     paddingVertical: spacing[12],
   },
   starTarget: {
-    minWidth: layout.controlHeight,
+    flex: 1,
+    minWidth: layout.tapTarget,
     minHeight: layout.controlHeight,
+    borderRadius: radius[12],
+    backgroundColor: colors.brand.tint,
   },
+  starSelected: { backgroundColor: colors.brand.primary },
   reasons: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[8] },
 });

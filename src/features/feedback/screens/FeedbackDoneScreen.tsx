@@ -44,7 +44,7 @@ export function FeedbackDoneScreen() {
         !entries.some((entry) => entry.receiptItemId === item.id),
     );
   return (
-    <Screen scroll={false}>
+    <Screen surface="surface">
       <FeedbackConfirmation
         result={completion.result}
         itemName={completion.itemName}

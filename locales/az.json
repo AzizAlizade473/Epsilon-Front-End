@@ -453,5 +453,21 @@
     "profileSetup": "Epsilon-u sizə uyğunlaşdırmaq üçün bir neçə məlumat.",
     "profileNote": "Yeməkləriniz. Rəyləriniz. Sizin Epsilon.",
     "ratingHint": "Kiçik bir rəy böyük fərq yaradır."
+  },
+  "purchaseDirection": {
+    "startHere": "Çekinizlə başlayın",
+    "scanHeadline": "Bir çek.\nDaha çox fürsət.",
+    "scanSequence": "Çeki skan edin  ·  Yeməkləri qiymətləndirin  ·  Keşbek qazanın",
+    "pendingBalance": "Gözləyən keşbek",
+    "pendingHint": "Təsdiq gözlənilir. Mükafatları Epsilon təsdiqləyir.",
+    "ratingProgress": "Rəyləriniz",
+    "progress": "{{total}} yeməkdən {{done}}-i qiymətləndirilib",
+    "dishPosition": "Yemək {{position}} / {{total}}",
+    "receiptIntro": "Həqiqi alış. Səmimi rəy.",
+    "receiptTotal": "Alışınız",
+    "ratingTitle": "Yeməyinizə dəyər qatın.",
+    "reasonTitle": "Nə daha yaxşı ola bilərdi?",
+    "confirmationNote": "Təcrübəniz fərq yaradır.",
+    "walletCaption": "Bütün mükafatlar bir yerdə."
   }
 }

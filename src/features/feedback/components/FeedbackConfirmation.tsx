@@ -1,4 +1,3 @@
-import Check from 'lucide-react-native/icons/check';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, StyleSheet, View } from 'react-native';
@@ -14,20 +13,14 @@ import {
   notificationAsync,
   performAndroidHapticsAsync,
 } from 'expo-haptics';
-import { Amount } from '@/components/ui/Amount';
+import { PurchaseAmount } from '@/components/purchase/PurchaseAmount';
+import { PurchaseArtwork } from '@/components/purchase/PurchaseArtwork';
+import { purchaseDesign as p } from '@/design/purchase';
 import { Button } from '@/components/ui/Button';
-import { Icon } from '@/components/ui/Icon';
 import { Text } from '@/components/ui/Text';
 import { ReceiptRule } from '@/components/ui/ReceiptRule';
 import { Brand } from '@/components/ui/Brand';
-import {
-  colors,
-  layout,
-  motionTokens,
-  radius,
-  spacing,
-  useMotion,
-} from '@/design';
+import { colors, motionTokens, radius, spacing, useMotion } from '@/design';
 import type { FeedbackResult } from '@/services/contracts';
 
 export function FeedbackConfirmation({
@@ -69,36 +62,49 @@ export function FeedbackConfirmation({
   }, [motion.reduceMotion, scale]);
   return (
     <View style={styles.content}>
-      <Brand />
-      <Animated.View style={[styles.mark, markStyle]}>
-        <Icon icon={Check} size="large" decorative color={colors.surface} />
-      </Animated.View>
-      <Text variant="title1" style={styles.center} accessibilityRole="header">
-        {t('feedback.thanks')}
-      </Text>
-      <Text accessibilityRole="alert" accessibilityLiveRegion="polite">
-        {t('feedback.sent')}
-      </Text>
-      <Text>{itemName}</Text>
-      {result.reward.status === 'confirmed' &&
-        result.reward.amountMinor !== null && (
-          <View style={styles.reward}>
-            <Text variant="caption" tone="secondary">
-              {t('navigation.cashback')}
-            </Text>
-            <Amount
-              minor={result.reward.amountMinor}
-              sign="always"
-              variant="title1"
-              tone="success"
-            />
-            <ReceiptRule />
-            <Text style={styles.center}>{t('feedback.rewardConfirmed')}</Text>
-          </View>
+      <View style={styles.top}>
+        <Brand />
+        <Text variant="caption" tone="secondary">
+          {t('navigation.cashback')}
+        </Text>
+      </View>
+      <View style={styles.hero}>
+        <Animated.View style={markStyle}>
+          <PurchaseArtwork kind="success" />
+        </Animated.View>
+        <Text
+          style={[p.headline, styles.center, styles.ink]}
+          accessibilityRole="header"
+        >
+          {t('feedback.thanks')}
+        </Text>
+        <Text accessibilityRole="alert" accessibilityLiveRegion="polite">
+          {t('feedback.sent')}
+        </Text>
+        <Text variant="caption" tone="secondary" style={styles.center}>
+          {t('purchaseDirection.confirmationNote')}
+        </Text>
+      </View>
+      <View style={styles.ticket}>
+        <Text variant="headline" style={styles.ink}>
+          {itemName}
+        </Text>
+        <ReceiptRule />
+        {result.reward.status === 'confirmed' &&
+          result.reward.amountMinor !== null && (
+            <View style={styles.reward}>
+              <Text variant="caption" tone="secondary">
+                {t('navigation.cashback')}
+              </Text>
+              <PurchaseAmount minor={result.reward.amountMinor} sign="always" />
+              <ReceiptRule />
+              <Text style={styles.center}>{t('feedback.rewardConfirmed')}</Text>
+            </View>
+          )}
+        {result.reward.status === 'pending' && (
+          <Text style={styles.center}>{t('feedback.rewardPending')}</Text>
         )}
-      {result.reward.status === 'pending' && (
-        <Text style={styles.center}>{t('feedback.rewardPending')}</Text>
-      )}
+      </View>
       <View style={styles.actions}>
         {remaining && (
           <Button label={t('feedback.otherDish')} onPress={onReceipt} />
@@ -113,30 +119,25 @@ export function FeedbackConfirmation({
   );
 }
 const styles = StyleSheet.create({
-  content: {
-    flex: 1,
+  content: { flex: 1, gap: spacing[24], justifyContent: 'space-between' },
+  top: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing[20],
+    justifyContent: 'space-between',
+    gap: spacing[12],
   },
-  mark: {
-    width: layout.successMarkSize,
-    height: layout.successMarkSize,
-    borderRadius: radius.pill,
-    backgroundColor: colors.brand.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  hero: { alignItems: 'center', gap: spacing[12], paddingTop: spacing[16] },
+  ink: { color: colors.brand.primary },
   center: { textAlign: 'center' },
-  reward: {
-    alignItems: 'center',
-    gap: spacing[8],
-    backgroundColor: colors.surface,
-    borderRadius: radius[24],
+  ticket: {
+    backgroundColor: colors.brand.tint,
     padding: spacing[24],
-    width: '100%',
-    borderWidth: layout.borderWidth,
-    borderColor: colors.border,
+    gap: spacing[12],
+    borderLeftWidth: spacing[4],
+    borderLeftColor: colors.brand.primary,
+    borderTopRightRadius: radius[20],
+    borderBottomRightRadius: radius[20],
   },
+  reward: { gap: spacing[12] },
   actions: { width: '100%', gap: spacing[12] },
 });
