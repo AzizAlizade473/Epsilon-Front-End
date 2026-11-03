@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     marginTop: typography.callout.lineHeight + spacing[8],
     justifyContent: 'center',
     paddingHorizontal: spacing[12],
-    backgroundColor: colors.surface,
+    backgroundColor: colors.background,
     borderRadius: radius[16],
     borderWidth: layout.hairlineWidth,
     borderColor: colors.border,

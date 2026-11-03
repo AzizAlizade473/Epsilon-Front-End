@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
   circle: {
     width: layout.controlHeight,
     minHeight: layout.controlHeight,
-    borderRadius: radius.pill,
+    borderRadius: radius[20],
     overflow: 'hidden',
     backgroundColor: colors.brand.primary,
   },

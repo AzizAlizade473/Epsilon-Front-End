@@ -79,6 +79,7 @@ export default function RestaurantsScreen() {
           {t('navigation.restaurants')}
         </Text>
       </View>
+      <Text tone="secondary">{t('visual.restaurants')}</Text>
       <View style={styles.search}>
         <Icon icon={Search} decorative />
         <TextInput
@@ -238,9 +239,9 @@ const styles = StyleSheet.create({
     minHeight: layout.searchHeight,
     paddingHorizontal: spacing[12],
     backgroundColor: colors.surface,
-    borderWidth: layout.hairlineWidth,
+    borderWidth: layout.borderWidth,
     borderColor: colors.border,
-    borderRadius: radius.pill,
+    borderRadius: radius[16],
   },
   input: {
     ...typography.body,

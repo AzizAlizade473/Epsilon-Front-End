@@ -65,7 +65,11 @@ export function Input({
               : focused
                 ? colors.brand.primary
                 : colors.border,
-            backgroundColor: disabled ? colors.divider : colors.surface,
+            backgroundColor: disabled
+              ? colors.divider
+              : focused
+                ? colors.surface
+                : colors.background,
             textAlignVertical: multiline ? 'top' : 'center',
             minHeight: multiline
               ? typography.body.lineHeight * (props.numberOfLines ?? 3) +
@@ -97,7 +101,7 @@ const styles = StyleSheet.create({
     color: colors.ink,
     minHeight: layout.controlHeight,
     padding: spacing[16],
-    borderWidth: layout.hairlineWidth,
+    borderWidth: layout.borderWidth,
     borderRadius: radius[16],
   },
 });

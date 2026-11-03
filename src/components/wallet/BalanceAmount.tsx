@@ -14,9 +14,11 @@ const AnimatedInput = Animated.createAnimatedComponent(TextInput);
 export function BalanceAmount({
   minor,
   accessibilityLabel,
+  inverse = false,
 }: {
   minor: number;
   accessibilityLabel: string;
+  inverse?: boolean;
 }) {
   const value = useSharedValue(minor);
   const previous = useRef(minor);
@@ -67,18 +69,23 @@ export function BalanceAmount({
           allowFontScaling
           maxFontSizeMultiplier={0}
           underlineColorAndroid={colors.transparent}
-          style={[StyleSheet.absoluteFill, styles.number]}
+          style={[
+            StyleSheet.absoluteFill,
+            styles.number,
+            inverse && styles.inverse,
+          ]}
         />
       </View>
       <Text
         variant="display"
         accessible={false}
-        style={styles.currency}
+        style={[styles.currency, inverse && styles.inverse]}
       >{` ${parts.currency}`}</Text>
     </View>
   );
 }
 const styles = StyleSheet.create({
+  inverse: { color: colors.surface },
   row: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline' },
   measure: { opacity: 0, fontVariant: ['tabular-nums'] },
   number: {

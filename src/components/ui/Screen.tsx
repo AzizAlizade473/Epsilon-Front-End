@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     ...column,
     flexGrow: 1,
     padding: spacing.screenMargin,
-    gap: spacing[16],
+    gap: spacing[20],
   },
   footer: { ...column, padding: spacing.screenMargin },
 });

@@ -3,7 +3,14 @@ import { Animated, StyleSheet, View } from 'react-native';
 import { useAnimatedValue } from '@/hooks/useAnimatedValue';
 import Check from 'lucide-react-native/icons/check';
 import { Icon } from '@/components/ui/Icon';
-import { colors, layout, motionTokens, spacing, useMotion } from '@/design';
+import {
+  colors,
+  layout,
+  motionTokens,
+  radius,
+  spacing,
+  useMotion,
+} from '@/design';
 
 export function Viewfinder({
   success,
@@ -46,7 +53,7 @@ export function Viewfinder({
     animation.start();
     return () => animation.stop();
   }, [motion.reduceMotion, scanning, line]);
-  const borderColor = success ? colors.success : colors.surface;
+  const borderColor = success ? colors.success : colors.brand.border;
   return (
     <View
       style={styles.fill}
@@ -113,24 +120,28 @@ const styles = StyleSheet.create({
   tl: {
     top: 0,
     left: 0,
+    borderTopLeftRadius: radius[20],
     borderTopWidth: layout.scanBracketWidth,
     borderLeftWidth: layout.scanBracketWidth,
   },
   tr: {
     top: 0,
     right: 0,
+    borderTopRightRadius: radius[20],
     borderTopWidth: layout.scanBracketWidth,
     borderRightWidth: layout.scanBracketWidth,
   },
   bl: {
     bottom: 0,
     left: 0,
+    borderBottomLeftRadius: radius[20],
     borderBottomWidth: layout.scanBracketWidth,
     borderLeftWidth: layout.scanBracketWidth,
   },
   br: {
     bottom: 0,
     right: 0,
+    borderBottomRightRadius: radius[20],
     borderBottomWidth: layout.scanBracketWidth,
     borderRightWidth: layout.scanBracketWidth,
   },

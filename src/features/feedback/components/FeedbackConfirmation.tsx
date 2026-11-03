@@ -18,6 +18,8 @@ import { Amount } from '@/components/ui/Amount';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { Text } from '@/components/ui/Text';
+import { ReceiptRule } from '@/components/ui/ReceiptRule';
+import { Brand } from '@/components/ui/Brand';
 import {
   colors,
   layout,
@@ -67,10 +69,11 @@ export function FeedbackConfirmation({
   }, [motion.reduceMotion, scale]);
   return (
     <View style={styles.content}>
+      <Brand />
       <Animated.View style={[styles.mark, markStyle]}>
-        <Icon icon={Check} size="large" decorative color={colors.success} />
+        <Icon icon={Check} size="large" decorative color={colors.surface} />
       </Animated.View>
-      <Text variant="title2" accessibilityRole="header">
+      <Text variant="title1" style={styles.center} accessibilityRole="header">
         {t('feedback.thanks')}
       </Text>
       <Text accessibilityRole="alert" accessibilityLiveRegion="polite">
@@ -80,13 +83,17 @@ export function FeedbackConfirmation({
       {result.reward.status === 'confirmed' &&
         result.reward.amountMinor !== null && (
           <View style={styles.reward}>
+            <Text variant="caption" tone="secondary">
+              {t('navigation.cashback')}
+            </Text>
             <Amount
               minor={result.reward.amountMinor}
               sign="always"
               variant="title1"
               tone="success"
             />
-            <Text>{t('feedback.rewardConfirmed')}</Text>
+            <ReceiptRule />
+            <Text style={styles.center}>{t('feedback.rewardConfirmed')}</Text>
           </View>
         )}
       {result.reward.status === 'pending' && (
@@ -116,11 +123,20 @@ const styles = StyleSheet.create({
     width: layout.successMarkSize,
     height: layout.successMarkSize,
     borderRadius: radius.pill,
-    backgroundColor: colors.successTint,
+    backgroundColor: colors.brand.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   center: { textAlign: 'center' },
-  reward: { alignItems: 'center', gap: spacing[8] },
+  reward: {
+    alignItems: 'center',
+    gap: spacing[8],
+    backgroundColor: colors.surface,
+    borderRadius: radius[24],
+    padding: spacing[24],
+    width: '100%',
+    borderWidth: layout.borderWidth,
+    borderColor: colors.border,
+  },
   actions: { width: '100%', gap: spacing[12] },
 });

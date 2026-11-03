@@ -10,7 +10,7 @@ export type TextProps = Omit<
   'allowFontScaling' | 'maxFontSizeMultiplier'
 > & {
   variant?: TypographyVariant;
-  tone?: 'default' | 'secondary' | 'danger' | 'success';
+  tone?: 'default' | 'secondary' | 'danger' | 'success' | 'inverse';
 };
 
 const tones = {
@@ -18,6 +18,7 @@ const tones = {
   secondary: colors.inkSecondary,
   danger: colors.danger,
   success: colors.successInk,
+  inverse: colors.surface,
 } as const;
 
 /** System typography; text always follows the user's font size setting. */

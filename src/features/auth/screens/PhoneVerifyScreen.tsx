@@ -5,6 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/Button';
 import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
+import { AuthHeading } from '@/components/ui/AuthHeading';
+import { Brand } from '@/components/ui/Brand';
+import Smartphone from 'lucide-react-native/icons/smartphone';
 import { spacing } from '@/design';
 import { useAuth, useAuthActions } from '@/providers/AuthProvider';
 import { PhoneField } from '../components/PhoneField';
@@ -54,7 +57,8 @@ export default function PhoneVerifyScreen() {
   };
   return (
     <Screen
-      title={t('navigation.phoneVerify')}
+      surface="surface"
+      leading={<Brand />}
       footer={
         <View style={{ gap: spacing[12] }}>
           <Button
@@ -80,7 +84,11 @@ export default function PhoneVerifyScreen() {
         </View>
       }
     >
-      <Text>{t('onboarding.verifyPhoneHelper')}</Text>
+      <AuthHeading
+        icon={Smartphone}
+        title={t('navigation.phoneVerify')}
+        message={t('onboarding.verifyPhoneHelper')}
+      />
       {config.isError && (
         <>
           <Text accessibilityRole="alert">{t('errors.generic')}</Text>

@@ -1,5 +1,8 @@
 import { decorativeSvgProps } from '@/lib/decorative-svg';
 import Star from 'lucide-react-native/icons/star';
+import Utensils from 'lucide-react-native/icons/utensils';
+import { Icon } from '@/components/ui/Icon';
+import { ReceiptRule } from '@/components/ui/ReceiptRule';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, StyleSheet, View } from 'react-native';
@@ -9,7 +12,14 @@ import { Chip } from '@/components/ui/Chip';
 import { Input } from '@/components/ui/Input';
 import { PressSurface } from '@/components/ui/PressSurface';
 import { Text } from '@/components/ui/Text';
-import { colors, layout, motionTokens, spacing, useMotion } from '@/design';
+import {
+  colors,
+  layout,
+  motionTokens,
+  radius,
+  spacing,
+  useMotion,
+} from '@/design';
 
 export const reasonCodes = [
   'taste',
@@ -65,10 +75,25 @@ export function RatingForm({
   }, [showReasons, opacity, motion.reduceMotion, motion.duration.normal]);
   return (
     <View style={styles.form}>
-      <Text variant="title2" accessibilityRole="header">
-        {itemName}
+      <View style={styles.dishHero}>
+        <View style={styles.plate}>
+          <Icon
+            icon={Utensils}
+            size="large"
+            color={colors.brand.primary}
+            decorative
+          />
+        </View>
+        <Text variant="title2" accessibilityRole="header" style={styles.center}>
+          {itemName}
+        </Text>
+        <Text variant="caption" tone="secondary">
+          {restaurantName}
+        </Text>
+      </View>
+      <Text variant="caption" tone="secondary">
+        {t('visual.ratingHint')}
       </Text>
-      <Text variant="caption">{restaurantName}</Text>
       <Text>{t('feedback.question')}</Text>
       <View
         style={styles.stars}
@@ -101,7 +126,7 @@ export function RatingForm({
               strokeWidth={layout.iconStrokeWidth}
               color={
                 rating <= draft.rating
-                  ? colors.brand.primary
+                  ? colors.brand.secondary
                   : colors.inkSecondary
               }
               fill={
@@ -143,6 +168,7 @@ export function RatingForm({
           ))}
         </Animated.View>
       )}
+      <ReceiptRule />
       <Input
         label={t('feedback.comment')}
         multiline
@@ -178,12 +204,31 @@ export function RatingForm({
   );
 }
 const styles = StyleSheet.create({
+  dishHero: {
+    backgroundColor: colors.brand.tint,
+    padding: spacing[24],
+    borderRadius: radius[24],
+    alignItems: 'center',
+    gap: spacing[12],
+  },
+  plate: {
+    width: layout.successMarkSize,
+    height: layout.successMarkSize,
+    borderRadius: radius.pill,
+    borderWidth: layout.borderWidth,
+    borderColor: colors.brand.border,
+    backgroundColor: colors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  center: { textAlign: 'center' },
   form: { gap: spacing[16] },
   stars: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
     gap: spacing[4],
+    paddingVertical: spacing[12],
   },
   starTarget: {
     minWidth: layout.controlHeight,

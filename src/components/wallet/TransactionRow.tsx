@@ -1,10 +1,5 @@
-import ArrowDownLeft from 'lucide-react-native/icons/arrow-down-left';
-import ArrowUpRight from 'lucide-react-native/icons/arrow-up-right';
-import RotateCcw from 'lucide-react-native/icons/rotate-ccw';
-import Clock from 'lucide-react-native/icons/clock';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
-import { Icon } from '@/components/ui/Icon';
 import { PressSurface } from '@/components/ui/PressSurface';
 import { Text } from '@/components/ui/Text';
 import { colors, layout, spacing } from '@/design';
@@ -13,12 +8,6 @@ import { TransactionTypeIcon } from './TransactionTypeIcon';
 import { formatMoney } from '@/lib/money';
 import type { WalletTransaction } from '@/services/contracts';
 
-const icons = {
-  earned: ArrowDownLeft,
-  redeemed: ArrowUpRight,
-  reversed: RotateCcw,
-  expired: Clock,
-};
 export function TransactionRow({
   transaction,
   onPress,
@@ -38,23 +27,23 @@ export function TransactionRow({
     .join(', ');
   const content = (
     <>
-      {history ? (
-        <TransactionTypeIcon type={transaction.type} />
-      ) : (
-        <Icon icon={icons[transaction.type]} decorative />
-      )}
+      <TransactionTypeIcon type={transaction.type} />
       <View style={styles.copy}>
-        <Text>{title}</Text>
+        <Text variant="callout">{title}</Text>
         {!history && transaction.itemName && (
-          <Text variant="caption">{transaction.itemName}</Text>
+          <Text variant="caption" tone="secondary">
+            {transaction.itemName}
+          </Text>
         )}
-        <Text variant="caption">
+        <Text variant="caption" tone="secondary">
           {history
             ? `${t(`wallet.type.${transaction.type}`)} · ${formatTime(transaction.createdAt)}`
             : `${status} · ${date}`}
         </Text>
         {history && transaction.status !== 'confirmed' && (
-          <Text variant="caption">{status}</Text>
+          <Text variant="caption" style={styles.status}>
+            {status}
+          </Text>
         )}
       </View>
       <Text
@@ -95,6 +84,13 @@ export function TransactionRow({
   );
 }
 const styles = StyleSheet.create({
+  status: {
+    color: colors.inkSecondary,
+    alignSelf: 'flex-start',
+    backgroundColor: colors.divider,
+    paddingHorizontal: spacing[8],
+    borderRadius: spacing[4],
+  },
   border: {
     borderBottomWidth: layout.hairlineWidth,
     borderBottomColor: colors.border,
@@ -104,7 +100,7 @@ const styles = StyleSheet.create({
     minHeight: layout.detailRowHeight,
     alignItems: 'center',
     gap: spacing[12],
-    paddingVertical: spacing[12],
+    paddingVertical: spacing[16],
   },
   copy: { flex: 1, minWidth: 0, gap: spacing[4] },
   amount: { flexShrink: 1, textAlign: 'right', maxWidth: '45%' },

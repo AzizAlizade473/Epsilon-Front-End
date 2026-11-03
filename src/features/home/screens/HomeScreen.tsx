@@ -5,7 +5,11 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { PullToRefresh } from '@/components/ui/PullToRefresh';
 import { Button } from '@/components/ui/Button';
-import { Chip } from '@/components/ui/Chip';
+import ScanLine from 'lucide-react-native/icons/scan-line';
+import ArrowUpRight from 'lucide-react-native/icons/arrow-up-right';
+import { Icon } from '@/components/ui/Icon';
+import { Brand } from '@/components/ui/Brand';
+import { WalletSurface } from '@/components/wallet/WalletSurface';
 import { IconButton } from '@/components/ui/IconButton';
 import { Screen } from '@/components/ui/Screen';
 import { PressSurface } from '@/components/ui/PressSurface';
@@ -16,10 +20,9 @@ import { DetailRowSkeleton } from '@/components/feedback/DetailRowSkeleton';
 import { MockDataNotice } from '@/components/feedback/MockDataNotice';
 import { BalanceAmount } from '@/components/wallet/BalanceAmount';
 import { TransactionRow } from '@/components/wallet/TransactionRow';
-import { colors, layout, spacing, typography } from '@/design';
+import { colors, layout, radius, spacing } from '@/design';
 import { useStaleRefetchOnFocus } from '@/hooks/useStaleRefetchOnFocus';
 import { useWallet, useWalletTransactions } from '@/hooks/useWallet';
-import { formatMoney } from '@/lib/money';
 import { useAuth } from '@/providers/AuthProvider';
 import { queryKeys } from '@/services/query';
 import { StaggeredRow } from '../components/StaggeredRow';
@@ -68,11 +71,7 @@ export default function HomeScreen() {
   return (
     <Screen
       edges={['top', 'left', 'right']}
-      leading={
-        <Text variant="title2" style={styles.brand}>
-          {t('auth.brand')}
-        </Text>
-      }
+      leading={<Brand />}
       trailing={
         <IconButton
           icon={Bell}
@@ -90,15 +89,13 @@ export default function HomeScreen() {
         />
       }
     >
-      <MockDataNotice />
-      <Text variant="callout">
+      <Text variant="title2">
         {t('home.greeting', { firstName: auth.user?.firstName ?? '' })}
       </Text>
-      <View style={styles.balance}>
-        <Text variant="caption">{t('home.balance')}</Text>
+      <WalletSurface pendingMinor={wallet.data?.pendingMinor}>
         <View style={styles.balanceValue}>
           {minor !== undefined ? (
-            <BalanceAmount minor={minor} accessibilityLabel={speech} />
+            <BalanceAmount minor={minor} accessibilityLabel={speech} inverse />
           ) : wallet.isPending ? (
             <Skeleton
               width={layout.balanceSkeletonWidth}
@@ -106,42 +103,48 @@ export default function HomeScreen() {
               accessibilityLabel={t('common.loading')}
             />
           ) : (
-            <Text accessibilityRole="alert">
+            <Text tone="inverse" accessibilityRole="alert">
               {t('home.balanceUnavailable')}
             </Text>
           )}
         </View>
-        {wallet.data && wallet.data.pendingMinor > 0 && (
-          <Chip
-            label={t('home.pending', {
-              amount: formatMoney(wallet.data.pendingMinor),
-            })}
-            tone="warning"
+      </WalletSurface>
+      {wallet.isError && (
+        <View>
+          {wallet.data && (
+            <Text accessibilityRole="alert">{t('product.loadError')}</Text>
+          )}
+          <Button
+            variant="ghost"
+            label={t('common.retry')}
+            loading={wallet.isFetching}
+            onPress={() => {
+              void wallet.refetch();
+            }}
           />
-        )}
-        <Text variant="caption">{t('home.universalWallet')}</Text>
-        {wallet.isError && (
-          <View>
-            {wallet.data && (
-              <Text accessibilityRole="alert">{t('product.loadError')}</Text>
-            )}
-            <Button
-              variant="ghost"
-              label={t('common.retry')}
-              loading={wallet.isFetching}
-              onPress={() => {
-                void wallet.refetch();
-              }}
-            />
-          </View>
-        )}
-      </View>
-      <View style={styles.action}>
-        <Button label={t('home.scan')} onPress={scan} />
-        <Text variant="caption" style={styles.center}>
-          {t('home.scanHelper')}
-        </Text>
-      </View>
+        </View>
+      )}
+      <PressSurface
+        accessibilityLabel={t('home.scan')}
+        onPress={scan}
+        contentStyle={styles.action}
+      >
+        <View style={styles.scanMark}>
+          <Icon
+            icon={ScanLine}
+            color={colors.brand.primary}
+            size="large"
+            decorative
+          />
+        </View>
+        <View style={styles.actionCopy}>
+          <Text variant="headline">{t('home.scan')}</Text>
+          <Text variant="caption" tone="secondary">
+            {t('home.scanHelper')}
+          </Text>
+        </View>
+        <Icon icon={ArrowUpRight} color={colors.brand.primary} decorative />
+      </PressSurface>
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Text
@@ -197,21 +200,34 @@ export default function HomeScreen() {
         )}
       </View>
       <PhoneVerificationBanner />
+      <MockDataNotice />
     </Screen>
   );
 }
 const styles = StyleSheet.create({
-  brand: {
-    fontSize: layout.homeWordmarkSize,
-    lineHeight: typography.title1.lineHeight,
-  },
-  balance: { gap: spacing[8], paddingVertical: spacing[8] },
   balanceValue: {
-    minHeight: typography.display.lineHeight,
+    minHeight: layout.controlHeight,
     justifyContent: 'center',
   },
-  action: { gap: spacing[8], paddingVertical: spacing[12] },
-  center: { textAlign: 'center' },
+  action: {
+    flexDirection: 'row',
+    gap: spacing[12],
+    alignItems: 'center',
+    padding: spacing[16],
+    borderRadius: radius[20],
+    backgroundColor: colors.surface,
+    borderWidth: layout.borderWidth,
+    borderColor: colors.border,
+  },
+  scanMark: {
+    width: layout.controlHeight,
+    height: layout.controlHeight,
+    backgroundColor: colors.brand.tint,
+    borderRadius: radius[16],
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actionCopy: { flex: 1, gap: spacing[4] },
   section: { gap: spacing[12] },
   sectionHeader: {
     flexDirection: 'row',

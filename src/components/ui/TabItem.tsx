@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { Icon, type IconProps } from './Icon';
 import { PressSurface } from './PressSurface';
@@ -24,15 +24,17 @@ export function TabItem({ label, icon, selected, onPress }: TabItemProps) {
       contentStyle={styles.content}
       pressedColor={colors.divider}
     >
-      <Icon
-        icon={icon}
-        color={selected ? colors.ink : colors.inkMuted}
-        decorative
-      />
+      <View style={[styles.icon, selected && styles.selected]}>
+        <Icon
+          icon={icon}
+          color={selected ? colors.brand.primary : colors.inkSecondary}
+          decorative
+        />
+      </View>
       <Text
         variant="tab"
         style={{
-          color: selected ? colors.ink : colors.inkSecondary,
+          color: selected ? colors.brand.primary : colors.inkSecondary,
           textAlign: 'center',
         }}
       >
@@ -43,6 +45,12 @@ export function TabItem({ label, icon, selected, onPress }: TabItemProps) {
 }
 
 const styles = StyleSheet.create({
+  icon: {
+    paddingHorizontal: spacing[12],
+    paddingVertical: spacing[4],
+    borderRadius: spacing[12],
+  },
+  selected: { backgroundColor: colors.brand.tint },
   item: { flex: 1 },
   content: {
     minHeight: layout.tabBarHeight,

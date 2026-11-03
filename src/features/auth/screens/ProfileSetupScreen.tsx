@@ -7,6 +7,9 @@ import { Input } from '@/components/ui/Input';
 import { Screen } from '@/components/ui/Screen';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { Text } from '@/components/ui/Text';
+import { AuthHeading } from '@/components/ui/AuthHeading';
+import { Brand } from '@/components/ui/Brand';
+import UserRound from 'lucide-react-native/icons/user-round';
 import { authOperation } from '@/lib/auth-lifecycle';
 import { changeLanguage, type SupportedLanguage } from '@/lib/i18n';
 import { serverNow } from '@/lib/server-clock';
@@ -94,7 +97,8 @@ export default function ProfileSetupScreen() {
     })();
   return (
     <Screen
-      title={t('navigation.profileSetup')}
+      surface="surface"
+      leading={<Brand />}
       footer={
         <Button
           label={t('common.continue')}
@@ -106,6 +110,11 @@ export default function ProfileSetupScreen() {
         />
       }
     >
+      <AuthHeading
+        icon={UserRound}
+        title={t('navigation.profileSetup')}
+        message={t('visual.profileSetup')}
+      />
       {config.isError && (
         <>
           <Text accessibilityRole="alert">{t('errors.generic')}</Text>

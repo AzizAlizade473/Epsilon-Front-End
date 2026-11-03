@@ -67,14 +67,13 @@ export function OtpInput({
 const styles = StyleSheet.create({
   root: { position: 'relative' },
   disabled: { opacity: layout.otpBusyOpacity },
-  boxes: { flexDirection: 'row', gap: spacing[4] },
+  boxes: { flexDirection: 'row', gap: spacing[8] },
   box: {
     flex: 1,
-    maxWidth: spacing[48],
     minHeight: layout.controlHeight,
-    borderWidth: layout.hairlineWidth,
+    borderWidth: layout.borderWidth,
     borderRadius: radius[12],
-    backgroundColor: colors.surface,
+    backgroundColor: colors.brand.tint,
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: spacing[12],

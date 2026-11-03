@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     gap: spacing[8],
     paddingHorizontal: spacing.screenMargin,
     paddingVertical: spacing[8],
-    backgroundColor: colors.surface,
+    backgroundColor: colors.transparent,
   },
   title: { flex: 1, minWidth: 0 },
 });

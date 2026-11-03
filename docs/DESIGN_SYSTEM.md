@@ -15,15 +15,24 @@ arbitrary shadows, fake content, generic marketing copy and decorative animation
 
 ## Tokens (UX-1)
 
-`src/design/tokens.ts` is the source for visual values. Brand primary `#2563EB`
-remains the specified placeholder until the real logo color is supplied/sampled.
-Pressed blue is `#1D4ED8`; brand tint/border are `#EFF6FF`/`#BFDBFE`.
-Ink is `#0F172A`, secondary `#64748B`, muted `#94A3B8`; background/surface are
-`#F7F8FA`/`#FFFFFF`. Status palettes remain the exact STEP 01 tokens.
+`src/design/tokens.ts` is the source for visual values. On 2026-11-02 the owner
+made [epsilonup.com](https://epsilonup.com/) the authoritative brand reference.
+The actual [stylesheet](https://epsilonup.com/style.css) and Chrome computed
+styles confirm primary `#282973`, secondary `#2F67B2`, accent (`--dark-color`)
+`#534C9C`, background `#FAF4F5`, surface `#FFFFFF`, body text `#333333`, secondary
+text `#555555`, muted `#888888` and border `#E8E8E8`. Pressed `#1A1A4E`, raised
+`#2F3D8F` and inverse caption `#B8CAFF` also come from the stylesheet.
+Mobile-only tonal adaptations: tint `#EEEFF7`, brand border `#D4D5E8`, divider
+`#F4F4F7`. Status colors retain semantic meaning; site success ink/tint are
+`#1A7F4B`/`#D4F7E7`, error ink `#B91C1C`. Muted colors are not body text.
+The exact [official wordmark](https://epsilonup.com/logo.svg) geometry is bundled
+in `Brand.tsx`, rendered white on the wallet and primary ink on light surfaces.
+No runtime request or font download is needed. Platform system typography remains.
 
-Secondary gray is suitable for text on white (4.76:1), but falls below 4.5:1 on
-the gray background. Helpers/subtitles use ink. Muted/status colors are not used
-as small text foregrounds on unsuitable surfaces; status chips have ink labels.
+The mobile identity uses a signature perforated receipt seam, a branded universal
+wallet, original receipt/plate illustration and monogram tiles when partner artwork
+is absent. All values and actions still come from existing contracts. The website's
+layouts, gradients, partner claims and marketing integrations are not imported.
 `__tests__/contrast.test.ts` guards supported text/background pairs at 4.5:1.
 
 Spacing: 4/8/12/16/20/24/32/48; screen margin 20. Radii: 12/16/20/24/pill.
@@ -33,9 +42,9 @@ icon circles 40. Dividers use the platform hairline token. Heights grow with tex
 
 | Typography            | Size / line height     | Weight |
 | --------------------- | ---------------------- | ------ |
-| display               | 56 / 60, tracking -1.5 | 700    |
-| title1                | 32 / 38                | 700    |
-| title2                | 24 / 30                | 700    |
+| display               | 52 / 60, tracking -1.5 | 500    |
+| title1                | 32 / 38                | 600    |
+| title2                | 24 / 30                | 600    |
 | headline              | 17 / 22                | 600    |
 | body                  | 16 / 22                | 400    |
 | callout               | 15 / 20                | 500    |

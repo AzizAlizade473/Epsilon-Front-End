@@ -8,7 +8,7 @@ import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
 import { PullToRefresh } from '@/components/ui/PullToRefresh';
 import { Amount } from '@/components/ui/Amount';
-import { Chip } from '@/components/ui/Chip';
+import { WalletSurface } from '@/components/wallet/WalletSurface';
 import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/feedback/ErrorState';
 import { EmptyState } from '@/components/feedback/EmptyState';
@@ -21,7 +21,6 @@ import { useWallet } from '@/hooks/useWallet';
 import { useWalletHistory } from '@/hooks/useWalletHistory';
 import { useStaleRefetchOnFocus } from '@/hooks/useStaleRefetchOnFocus';
 import { queryKeys } from '@/services/query';
-import { formatMoney } from '@/lib/money';
 import { groupWalletHistory } from '@/lib/wallet-history';
 
 export default function WalletScreen() {
@@ -57,27 +56,19 @@ export default function WalletScreen() {
         <Text variant="title1" accessibilityRole="header">
           {t('navigation.cashback')}
         </Text>
+        <WalletSurface pendingMinor={wallet.data?.pendingMinor}>
+          {wallet.data ? (
+            <Amount minor={wallet.data.balanceMinor} tone="inverse" />
+          ) : wallet.isLoading ? (
+            <Skeleton
+              width={layout.balanceSkeletonWidth}
+              height={layout.controlHeight}
+              accessibilityLabel={t('common.loading')}
+            />
+          ) : null}
+        </WalletSurface>
         <MockDataNotice />
-        <Text variant="caption">{t('home.balance')}</Text>
-        {wallet.data ? (
-          <>
-            <Amount minor={wallet.data.balanceMinor} />
-            {wallet.data.pendingMinor > 0 && (
-              <Chip
-                tone="warning"
-                label={t('home.pending', {
-                  amount: formatMoney(wallet.data.pendingMinor),
-                })}
-              />
-            )}
-          </>
-        ) : wallet.isLoading ? (
-          <Skeleton
-            width={layout.balanceSkeletonWidth}
-            height={layout.controlHeight}
-            accessibilityLabel={t('common.loading')}
-          />
-        ) : null}
+        <Text variant="headline">{t('visual.history')}</Text>
         {wallet.isError && (
           <Text tone="danger" accessibilityRole="alert">
             {t('wallet.loadError')}

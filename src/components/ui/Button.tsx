@@ -48,7 +48,7 @@ export function Button({
   accessibilityLabel = label,
   variant = 'primary',
   loading = false,
-  shape = 'pill',
+  shape = 'rounded',
   ...props
 }: ButtonProps) {
   const palette = variants[variant];

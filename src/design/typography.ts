@@ -9,24 +9,24 @@ export const fontFamily = Platform.OS === 'web' ? 'system-ui' : undefined;
 export const typography = {
   display: {
     fontFamily,
-    fontSize: 56,
+    fontSize: 52,
     lineHeight: 60,
-    fontWeight: '700',
+    fontWeight: '500',
     letterSpacing: -1.5,
   },
   title1: {
     fontFamily,
     fontSize: 32,
     lineHeight: 38,
-    fontWeight: '700',
-    letterSpacing: 0,
+    fontWeight: '600',
+    letterSpacing: -0.8,
   },
   title2: {
     fontFamily,
     fontSize: 24,
     lineHeight: 30,
-    fontWeight: '700',
-    letterSpacing: 0,
+    fontWeight: '600',
+    letterSpacing: -0.4,
   },
   headline: {
     fontFamily,

@@ -12,23 +12,25 @@ import {
 } from '@/design';
 
 describe('design tokens', () => {
-  test('exposes brand and semantic colors from the spec', () => {
-    expect(colors.brand.primary).toBe('#2563EB');
-    expect(colors.brand.primaryPressed).toBe('#1D4ED8');
-    expect(colors.brand.tint).toBe('#EFF6FF');
-    expect(colors.brand.border).toBe('#BFDBFE');
-    expect(colors.ink).toBe('#0F172A');
-    expect(colors.inkSecondary).toBe('#64748B');
-    expect(colors.inkMuted).toBe('#94A3B8');
-    expect(colors.background).toBe('#F7F8FA');
+  test('exposes verified epsilonup.com colors and mobile tonal adaptations', () => {
+    expect(colors.brand.primary).toBe('#282973');
+    expect(colors.brand.secondary).toBe('#2F67B2');
+    expect(colors.brand.accent).toBe('#534C9C');
+    expect(colors.brand.primaryPressed).toBe('#1A1A4E');
+    expect(colors.brand.tint).toBe('#EEEFF7');
+    expect(colors.brand.border).toBe('#D4D5E8');
+    expect(colors.ink).toBe('#333333');
+    expect(colors.inkSecondary).toBe('#555555');
+    expect(colors.inkMuted).toBe('#888888');
+    expect(colors.background).toBe('#FAF4F5');
     expect(colors.surface).toBe('#FFFFFF');
-    expect(colors.border).toBe('#E2E8F0');
-    expect(colors.divider).toBe('#F1F5F9');
+    expect(colors.border).toBe('#E8E8E8');
+    expect(colors.divider).toBe('#F4F4F7');
     expect(colors.success).toBe('#16A34A');
-    expect(colors.successTint).toBe('#ECFDF5');
+    expect(colors.successTint).toBe('#D4F7E7');
     expect(colors.warning).toBe('#D97706');
     expect(colors.warningTint).toBe('#FFF7ED');
-    expect(colors.danger).toBe('#DC2626');
+    expect(colors.danger).toBe('#B91C1C');
     expect(colors.dangerTint).toBe('#FEE2E2');
     expect(colors.overlay).toBe('rgba(15,23,42,0.5)');
     expect(colors.scanDim).toBe('rgba(0,0,0,0.6)');
@@ -60,9 +62,9 @@ describe('design tokens', () => {
 
   test('typography sizes match the spec', () => {
     expect(typography.display).toMatchObject({
-      fontSize: 56,
+      fontSize: 52,
       lineHeight: 60,
-      fontWeight: '700',
+      fontWeight: '500',
       letterSpacing: -1.5,
     });
     expect(typography.title1.fontSize).toBe(32);

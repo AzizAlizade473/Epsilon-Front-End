@@ -4,9 +4,11 @@ import { StyleSheet, View } from 'react-native';
 import { BackButton } from '@/components/navigation/BackButton';
 import { Button } from '@/components/ui/Button';
 import { Screen } from '@/components/ui/Screen';
-import { Text } from '@/components/ui/Text';
+import { AuthHeading } from '@/components/ui/AuthHeading';
+import { Brand } from '@/components/ui/Brand';
+import Smartphone from 'lucide-react-native/icons/smartphone';
 import { env } from '@/lib/env';
-import { colors, spacing } from '@/design';
+import { spacing } from '@/design';
 import {
   AuthEntrySwitch,
   GoogleEntry,
@@ -40,20 +42,18 @@ export default function AuthEntryScreen({ intent }: { intent: AuthIntent }) {
           }}
         />
       }
+      trailing={<Brand />}
       footer={<AuthEntrySwitch intent={intent} disabled={busy} />}
     >
-      <View style={styles.heading}>
-        <Text variant="title1" accessibilityRole="header" style={styles.title}>
-          {t(`authEntry.${intent}`)}
-        </Text>
-        <Text style={styles.helper}>
-          {t(
-            intent === 'login'
-              ? 'authEntry.loginHelper'
-              : 'authEntry.registerHelper',
-          )}
-        </Text>
-      </View>
+      <AuthHeading
+        icon={Smartphone}
+        title={t('authEntry.' + intent)}
+        message={t(
+          intent === 'login'
+            ? 'authEntry.loginHelper'
+            : 'authEntry.registerHelper',
+        )}
+      />
       <View style={styles.form}>
         <PhoneField
           autoFocus={false}
@@ -89,8 +89,5 @@ export default function AuthEntryScreen({ intent }: { intent: AuthIntent }) {
 }
 
 const styles = StyleSheet.create({
-  heading: { gap: spacing[16], paddingVertical: spacing[32] },
-  title: { color: colors.brand.primary, textAlign: 'center' },
-  helper: { textAlign: 'center' },
-  form: { gap: spacing[24], paddingVertical: spacing[16] },
+  form: { gap: spacing[24], paddingBottom: spacing[16] },
 });

@@ -12,12 +12,12 @@
     "notFound": "No account was found for this sign-in method. Sign up to continue.",
     "exists": "This account already exists. Log in to continue.",
     "conflict": "This sign-in method belongs to another account. Use your existing sign-in method.",
-    "googleNativeOnly": "Google sign-in works in configured Android builds. This browser preview does not sign in to Google.",
-    "googleSetupRequired": "Google sign-in is not configured in this build. Continue with your phone number."
+    "googleNativeOnly": "Use the Epsilon Android app to continue with Google.",
+    "googleSetupRequired": "Google is temporarily unavailable. Continue with your phone number."
   },
   "authEntry": {
-    "headline": "Rate your meal. Earn cashback.",
-    "description": "Scan your receipt, rate the dishes you bought and earn cashback on eligible purchases.",
+    "headline": "Good food deserves\ngreat feedback.",
+    "description": "Turn your dining experience into something more. Scan, rate and earn cashback on eligible purchases.",
     "login": "Log in",
     "register": "Sign up",
     "loginHelper": "Verify your phone number to access your account.",
@@ -170,16 +170,16 @@
     "logoutConfirm": "Do you want to sign out?"
   },
   "product": {
-    "demoData": "Test data — not real activity or a partner directory.",
+    "demoData": "Preview data",
     "loadError": "Unable to load data.",
     "loadMore": "Load more"
   },
   "home": {
     "greeting": "Hello, {{firstName}}",
-    "balance": "Total cashback",
+    "balance": "Confirmed cashback",
     "balanceSpeech": "Total cashback, {{sign}}{{manat}} manat {{qepik}} qepik",
     "pending": "Pending {{amount}}",
-    "universalWallet": "Cashback accumulates across all partner restaurants.",
+    "universalWallet": "One Epsilon wallet",
     "scan": "Scan receipt",
     "scanHelper": "Rate your dishes and earn cashback.",
     "recent": "Recent activity",
@@ -354,8 +354,8 @@
     "brand": "Epsilon mark",
     "mark": "ε",
     "edit": "Edit personal information",
-    "account": "ACCOUNT",
-    "security": "SECURITY AND SUPPORT",
+    "account": "Account",
+    "security": "Security and support",
     "personal": "Personal information",
     "reviews": "My reviews",
     "notifications": "Notifications",
@@ -441,5 +441,17 @@
     "updateBody": "Install the latest version of Epsilon to continue.",
     "updateAction": "Update on Play Store",
     "notFoundBody": "This page is unavailable. You can return home."
+  },
+  "visual": {
+    "history": "Wallet activity",
+    "restaurants": "Good places. More reasons to return.",
+    "restaurantHint": "Keep your receipt. Your feedback starts here.",
+    "partner": "On Epsilon",
+    "scanTitle": "Your receipt is the beginning.",
+    "scanHint": "Scan. Share your experience. See your reward.",
+    "manualHint": "Find the purchase code on your receipt.",
+    "profileSetup": "A few details to make Epsilon yours.",
+    "profileNote": "Your meals. Your feedback. Your Epsilon.",
+    "ratingHint": "A little feedback goes a long way."
   }
 }

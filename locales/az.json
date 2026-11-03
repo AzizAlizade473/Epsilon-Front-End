@@ -12,12 +12,12 @@
     "notFound": "Bu üsulla bağlı hesab tapılmadı. Davam etmək üçün qeydiyyatdan keç.",
     "exists": "Bu hesab artıq mövcuddur. Davam etmək üçün daxil ol.",
     "conflict": "Bu giriş üsulu başqa hesabla bağlıdır. Mövcud giriş üsulundan istifadə et.",
-    "googleNativeOnly": "Google ilə giriş sazlanmış Android tətbiqində işləyir. Brauzer önbaxışı Google hesabına daxil olmur.",
-    "googleSetupRequired": "Google ilə giriş bu versiyada sazlanmayıb. Telefon nömrəsi ilə davam et."
+    "googleNativeOnly": "Google ilə davam etmək üçün Epsilon Android tətbiqindən istifadə edin.",
+    "googleSetupRequired": "Google hazırda əlçatan deyil. Telefon nömrənizlə davam edin."
   },
   "authEntry": {
-    "headline": "Yeməyini qiymətləndir, keşbek qazan",
-    "description": "Çekini skan et, aldığın yeməkləri qiymətləndir və uyğun alışlardan keşbek qazan.",
+    "headline": "Gözəl yemək\nsəmimi rəyə layiqdir.",
+    "description": "Yemək təcrübənizdən daha çox qazanın. Çeki skan edin, rəy bildirin və uyğun alışlardan keşbek qazanın.",
     "login": "Daxil ol",
     "register": "Qeydiyyatdan keç",
     "loginHelper": "Telefon nömrəni təsdiqləyərək hesabına daxil ol.",
@@ -170,16 +170,16 @@
     "logoutConfirm": "Hesabdan çıxmaq istəyirsiniz?"
   },
   "product": {
-    "demoData": "Sınaq məlumatları — real əməliyyat və ya partnyor siyahısı deyil.",
+    "demoData": "Nümunə məlumatlar",
     "loadError": "Məlumatları yükləmək mümkün olmadı.",
     "loadMore": "Daha çox göstər"
   },
   "home": {
     "greeting": "Salam, {{firstName}}",
-    "balance": "Ümumi keşbek",
+    "balance": "Təsdiqlənmiş keşbek",
     "balanceSpeech": "Ümumi keşbek, {{sign}}{{manat}} manat {{qepik}} qəpik",
     "pending": "Gözləyən {{amount}}",
-    "universalWallet": "Keşbek bütün partnyor restoranlarda toplanır.",
+    "universalWallet": "Vahid Epsilon pulqabısı",
     "scan": "Çeki skan et",
     "scanHelper": "Yeməkləri qiymətləndirin və keşbek qazanın.",
     "recent": "Son fəaliyyət",
@@ -354,8 +354,8 @@
     "brand": "Epsilon nişanı",
     "mark": "ε",
     "edit": "Məlumatları redaktə et",
-    "account": "HESAB",
-    "security": "TƏHLÜKƏSİZLİK VƏ DƏSTƏK",
+    "account": "Hesab",
+    "security": "Təhlükəsizlik və dəstək",
     "personal": "Şəxsi məlumatlar",
     "reviews": "Rəylərim",
     "notifications": "Bildirişlər",
@@ -441,5 +441,17 @@
     "updateBody": "Davam etmək üçün Epsilon-un yeni versiyasını quraşdırın.",
     "updateAction": "Play Store-da yenilə",
     "notFoundBody": "Bu səhifə mövcud deyil. Ana səhifəyə qayıda bilərsiniz."
+  },
+  "visual": {
+    "history": "Pulqabı əməliyyatları",
+    "restaurants": "Gözəl məkanlar. Qayıtmaq üçün daha çox səbəb.",
+    "restaurantHint": "Çekinizi saxlayın. Rəyiniz buradan başlayır.",
+    "partner": "Epsilon-da",
+    "scanTitle": "Hər şey çekinizdən başlayır.",
+    "scanHint": "Skan edin. Rəy bildirin. Mükafatınızı görün.",
+    "manualHint": "Alış kodunu çekinizdə tapın.",
+    "profileSetup": "Epsilon-u sizə uyğunlaşdırmaq üçün bir neçə məlumat.",
+    "profileNote": "Yeməkləriniz. Rəyləriniz. Sizin Epsilon.",
+    "ratingHint": "Kiçik bir rəy böyük fərq yaradır."
   }
 }

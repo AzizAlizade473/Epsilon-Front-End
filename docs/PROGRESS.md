@@ -1,5 +1,28 @@
 # Epsilon progress
 
+## Full visual redesign — 2026-11-03
+
+Owner overrides per-screen micro-step gates: one continuous UI batch, final
+validation, one commit/push. Based on latest fetched `06b53bb`; existing work
+preserved on `design/epsilon-visual-overhaul`. Website CSS/computed colors and
+official vector wordmark are authoritative; see DESIGN_SYSTEM.md for exact values.
+Home/wallet, restaurants, scan/manual entry, profile/settings, all auth screens,
+receipt/rating/confirmation/transaction details share the new identity. Existing
+services, workflows, age policy and AZ/EN/RU remain. No dependency added.
+Visual references: Revolut Home Appearance, Jasmine Jones Starbucks Rewards and
+Alyssa Long Too Good To Go; Unslop by Damir Sokolovsky (CC BY 4.0).
+
+- [x] visual.1 — Final validation and single pushed recovery point. Lint/strict
+      TypeScript and all quality-gate stages pass; 103 suites / 607 tests, 86.66%
+      line coverage, 368 localization keys. Updated obsolete placeholder-token
+      assertions; retained all thresholds and added official-palette contrast pairs.
+      Android Hermes: 6,184,237 bytes (+1.25%, unchanged 10% limit). Secret scan passes.
+      Browser fixture journey covers auth/legal/OTP/profile, Home, restaurant search,
+      wallet/details, manual receipt, rating/reward and logout. AZ/EN/RU at 360px and
+      enlarged browser text reviewed; evidence in ignored reports/visual-overhaul.
+      Native camera/Google/TalkBack/device font scaling remain pending; backend and
+      existing release gates are unchanged. No main merge or deployment.
+
 ## Auth workflow and bundled legal documents — 2026-11-02
 
 Owner scope: diagnose Google/logout/profile behavior; preserve OTP and existing

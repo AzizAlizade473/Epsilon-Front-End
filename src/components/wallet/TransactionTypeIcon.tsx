@@ -31,7 +31,7 @@ export function TransactionTypeIcon({
       style={{
         width: size,
         height: size,
-        borderRadius: radius.pill,
+        borderRadius: radius[16],
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: backgrounds[type],

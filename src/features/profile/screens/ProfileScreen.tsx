@@ -50,7 +50,6 @@ export default function ProfileScreen() {
     (typeof account)[number] | (typeof support)[number]) => (
     <ListRow
       key={route}
-      plainIcon
       title={t(`profile.${key}`)}
       icon={icon}
       value={
@@ -91,25 +90,29 @@ export default function ProfileScreen() {
           style={styles.avatar}
         >
           <Text variant="title2" style={styles.brand}>
-            {t('profile.mark')}
+            {user.data?.firstName?.slice(0, 1) || t('profile.mark')}
           </Text>
         </Pressable>
         <View style={styles.copy}>
-          <Text variant="title2">
+          <Text variant="title2" tone="inverse">
             {[user.data?.firstName, user.data?.lastName]
               .filter(Boolean)
               .join(' ')}
           </Text>
-          <Text variant="caption">
+          <Text variant="caption" style={styles.identityMeta}>
             {maskedPhone(user.data?.phone ?? null) || user.data?.email}
           </Text>
         </View>
         <IconButton
           icon={Pencil}
+          tone="inverse"
           accessibilityLabel={t('profile.edit')}
           onPress={() => router.push('/profile/personal-info')}
         />
       </View>
+      <Text variant="caption" tone="secondary">
+        {t('visual.profileNote')}
+      </Text>
       {user.isError && (
         <>
           <Text tone="danger">{t('errors.generic')}</Text>
@@ -131,7 +134,7 @@ export default function ProfileScreen() {
       </Text>
       <View style={styles.group}>{support.map(row)}</View>
       <Button
-        variant="destructive"
+        variant="outline"
         label={t('profile.logout')}
         onPress={() => setConfirm(true)}
       />
@@ -186,21 +189,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[12],
-    paddingVertical: spacing[16],
+    padding: spacing[20],
+    backgroundColor: colors.brand.deep,
+    borderRadius: radius[24],
   },
   avatar: {
     width: layout.profileAvatarSize,
     height: layout.profileAvatarSize,
     borderRadius: radius.pill,
-    backgroundColor: colors.brand.tint,
+    backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
   brand: { color: colors.brand.primary },
+  identityMeta: { color: colors.brand.onDeep },
   copy: { flex: 1, minWidth: 0, gap: spacing[4] },
   group: {
     backgroundColor: colors.surface,
-    borderRadius: radius[16],
+    borderRadius: radius[20],
+    borderWidth: layout.borderWidth,
+    borderColor: colors.border,
     paddingHorizontal: spacing[16],
   },
   dialog: { gap: spacing[16] },

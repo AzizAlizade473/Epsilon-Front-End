@@ -1,4 +1,4 @@
-import { Image } from 'expo-image';
+import { Brand } from '@/components/ui/Brand';
 import { useCallback, useRef, useState } from 'react';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -6,7 +6,7 @@ import { StyleSheet, View } from 'react-native';
 import { Button } from '@/components/ui/Button';
 import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
-import { colors, layout, spacing } from '@/design';
+import { colors, spacing } from '@/design';
 import { authOperation } from '@/lib/auth-lifecycle';
 import { FadeUp } from '../components/FadeUp';
 import { LegalLinks } from '../components/LegalLinks';
@@ -31,17 +31,12 @@ export default function WelcomeScreen() {
     authOperation.release();
   };
   return (
-    <Screen surface="brandTint">
+    <Screen surface="surface">
       <View style={styles.stage}>
         <View style={styles.content}>
           <FadeUp order={0}>
             <View style={styles.brand}>
-              <Image
-                source={require('../../../../assets/brand/epsilon-logo.png')}
-                style={styles.logo}
-                contentFit="contain"
-                accessibilityLabel={t('auth.brand')}
-              />
+              <Brand />
             </View>
           </FadeUp>
           <FadeUp order={1}>
@@ -49,11 +44,11 @@ export default function WelcomeScreen() {
               <Text
                 variant="title1"
                 accessibilityRole="header"
-                style={[styles.center, styles.title]}
+                style={styles.title}
               >
                 {t('authEntry.headline')}
               </Text>
-              <Text style={styles.center}>{t('authEntry.description')}</Text>
+              <Text tone="secondary">{t('authEntry.description')}</Text>
             </View>
           </FadeUp>
           <WelcomeArtwork />
@@ -92,10 +87,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: spacing[24],
   },
-  brand: { alignItems: 'center' },
-  logo: { width: layout.welcomeLogoSize, height: layout.welcomeLogoSize },
+  brand: { alignItems: 'flex-start' },
   heading: { gap: spacing[16] },
-  title: { color: colors.brand.primary },
+  title: { color: colors.brand.deep },
   actions: { gap: spacing[12] },
-  center: { textAlign: 'center' },
 });

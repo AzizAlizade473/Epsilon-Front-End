@@ -41,12 +41,16 @@ export function ListRow({
             plainIcon && { backgroundColor: colors.transparent },
           ]}
         >
-          <Icon icon={icon} decorative />
+          <Icon icon={icon} color={colors.brand.deep} decorative />
         </View>
       )}
       <View style={styles.text}>
-        <Text>{title}</Text>
-        {subtitle && <Text variant="caption">{subtitle}</Text>}
+        <Text variant="callout">{title}</Text>
+        {subtitle && (
+          <Text variant="caption" tone="secondary">
+            {subtitle}
+          </Text>
+        )}
       </View>
       {value && (
         <Text variant="callout" style={styles.value}>
@@ -101,8 +105,8 @@ const styles = StyleSheet.create({
   leading: {
     width: layout.leadingIconSize,
     height: layout.leadingIconSize,
-    borderRadius: radius.pill,
-    backgroundColor: colors.divider,
+    borderRadius: radius[12],
+    backgroundColor: colors.brand.tint,
     justifyContent: 'center',
     alignItems: 'center',
   },

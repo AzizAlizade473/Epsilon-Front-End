@@ -13,6 +13,9 @@ import { BackButton } from '@/components/navigation/BackButton';
 import { Button } from '@/components/ui/Button';
 import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
+import { AuthHeading } from '@/components/ui/AuthHeading';
+import { Brand } from '@/components/ui/Brand';
+import MessageSquare from 'lucide-react-native/icons/message-square';
 import { colors, layout, useMotion } from '@/design';
 import { OtpInput } from '../components/OtpInput';
 import { ResendTimer, useSecondsUntil } from '../components/ResendTimer';
@@ -87,8 +90,9 @@ export default function OtpScreen({
     return <Redirect href={mode === 'link' ? '/phone-verify' : '/phone'} />;
   return (
     <Screen
-      title={t('navigation.otp')}
+      surface="surface"
       leading={<BackButton />}
+      trailing={<Brand />}
       footer={
         <ResendTimer
           deadline={challenge?.resendAt ?? 0}
@@ -103,9 +107,13 @@ export default function OtpScreen({
         />
       }
     >
-      <Text>
-        {t('auth.otpHelper', { phone: maskPhone(challenge?.phone ?? '') })}
-      </Text>
+      <AuthHeading
+        icon={MessageSquare}
+        title={t('navigation.otp')}
+        message={t('auth.otpHelper', {
+          phone: maskPhone(challenge?.phone ?? ''),
+        })}
+      />
       <Animated.View
         style={{
           transform: [{ translateX }],

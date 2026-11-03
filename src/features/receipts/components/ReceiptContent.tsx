@@ -12,6 +12,8 @@ import { Chip } from '@/components/ui/Chip';
 import { Icon } from '@/components/ui/Icon';
 import { PressSurface } from '@/components/ui/PressSurface';
 import { Text } from '@/components/ui/Text';
+import { ReceiptRule } from '@/components/ui/ReceiptRule';
+import Utensils from 'lucide-react-native/icons/utensils';
 import { MockDataNotice } from '@/components/feedback/MockDataNotice';
 import { colors, layout, radius, spacing } from '@/design';
 import { formatDate, formatTime } from '@/lib/date';
@@ -43,7 +45,6 @@ export function ReceiptContent({
   );
   const header = (
     <View style={styles.header}>
-      <MockDataNotice />
       <View style={styles.restaurant}>
         <View style={styles.logo}>
           {receipt.restaurant.logoUrl?.startsWith('https://') && !failedLogo ? (
@@ -74,6 +75,7 @@ export function ReceiptContent({
         label={t(`receipt.status.${receipt.status}`)}
         tone={receipt.status === 'verified' ? 'success' : 'neutral'}
       />
+      <ReceiptRule />
       <Text variant="headline" accessibilityRole="header">
         {t('receipt.items')}
       </Text>
@@ -90,8 +92,13 @@ export function ReceiptContent({
         const canRate = !readOnly && item.canRate && !rated && !pending;
         const content = (
           <>
+            <View style={styles.dish}>
+              <Icon icon={Utensils} color={colors.brand.primary} decorative />
+            </View>
             <View style={styles.copy}>
-              <Text numberOfLines={2}>{item.name}</Text>
+              <Text variant="callout" numberOfLines={2}>
+                {item.name}
+              </Text>
               <Text variant="caption">
                 {t('receipt.quantityPrice', {
                   qty: item.quantity,
@@ -154,6 +161,7 @@ export function ReceiptContent({
       }}
       ListFooterComponent={
         <View style={styles.footer}>
+          <ReceiptRule />
           <Text variant="caption">{t('receipt.total')}</Text>
           <Amount minor={receipt.totalMinor} variant="title1" />
           {receipt.rewardHint && (
@@ -167,13 +175,28 @@ export function ReceiptContent({
             {t('receipt.identifier', { id: receipt.id })}
           </Text>
           {!remaining && <Button label={t('feedback.home')} onPress={onHome} />}
+          <MockDataNotice />
         </View>
       }
     />
   );
 }
 const styles = StyleSheet.create({
-  header: { gap: spacing[16], paddingBottom: spacing[16] },
+  header: {
+    gap: spacing[16],
+    padding: spacing[20],
+    backgroundColor: colors.surface,
+    borderTopLeftRadius: radius[24],
+    borderTopRightRadius: radius[24],
+  },
+  dish: {
+    width: layout.leadingIconSize,
+    height: layout.leadingIconSize,
+    borderRadius: radius[12],
+    backgroundColor: colors.paper,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   restaurant: { flexDirection: 'row', gap: spacing[12], alignItems: 'center' },
   logo: {
     width: layout.receiptLogoSize,
@@ -186,7 +209,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[12],
-    paddingVertical: spacing[16],
+    padding: spacing[16],
+    backgroundColor: colors.surface,
     minHeight: layout.detailRowHeight,
     borderBottomWidth: layout.hairlineWidth,
     borderBottomColor: colors.border,
@@ -198,6 +222,12 @@ const styles = StyleSheet.create({
     padding: spacing[8],
     flexShrink: 1,
   },
-  footer: { gap: spacing[12], paddingVertical: spacing[24] },
+  footer: {
+    gap: spacing[12],
+    padding: spacing[24],
+    backgroundColor: colors.surface,
+    borderBottomLeftRadius: radius[24],
+    borderBottomRightRadius: radius[24],
+  },
   stars: { flexDirection: 'row', gap: spacing[4] },
 });

@@ -6,11 +6,12 @@ import { Amount } from '@/components/ui/Amount';
 import { Chip } from '@/components/ui/Chip';
 import { ListRow } from '@/components/ui/ListRow';
 import { Text } from '@/components/ui/Text';
+import { ReceiptRule } from '@/components/ui/ReceiptRule';
 import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/feedback/ErrorState';
 import { DetailRowSkeleton } from '@/components/feedback/DetailRowSkeleton';
 import { TransactionTypeIcon } from '@/components/wallet/TransactionTypeIcon';
-import { spacing } from '@/design';
+import { colors, radius, spacing } from '@/design';
 import { useWalletTransaction } from '@/hooks/useWalletHistory';
 import { useToast } from '@/providers/ToastProvider';
 import { formatDate, formatTime } from '@/lib/date';
@@ -121,6 +122,7 @@ export function TransactionContent({
           }
         />
       </View>
+      <ReceiptRule />
       {rows.map(([key, value]) =>
         value ? (
           <ListRow
@@ -150,6 +152,8 @@ const styles = StyleSheet.create({
   hero: {
     alignItems: 'center',
     gap: spacing[16],
-    paddingVertical: spacing[16],
+    padding: spacing[24],
+    backgroundColor: colors.brand.tint,
+    borderRadius: radius[24],
   },
 });

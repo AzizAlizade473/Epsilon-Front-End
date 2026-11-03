@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { Button, type ButtonProps } from '@/components/ui/Button';
 import { Icon, type IconProps } from '@/components/ui/Icon';
 import { Text } from '@/components/ui/Text';
-import { spacing } from '@/design';
+import { colors, layout, radius, spacing } from '@/design';
 
 export type StatePanelProps = {
   icon: IconProps['icon'];
@@ -23,7 +23,12 @@ export function StatePanel({
   return (
     <View style={styles.panel}>
       <View style={styles.icon}>
-        <Icon icon={icon} size="large" decorative />
+        <Icon
+          icon={icon}
+          size="large"
+          color={colors.brand.primary}
+          decorative
+        />
       </View>
       <Text
         variant="title2"
@@ -33,7 +38,11 @@ export function StatePanel({
       >
         {title}
       </Text>
-      {message && <Text style={styles.copy}>{message}</Text>}
+      {message && (
+        <Text tone="secondary" style={styles.copy}>
+          {message}
+        </Text>
+      )}
       {action && <Button {...action} />}
     </View>
   );
@@ -41,6 +50,14 @@ export function StatePanel({
 
 const styles = StyleSheet.create({
   panel: { padding: spacing[24], gap: spacing[16] },
-  icon: { alignSelf: 'center' },
+  icon: {
+    alignSelf: 'center',
+    width: layout.partnerMarkSize,
+    height: layout.partnerMarkSize,
+    borderRadius: radius[24],
+    backgroundColor: colors.brand.tint,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   copy: { textAlign: 'center' },
 });

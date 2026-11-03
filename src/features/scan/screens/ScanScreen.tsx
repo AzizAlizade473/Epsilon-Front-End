@@ -29,7 +29,8 @@ import {
 } from 'expo-haptics';
 import { Button } from '@/components/ui/Button';
 import { IconButton } from '@/components/ui/IconButton';
-import { Icon } from '@/components/ui/Icon';
+import { ReceiptArtwork } from '@/components/ui/ReceiptArtwork';
+import { AuthHeading } from '@/components/ui/AuthHeading';
 import { Input } from '@/components/ui/Input';
 import { Screen } from '@/components/ui/Screen';
 import { Sheet } from '@/components/ui/Sheet';
@@ -141,7 +142,7 @@ export default function ScanScreen() {
     <>
       {!permission?.granted ? (
         <Screen
-          title={t('scan.permissionTitle')}
+          surface="surface"
           leading={
             <IconButton
               icon={X}
@@ -150,7 +151,10 @@ export default function ScanScreen() {
             />
           }
         >
-          <Icon icon={Camera} size="large" decorative />
+          <View style={styles.permissionArt}>
+            <ReceiptArtwork />
+          </View>
+          <AuthHeading icon={Camera} title={t('scan.permissionTitle')} />
           <Text accessibilityLiveRegion="polite">
             {t(
               scan.state === 'resolving'
@@ -303,6 +307,11 @@ export default function ScanScreen() {
             accessibilityLabel={t('scan.manual')}
           >
             <View style={styles.form}>
+              <AuthHeading
+                icon={Camera}
+                title={t('scan.manual')}
+                message={t('visual.manualHint')}
+              />
               <Input
                 label={t('scan.code')}
                 value={code}
@@ -329,6 +338,10 @@ export default function ScanScreen() {
   );
 }
 const styles = StyleSheet.create({
+  permissionArt: {
+    backgroundColor: colors.brand.tint,
+    borderRadius: radius[24],
+  },
   root: { flex: 1, backgroundColor: colors.cameraBackground },
   controls: { flex: 1, justifyContent: 'space-between' },
   header: {
@@ -339,12 +352,12 @@ const styles = StyleSheet.create({
     gap: spacing[8],
   },
   inverse: { color: colors.surface, flexShrink: 1, textAlign: 'center' },
-  bottom: { padding: spacing[20], gap: spacing[16] },
+  bottom: { padding: spacing[24], gap: spacing[20] },
   instructions: {
     color: colors.surface,
     textAlign: 'center',
     backgroundColor: colors.scanDim,
-    borderRadius: radius.pill,
+    borderRadius: radius[16],
     padding: spacing[12],
   },
   error: {
