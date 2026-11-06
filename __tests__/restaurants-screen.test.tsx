@@ -20,6 +20,7 @@ const mockList = jest.fn(
     nextCursor: null,
   }),
 );
+const mockPush = jest.fn();
 jest.mock('@/lib/env', () => ({
   env: { EXPO_PUBLIC_APP_ENV: 'development', EXPO_PUBLIC_API_MODE: 'mock' },
 }));
@@ -37,7 +38,10 @@ jest.mock('@shopify/flash-list', () => ({
 jest.mock('expo-image', () => ({ Image: 'ExpoImage' }));
 jest.mock('expo-router', () => {
   const React = jest.requireActual<typeof import('react')>('react');
-  return { useFocusEffect: (fn: () => void) => React.useEffect(fn, [fn]) };
+  return {
+    useRouter: () => ({ push: mockPush }),
+    useFocusEffect: (fn: () => void) => React.useEffect(fn, [fn]),
+  };
 });
 const client = createQueryClient();
 beforeEach(async () => {
@@ -66,16 +70,19 @@ async function restaurants() {
     </SafeAreaProvider>,
   );
 }
-it('renders static restaurant rows without detail buttons or fake partner claims', async () => {
+it('opens restaurant profiles and clearly labels development partner data', async () => {
   await restaurants();
   await waitFor(() =>
     expect(screen.getByText(mockRestaurants[0]!.name)).toBeOnTheScreen(),
   );
-  expect(
-    screen.queryByRole('button', {
-      name: new RegExp(mockRestaurants[0]!.name),
-    }),
-  ).toBeNull();
+  const detail = screen.getByRole('button', {
+    name: new RegExp(mockRestaurants[0]!.name),
+  });
+  await fireEvent.press(detail);
+  expect(mockPush).toHaveBeenCalledWith({
+    pathname: '/restaurant/[id]',
+    params: { id: mockRestaurants[0]!.id },
+  });
   expect(screen.getByText(az.product.demoData)).toBeOnTheScreen();
 });
 it('distinguishes a real empty directory from a request failure', async () => {

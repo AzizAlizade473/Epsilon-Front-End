@@ -2,7 +2,7 @@ import { afterEach, expect, jest, test } from '@jest/globals';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { createQueryClient } from '@/services/query';
 import { userEvent } from '@testing-library/react-native';
-import { renderRouter, screen, testRouter } from 'expo-router/testing-library';
+import { renderRouter, screen } from 'expo-router/testing-library';
 
 import az from '../locales/az.json';
 
@@ -39,7 +39,7 @@ jest.mock('@/providers/AuthProvider', () => ({
   }),
 }));
 
-test('four tabs stay selected underneath the root Scan modal', async () => {
+test('exactly four tabs include Scan and omit Cashback', async () => {
   await initializeI18n();
   const result = await renderRouter(
     { appDir: 'app', overrides: { _layout: TestRoot } },
@@ -51,13 +51,17 @@ test('four tabs stay selected underneath the root Scan modal', async () => {
     screen.getByRole('tab', { name: az.navigation.restaurants }),
   );
   expect(result.getPathname()).toBe('/restaurants');
-  await user.press(screen.getByRole('button', { name: az.navigation.scan }));
+  expect(
+    screen.queryByRole('tab', { name: az.navigation.cashback }),
+  ).toBeNull();
+  await user.press(screen.getByRole('tab', { name: az.navigation.scan }));
   expect(result.getPathname()).toBe('/scan');
-  const rootRoutes =
-    result.getRouterState()?.routes[0]?.state?.routes ??
-    result.getRouterState()?.routes;
-  expect(rootRoutes?.at(-1)?.name).toBe('scan');
-  await testRouter.back('/restaurants');
+  expect(
+    screen.getByRole('tab', { name: az.navigation.scan, selected: true }),
+  ).toBeOnTheScreen();
+  await user.press(
+    screen.getByRole('tab', { name: az.navigation.restaurants }),
+  );
   expect(
     screen.getByRole('tab', {
       name: az.navigation.restaurants,

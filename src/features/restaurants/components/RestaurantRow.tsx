@@ -1,60 +1,52 @@
-import { Image } from 'expo-image';
+import { useRouter } from 'expo-router';
+import ArrowUpRight from 'lucide-react-native/icons/arrow-up-right';
 import MapPin from 'lucide-react-native/icons/map-pin';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, useWindowDimensions } from 'react-native';
+import { PressSurface } from '@/components/ui/PressSurface';
 import { Icon } from '@/components/ui/Icon';
 import { Text } from '@/components/ui/Text';
-import { ReceiptRule } from '@/components/ui/ReceiptRule';
 import { colors, layout, radius, spacing } from '@/design';
+import { premium } from '@/design/premium';
 import type { Restaurant } from '@/services/contracts';
+import { useCatalog } from '../catalog';
+import { FoodImage } from '@/components/food/FoodImage';
 
 export function RestaurantRow({ restaurant }: { restaurant: Restaurant }) {
   const { t } = useTranslation();
-  const [failedUrl, setFailedUrl] = useState<string | null>(null);
-  const logo =
-    restaurant.logoUrl?.startsWith('https://') &&
-    restaurant.logoUrl !== failedUrl
-      ? restaurant.logoUrl
-      : null;
+  const router = useRouter();
+  const catalog = useCatalog(restaurant.id);
+  const { width } = useWindowDimensions();
+  const imageWidth =
+    Math.min(width, layout.contentMaxWidth) - spacing.screenMargin * 2;
   const branches = t('restaurants.branches', { count: restaurant.branchCount });
-  const initials = restaurant.name
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((word) => word[0] ?? '')
-    .join('');
   return (
-    <View
-      accessible
-      accessibilityRole="text"
+    <PressSurface
       accessibilityLabel={`${restaurant.name}, ${branches}`}
-      style={styles.tile}
+      onPress={() =>
+        router.push({
+          pathname: '/restaurant/[id]',
+          params: { id: restaurant.id },
+        })
+      }
+      style={styles.card}
+      contentStyle={styles.content}
+      spring
     >
-      <View style={styles.row}>
-        <View style={styles.logo}>
-          {logo ? (
-            <Image
-              source={{ uri: logo }}
-              recyclingKey={restaurant.id}
-              style={styles.image}
-              contentFit="contain"
-              cachePolicy="memory-disk"
-              transition={0}
-              accessible={false}
-              onError={() => setFailedUrl(logo)}
-            />
-          ) : (
-            <Text variant="title1" style={styles.monogram}>
-              {initials}
-            </Text>
-          )}
-        </View>
+      <FoodImage
+        photo={catalog.data?.cover}
+        uri={restaurant.logoUrl}
+        width={imageWidth}
+        height={premium.heroHeight}
+        rounded={false}
+      />
+      <View style={styles.info}>
         <View style={styles.copy}>
-          <Text variant="caption" style={styles.label}>
-            {t('visual.partner')}
+          <Text variant="caption" style={styles.cuisine}>
+            {t(catalog.data?.cuisineKey ?? 'visual.partner')}
           </Text>
           <Text variant="title2">{restaurant.name}</Text>
-          <View style={styles.branches}>
+          <View style={styles.location}>
             <Icon
               icon={MapPin}
               size="small"
@@ -66,41 +58,37 @@ export function RestaurantRow({ restaurant }: { restaurant: Restaurant }) {
             </Text>
           </View>
         </View>
+        <View style={styles.arrow}>
+          <Icon icon={ArrowUpRight} color={colors.brand.primary} decorative />
+        </View>
       </View>
-      <ReceiptRule />
-      <Text variant="caption" tone="secondary">
-        {t('visual.restaurantHint')}
-      </Text>
-    </View>
+    </PressSurface>
   );
 }
 const styles = StyleSheet.create({
-  tile: {
+  card: {
+    ...premium.shadow,
     backgroundColor: colors.surface,
-    borderRadius: radius[20],
-    borderWidth: layout.borderWidth,
-    borderColor: colors.border,
-    padding: spacing[20],
-    marginBottom: spacing[16],
-    gap: spacing[8],
+    borderRadius: radius[24],
+    marginBottom: spacing[24],
+    overflow: 'hidden',
   },
-  row: {
+  content: { alignItems: 'stretch', justifyContent: 'flex-start' },
+  info: {
+    padding: spacing[20],
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: layout.detailRowHeight,
-    gap: spacing[16],
+    gap: spacing[12],
   },
-  logo: {
-    width: layout.partnerMarkSize,
-    height: layout.partnerMarkSize,
-    backgroundColor: colors.paper,
-    borderRadius: radius[20],
+  copy: { flex: 1, gap: spacing[8], minWidth: 0 },
+  cuisine: { color: colors.brand.accent },
+  location: { flexDirection: 'row', gap: spacing[4], alignItems: 'center' },
+  arrow: {
+    width: layout.tapTarget,
+    height: layout.tapTarget,
+    borderRadius: radius.pill,
+    backgroundColor: colors.brand.tint,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  image: { width: layout.profileAvatarSize, height: layout.profileAvatarSize },
-  monogram: { color: colors.paperInk },
-  label: { color: colors.brand.primary },
-  branches: { flexDirection: 'row', gap: spacing[4], alignItems: 'center' },
-  copy: { flex: 1, gap: spacing[8], minWidth: 0 },
 });

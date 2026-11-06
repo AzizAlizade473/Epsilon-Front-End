@@ -4,7 +4,7 @@ import { BackHandler } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import TabsLayout from '../app/(tabs)/_layout';
-import ScanScreen from '../app/scan';
+import ScanScreen from '../app/(tabs)/scan';
 import az from '../locales/az.json';
 
 import { BackButton } from '@/components/navigation/BackButton';

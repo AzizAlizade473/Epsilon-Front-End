@@ -253,7 +253,13 @@ export const mockRestaurantService: RestaurantService = {
     await simulateDelay();
     checkMockScenario();
     const found = mockRestaurants.find((r) => r.id === id);
-    return found ?? mockRestaurants[0]!;
+    if (!found)
+      throw new ApiError({
+        code: 'UNKNOWN',
+        message: 'Restaurant unavailable',
+        status: 404,
+      });
+    return found;
   },
 };
 

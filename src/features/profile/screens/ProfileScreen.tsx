@@ -94,7 +94,7 @@ export default function ProfileScreen() {
           </Text>
         </Pressable>
         <View style={styles.copy}>
-          <Text variant="title2" tone="inverse">
+          <Text variant="title2">
             {[user.data?.firstName, user.data?.lastName]
               .filter(Boolean)
               .join(' ')}
@@ -105,7 +105,6 @@ export default function ProfileScreen() {
         </View>
         <IconButton
           icon={Pencil}
-          tone="inverse"
           accessibilityLabel={t('profile.edit')}
           onPress={() => router.push('/profile/personal-info')}
         />
@@ -190,19 +189,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing[12],
     padding: spacing[20],
-    backgroundColor: colors.brand.deep,
+    backgroundColor: colors.surface,
+    borderWidth: layout.borderWidth,
+    borderColor: colors.border,
     borderRadius: radius[24],
   },
   avatar: {
     width: layout.profileAvatarSize,
     height: layout.profileAvatarSize,
     borderRadius: radius.pill,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.brand.tint,
     alignItems: 'center',
     justifyContent: 'center',
   },
   brand: { color: colors.brand.primary },
-  identityMeta: { color: colors.brand.onDeep },
+  identityMeta: { color: colors.inkSecondary },
   copy: { flex: 1, minWidth: 0, gap: spacing[4] },
   group: {
     backgroundColor: colors.surface,

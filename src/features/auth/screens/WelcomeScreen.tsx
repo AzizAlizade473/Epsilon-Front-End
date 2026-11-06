@@ -68,6 +68,11 @@ export default function WelcomeScreen() {
                 onPress={() => open('/register')}
               />
               <LegalLinks showCaption={false} />
+              <Button
+                label={t('premium.browse')}
+                variant="ghost"
+                onPress={() => router.push('/restaurants')}
+              />
             </View>
           </FadeUp>
         </View>

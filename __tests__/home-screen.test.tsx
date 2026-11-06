@@ -36,6 +36,9 @@ jest.mock('@/providers/AuthProvider', () => ({
     requirePhoneVerification: true,
   }),
 }));
+jest.mock('@/providers/FeedbackProvider', () => ({
+  useFeedback: () => ({ entries: [], completedIds: [] }),
+}));
 jest.mock('expo-router', () => {
   const React = jest.requireActual<typeof import('react')>('react');
   return {
@@ -113,8 +116,8 @@ it('keeps Scan usable during errors and prevents duplicate modal navigation', as
   const scan = screen.getByRole('button', { name: az.home.scan });
   await fireEvent.press(scan);
   await fireEvent.press(scan);
-  expect(mockPush).toHaveBeenCalledTimes(1);
-  expect(mockPush).toHaveBeenCalledWith('/scan');
+  expect(mockNavigate).toHaveBeenCalledTimes(1);
+  expect(mockNavigate).toHaveBeenCalledWith('/scan');
   expect(screen.getByRole('button', { name: az.home.viewAll })).toBeEnabled();
 });
 it('shows an honest empty state and routes the secondary actions to existing screens', async () => {

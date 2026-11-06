@@ -11,6 +11,7 @@ import { originalReceipts as o } from '@/design/original-receipts';
 import { formatMoney } from '@/lib/money';
 import type { ReceiptItem } from '@/services/contracts';
 import { OriginalStars } from '@/components/receipts/OriginalStars';
+import { FoodImage } from '@/components/food/FoodImage';
 
 /** Source: ProductCard.tsx / ReceiptItemCard at Epsilon@8f133b0.
  * Product category is not in this contract: icon matching is decorative only.
@@ -46,11 +47,19 @@ export function DishCard({
             { backgroundColor: drink ? o.colors.drinkTint : o.colors.foodTint },
           ]}
         >
-          <Icon
-            icon={icon}
-            color={drink ? o.colors.drink : o.colors.food}
-            decorative
-          />
+          {item.id === 'item_01' || item.id === 'item_02' ? (
+            <FoodImage
+              photo="coffee"
+              width={o.size.icon}
+              height={o.size.icon}
+            />
+          ) : (
+            <Icon
+              icon={icon}
+              color={drink ? o.colors.drink : o.colors.food}
+              decorative
+            />
+          )}
         </View>
         <View style={styles.copy}>
           <Text style={styles.name}>{item.name}</Text>

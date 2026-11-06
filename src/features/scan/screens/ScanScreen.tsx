@@ -29,7 +29,7 @@ import {
 } from 'expo-haptics';
 import { Button } from '@/components/ui/Button';
 import { IconButton } from '@/components/ui/IconButton';
-import { ReceiptArtwork } from '@/components/ui/ReceiptArtwork';
+import { ScanPreview } from '../components/ScanPreview';
 import { AuthHeading } from '@/components/ui/AuthHeading';
 import { Input } from '@/components/ui/Input';
 import { Screen } from '@/components/ui/Screen';
@@ -152,9 +152,11 @@ export default function ScanScreen() {
           }
         >
           <View style={styles.permissionArt}>
-            <ReceiptArtwork />
+            <ScanPreview />
           </View>
-          <AuthHeading icon={Camera} title={t('scan.permissionTitle')} />
+          <Text variant="title1" accessibilityRole="header">
+            {t('scan.permissionTitle')}
+          </Text>
           <Text accessibilityLiveRegion="polite">
             {t(
               scan.state === 'resolving'

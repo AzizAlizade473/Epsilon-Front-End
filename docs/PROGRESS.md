@@ -1110,3 +1110,29 @@ The current scope at the top and subsequent batch entries supersede this history
   `reports/notification-minimal/04-earned.png` (ignored). Native QA pending.
 - Full `npm run check` passes: 105 suites / 615 tests; quality and security gates
   unchanged. Existing release NO-GO remains unchanged.
+
+## Premium four-tab redesign (2026-11-06)
+
+- [x] UI.premium.four-tabs - Applied the owner's wallet/food videos and supplied
+      navigation template in one batch. Exactly Home, Restaurants, Scan and Profile;
+      Cashback is a protected detail screen opened from Home. Wallet motion remains
+      shared across the root stack. Dark Home hero, ledger, verified-purchase feedback
+      queue, food containers, restaurant profiles, public dish reviews, Scan framing
+      and refined account header implemented with AZ/EN/RU and reduced motion.
+- Restaurants, restaurant profiles and dish review views are public. Home, wallet,
+  scan and account routes retain authentication gates. Public dish cards are read-only;
+  existing receipt/item ownership, eligibility, outbox and server reward checks remain.
+- Existing API supplies directory/basic restaurant details, not public menus/reviews.
+  Menu, score and comment previews are explicitly mock-only, schema validated and
+  absent in production. Live mode shows an unavailable menu and genuine partner logos;
+  no new backend endpoint or real partnership is fabricated.
+- Six curated Pexels photos total 496,019 bytes; sources/license recorded in
+  `assets/food/SOURCES.md`. Stock assets only render in development mock mode.
+- Full `npm run check`: 106 suites / 618 tests pass, unchanged thresholds and security
+  gates. Focused revalidation after final photo fallback/comment presentation passes
+  (7 tests, types and lint). No new dependencies. Existing release NO-GO unchanged.
+- Actual browser review: signed-out directory/profile/dish, four tabs, wallet travel,
+  scan/manual entry, profile and verified receipt → rating → confirmed reward; completed
+  dish disappears from invitations. 320px/Russian/reduced-motion menu reviewed.
+  Fifteen screenshots/gallery: `reports/premium-four-tab/` (ignored). Android/device
+  motion, haptics, TalkBack and live backend authorization remain pending.

@@ -1,26 +1,23 @@
 import type { BottomTabBarProps } from 'expo-router/js-tabs';
 import House from 'lucide-react-native/icons/house';
-import Store from 'lucide-react-native/icons/store';
-import User from 'lucide-react-native/icons/user';
-import Wallet from 'lucide-react-native/icons/wallet';
-import { useState } from 'react';
+import Utensils from 'lucide-react-native/icons/utensils';
+import UserRound from 'lucide-react-native/icons/user-round';
+import ScanLine from 'lucide-react-native/icons/scan-line';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
-
-import { ScanAction } from './ScanAction';
-import { TabItem } from './TabItem';
-
-import { colors, layout, spacing } from '@/design';
-import { walletDesign as w } from '@/design/wallet';
-import { useWalletJourney } from '@/components/wallet/WalletJourney';
+import { Icon } from './Icon';
+import { PressSurface } from './PressSurface';
+import { Text } from './Text';
+import { colors, layout, radius, spacing } from '@/design';
 
 const tabs = [
   { name: 'home', icon: House },
-  { name: 'restaurants', icon: Store },
-  { name: 'cashback', icon: Wallet },
-  { name: 'profile', icon: User },
+  { name: 'restaurants', icon: Utensils },
+  { name: 'scan', icon: ScanLine },
+  { name: 'profile', icon: UserRound },
 ] as const;
 
+/** Four real destinations. Scan is an emphasized tab, never a fifth action. */
 export function TabBar({
   state,
   emitter,
@@ -28,102 +25,99 @@ export function TabBar({
   insets,
 }: BottomTabBarProps) {
   const { t } = useTranslation();
-  const journey = useWalletJourney();
-  const inverse = state.routes[state.index]?.name === 'cashback';
-  const [scanHeight, setScanHeight] = useState<number>(
-    layout.tabBarHeight + spacing[12],
-  );
-  const renderTab = (tab: (typeof tabs)[number]) => {
-    const route = state.routes.find((item) => item.name === tab.name);
-    if (!route) return null;
-    const selected = state.routes[state.index]?.key === route.key;
-    return (
-      <TabItem
-        label={t(`navigation.${tab.name}`)}
-        icon={tab.icon}
-        selected={selected}
-        inverse={inverse}
-        onPress={() => {
-          const event = emitter.emit({
-            type: 'tabPress',
-            target: route.key,
-            canPreventDefault: true,
-          });
-          if (!selected && !event.defaultPrevented) {
-            if (
-              journey &&
-              tab.name === 'cashback' &&
-              state.routes[state.index]?.name === 'home'
-            )
-              journey.open(null);
-            else if (journey && tab.name === 'home' && inverse) journey.close();
-            else navigateToTab(route.key);
-          }
-        }}
-      />
-    );
-  };
   return (
     <View
       style={[
-        styles.wrapper,
+        styles.bar,
         {
-          paddingBottom: insets.bottom,
-          paddingLeft: insets.left,
-          paddingRight: insets.right,
+          paddingBottom: Math.max(insets.bottom, spacing[8]),
+          paddingLeft: insets.left + spacing[8],
+          paddingRight: insets.right + spacing[8],
         },
       ]}
     >
-      <View
-        pointerEvents="none"
-        style={[
-          styles.background,
-          inverse && {
-            backgroundColor: w.colors.canvas,
-            borderTopColor: w.colors.line,
-          },
-        ]}
-      />
-      <View
-        style={[
-          styles.row,
-          {
-            minHeight: Math.max(layout.tabBarHeight, scanHeight - spacing[12]),
-          },
-        ]}
-      >
-        {renderTab(tabs[0])}
-        {renderTab(tabs[1])}
-        <View style={styles.spacer} />
-        {renderTab(tabs[2])}
-        {renderTab(tabs[3])}
-      </View>
-      <View
-        style={styles.scan}
-        onLayout={(event) => setScanHeight(event.nativeEvent.layout.height)}
-      >
-        <ScanAction inverse={inverse} />
-      </View>
+      {tabs.map((tab) => {
+        const route = state.routes.find((r) => r.name === tab.name);
+        if (!route) return null;
+        const selected = route.key === state.routes[state.index]?.key;
+        const scan = tab.name === 'scan';
+        return (
+          <PressSurface
+            key={tab.name}
+            accessibilityRole="tab"
+            accessibilityLabel={t(`navigation.${tab.name}`)}
+            accessibilityState={{ selected }}
+            onPress={() => {
+              const event = emitter.emit({
+                type: 'tabPress',
+                target: route.key,
+                canPreventDefault: true,
+              });
+              if (!selected && !event.defaultPrevented)
+                navigateToTab(route.key);
+            }}
+            style={styles.item}
+            contentStyle={styles.target}
+            spring
+          >
+            <View
+              style={[
+                styles.icon,
+                selected && styles.selected,
+                scan && styles.scan,
+              ]}
+            >
+              <Icon
+                icon={tab.icon}
+                color={
+                  scan
+                    ? colors.surface
+                    : selected
+                      ? colors.brand.primary
+                      : colors.inkSecondary
+                }
+                decorative
+              />
+            </View>
+            <Text
+              variant="tab"
+              style={{
+                color:
+                  selected || scan ? colors.brand.primary : colors.inkSecondary,
+                textAlign: 'center',
+              }}
+            >
+              {t(`navigation.${tab.name}`)}
+            </Text>
+          </PressSurface>
+        );
+      })}
     </View>
   );
 }
-
 const styles = StyleSheet.create({
-  wrapper: { paddingTop: spacing[12], marginTop: -spacing[12] },
-  background: {
-    ...StyleSheet.absoluteFill,
-    top: spacing[12],
+  bar: {
+    flexDirection: 'row',
     backgroundColor: colors.surface,
     borderTopWidth: layout.hairlineWidth,
     borderTopColor: colors.border,
+    paddingTop: spacing[8],
   },
-  row: { flexDirection: 'row' },
-  spacer: { width: layout.controlHeight },
-  scan: {
-    position: 'absolute',
-    top: 0,
-    left: '50%',
+  item: { flex: 1 },
+  target: { gap: spacing[4], minHeight: layout.tabBarHeight },
+  icon: {
     width: layout.controlHeight,
-    marginLeft: -layout.controlHeight / 2,
+    height: layout.tapTarget,
+    borderRadius: radius.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  selected: { backgroundColor: colors.brand.tint },
+  scan: {
+    height: layout.controlHeight,
+    backgroundColor: colors.brand.primary,
+    marginTop: -spacing[16],
+    borderWidth: spacing[4],
+    borderColor: colors.surface,
   },
 });
