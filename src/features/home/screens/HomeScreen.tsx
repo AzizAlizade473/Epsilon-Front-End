@@ -25,6 +25,7 @@ import { useStaleRefetchOnFocus } from '@/hooks/useStaleRefetchOnFocus';
 import { useWallet, useWalletTransactions } from '@/hooks/useWallet';
 import { useAuth } from '@/providers/AuthProvider';
 import { queryKeys } from '@/services/query';
+import { BillsSection } from '@/components/receipts/BillsSection';
 import { StaggeredRow } from '../components/StaggeredRow';
 
 export default function HomeScreen() {
@@ -70,6 +71,7 @@ export default function HomeScreen() {
         });
   return (
     <Screen
+      surface="receiptCanvas"
       edges={['top', 'left', 'right']}
       leading={<Brand />}
       trailing={
@@ -145,6 +147,11 @@ export default function HomeScreen() {
         </View>
         <Icon icon={ArrowUpRight} color={colors.brand.primary} decorative />
       </PressSurface>
+      <BillsSection
+        receiptIds={
+          transactions.data?.items.map((item) => item.receiptId) ?? []
+        }
+      />
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Text

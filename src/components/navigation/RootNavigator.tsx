@@ -30,9 +30,13 @@ export function RootNavigator() {
           animation: reduceMotion ? 'fade' : 'slide_from_bottom',
         }}
       />
+      <Stack.Screen name="receipt/[receiptId]" options={transparentSheet} />
       <Stack.Screen
-        name="receipt/[receiptId]"
-        options={{ presentation: 'card' }}
+        name="receipts"
+        options={{
+          presentation: 'fullScreenModal',
+          animation: reduceMotion ? 'none' : 'slide_from_bottom',
+        }}
       />
       <Stack.Screen name="rate/[receiptItemId]" options={transparentSheet} />
       <Stack.Screen

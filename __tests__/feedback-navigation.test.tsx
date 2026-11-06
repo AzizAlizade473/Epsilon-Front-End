@@ -124,7 +124,10 @@ it('locks duplicate taps and dismissal until the submit settles, then replaces t
   expect(mockSubmit).toHaveBeenCalledTimes(1);
   expect(mockBeforeClose?.()).toBe(false);
   await act(() => finish('sent'));
-  expect(mockReplace).toHaveBeenCalledWith('/feedback-done');
+  expect(mockDismissTo).toHaveBeenCalledWith({
+    pathname: '/receipt/[receiptId]',
+    params: { receiptId: mockReceipt.id },
+  });
 });
 it.each(['home', 'receipt'] as const)(
   'leaves confirmation for %s once and never puts rewards in navigation parameters',

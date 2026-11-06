@@ -1,5 +1,22 @@
 # Epsilon progress
 
+## Original receipt/rating recovery — 2026-11-06
+
+Source: AzizAlizade473/Epsilon at `8f133b0`, specifically HomeScreen receipt
+rows/detail sheet, ProductCard/ReceiptItemCard, StarRow, FeedbackModal and useRating
+navigation. Branch: `design/original-receipt-experience`, based on `3aad358`.
+Recovered calendar bills, inline solid stars, nested feedback sheet and return-to-
+bill completion. OBA terminology replaced; current Epsilon primary color retained.
+No service/financial contracts changed. Lists use only actual cached receipts and
+existing transaction receipt IDs: the current API has no receipt-list operation.
+Rating edits, trust multipliers and the old client cooldown were not imported.
+
+- [x] original.1 — 26 focused tests pass, including real-reference-only bill lists,
+      logout cleanup, inline star handoff, submission locks and cross-list cache
+      notifications. Strict TypeScript, zero-warning lint, localization and OpenAPI
+      checks pass. Nine actual phone captures and overview are in ignored
+      reports/original-receipt-experience. Native verification remains pending.
+
 ## Full visual redesign — 2026-11-03
 
 Owner overrides per-screen micro-step gates: one continuous UI batch, final

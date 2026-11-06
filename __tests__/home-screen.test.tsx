@@ -12,7 +12,11 @@ import { RefreshControl } from 'react-native';
 import HomeScreen from '@/features/home/screens/HomeScreen';
 import { createQueryClient } from '@/services/query';
 import { initializeI18n, i18n } from '@/lib/i18n';
-import { mockTransactions, mockWallet } from '@/services/mock/fixtures';
+import {
+  mockTransactions,
+  mockWallet,
+  mockReceipt,
+} from '@/services/mock/fixtures';
 import az from '../locales/az.json';
 
 const mockPush = jest.fn();
@@ -41,6 +45,7 @@ jest.mock('expo-router', () => {
 });
 jest.mock('@/services', () => ({
   services: {
+    receipt: { get: async () => mockReceipt },
     wallet: {
       get: () => mockWalletGet(),
       transactions: () => mockTransactionsGet(),

@@ -1,25 +1,19 @@
-import { decorativeSvgProps } from '@/lib/decorative-svg';
-import Star from 'lucide-react-native/icons/star';
-import Utensils from 'lucide-react-native/icons/utensils';
-import { Icon } from '@/components/ui/Icon';
-import { ReceiptRule } from '@/components/ui/ReceiptRule';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, StyleSheet, View } from 'react-native';
-import { useAnimatedValue } from '@/hooks/useAnimatedValue';
-import { Button } from '@/components/ui/Button';
-import { Chip } from '@/components/ui/Chip';
-import { Input } from '@/components/ui/Input';
-import { PressSurface } from '@/components/ui/PressSurface';
-import { Text } from '@/components/ui/Text';
 import {
-  colors,
-  layout,
-  motionTokens,
-  radius,
-  spacing,
-  useMotion,
-} from '@/design';
+  Animated,
+  Platform,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { useAnimatedValue } from '@/hooks/useAnimatedValue';
+import { Text } from '@/components/ui/Text';
+import { Button } from '@/components/ui/Button';
+import { OriginalStars } from '@/components/receipts/OriginalStars';
+import { originalReceipts as o } from '@/design/original-receipts';
+import { spacing, useMotion } from '@/design';
 
 export const reasonCodes = [
   'taste',
@@ -34,6 +28,7 @@ export type RatingDraft = {
   comment: string;
   reasonCodes: string[];
 };
+/** Adapted directly from original components/FeedbackModal.tsx, Epsilon@8f133b0. */
 export function RatingForm({
   itemName,
   restaurantName,
@@ -55,133 +50,118 @@ export function RatingForm({
   error?: string;
   queued: boolean;
 }) {
-  const { t } = useTranslation();
-  const motion = useMotion();
-  const opacity = useAnimatedValue(1);
-  const showReasons = draft.rating > 0 && draft.rating <= 3;
+  const { t } = useTranslation(),
+    motion = useMotion();
+  const y = useAnimatedValue(0),
+    scale = useAnimatedValue(1),
+    opacity = useAnimatedValue(1);
   useEffect(() => {
-    if (!showReasons || motion.reduceMotion) {
-      opacity.setValue(1);
-      return;
-    }
+    if (motion.reduceMotion) return;
+    y.setValue(o.feedbackMotion.rise);
+    scale.setValue(o.feedbackMotion.scale);
     opacity.setValue(0);
-    const animation = Animated.timing(opacity, {
-      toValue: 1,
-      duration: motion.duration.normal,
-      useNativeDriver: true,
-    });
+    const native = Platform.OS !== 'web';
+    const animation = Animated.parallel([
+      Animated.spring(y, {
+        toValue: 0,
+        useNativeDriver: native,
+        damping: o.feedbackMotion.damping,
+        stiffness: o.feedbackMotion.stiffness,
+      }),
+      Animated.spring(scale, {
+        toValue: 1,
+        useNativeDriver: native,
+        damping: o.feedbackMotion.damping,
+        stiffness: o.feedbackMotion.stiffness,
+      }),
+      Animated.timing(opacity, {
+        toValue: 1,
+        useNativeDriver: native,
+        duration: o.feedbackMotion.duration,
+      }),
+    ]);
     animation.start();
     return () => animation.stop();
-  }, [showReasons, opacity, motion.reduceMotion, motion.duration.normal]);
+  }, [motion.reduceMotion, y, scale, opacity]);
   return (
-    <View style={styles.form}>
-      <View style={styles.dishHero}>
-        <View style={styles.plate}>
-          <Icon
-            icon={Utensils}
-            size="large"
-            color={colors.brand.primary}
-            decorative
-          />
-        </View>
-        <Text variant="title2" accessibilityRole="header" style={styles.center}>
-          {itemName}
-        </Text>
-        <Text variant="caption" tone="secondary">
-          {restaurantName}
-        </Text>
-      </View>
-      <Text variant="caption" tone="secondary">
-        {t('visual.ratingHint')}
+    <Animated.View
+      style={[
+        styles.form,
+        { opacity, transform: [{ translateY: y }, { scale }] },
+      ]}
+    >
+      <Text style={styles.title} accessibilityRole="header">
+        {t(
+          draft.rating > 3
+            ? 'originalReceipts.shareThoughts'
+            : 'originalReceipts.reasonTitle',
+        )}
       </Text>
-      <Text>{t('feedback.question')}</Text>
-      <View
-        style={styles.stars}
-        accessibilityRole="radiogroup"
-        accessibilityLabel={t('feedback.question')}
-      >
-        {[1, 2, 3, 4, 5].map((rating) => (
-          <PressSurface
-            key={rating}
-            accessibilityRole="radio"
-            accessibilityLabel={t('feedback.starChoice', {
-              count: rating,
-              meaning: t(`feedback.rating.${rating}`),
-            })}
-            accessibilityState={{ checked: draft.rating === rating }}
-            disabled={disabled}
-            contentStyle={styles.starTarget}
-            spring
-            pressScale={motionTokens.starPressScale}
-            onPress={() =>
-              onChange({
-                ...draft,
-                rating,
-                reasonCodes: rating <= 3 ? draft.reasonCodes : [],
-              })
-            }
-          >
-            <Star
-              size={layout.ratingStarSize}
-              strokeWidth={layout.iconStrokeWidth}
-              color={
-                rating <= draft.rating
-                  ? colors.brand.secondary
-                  : colors.inkSecondary
-              }
-              fill={
-                rating <= draft.rating
-                  ? colors.brand.primary
-                  : colors.transparent
-              }
-              {...decorativeSvgProps}
-            />
-          </PressSurface>
-        ))}
+      <Text style={styles.dish}>{itemName}</Text>
+      <Text style={styles.sub}>{restaurantName}</Text>
+      <View style={styles.stars}>
+        <OriginalStars
+          large
+          value={draft.rating}
+          onRate={(rating) => onChange({ ...draft, rating })}
+          disabled={disabled}
+          label={t('feedback.question')}
+        />
       </View>
-      {draft.rating > 0 && (
-        <Text accessibilityLiveRegion="polite">
-          {t(`feedback.rating.${draft.rating}`)}
-        </Text>
-      )}
-      {showReasons && (
-        <Animated.View style={[styles.reasons, { opacity }]}>
-          {reasonCodes.map((code) => (
-            <Chip
+      <View style={styles.options}>
+        {reasonCodes.map((code) => {
+          const selected = draft.reasonCodes.includes(code);
+          return (
+            <TouchableOpacity
               key={code}
-              label={t(`feedback.reasons.${code}`)}
-              selected={draft.reasonCodes.includes(code)}
+              activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel={t('feedback.reasons.' + code)}
+              accessibilityState={{
+                selected,
+                disabled:
+                  disabled || (!selected && draft.reasonCodes.length >= 3),
+              }}
               disabled={
-                disabled ||
-                (draft.reasonCodes.length >= 3 &&
-                  !draft.reasonCodes.includes(code))
+                disabled || (!selected && draft.reasonCodes.length >= 3)
               }
               onPress={() =>
                 onChange({
                   ...draft,
-                  reasonCodes: draft.reasonCodes.includes(code)
+                  reasonCodes: selected
                     ? draft.reasonCodes.filter((value) => value !== code)
                     : [...draft.reasonCodes, code],
                 })
               }
-            />
-          ))}
-        </Animated.View>
-      )}
-      <ReceiptRule />
-      <Input
-        label={t('feedback.comment')}
+              style={[styles.option, selected && styles.optionActive]}
+            >
+              <Text
+                style={[styles.optionText, selected && styles.optionTextActive]}
+              >
+                {t('feedback.reasons.' + code)}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+      <TextInput
+        accessibilityLabel={t('feedback.comment')}
+        placeholder={t('feedback.comment')}
+        placeholderTextColor={o.colors.secondary}
         multiline
         numberOfLines={3}
         maxLength={500}
+        allowFontScaling
+        maxFontSizeMultiplier={0}
         editable={!disabled}
         value={draft.comment}
         onChangeText={(comment) => onChange({ ...draft, comment })}
+        style={styles.input}
       />
-      <Text variant="caption">
+      <Text style={styles.counter}>
         {t('feedback.counter', { count: draft.comment.length })}
       </Text>
-      <Text variant="caption">{t('feedback.neutralReward')}</Text>
+      <Text style={styles.sub}>{t('feedback.neutralReward')}</Text>
       {queued && (
         <Text accessibilityLiveRegion="polite">{t('feedback.saved')}</Text>
       )}
@@ -200,39 +180,46 @@ export function RatingForm({
         disabled={draft.rating === 0 || busy}
         onPress={onSubmit}
       />
-    </View>
+    </Animated.View>
   );
 }
 const styles = StyleSheet.create({
-  dishHero: {
-    backgroundColor: colors.brand.tint,
-    padding: spacing[24],
-    borderRadius: radius[24],
-    alignItems: 'center',
-    gap: spacing[12],
-  },
-  plate: {
-    width: layout.successMarkSize,
-    height: layout.successMarkSize,
-    borderRadius: radius.pill,
-    borderWidth: layout.borderWidth,
-    borderColor: colors.brand.border,
-    backgroundColor: colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  center: { textAlign: 'center' },
   form: { gap: spacing[16] },
-  stars: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+  title: { ...o.type.title, color: o.colors.ink, textAlign: 'center' },
+  dish: { ...o.type.product, color: o.colors.ink, textAlign: 'center' },
+  sub: { ...o.type.caption, color: o.colors.secondary },
+  stars: { alignItems: 'center', marginBottom: spacing[4] },
+  options: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[8] },
+  option: {
+    minHeight: o.size.target,
+    paddingHorizontal: spacing[16],
+    paddingVertical: 10,
+    borderRadius: o.radius.chip,
+    borderWidth: 1,
+    borderColor: o.colors.emptyStar,
+    backgroundColor: o.colors.surface,
     justifyContent: 'center',
-    gap: spacing[4],
-    paddingVertical: spacing[12],
   },
-  starTarget: {
-    minWidth: layout.controlHeight,
-    minHeight: layout.controlHeight,
+  optionActive: {
+    backgroundColor: o.colors.selected,
+    borderColor: o.colors.selected,
   },
-  reasons: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[8] },
+  optionText: {
+    ...o.type.caption,
+    fontWeight: '600',
+    color: o.colors.secondary,
+  },
+  optionTextActive: { color: o.colors.surface },
+  input: {
+    backgroundColor: o.colors.soft,
+    borderWidth: 0,
+    borderRadius: o.radius.dish,
+    padding: spacing[16],
+    fontSize: 14,
+    fontWeight: '500',
+    color: o.colors.ink,
+    minHeight: 80,
+    textAlignVertical: 'top',
+  },
+  counter: { ...o.type.caption, color: o.colors.secondary, textAlign: 'right' },
 });

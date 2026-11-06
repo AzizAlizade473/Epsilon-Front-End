@@ -453,5 +453,19 @@
     "profileSetup": "A few details to make Epsilon yours.",
     "profileNote": "Your meals. Your feedback. Your Epsilon.",
     "ratingHint": "A little feedback goes a long way."
+  },
+  "originalReceipts": {
+    "bills": "Your bills",
+    "allBills": "All bills",
+    "all": "All",
+    "bill": "Bill #{{id}}",
+    "dishes_one": "{{count}} dish",
+    "dishes_other": "{{count}} dishes",
+    "rated": "Rated",
+    "pending": "To rate",
+    "empty": "No bills yet",
+    "emptyBody": "Scan a restaurant bill to see your purchased dishes here.",
+    "shareThoughts": "Share your thoughts",
+    "reasonTitle": "What could be better?"
   }
 }

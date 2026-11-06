@@ -463,5 +463,21 @@
     "profileSetup": "Несколько деталей, чтобы сделать Epsilon вашим.",
     "profileNote": "Ваши блюда. Ваши отзывы. Ваш Epsilon.",
     "ratingHint": "Небольшой отзыв многое меняет."
+  },
+  "originalReceipts": {
+    "bills": "Ваши счета",
+    "allBills": "Все счета",
+    "all": "Все",
+    "bill": "Счёт №{{id}}",
+    "dishes_one": "{{count}} блюдо",
+    "dishes_few": "{{count}} блюда",
+    "dishes_many": "{{count}} блюд",
+    "dishes_other": "{{count}} блюда",
+    "rated": "Оценено",
+    "pending": "Ждёт отзыва",
+    "empty": "Счетов пока нет",
+    "emptyBody": "Сканируйте счёт ресторана, чтобы увидеть купленные блюда.",
+    "shareThoughts": "Поделитесь впечатлениями",
+    "reasonTitle": "Что можно улучшить?"
   }
 }

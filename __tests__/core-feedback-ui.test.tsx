@@ -116,7 +116,7 @@ describe('rating and reward presentation', () => {
     expect(screen.getAllByRole('radio')[1]).toBeChecked();
     expect(screen.getByText(az.feedback.reasons.taste)).toBeOnTheScreen();
     await fireEvent.press(screen.getAllByRole('radio')[4]!);
-    expect(screen.queryByText(az.feedback.reasons.taste)).toBeNull();
+    expect(screen.getByText(az.feedback.reasons.taste)).toBeOnTheScreen();
     expect(screen.getByDisplayValue('My comment')).toBeOnTheScreen();
     expect(
       screen.getByRole('button', { name: az.feedback.send }),

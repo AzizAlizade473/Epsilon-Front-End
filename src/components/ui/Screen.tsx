@@ -14,6 +14,7 @@ import { Header, type HeaderProps } from './Header';
 import { Text } from './Text';
 
 import { colors, layout, spacing, theme, typography } from '@/design';
+import { originalReceipts } from '@/design/original-receipts';
 
 export type ScreenProps = Pick<HeaderProps, 'leading' | 'trailing'> & {
   children: ReactNode;
@@ -22,7 +23,7 @@ export type ScreenProps = Pick<HeaderProps, 'leading' | 'trailing'> & {
   footer?: ReactNode;
   edges?: Edges;
   refreshControl?: ReactElement<RefreshControlProps>;
-  surface?: 'background' | 'surface' | 'brandTint';
+  surface?: 'background' | 'surface' | 'brandTint' | 'receiptCanvas';
 };
 
 export function Screen({
@@ -66,7 +67,11 @@ export function Screen({
         styles.root,
         {
           backgroundColor:
-            surface === 'brandTint' ? colors.brand.tint : colors[surface],
+            surface === 'receiptCanvas'
+              ? originalReceipts.colors.canvas
+              : surface === 'brandTint'
+                ? colors.brand.tint
+                : colors[surface],
         },
       ]}
       edges={edges}

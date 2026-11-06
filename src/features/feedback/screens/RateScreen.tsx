@@ -14,6 +14,10 @@ import { queryKeys } from '@/services/query';
 import { generateIdempotencyKey } from '@/services/http/idempotency';
 import { trustedServerTime } from '@/lib/server-clock';
 import { OutboxFullError } from '@/services/feedback-outbox';
+import {
+  selectedReceiptRating,
+  clearReceiptRating,
+} from '@/lib/receipt-rating-selection';
 import { RatingForm, type RatingDraft } from '../components/RatingForm';
 
 export function RateScreen() {
@@ -46,7 +50,7 @@ export function RateScreen() {
     (entry) => entry.receiptItemId === itemId,
   );
   const [draft, setDraft] = useState<RatingDraft>(() => ({
-    rating: saved?.rating ?? 0,
+    rating: saved?.rating ?? selectedReceiptRating(itemId),
     comment: saved?.comment ?? '',
     reasonCodes: saved?.reasonCodes ?? [],
   }));
@@ -57,8 +61,9 @@ export function RateScreen() {
     mounted.current = true;
     return () => {
       mounted.current = false;
+      clearReceiptRating(itemId);
     };
-  }, []);
+  }, [itemId]);
   const [error, setError] = useState<string>();
   const [key, setKey] = useState(() =>
     generateIdempotencyKey('feedback-submit'),
@@ -114,7 +119,11 @@ export function RateScreen() {
         item.name,
       );
       if (!mounted.current) return;
-      if (outcome === 'sent') router.replace('/feedback-done');
+      if (outcome === 'sent')
+        router.dismissTo({
+          pathname: '/receipt/[receiptId]',
+          params: { receiptId: receipt.id },
+        });
       else if (outcome === 'duplicate') close();
       else if (outcome === 'invalid') {
         setError(t('feedback.invalid'));
@@ -136,6 +145,7 @@ export function RateScreen() {
   };
   return (
     <Sheet
+      appearance="feedback"
       onClose={close}
       onBeforeClose={beforeClose}
       accessibilityLabel={t('navigation.rate')}

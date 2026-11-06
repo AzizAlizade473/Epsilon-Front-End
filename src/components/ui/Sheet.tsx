@@ -32,6 +32,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { focusAccessible } from '@/lib/focus-accessible';
+import { originalReceipts as original } from '@/design/original-receipts';
 
 import {
   colors,
@@ -48,6 +49,7 @@ export type SheetProps = {
   onBeforeClose?: () => boolean;
   visible?: boolean;
   accessibilityLabel?: string;
+  appearance?: 'default' | 'receipt' | 'feedback';
 };
 
 export function Sheet(props: SheetProps) {
@@ -59,6 +61,7 @@ function SheetBody({
   onBeforeClose,
   visible = true,
   accessibilityLabel,
+  appearance = 'default',
 }: SheetProps) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -196,7 +199,15 @@ function SheetBody({
       accessibilityViewIsModal
       accessibilityRole="alert"
     >
-      <Animated.View style={[styles.backdrop, overlayStyle]}>
+      <Animated.View
+        style={[
+          styles.backdrop,
+          appearance !== 'default' && {
+            backgroundColor: original.colors.overlay,
+          },
+          overlayStyle,
+        ]}
+      >
         <Pressable
           accessible={false}
           importantForAccessibility="no-hide-descendants"
@@ -206,7 +217,10 @@ function SheetBody({
       </Animated.View>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={styles.keyboardContainer}
+        style={[
+          styles.keyboardContainer,
+          appearance !== 'default' && { maxHeight: '80%' },
+        ]}
       >
         <GestureDetector gesture={panGesture}>
           <Animated.View
@@ -214,6 +228,8 @@ function SheetBody({
             accessibilityLabel={accessibilityLabel}
             style={[
               styles.sheet,
+              appearance !== 'default' && styles.originalSheet,
+              appearance === 'feedback' && { paddingHorizontal: spacing[32] },
               { paddingBottom: Math.max(insets.bottom, spacing[16]) },
               sheetAnimatedStyle,
             ]}
@@ -236,6 +252,12 @@ function SheetBody({
 }
 
 const styles = StyleSheet.create({
+  originalSheet: {
+    borderTopLeftRadius: original.radius.sheet,
+    borderTopRightRadius: original.radius.sheet,
+    paddingHorizontal: spacing[24],
+    maxHeight: '100%',
+  },
   root: {
     ...StyleSheet.absoluteFill,
     justifyContent: 'flex-end',

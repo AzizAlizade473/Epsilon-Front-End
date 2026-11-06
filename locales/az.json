@@ -453,5 +453,19 @@
     "profileSetup": "Epsilon-u sizə uyğunlaşdırmaq üçün bir neçə məlumat.",
     "profileNote": "Yeməkləriniz. Rəyləriniz. Sizin Epsilon.",
     "ratingHint": "Kiçik bir rəy böyük fərq yaradır."
+  },
+  "originalReceipts": {
+    "bills": "Hesablarınız",
+    "allBills": "Bütün hesablar",
+    "all": "Hamısı",
+    "bill": "Hesab #{{id}}",
+    "dishes_one": "{{count}} yemək",
+    "dishes_other": "{{count}} yemək",
+    "rated": "Qiymətləndirilib",
+    "pending": "Rəy gözləyir",
+    "empty": "Hələ hesab yoxdur",
+    "emptyBody": "Aldığınız yeməkləri görmək üçün restoran hesabını skan edin.",
+    "shareThoughts": "Fikirlərinizi bölüşün",
+    "reasonTitle": "Nə daha yaxşı ola bilərdi?"
   }
 }
