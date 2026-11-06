@@ -11,6 +11,7 @@ import { ScanAction } from './ScanAction';
 import { TabItem } from './TabItem';
 
 import { colors, layout, spacing } from '@/design';
+import { walletDesign as w } from '@/design/wallet';
 import { useWalletJourney } from '@/components/wallet/WalletJourney';
 
 const tabs = [
@@ -41,6 +42,7 @@ export function TabBar({
         label={t(`navigation.${tab.name}`)}
         icon={tab.icon}
         selected={selected}
+        inverse={inverse}
         onPress={() => {
           const event = emitter.emit({
             type: 'tabPress',
@@ -72,7 +74,16 @@ export function TabBar({
         },
       ]}
     >
-      <View pointerEvents="none" style={styles.background} />
+      <View
+        pointerEvents="none"
+        style={[
+          styles.background,
+          inverse && {
+            backgroundColor: w.colors.canvas,
+            borderTopColor: w.colors.line,
+          },
+        ]}
+      />
       <View
         style={[
           styles.row,
@@ -91,7 +102,7 @@ export function TabBar({
         style={styles.scan}
         onLayout={(event) => setScanHeight(event.nativeEvent.layout.height)}
       >
-        <ScanAction />
+        <ScanAction inverse={inverse} />
       </View>
     </View>
   );

@@ -26,7 +26,7 @@ import { Skeleton } from '@/components/feedback/Skeleton';
 import { DetailRowSkeleton } from '@/components/feedback/DetailRowSkeleton';
 import { MockDataNotice } from '@/components/feedback/MockDataNotice';
 import { TransactionRow } from '@/components/wallet/TransactionRow';
-import { colors, layout, spacing } from '@/design';
+import { colors, layout, radius, spacing } from '@/design';
 import { walletDesign as w } from '@/design/wallet';
 import { useWallet } from '@/hooks/useWallet';
 import { useWalletHistory } from '@/hooks/useWalletHistory';
@@ -71,12 +71,13 @@ export default function WalletScreen() {
         <View style={styles.heading}>
           <IconButton
             icon={ArrowLeft}
+            tone="inverse"
             accessibilityLabel={t('navigation.back')}
             onPress={() =>
               journey ? journey.close() : router.navigate('/home')
             }
           />
-          <Text variant="title2" accessibilityRole="header">
+          <Text variant="title2" tone="inverse" accessibilityRole="header">
             {t('navigation.cashback')}
           </Text>
         </View>
@@ -93,7 +94,10 @@ export default function WalletScreen() {
             contentStyle={styles.cardPress}
             spring
           >
-            <WalletSurface pendingMinor={wallet.data?.pendingMinor}>
+            <WalletSurface
+              focused={expanded}
+              pendingMinor={wallet.data?.pendingMinor}
+            >
               {wallet.data ? (
                 <Amount minor={wallet.data.balanceMinor} tone="inverse" />
               ) : wallet.isLoading ? (
@@ -132,6 +136,7 @@ export default function WalletScreen() {
         )}
       </View>
       <View style={styles.ledgerHeading}>
+        <View style={styles.handle} />
         <Text variant="title2" accessibilityRole="header">
           {t('visual.history')}
         </Text>
@@ -268,10 +273,21 @@ const styles = StyleSheet.create({
   cardPress: { alignItems: 'stretch' },
   error: { color: w.colors.text },
   ledgerHeading: {
+    borderTopLeftRadius: radius[24],
+    borderTopRightRadius: radius[24],
     backgroundColor: colors.surface,
+    marginTop: -spacing[12],
     paddingHorizontal: spacing[20],
-    paddingTop: spacing[20],
+    paddingTop: spacing[12],
     gap: spacing[8],
+  },
+  handle: {
+    width: spacing[32],
+    height: spacing[4],
+    borderRadius: radius.pill,
+    backgroundColor: colors.border,
+    alignSelf: 'center',
+    marginBottom: spacing[8],
   },
   date: {
     backgroundColor: colors.surface,

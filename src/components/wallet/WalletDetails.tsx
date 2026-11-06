@@ -59,7 +59,7 @@ export function WalletDetails({
           <Text variant="caption" style={styles.muted}>
             {t('walletMotion.pending')}
           </Text>
-          <Text variant="headline">
+          <Text variant="headline" tone="inverse">
             {pendingMinor === undefined
               ? t('common.loading')
               : formatMoney(pendingMinor)}
@@ -94,7 +94,7 @@ export function WalletDetails({
             <Text style={[styles.copy, styles.white]} variant="callout">
               {t('home.balance')}
             </Text>
-            <Text variant="headline">
+            <Text variant="headline" tone="inverse">
               {balanceMinor === undefined
                 ? t('common.loading')
                 : formatMoney(balanceMinor)}

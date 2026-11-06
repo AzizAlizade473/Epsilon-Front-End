@@ -1096,3 +1096,17 @@ The current scope at the top and subsequent batch entries supersede this history
   reward. Actual screenshots: `reports/wallet-minimal/` (ignored). Native visual
   and tactile verification remain pending. Full `npm run check` passes: 105 suites,
   615 tests, unchanged quality/security gates. Existing release NO-GO is unchanged.
+
+## Cashback notification clarification (2026-11-06)
+
+- [x] UI.reward.notice - Owner clarified the minimal styling request applied only
+      to the cashback notification. Restored the approved layered wallet, dark
+      dashboard, navigation and original rating-star appearance exactly; retained
+      the navigation query-loading fix.
+- Replaced the large dark notification and animated blue circle with a compact
+  white bordered notice, simple check, reward amount and close action. Subtle fade
+  respects reduced motion; server confirmation, accessibility, dismissal and
+  haptic feedback remain intact. Browser fixture flow verified; screenshot at
+  `reports/notification-minimal/04-earned.png` (ignored). Native QA pending.
+- Full `npm run check` passes: 105 suites / 615 tests; quality and security gates
+  unchanged. Existing release NO-GO remains unchanged.

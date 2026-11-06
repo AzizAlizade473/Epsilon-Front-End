@@ -2,11 +2,8 @@ import { useEffect } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import Animated, {
   cancelAnimation,
-  interpolate,
   useAnimatedStyle,
   useSharedValue,
-  withDelay,
-  withSpring,
   withTiming,
 } from 'react-native-reanimated';
 import { notificationAsync, NotificationFeedbackType } from 'expo-haptics';
@@ -18,10 +15,9 @@ import { Icon } from '@/components/ui/Icon';
 import { IconButton } from '@/components/ui/IconButton';
 import { Amount } from '@/components/ui/Amount';
 import { colors, layout, radius, spacing, useMotion } from '@/design';
-import { walletDesign as w } from '@/design/wallet';
 import { formatMoney } from '@/lib/money';
 
-/** Only mounted for an actual confirmed server reward; never estimates earnings. */
+/** A quiet confirmation, shown only for a confirmed server reward. */
 export function RewardCelebration({
   amountMinor,
   onDismiss,
@@ -31,78 +27,54 @@ export function RewardCelebration({
 }) {
   const { t } = useTranslation();
   const motion = useMotion();
-  const bloom = useSharedValue(1);
-  const content = useSharedValue(1);
+  const opacity = useSharedValue(1);
   useEffect(() => {
     const timer = setTimeout(onDismiss, layout.toastDuration);
     return () => clearTimeout(timer);
   }, [onDismiss]);
   useEffect(() => {
-    if (motion.reduceMotion) {
-      bloom.value = 1;
-      content.value = 1;
-      return;
-    }
-    bloom.value = 0;
-    content.value = 0;
-    bloom.value = withSpring(1, w.spring);
-    content.value = withDelay(
-      w.stagger * 3,
-      withTiming(1, { duration: w.successDuration }),
-    );
     if (Platform.OS !== 'web')
       void notificationAsync(NotificationFeedbackType.Success).catch(
         () => undefined,
       );
-    return () => {
-      cancelAnimation(bloom);
-      cancelAnimation(content);
-    };
-  }, [bloom, content, motion.reduceMotion]);
-  const circle = useAnimatedStyle(() => ({
-    transform: [
-      { scale: interpolate(bloom.value, [0, 0.7, 1], [0.1, 1.3, 1]) },
-    ],
-  }));
-  const copy = useAnimatedStyle(() => ({
-    opacity: content.value,
-    transform: [{ translateY: w.rise * (1 - content.value) }],
-  }));
+  }, []);
+  useEffect(() => {
+    if (motion.reduceMotion) {
+      opacity.value = 1;
+      return;
+    }
+    opacity.value = 0;
+    opacity.value = withTiming(1, { duration: motion.duration.normal });
+    return () => cancelAnimation(opacity);
+  }, [motion.reduceMotion, motion.duration.normal, opacity]);
+  const entrance = useAnimatedStyle(() => ({ opacity: opacity.value }));
   return (
-    <View style={styles.host}>
+    <Animated.View style={[styles.host, entrance]}>
       <View style={styles.banner}>
-        <Animated.View pointerEvents="none" style={[styles.orb, circle]}>
-          <Icon icon={Check} color={colors.surface} decorative size="large" />
-        </Animated.View>
-        <Animated.View style={[styles.copy, copy]}>
+        <Icon icon={Check} color={colors.brand.primary} decorative />
+        <View style={styles.copy}>
           <Text
             variant="caption"
-            tone="inverse"
+            tone="secondary"
             accessibilityRole="alert"
+            accessibilityLiveRegion="polite"
             accessibilityLabel={
               t('feedback.rewardConfirmed') +
               ' ' +
               formatMoney(amountMinor, { sign: 'always' })
             }
-            accessibilityLiveRegion="polite"
           >
             {t('feedback.rewardConfirmed')}
           </Text>
-          <Amount
-            minor={amountMinor}
-            sign="always"
-            variant="title2"
-            tone="inverse"
-          />
-        </Animated.View>
+          <Amount minor={amountMinor} sign="always" variant="title2" />
+        </View>
         <IconButton
           icon={X}
-          tone="inverse"
           accessibilityLabel={t('navigation.close')}
           onPress={onDismiss}
         />
       </View>
-    </View>
+    </Animated.View>
   );
 }
 const styles = StyleSheet.create({
@@ -110,20 +82,13 @@ const styles = StyleSheet.create({
   banner: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing[16],
-    padding: spacing[16],
-    backgroundColor: colors.brand.primary,
-    borderRadius: radius[24],
-    overflow: 'hidden',
-    minHeight: w.successSize + spacing[16],
-  },
-  orb: {
-    width: layout.controlHeight,
-    height: layout.controlHeight,
-    borderRadius: radius.pill,
-    backgroundColor: colors.brand.secondary,
-    alignItems: 'center',
-    justifyContent: 'center',
+    gap: spacing[12],
+    padding: spacing[12],
+    backgroundColor: colors.surface,
+    borderWidth: layout.borderWidth,
+    borderColor: colors.border,
+    borderRadius: radius[12],
+    minHeight: layout.detailRowHeight,
   },
   copy: { flex: 1, minWidth: 0, gap: spacing[4] },
 });
