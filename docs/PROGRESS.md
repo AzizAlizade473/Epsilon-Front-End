@@ -1083,3 +1083,16 @@ The current scope at the top and subsequent batch entries supersede this history
   Screenshots, sampled motion replay and WebM: `reports/wallet-motion/` (ignored).
   Android/device frame rate, TalkBack and tactile feedback verification pending;
   no native performance or production-backend verification claimed.
+
+## Minimal wallet correction (2026-11-06)
+
+- [x] UI.wallet.minimal - Replaced layered card artwork with one flat indigo
+      balance surface, light dashboard and standard navigation. Removed decorative
+      graphics; reduced entrance movement. Rating stars now use plain brand-blue
+      fills and neutral outlines, preserving selection and submission behavior.
+- Wallet transitions now load their query only while the traveling card is shown,
+  fixing the isolated tab-root navigation regression. Financial logic unchanged.
+- Browser fixture journey verified through details, return, rating and confirmed
+  reward. Actual screenshots: `reports/wallet-minimal/` (ignored). Native visual
+  and tactile verification remain pending. Full `npm run check` passes: 105 suites,
+  615 tests, unchanged quality/security gates. Existing release NO-GO is unchanged.

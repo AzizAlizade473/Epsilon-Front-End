@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing[16],
     padding: spacing[16],
-    backgroundColor: w.colors.canvas,
+    backgroundColor: colors.brand.primary,
     borderRadius: radius[24],
     overflow: 'hidden',
     minHeight: w.successSize + spacing[16],

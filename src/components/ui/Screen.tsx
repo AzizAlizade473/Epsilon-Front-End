@@ -83,9 +83,7 @@ export function Screen({
       ]}
       edges={edges}
     >
-      <StatusBar
-        style={surface === 'wallet' ? 'light' : theme.statusBarStyle}
-      />
+      <StatusBar style={theme.statusBarStyle} />
       <KeyboardAvoidingView
         style={styles.fill}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}

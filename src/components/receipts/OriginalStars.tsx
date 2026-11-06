@@ -2,9 +2,10 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import Star from 'lucide-react-native/icons/star';
 import { originalReceipts as o } from '@/design/original-receipts';
+import { colors, layout } from '@/design';
 import { decorativeSvgProps } from '@/lib/decorative-svg';
 
-/** Original ProductCard.StarRow: solid stars, gray/lime fill and 0.7 press opacity. */
+/** Plain brand-colored stars, preserving the original rating interactions. */
 export function OriginalStars({
   value,
   onRate,
@@ -31,9 +32,9 @@ export function OriginalStars({
         const star = (
           <Star
             size={large ? o.size.modalStar : o.size.star}
-            strokeWidth={1.5}
-            color={i <= value ? o.colors.ink : o.colors.secondary}
-            fill={i <= value ? o.colors.star : o.colors.emptyStar}
+            strokeWidth={layout.iconStrokeWidth}
+            color={i <= value ? colors.brand.primary : colors.inkMuted}
+            fill={i <= value ? colors.brand.primary : colors.transparent}
             {...decorativeSvgProps}
           />
         );

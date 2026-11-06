@@ -40,7 +40,6 @@ const Context = createContext<Journey | null>(null);
 /** The same measured card flies above both tabs; no experimental shared-element API. */
 export function WalletJourney({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const wallet = useWallet();
   const motion = useMotion();
   const host = useRef<WalletCardRef>(null);
   const homeCard = useRef<WalletCardRef | null>(null);
@@ -172,7 +171,7 @@ export function WalletJourney({ children }: { children: ReactNode }) {
     >
       <View ref={host} collapsable={false} style={styles.fill}>
         {children}
-        {flight && wallet.data && (
+        {flight && (
           <View
             pointerEvents="none"
             accessibilityElementsHidden
@@ -182,14 +181,22 @@ export function WalletJourney({ children }: { children: ReactNode }) {
             <Animated.View
               style={[styles.flying, { width: flight.from.width }, cardStyle]}
             >
-              <WalletSurface pendingMinor={wallet.data.pendingMinor}>
-                <Amount minor={wallet.data.balanceMinor} tone="inverse" />
-              </WalletSurface>
+              <TravelingWallet />
             </Animated.View>
           </View>
         )}
       </View>
     </Context.Provider>
+  );
+}
+
+function TravelingWallet() {
+  const wallet = useWallet();
+  if (!wallet.data) return null;
+  return (
+    <WalletSurface pendingMinor={wallet.data.pendingMinor}>
+      <Amount minor={wallet.data.balanceMinor} tone="inverse" />
+    </WalletSurface>
   );
 }
 
