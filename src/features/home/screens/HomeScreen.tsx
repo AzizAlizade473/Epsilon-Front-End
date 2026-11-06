@@ -10,6 +10,10 @@ import ArrowUpRight from 'lucide-react-native/icons/arrow-up-right';
 import { Icon } from '@/components/ui/Icon';
 import { Brand } from '@/components/ui/Brand';
 import { WalletSurface } from '@/components/wallet/WalletSurface';
+import {
+  useWalletJourney,
+  type WalletCardRef,
+} from '@/components/wallet/WalletJourney';
 import { IconButton } from '@/components/ui/IconButton';
 import { Screen } from '@/components/ui/Screen';
 import { PressSurface } from '@/components/ui/PressSurface';
@@ -33,6 +37,8 @@ export default function HomeScreen() {
   const auth = useAuth();
   const router = useRouter();
   const wallet = useWallet();
+  const journey = useWalletJourney();
+  const walletCard = useRef<WalletCardRef>(null);
   const transactions = useWalletTransactions({ limit: 3 });
   useStaleRefetchOnFocus(queryKeys.wallet.all);
   const locked = useRef(false);
@@ -94,23 +100,45 @@ export default function HomeScreen() {
       <Text variant="title2">
         {t('home.greeting', { firstName: auth.user?.firstName ?? '' })}
       </Text>
-      <WalletSurface pendingMinor={wallet.data?.pendingMinor}>
-        <View style={styles.balanceValue}>
-          {minor !== undefined ? (
-            <BalanceAmount minor={minor} accessibilityLabel={speech} inverse />
-          ) : wallet.isPending ? (
-            <Skeleton
-              width={layout.balanceSkeletonWidth}
-              height={layout.controlHeight}
-              accessibilityLabel={t('common.loading')}
-            />
-          ) : (
-            <Text tone="inverse" accessibilityRole="alert">
-              {t('home.balanceUnavailable')}
-            </Text>
-          )}
+      <PressSurface
+        accessibilityLabel={t('navigation.cashback')}
+        onPress={() =>
+          journey
+            ? journey.open(walletCard.current)
+            : router.navigate('/cashback')
+        }
+        contentStyle={styles.walletPress}
+        spring
+      >
+        <View
+          ref={walletCard}
+          onLayout={() => journey?.registerHome(walletCard.current)}
+          collapsable={false}
+          style={[styles.walletWidth, { opacity: journey?.active ? 0 : 1 }]}
+        >
+          <WalletSurface pendingMinor={wallet.data?.pendingMinor}>
+            <View style={styles.balanceValue}>
+              {minor !== undefined ? (
+                <BalanceAmount
+                  minor={minor}
+                  accessibilityLabel={speech}
+                  inverse
+                />
+              ) : wallet.isPending ? (
+                <Skeleton
+                  width={layout.balanceSkeletonWidth}
+                  height={layout.controlHeight}
+                  accessibilityLabel={t('common.loading')}
+                />
+              ) : (
+                <Text tone="inverse" accessibilityRole="alert">
+                  {t('home.balanceUnavailable')}
+                </Text>
+              )}
+            </View>
+          </WalletSurface>
         </View>
-      </WalletSurface>
+      </PressSurface>
       {wallet.isError && (
         <View>
           {wallet.data && (
@@ -212,6 +240,8 @@ export default function HomeScreen() {
   );
 }
 const styles = StyleSheet.create({
+  walletPress: { alignItems: 'stretch' },
+  walletWidth: { width: '100%' },
   balanceValue: {
     minHeight: layout.controlHeight,
     justifyContent: 'center',

@@ -5,15 +5,23 @@ import { PressSurface } from './PressSurface';
 import { Text } from './Text';
 
 import { colors, layout, spacing } from '@/design';
+import { walletDesign as w } from '@/design/wallet';
 
 export type TabItemProps = {
   label: string;
   icon: IconProps['icon'];
   selected: boolean;
   onPress: () => void;
+  inverse?: boolean;
 };
 
-export function TabItem({ label, icon, selected, onPress }: TabItemProps) {
+export function TabItem({
+  label,
+  icon,
+  selected,
+  onPress,
+  inverse = false,
+}: TabItemProps) {
   return (
     <PressSurface
       accessibilityRole="tab"
@@ -22,19 +30,39 @@ export function TabItem({ label, icon, selected, onPress }: TabItemProps) {
       onPress={onPress}
       style={styles.item}
       contentStyle={styles.content}
-      pressedColor={colors.divider}
+      pressedColor={inverse ? w.colors.raised : colors.divider}
     >
-      <View style={[styles.icon, selected && styles.selected]}>
+      <View
+        style={[
+          styles.icon,
+          selected && styles.selected,
+          inverse && selected && { backgroundColor: w.colors.raised },
+        ]}
+      >
         <Icon
           icon={icon}
-          color={selected ? colors.brand.primary : colors.inkSecondary}
+          color={
+            inverse
+              ? selected
+                ? w.colors.text
+                : w.colors.muted
+              : selected
+                ? colors.brand.primary
+                : colors.inkSecondary
+          }
           decorative
         />
       </View>
       <Text
         variant="tab"
         style={{
-          color: selected ? colors.brand.primary : colors.inkSecondary,
+          color: inverse
+            ? selected
+              ? w.colors.text
+              : w.colors.muted
+            : selected
+              ? colors.brand.primary
+              : colors.inkSecondary,
           textAlign: 'center',
         }}
       >

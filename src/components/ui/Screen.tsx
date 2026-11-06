@@ -7,6 +7,8 @@ import {
   StyleSheet,
   View,
   type RefreshControlProps,
+  type StyleProp,
+  type ViewStyle,
 } from 'react-native';
 import { SafeAreaView, type Edges } from 'react-native-safe-area-context';
 
@@ -15,6 +17,7 @@ import { Text } from './Text';
 
 import { colors, layout, spacing, theme, typography } from '@/design';
 import { originalReceipts } from '@/design/original-receipts';
+import { walletDesign } from '@/design/wallet';
 
 export type ScreenProps = Pick<HeaderProps, 'leading' | 'trailing'> & {
   children: ReactNode;
@@ -23,7 +26,8 @@ export type ScreenProps = Pick<HeaderProps, 'leading' | 'trailing'> & {
   footer?: ReactNode;
   edges?: Edges;
   refreshControl?: ReactElement<RefreshControlProps>;
-  surface?: 'background' | 'surface' | 'brandTint' | 'receiptCanvas';
+  surface?: 'background' | 'surface' | 'brandTint' | 'receiptCanvas' | 'wallet';
+  contentStyle?: StyleProp<ViewStyle>;
 };
 
 export function Screen({
@@ -36,6 +40,7 @@ export function Screen({
   edges,
   refreshControl,
   surface = 'background',
+  contentStyle,
 }: ScreenProps) {
   const [collapsed, setCollapsed] = useState(false);
   const collapsedRef = useRef(false);
@@ -67,16 +72,20 @@ export function Screen({
         styles.root,
         {
           backgroundColor:
-            surface === 'receiptCanvas'
-              ? originalReceipts.colors.canvas
-              : surface === 'brandTint'
-                ? colors.brand.tint
-                : colors[surface],
+            surface === 'wallet'
+              ? walletDesign.colors.canvas
+              : surface === 'receiptCanvas'
+                ? originalReceipts.colors.canvas
+                : surface === 'brandTint'
+                  ? colors.brand.tint
+                  : colors[surface],
         },
       ]}
       edges={edges}
     >
-      <StatusBar style={theme.statusBarStyle} />
+      <StatusBar
+        style={surface === 'wallet' ? 'light' : theme.statusBarStyle}
+      />
       <KeyboardAvoidingView
         style={styles.fill}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -93,7 +102,7 @@ export function Screen({
           <ScrollView
             testID="screen-scroll"
             refreshControl={refreshControl}
-            contentContainerStyle={styles.content}
+            contentContainerStyle={[styles.content, contentStyle]}
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="on-drag"
             scrollEventThrottle={spacing[16]}
@@ -111,7 +120,9 @@ export function Screen({
             {content}
           </ScrollView>
         ) : (
-          <View style={[styles.content, styles.fill]}>{content}</View>
+          <View style={[styles.content, styles.fill, contentStyle]}>
+            {content}
+          </View>
         )}
         {footer && <View style={styles.footer}>{footer}</View>}
       </KeyboardAvoidingView>

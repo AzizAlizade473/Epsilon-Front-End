@@ -40,7 +40,7 @@ export function TransactionRow({
             ? `${t(`wallet.type.${transaction.type}`)} · ${formatTime(transaction.createdAt)}`
             : `${status} · ${date}`}
         </Text>
-        {history && transaction.status !== 'confirmed' && (
+        {history && (
           <Text variant="caption" style={styles.status}>
             {status}
           </Text>

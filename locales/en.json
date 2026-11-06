@@ -467,5 +467,10 @@
     "emptyBody": "Scan a restaurant bill to see your purchased dishes here.",
     "shareThoughts": "Share your thoughts",
     "reasonTitle": "What could be better?"
+  },
+  "walletMotion": {
+    "details": "Balance details",
+    "pending": "Pending rewards",
+    "pendingHelp": "Pending rewards stay separate from your confirmed cashback until the server approves them."
   }
 }

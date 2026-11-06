@@ -94,6 +94,29 @@ it('provides a scan action for an actually empty history', async () => {
   await fireEvent.press(screen.getByRole('button', { name: az.home.scan }));
   expect(mockPush).toHaveBeenCalledWith('/scan');
 });
+it('expands reward details without adding pending rewards to the server balance', async () => {
+  mockWalletGet.mockResolvedValue({
+    ...mockWallet,
+    balanceMinor: 98765,
+    pendingMinor: 12345,
+  });
+  await page(<WalletScreen />);
+  await waitFor(() =>
+    expect(screen.getByLabelText('987.65 ₼')).toBeOnTheScreen(),
+  );
+  expect(screen.queryByText(az.walletMotion.pendingHelp)).toBeNull();
+  const details = screen.getAllByRole('button', {
+    name: az.walletMotion.details,
+  });
+  await fireEvent.press(details[details.length - 1]!);
+  expect(screen.getByText(az.walletMotion.pendingHelp)).toBeOnTheScreen();
+  expect(screen.getAllByLabelText('987.65 ₼')).toHaveLength(1);
+  expect(screen.queryByText('1111.10')).toBeNull();
+  await fireEvent.press(
+    screen.getAllByRole('button', { name: az.walletMotion.details }).at(-1)!,
+  );
+  expect(screen.queryByText(az.walletMotion.pendingHelp)).toBeNull();
+});
 it('omits null transaction context and reports copy success only after the clipboard succeeds', async () => {
   const transaction = mockTransactions[1]!;
   const copy = jest.fn<(value: string) => Promise<boolean>>(async () => true);

@@ -9,8 +9,9 @@ import { PressSurface } from './PressSurface';
 import { Text } from './Text';
 
 import { colors, layout, motionTokens, radius, spacing } from '@/design';
+import { walletDesign as w } from '@/design/wallet';
 
-export function ScanAction() {
+export function ScanAction({ inverse = false }: { inverse?: boolean }) {
   const router = useRouter();
   const locked = useRef(false);
   const { t } = useTranslation();
@@ -36,7 +37,9 @@ export function ScanAction() {
       >
         <Icon icon={ScanLine} color={colors.surface} decorative />
       </PressSurface>
-      <Text variant="tab">{t('navigation.scanTab')}</Text>
+      <Text variant="tab" style={inverse && { color: w.colors.muted }}>
+        {t('navigation.scanTab')}
+      </Text>
     </View>
   );
 }

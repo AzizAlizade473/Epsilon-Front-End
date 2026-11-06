@@ -1069,3 +1069,17 @@ The current scope at the top and subsequent batch entries supersede this history
 - [x] UI.welcome.1 - Reference-inspired centered welcome card, transparent existing Epsilon placeholder mark, preserved phone/Google flow. Checks: 93 suites / 561 tests; mobile browser phone navigation verified; native visual QA pending.
 
 - [x] UI.welcome.2 - Use owner-supplied PDF logo with transparent background in welcome card; browser asset/alpha verified. Full check passes: 94 suites / 563 tests. Native visual QA pending.
+
+## Wallet motion reference (2026-11-06)
+
+- [x] UI.wallet.motion - Studied the owner's 18.67-second video and extracted
+      transition frames. One universal wallet with website indigo/blue/violet anchors,
+      layered card, measured Home/Wallet spring travel, expandable reward details,
+      staggered ledger and server-confirmed reward celebration. Existing financial
+      contracts, pagination, refresh, statuses and recovered receipt/rating UI retained.
+- Focused validation: 7 relevant suites / 31 tests, strict TypeScript, changed-code
+  lint, formatting, locale parity and OpenAPI contract checks. No dependencies added.
+- Actual browser fixture journey and 320px AZ/RU/reduced-motion review completed.
+  Screenshots, sampled motion replay and WebM: `reports/wallet-motion/` (ignored).
+  Android/device frame rate, TalkBack and tactile feedback verification pending;
+  no native performance or production-backend verification claimed.

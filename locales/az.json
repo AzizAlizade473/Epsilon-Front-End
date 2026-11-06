@@ -467,5 +467,10 @@
     "emptyBody": "Aldığınız yeməkləri görmək üçün restoran hesabını skan edin.",
     "shareThoughts": "Fikirlərinizi bölüşün",
     "reasonTitle": "Nə daha yaxşı ola bilərdi?"
+  },
+  "walletMotion": {
+    "details": "Balans məlumatları",
+    "pending": "Gözləyən mükafatlar",
+    "pendingHelp": "Gözləyən mükafatlar server tərəfindən təsdiqlənənədək təsdiqlənmiş keşbekdən ayrı saxlanılır."
   }
 }

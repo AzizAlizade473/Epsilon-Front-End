@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
@@ -10,12 +10,12 @@ import { originalReceipts as o } from '@/design/original-receipts';
 import { useReceipt } from '@/hooks/useReceipt';
 import { useFeedback } from '@/providers/FeedbackProvider';
 import { useToast } from '@/providers/ToastProvider';
-import { formatMoney } from '@/lib/money';
 import {
   selectReceiptRating,
   clearReceiptRating,
 } from '@/lib/receipt-rating-selection';
 import { ReceiptContent } from '../components/ReceiptContent';
+import { RewardCelebration } from '@/components/wallet/RewardCelebration';
 export function ReceiptScreen() {
   const params = useLocalSearchParams<{ receiptId?: string }>();
   const id = typeof params.receiptId === 'string' ? params.receiptId : '';
@@ -25,23 +25,29 @@ export function ReceiptScreen() {
     toast = useToast();
   const { t } = useTranslation();
   const window = useWindowDimensions();
+  const [earned, setEarned] = useState<{ minor: number; item: string } | null>(
+    null,
+  );
+  const dismissEarned = useCallback(() => setEarned(null), []);
   const completion = feedback.completion,
     clear = feedback.clearCompletion;
   useFocusEffect(
     useCallback(() => {
       if (completion?.entry.receiptId !== id) return;
       const reward = completion.result.reward;
-      toast(
-        reward.status === 'confirmed' && reward.amountMinor !== null
-          ? t('feedback.rewardConfirmed') +
-              ' ' +
-              formatMoney(reward.amountMinor, { sign: 'always' })
-          : t(
-              reward.status === 'pending'
-                ? 'feedback.rewardPending'
-                : 'feedback.sent',
-            ),
-      );
+      if (reward.status === 'confirmed' && reward.amountMinor !== null) {
+        setEarned({
+          minor: reward.amountMinor,
+          item: completion.entry.receiptItemId,
+        });
+      } else
+        toast(
+          t(
+            reward.status === 'pending'
+              ? 'feedback.rewardPending'
+              : 'feedback.sent',
+          ),
+        );
       clear();
     }, [completion, id, toast, t, clear]),
   );
@@ -89,6 +95,13 @@ export function ReceiptScreen() {
             onRetry={() => {
               void query.refetch();
             }}
+          />
+        )}
+        {earned !== null && (
+          <RewardCelebration
+            key={earned.item}
+            amountMinor={earned.minor}
+            onDismiss={dismissEarned}
           />
         )}
       </View>

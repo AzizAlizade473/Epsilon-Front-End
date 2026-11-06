@@ -11,6 +11,8 @@ import { ScanAction } from './ScanAction';
 import { TabItem } from './TabItem';
 
 import { colors, layout, spacing } from '@/design';
+import { walletDesign as w } from '@/design/wallet';
+import { useWalletJourney } from '@/components/wallet/WalletJourney';
 
 const tabs = [
   { name: 'home', icon: House },
@@ -26,6 +28,8 @@ export function TabBar({
   insets,
 }: BottomTabBarProps) {
   const { t } = useTranslation();
+  const journey = useWalletJourney();
+  const inverse = state.routes[state.index]?.name === 'cashback';
   const [scanHeight, setScanHeight] = useState<number>(
     layout.tabBarHeight + spacing[12],
   );
@@ -38,13 +42,23 @@ export function TabBar({
         label={t(`navigation.${tab.name}`)}
         icon={tab.icon}
         selected={selected}
+        inverse={inverse}
         onPress={() => {
           const event = emitter.emit({
             type: 'tabPress',
             target: route.key,
             canPreventDefault: true,
           });
-          if (!selected && !event.defaultPrevented) navigateToTab(route.key);
+          if (!selected && !event.defaultPrevented) {
+            if (
+              journey &&
+              tab.name === 'cashback' &&
+              state.routes[state.index]?.name === 'home'
+            )
+              journey.open(null);
+            else if (journey && tab.name === 'home' && inverse) journey.close();
+            else navigateToTab(route.key);
+          }
         }}
       />
     );
@@ -60,7 +74,16 @@ export function TabBar({
         },
       ]}
     >
-      <View pointerEvents="none" style={styles.background} />
+      <View
+        pointerEvents="none"
+        style={[
+          styles.background,
+          inverse && {
+            backgroundColor: w.colors.canvas,
+            borderTopColor: w.colors.line,
+          },
+        ]}
+      />
       <View
         style={[
           styles.row,
@@ -79,7 +102,7 @@ export function TabBar({
         style={styles.scan}
         onLayout={(event) => setScanHeight(event.nativeEvent.layout.height)}
       >
-        <ScanAction />
+        <ScanAction inverse={inverse} />
       </View>
     </View>
   );
