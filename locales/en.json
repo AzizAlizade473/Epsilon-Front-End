@@ -26,6 +26,17 @@
     "noAccount": "Don't have an account?",
     "hasAccount": "Already have an account?"
   },
+  "welcomePager": {
+    "skip": "Skip",
+    "next": "Next",
+    "position": "Page {{current}} of {{total}}",
+    "welcomeTitle": "Welcome",
+    "welcomeBody": "Good food deserves great feedback. Epsilon turns every meal out into something more.",
+    "scanTitle": "Scan your receipt",
+    "scanBody": "Scan the QR code on your bill to link the purchase to your account.",
+    "earnTitle": "Rate and earn",
+    "earnBody": "Rate the dishes you actually ordered and earn cashback on eligible purchases."
+  },
   "navigation": {
     "welcome": "Welcome",
     "phone": "Enter your phone number",
@@ -144,7 +155,8 @@
     "resendAfter": "Resend in {{s}} sec.",
     "otpInvalid": "Incorrect code. Try again.",
     "otpExpired": "The code has expired. Send a new code.",
-    "tooMany": "Too many attempts. Please try again later."
+    "tooMany": "Too many attempts. Please try again later.",
+    "continueApple": "Continue with Apple"
   },
   "onboarding": {
     "googleFailed": "Unable to sign in. Please try again.",

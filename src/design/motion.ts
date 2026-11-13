@@ -4,6 +4,12 @@ import { AccessibilityInfo, Easing } from 'react-native';
 export const motionTokens = {
   welcomeIntroDuration: 600,
   welcomeIntroRotation: '-6deg',
+  authEnterDuration: 420,
+  authEnterStagger: 60,
+  authEnterRise: 12,
+  authLabelFade: 180,
+  contourFadeDuration: 700,
+  slideParallax: 0.35,
   tabFadeDuration: 150,
   scanPressScale: 0.94,
   scanLineDuration: 1800,

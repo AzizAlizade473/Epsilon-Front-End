@@ -26,6 +26,17 @@
     "noAccount": "Hesabın yoxdur?",
     "hasAccount": "Hesabın var?"
   },
+  "welcomePager": {
+    "skip": "Keç",
+    "next": "Növbəti",
+    "position": "Səhifə {{current}} / {{total}}",
+    "welcomeTitle": "Xoş gəldin",
+    "welcomeBody": "Gözəl yemək səmimi rəyə layiqdir. Epsilon hər restoran səfərini daha dəyərli edir.",
+    "scanTitle": "Çeki skan et",
+    "scanBody": "Alışı hesabına bağlamaq üçün hesabdakı QR kodu skan et.",
+    "earnTitle": "Qiymətləndir və qazan",
+    "earnBody": "Həqiqətən sifariş etdiyin yeməkləri qiymətləndir, uyğun alışlardan keşbek qazan."
+  },
   "navigation": {
     "welcome": "Xoş gəlmisiniz",
     "phone": "Telefon nömrənizi daxil edin",
@@ -144,7 +155,8 @@
     "resendAfter": "{{s}} san. sonra yenidən göndər",
     "otpInvalid": "Kod yanlışdır. Yenidən cəhd edin.",
     "otpExpired": "Kodun müddəti bitib. Yeni kod göndərin.",
-    "tooMany": "Çox cəhd edildi. Bir az sonra yenidən yoxlayın."
+    "tooMany": "Çox cəhd edildi. Bir az sonra yenidən yoxlayın.",
+    "continueApple": "Apple ilə davam et"
   },
   "onboarding": {
     "googleFailed": "Daxil olmaq mümkün olmadı. Yenidən cəhd edin.",

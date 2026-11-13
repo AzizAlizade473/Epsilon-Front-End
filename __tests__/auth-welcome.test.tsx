@@ -49,43 +49,42 @@ async function welcome() {
     </SafeAreaProvider>,
   );
 }
-it.each(['login', 'register'] as const)(
-  'opens %s once from Welcome',
-  async (intent) => {
-    await welcome();
-    expect(
-      screen.queryByRole('button', { name: az.auth.continueGoogle }),
-    ).toBeNull();
-    const phone = screen.getByRole('button', { name: az.authEntry[intent] });
-    await fireEvent.press(phone);
-    await fireEvent.press(phone);
-    expect(mockPush).toHaveBeenCalledTimes(1);
-    expect(mockPush).toHaveBeenCalledWith(`/${intent}`);
-  },
-);
-it.each(['terms', 'privacy'] as const)(
-  'opens bundled %s without launching an external browser',
-  async (type) => {
-    await welcome();
-    const link = screen.getByRole('link', { name: az.auth[type] });
-    await fireEvent.press(link);
-    await fireEvent.press(link);
-    expect(mockPush).toHaveBeenCalledTimes(1);
-    expect(mockPush).toHaveBeenCalledWith(`/legal/${type}`);
-  },
-);
+it('pages forward, then Continue opens Login once', async () => {
+  await welcome();
+  expect(
+    screen.getByRole('header', { name: az.welcomePager.welcomeTitle }),
+  ).toBeOnTheScreen();
+  await fireEvent.press(
+    screen.getByRole('button', { name: az.welcomePager.next }),
+  );
+  await fireEvent.press(
+    screen.getByRole('button', { name: az.welcomePager.next }),
+  );
+  expect(
+    screen.queryByRole('button', { name: az.welcomePager.skip }),
+  ).toBeNull();
+  const go = screen.getByRole('button', { name: az.common.continue });
+  await fireEvent.press(go);
+  await fireEvent.press(go);
+  expect(mockPush).toHaveBeenCalledTimes(1);
+  expect(mockPush).toHaveBeenCalledWith('/login');
+});
+it('Skip jumps straight to the last page', async () => {
+  await welcome();
+  await fireEvent.press(
+    screen.getByRole('button', { name: az.welcomePager.skip }),
+  );
+  expect(
+    screen.getByRole('button', { name: az.common.continue }),
+  ).toBeOnTheScreen();
+  expect(mockPush).not.toHaveBeenCalled();
+});
 it('keeps Google on dedicated entry screens even when enabled', async () => {
   env.ENABLE_GOOGLE_SIGNIN = true;
   await welcome();
   expect(
     screen.queryByRole('button', { name: az.auth.continueGoogle }),
   ).toBeNull();
-  expect(
-    screen.getByRole('button', { name: az.authEntry.login }),
-  ).toBeOnTheScreen();
-  expect(
-    screen.getByRole('button', { name: az.authEntry.register }),
-  ).toBeOnTheScreen();
   expect(mockSignIn).not.toHaveBeenCalled();
   expect(mockPush).not.toHaveBeenCalled();
 });
