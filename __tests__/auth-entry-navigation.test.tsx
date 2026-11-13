@@ -40,18 +40,19 @@ beforeEach(async () => {
   otpChallenge.clear();
   await initializeI18n('az');
 });
-test('actual entry routes connect Welcome, Login, Sign Up and Back without stale locks', async () => {
+test('actual entry routes connect Welcome pager, Login, Sign Up and Back without stale locks', async () => {
   const result = await renderRouter(routes, { initialUrl: '/welcome' });
   const user = userEvent.setup();
-  await user.press(screen.getByRole('button', { name: az.authEntry.login }));
+  await user.press(screen.getByRole('button', { name: az.welcomePager.skip }));
+  await user.press(screen.getByRole('button', { name: az.common.continue }));
   expect(result.getPathname()).toBe('/login');
   await user.press(screen.getByRole('link', { name: az.authEntry.register }));
   expect(result.getPathname()).toBe('/register');
   await user.press(screen.getByRole('link', { name: az.authEntry.login }));
   expect(result.getPathname()).toBe('/login');
   await testRouter.back('/welcome');
-  await user.press(screen.getByRole('button', { name: az.authEntry.register }));
-  expect(result.getPathname()).toBe('/register');
+  await user.press(screen.getByRole('button', { name: az.common.continue }));
+  expect(result.getPathname()).toBe('/login');
 });
 test('legacy phone visits reach the complete Login screen', async () => {
   const result = await renderRouter(routes, { initialUrl: '/phone' });

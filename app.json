@@ -4,6 +4,24 @@
     "slug": "epsilon",
     "version": "0.1.0",
     "scheme": "epsilon",
-    "plugins": ["expo-router", "expo-status-bar"]
+    "plugins": [
+      "expo-router",
+      "expo-status-bar"
+    ],
+    "extra": {
+      "epsilonFlags": {
+        "google": false,
+        "apple": false,
+        "crashDevelopment": false
+      },
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "0d37c703-3401-4137-8437-e24085a7b0d6"
+      }
+    }
   }
 }

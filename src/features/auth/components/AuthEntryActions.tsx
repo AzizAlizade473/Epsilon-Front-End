@@ -5,7 +5,7 @@ import { PressSurface } from '@/components/ui/PressSurface';
 import { Text } from '@/components/ui/Text';
 import { colors, layout, spacing } from '@/design';
 import { env } from '@/lib/env';
-import { GoogleButton } from './GoogleButton';
+import { AppleButton, GoogleButton } from './GoogleButton';
 
 export type AuthIntent = 'login' | 'register';
 
@@ -46,20 +46,18 @@ export function GoogleEntry({
   loading,
   error,
   onPress,
+  onApple,
 }: {
   busy: boolean;
   loading: boolean;
   error?: string;
   onPress: () => void;
+  /** Apple stays hidden until a native flow exists and the flag allows it (iOS only). */
+  onApple?: () => void;
 }) {
   const { t } = useTranslation();
   return (
     <View style={styles.group}>
-      <View style={styles.separator}>
-        <View style={styles.line} />
-        <Text variant="caption">{t('auth.or')}</Text>
-        <View style={styles.line} />
-      </View>
       <GoogleButton
         disabled={busy || !env.ENABLE_GOOGLE_SIGNIN || Platform.OS === 'web'}
         loading={loading}
@@ -83,6 +81,16 @@ export function GoogleEntry({
           {error}
         </Text>
       )}
+      {onApple && env.ENABLE_APPLE_SIGNIN && Platform.OS === 'ios' && (
+        <AppleButton disabled={busy} onPress={onApple} />
+      )}
+      <View style={styles.separator}>
+        <View style={styles.line} />
+        <Text variant="caption" style={styles.or}>
+          {t('auth.or')}
+        </Text>
+        <View style={styles.line} />
+      </View>
     </View>
   );
 }
@@ -90,6 +98,7 @@ export function GoogleEntry({
 const styles = StyleSheet.create({
   group: { gap: spacing[12] },
   separator: { flexDirection: 'row', alignItems: 'center', gap: spacing[16] },
+  or: { textTransform: 'uppercase', letterSpacing: 1 },
   line: {
     height: layout.hairlineWidth,
     backgroundColor: colors.border,
@@ -102,5 +111,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   link: { paddingHorizontal: spacing[8], paddingVertical: spacing[8] },
-  linkText: { color: colors.brand.primary, textDecorationLine: 'underline' },
+  linkText: { color: colors.brand.secondary, fontWeight: '600' },
 });
