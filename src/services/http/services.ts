@@ -37,33 +37,55 @@ import type {
   WalletService,
 } from '../interfaces';
 import { z } from 'zod';
-import { requireAuthIntentSupport } from '@/lib/auth-intent';
+import { AuthIntentError, type AuthIntent } from '@/lib/auth-intent';
+import { ApiError } from './errors';
 
 const voidSchema = z
   .null()
   .or(z.undefined())
   .transform(() => undefined);
 
+/** Epsilon backend answers an intent mismatch with ACCOUNT_NOT_FOUND (404) or
+ * ACCOUNT_EXISTS (409); those codes are outside the typed enum, so they arrive
+ * as UNKNOWN with that status. Only intent requests are mapped. */
+async function withIntent<T>(
+  intent: AuthIntent | undefined,
+  run: () => Promise<T>,
+): Promise<T> {
+  try {
+    return await run();
+  } catch (error) {
+    if (intent && error instanceof ApiError && error.code === 'UNKNOWN') {
+      if (error.status === 404) throw new AuthIntentError('notFound');
+      if (error.status === 409) throw new AuthIntentError('exists');
+    }
+    throw error;
+  }
+}
+
 export const httpAuthService: AuthService = {
+  supportsAuthIntent: true,
+
   async requestOtp(input) {
-    requireAuthIntentSupport(input.intent);
     return request('POST', '/auth/otp/request', otpChallengeSchema, input, {
       idempotencyKey: generateIdempotencyKey('otp-req'),
     });
   },
 
   async verifyOtp(input) {
-    requireAuthIntentSupport(input.intent);
-    return request('POST', '/auth/otp/verify', authResultSchema, input, {
-      idempotencyKey: generateIdempotencyKey('otp-ver'),
-    });
+    return withIntent(input.intent, () =>
+      request('POST', '/auth/otp/verify', authResultSchema, input, {
+        idempotencyKey: generateIdempotencyKey('otp-ver'),
+      }),
+    );
   },
 
   async signInWithGoogle(input) {
-    requireAuthIntentSupport(input.intent);
-    return request('POST', '/auth/google', authResultSchema, input, {
-      idempotencyKey: generateIdempotencyKey('google-auth'),
-    });
+    return withIntent(input.intent, () =>
+      request('POST', '/auth/google', authResultSchema, input, {
+        idempotencyKey: generateIdempotencyKey('google-auth'),
+      }),
+    );
   },
 
   async signInWithApple() {
