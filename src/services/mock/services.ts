@@ -26,6 +26,7 @@ import type {
 import {
   mockConfig,
   mockReceipt,
+  demoReward,
   mockRestaurants,
   mockTransactions,
   mockUser,
@@ -339,15 +340,22 @@ export const mockFeedbackService: FeedbackService = {
         status: 409,
       });
     const scenario = getMockScenario();
-    const status =
-      scenario === 'feedback_pending'
+    // One reward per verified receipt: only the first rated item can carry it.
+    const firstOnReceipt = mockRatings.size === 0;
+    const status = !firstOnReceipt
+      ? 'none'
+      : scenario === 'feedback_pending'
         ? 'pending'
         : scenario === 'feedback_none'
           ? 'none'
           : 'confirmed';
     const result: FeedbackResult = {
       feedbackId: `fb_mock_${item.id}`,
-      reward: { status, amountMinor: status === 'confirmed' ? 250 : null },
+      reward: {
+        status,
+        amountMinor:
+          status === 'confirmed' ? demoReward(mockReceipt.totalMinor) : null,
+      },
     };
     mockRatings.set(item.id, input.rating);
     mockReviews.unshift({

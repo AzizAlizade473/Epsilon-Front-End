@@ -15,8 +15,9 @@ let _services: ServiceContainer | undefined;
 
 /** Development fixtures are not imported/evaluated by release startup. */
 export async function initializeServices(): Promise<void> {
+  // Non-production demo builds (preview APK) may run on fixtures; production
+  // never can: parseEnv rejects mock mode there and the build guard enforces it.
   if (
-    __DEV__ &&
     env.EXPO_PUBLIC_APP_ENV !== 'production' &&
     env.EXPO_PUBLIC_API_MODE === 'mock'
   ) {

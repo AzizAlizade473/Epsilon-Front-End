@@ -1,6 +1,7 @@
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { BottomTabBarHeightContext } from 'expo-router/js-tabs';
 import { useTranslation } from 'react-i18next';
 import {
   Animated,
@@ -54,6 +55,10 @@ export default function ScanScreen() {
   const router = useRouter();
   const toast = useToast();
   const insets = useSafeAreaInsets();
+  const tabBarHeight = useContext(BottomTabBarHeightContext) ?? 0;
+  const bottomInset = tabBarHeight
+    ? tabBarHeight + spacing[16]
+    : Math.max(insets.bottom, spacing[20]);
   const [permission, requestPermission, getPermission] = useCameraPermissions();
   const scan = useScanMachine();
   const { cancel, event } = scan;
@@ -143,6 +148,14 @@ export default function ScanScreen() {
       {!permission?.granted ? (
         <Screen
           surface="surface"
+          footer={
+            <Button
+              variant="ghost"
+              label={t('scan.manual')}
+              disabled={scan.state === 'resolving' || scan.state === 'success'}
+              onPress={() => event('manual')}
+            />
+          }
           leading={
             <IconButton
               icon={X}
@@ -183,12 +196,6 @@ export default function ScanScreen() {
               scan.state === 'success'
             }
           />
-          <Button
-            variant="ghost"
-            label={t('scan.manual')}
-            disabled={scan.state === 'resolving' || scan.state === 'success'}
-            onPress={() => event('manual')}
-          />
         </Screen>
       ) : (
         <View style={styles.root}>
@@ -213,8 +220,8 @@ export default function ScanScreen() {
             success={scan.state === 'success'}
           />
           <SafeAreaView
-            style={styles.controls}
-            edges={['top', 'bottom']}
+            style={[styles.controls, { paddingBottom: bottomInset }]}
+            edges={['top', 'left', 'right']}
             pointerEvents="box-none"
           >
             <View style={styles.header}>
@@ -266,7 +273,7 @@ export default function ScanScreen() {
           style={[
             styles.error,
             {
-              paddingBottom: Math.max(insets.bottom, spacing[20]),
+              paddingBottom: bottomInset,
               opacity: slide,
               transform: [
                 {

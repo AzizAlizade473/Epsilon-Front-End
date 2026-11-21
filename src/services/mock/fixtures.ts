@@ -3,6 +3,7 @@
  * All fixtures strictly adhere to contract schemas.
  */
 
+import { computeCashbackMinor } from '@/lib/cashback';
 import type {
   Config,
   Receipt,
@@ -47,23 +48,159 @@ export const mockConfig: Config = {
 export const mockRestaurants: Restaurant[] = [
   {
     id: 'rest_01',
-    name: 'Demo restoran 1',
+    name: 'Nar & Sharab',
     logoUrl: null,
     branchCount: 3,
   },
   {
     id: 'rest_02',
-    name: 'Demo restoran 2',
+    name: 'Firuza Kitchen',
     logoUrl: null,
     branchCount: 2,
   },
   {
     id: 'rest_03',
-    name: 'Demo restoran 3',
+    name: 'Lavash House',
+    logoUrl: null,
+    branchCount: 4,
+  },
+  {
+    id: 'rest_04',
+    name: 'Qala Sofrası',
+    logoUrl: null,
+    branchCount: 1,
+  },
+  {
+    id: 'rest_05',
+    name: 'Tbilisi Courtyard',
+    logoUrl: null,
+    branchCount: 2,
+  },
+  {
+    id: 'rest_06',
+    name: 'Mtkvari Table',
+    logoUrl: null,
+    branchCount: 1,
+  },
+  {
+    id: 'rest_07',
+    name: 'Mangal Atelier',
+    logoUrl: null,
+    branchCount: 3,
+  },
+  {
+    id: 'rest_08',
+    name: 'Bosphorus Grill',
+    logoUrl: null,
+    branchCount: 2,
+  },
+  {
+    id: 'rest_09',
+    name: 'Trattoria Bellavista',
+    logoUrl: null,
+    branchCount: 2,
+  },
+  {
+    id: 'rest_10',
+    name: 'Forno Rosso',
+    logoUrl: null,
+    branchCount: 1,
+  },
+  {
+    id: 'rest_11',
+    name: 'Casa Nonna',
+    logoUrl: null,
+    branchCount: 1,
+  },
+  {
+    id: 'rest_12',
+    name: 'Sumi Izakaya',
+    logoUrl: null,
+    branchCount: 2,
+  },
+  {
+    id: 'rest_13',
+    name: 'Koi Roll Bar',
+    logoUrl: null,
+    branchCount: 1,
+  },
+  {
+    id: 'rest_14',
+    name: 'Ember Steakhouse',
+    logoUrl: null,
+    branchCount: 3,
+  },
+  {
+    id: 'rest_15',
+    name: 'Prime & Smoke',
+    logoUrl: null,
+    branchCount: 2,
+  },
+  {
+    id: 'rest_16',
+    name: 'Caspian Catch',
+    logoUrl: null,
+    branchCount: 4,
+  },
+  {
+    id: 'rest_17',
+    name: 'Blue Anchor',
+    logoUrl: null,
+    branchCount: 1,
+  },
+  {
+    id: 'rest_18',
+    name: 'Pomegranate Café',
+    logoUrl: null,
+    branchCount: 5,
+  },
+  {
+    id: 'rest_19',
+    name: 'Morning Ritual',
+    logoUrl: null,
+    branchCount: 6,
+  },
+  {
+    id: 'rest_20',
+    name: 'Lotus Wok',
+    logoUrl: null,
+    branchCount: 2,
+  },
+  {
+    id: 'rest_21',
+    name: 'Olive Terrace',
+    logoUrl: null,
+    branchCount: 1,
+  },
+  {
+    id: 'rest_22',
+    name: 'Stack Burger Lab',
+    logoUrl: null,
+    branchCount: 3,
+  },
+  {
+    id: 'rest_23',
+    name: 'Maison Lumière',
+    logoUrl: null,
+    branchCount: 1,
+  },
+  {
+    id: 'rest_24',
+    name: 'Saffron Route',
+    logoUrl: null,
+    branchCount: 2,
+  },
+  {
+    id: 'rest_25',
+    name: 'Cedar & Spice',
     logoUrl: null,
     branchCount: 1,
   },
 ];
+
+/** Every demo reward comes from the one pilot policy, never a hand-typed amount. */
+export const demoReward = (receiptTotalMinor: number) =>
+  computeCashbackMinor(receiptTotalMinor);
 
 export const mockReceipt: Receipt = {
   id: 'rcpt_789456',
@@ -103,14 +240,16 @@ export const mockReceipt: Receipt = {
     },
   ],
   rewardHint: {
-    amountMinor: 250, // 2.50 ₼
+    amountMinor: demoReward(4850),
     currency: 'AZN',
   },
 };
 
+// Pending: one verified 15 ₼ receipt. Balance: the confirmed ledger below
+// (0.60 + 0.45 earned, 0.20 expired).
 export const mockWallet: Wallet = {
-  balanceMinor: 3450, // 34.50 ₼
-  pendingMinor: 250, // 2.50 ₼
+  balanceMinor: demoReward(4850) + demoReward(3000) - 20,
+  pendingMinor: demoReward(1500),
   currency: 'AZN',
 };
 
@@ -119,11 +258,11 @@ export const mockTransactions: WalletTransaction[] = [
     id: 'tx_01',
     type: 'earned',
     status: 'confirmed',
-    amountMinor: 250,
+    amountMinor: demoReward(4850), // receipt rcpt_789456, 48.50 ₼
     createdAt: '2024-02-14T20:00:00Z',
     source: {
       restaurantId: 'rest_01',
-      restaurantName: 'Demo restoran 1',
+      restaurantName: 'Nar & Sharab',
       branchName: 'Fəvvarələr Meydanı filialı',
     },
     receiptId: 'rcpt_789456',
@@ -131,13 +270,13 @@ export const mockTransactions: WalletTransaction[] = [
   },
   {
     id: 'tx_02',
-    type: 'redeemed',
+    type: 'earned',
     status: 'confirmed',
-    amountMinor: -1500,
+    amountMinor: demoReward(3000), // a 30.00 ₼ receipt
     createdAt: '2024-02-10T14:15:00Z',
     source: {
       restaurantId: 'rest_02',
-      restaurantName: 'Demo restoran 2',
+      restaurantName: 'Firuza Kitchen',
       branchName: null,
     },
     receiptId: null,
@@ -147,11 +286,11 @@ export const mockTransactions: WalletTransaction[] = [
     id: 'tx_pending',
     type: 'earned',
     status: 'pending',
-    amountMinor: 125,
+    amountMinor: demoReward(1500), // a 15.00 ₼ receipt, awaiting confirmation
     createdAt: '2024-02-15T09:00:00Z',
     source: {
       restaurantId: 'rest_01',
-      restaurantName: 'Demo restoran 1',
+      restaurantName: 'Nar & Sharab',
       branchName: null,
     },
     receiptId: null,
@@ -161,7 +300,7 @@ export const mockTransactions: WalletTransaction[] = [
     id: 'tx_reversed',
     type: 'reversed',
     status: 'cancelled',
-    amountMinor: -125,
+    amountMinor: -demoReward(1500),
     createdAt: '2024-02-14T21:00:00Z',
     source: null,
     receiptId: null,
@@ -171,7 +310,7 @@ export const mockTransactions: WalletTransaction[] = [
     id: 'tx_expired',
     type: 'expired',
     status: 'confirmed',
-    amountMinor: -50,
+    amountMinor: -20,
     createdAt: '2024-02-14T20:30:00Z',
     source: null,
     receiptId: null,
