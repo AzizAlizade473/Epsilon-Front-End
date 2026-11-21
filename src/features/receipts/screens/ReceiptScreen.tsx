@@ -68,6 +68,7 @@ export function ReceiptScreen() {
             pendingIds={feedback.entries.map((entry) => entry.receiptItemId)}
             completedIds={feedback.completedIds}
             onClose={close}
+            onScanAnother={() => router.replace('/scan')}
             onRate={(item, rating) => {
               clearReceiptRating();
               if (rating !== undefined) selectReceiptRating(item.id, rating);

@@ -17,6 +17,16 @@ import { FoodImage } from '@/components/food/FoodImage';
  * Product category is not in this contract: icon matching is decorative only.
  * Per-product payouts, multipliers and editing controls are intentionally absent.
  */
+/** Printed quantity from thousandths, without float noise: 370 → "0.37", 2000 → "2". */
+export const formatQuantity = (milli: number) =>
+  `${Math.trunc(milli / 1000)}${
+    milli % 1000
+      ? `.${String(milli % 1000)
+          .padStart(3, '0')
+          .replace(/0+$/, '')}`
+      : ''
+  }`;
+
 export function DishCard({
   item,
   readOnly,
@@ -64,11 +74,21 @@ export function DishCard({
         <View style={styles.copy}>
           <Text style={styles.name}>{item.name}</Text>
           <Text style={styles.sub}>
-            {t('receipt.quantityPrice', {
-              qty: item.quantity,
-              price: formatMoney(item.unitPriceMinor),
-            })}
+            {item.line
+              ? t('fiscal.linePrice', {
+                  qty: formatQuantity(item.line.quantityMilli),
+                  unit: item.line.unit ?? '',
+                  price: formatMoney(item.line.unitPriceMinor),
+                  total: formatMoney(item.line.lineTotalMinor),
+                })
+              : t('receipt.quantityPrice', {
+                  qty: item.quantity,
+                  price: formatMoney(item.unitPriceMinor),
+                })}
           </Text>
+          {item.line?.cashbackClaimed && (
+            <Text style={styles.sub}>{t('fiscal.cashbackClaimed')}</Text>
+          )}
         </View>
       </View>
       {(item.canRate || rated || pending) && (

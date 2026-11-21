@@ -292,6 +292,14 @@
       "unknown": {
         "title": "Qəbzi yoxlamaq alınmadı",
         "body": "Yenidən cəhd edin."
+      },
+      "sourceUnavailable": {
+        "title": "Rəsmi çek xidməti əlçatan deyil",
+        "body": "Epsilon bu çeki e-kassa xidmətindən ala bilmədi. Heç nə saxlanılmadı. Sonra yenidən cəhd edin və ya başqa çek skan edin."
+      },
+      "verificationFailed": {
+        "title": "Çek təsdiqlənmədi",
+        "body": "Rəsmi çek məlumatları uyğun gəlmədi, ona görə Epsilon onlardan istifadə etmədi."
       }
     }
   },
@@ -770,5 +778,104 @@
     "tryEdit": "Dəyiş",
     "noVerifiedTitle": "Hələ təsdiqlənmiş məhsul yoxdur",
     "noVerifiedBody": "Bu marketin ictimai kataloqunda yoxlana bilən məhsul tapılmadı, ona görə heç nə uydurmadıq."
+  },
+  "fiscal": {
+    "sectorLine": "Sahə: {{sector}}",
+    "verified": "Fiskal çek təsdiqləndi",
+    "testData": "Test məlumatı, rəsmi deyil",
+    "aiAssisted": "Kateqoriyanı AI təklif edib",
+    "partner": "Epsilon tərəfdaşı",
+    "sector": {
+      "horeca": "Restoran və kafelər",
+      "retail": "Pərakəndə",
+      "healthcare": "Səhiyyə",
+      "automotive": "Avtomobil",
+      "services": "Xidmətlər",
+      "other": "Digər",
+      "unknown": "Təsdiqlənməyib"
+    },
+    "type": {
+      "restaurant": "Restoran",
+      "cafe": "Kafe",
+      "coffee_shop": "Qəhvəxana",
+      "fast_food": "Fast food",
+      "bakery_cafe": "Çörək-kafe",
+      "other_food_service": "İaşə",
+      "supermarket": "Supermarket",
+      "grocery_store": "Ərzaq mağazası",
+      "convenience_store": "Mini market",
+      "clothing_store": "Geyim mağazası",
+      "electronics_store": "Elektronika mağazası",
+      "other_retail": "Mağaza",
+      "pharmacy": "Aptek",
+      "clinic": "Klinika",
+      "other_healthcare": "Səhiyyə",
+      "gas_station": "Yanacaqdoldurma məntəqəsi",
+      "other_automotive": "Avtomobil",
+      "other_services": "Xidmətlər",
+      "other": "Digər obyekt",
+      "unknown": "Naməlum obyekt"
+    },
+    "reason": {
+      "UNSUPPORTED_MERCHANT_CATEGORY": "Çek təsdiqləndi. Bu obyekt {{type}} kimi müəyyən edilib. Epsilon-da qiymətləndirmə və keşbek hazırda yalnız restoran və kafelər üçün mövcuddur.",
+      "MERCHANT_CATEGORY_UNKNOWN": "Epsilon bu obyektin növünü dəqiq müəyyən edə bilmədi, ona görə bu çek üçün qiymətləndirmə və keşbek bağlıdır.",
+      "NOT_EPSILON_PARTNER": "Bu məkan hələ Epsilon tərəfdaşı deyil. Yeməklərinizi qiymətləndirə bilərsiniz, lakin keşbek yoxdur.",
+      "PHONE_NOT_VERIFIED": "Bu çekdən keşbek qazanmaq üçün telefon nömrənizi təsdiqləyin. Yeməkləri yenə qiymətləndirə bilərsiniz."
+    },
+    "scanAnother": "Başqa çek skan et",
+    "products": "Alınmış məhsullar",
+    "merchantSection": "Obyekt",
+    "receiptSection": "Çek",
+    "legalName": "Qeydiyyatdakı ad",
+    "voen": "VÖEN",
+    "objectName": "Obyektin adı",
+    "objectCode": "Obyektin kodu",
+    "address": "Ünvan",
+    "number": "Çek nömrəsi",
+    "dateTime": "Tarix və vaxt",
+    "fiscalId": "Fiskal İD",
+    "payment": "Ödəniş",
+    "paymentMethod": {
+      "cash": "Nağd",
+      "cashless": "Kart",
+      "mixed": "Nağd və kart",
+      "bonus": "Bonus",
+      "other": "Digər"
+    },
+    "subtotal": "Ara cəm",
+    "discount": "Endirim",
+    "vat": "ƏDV",
+    "vatRate": "ƏDV {{rate}}%",
+    "total": "Yekun",
+    "moreDetails": "Daha çox çek məlumatı",
+    "lessDetails": "Az məlumat",
+    "documentId": "Sənəd İD",
+    "receiptType": "Çekin növü",
+    "receiptTypes": {
+      "sale": "Satış",
+      "return": "Qaytarma",
+      "prepayment": "Avans",
+      "credit": "Nisyə",
+      "other": "Digər"
+    },
+    "cash": "Nağd ödənilib",
+    "cashless": "Kartla ödənilib",
+    "bonus": "Bonusla ödənilib",
+    "change": "Qalıq",
+    "deviceModel": "Kassa aparatının modeli",
+    "deviceSerial": "Kassa aparatının zavod nömrəsi",
+    "nmq": "NMQ-nun qeydiyyat nömrəsi",
+    "classifiedBy": "Kateqoriya mənbəyi",
+    "source": "Məlumat mənbəyi",
+    "method": {
+      "epsilon_partner": "Epsilon tərəfdaş qeydi",
+      "cache": "Əvvəlki qərar",
+      "name_rule": "Obyektin adı",
+      "ai_assisted": "AI təklifi",
+      "none": "Müəyyən edilməyib"
+    },
+    "devJson": "Developer: JSON göstər",
+    "linePrice": "{{qty}} {{unit}} × {{price}} = {{total}}",
+    "cashbackClaimed": "Bu məhsul üçün keşbek artıq alınıb"
   }
 }

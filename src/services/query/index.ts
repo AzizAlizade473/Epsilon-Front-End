@@ -60,6 +60,7 @@ export const queryKeys = {
   },
   receipt: {
     all: ['receipt'] as const,
+    list: ['receipt', 'list'] as const,
     detail: (id: string) => [...queryKeys.receipt.all, 'detail', id] as const,
   },
   feedback: {

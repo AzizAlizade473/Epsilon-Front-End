@@ -292,6 +292,14 @@
       "unknown": {
         "title": "Could not check receipt",
         "body": "Please try again."
+      },
+      "sourceUnavailable": {
+        "title": "Official receipt service unavailable",
+        "body": "Epsilon could not get this receipt from the e-kassa service. Nothing was saved. Try again later or scan another receipt."
+      },
+      "verificationFailed": {
+        "title": "Receipt could not be verified",
+        "body": "The official receipt data did not add up, so Epsilon did not use it."
       }
     }
   },
@@ -770,5 +778,104 @@
     "tryEdit": "Change",
     "noVerifiedTitle": "No verified products yet",
     "noVerifiedBody": "We could not verify products in this chain’s public catalogue, so none are shown rather than invented."
+  },
+  "fiscal": {
+    "sectorLine": "Sector: {{sector}}",
+    "verified": "Fiscal receipt verified",
+    "testData": "Test data, not official",
+    "aiAssisted": "Category suggested by AI",
+    "partner": "Epsilon partner",
+    "sector": {
+      "horeca": "Restaurants & cafés",
+      "retail": "Retail",
+      "healthcare": "Healthcare",
+      "automotive": "Automotive",
+      "services": "Services",
+      "other": "Other",
+      "unknown": "Unverified"
+    },
+    "type": {
+      "restaurant": "Restaurant",
+      "cafe": "Café",
+      "coffee_shop": "Coffee shop",
+      "fast_food": "Fast food",
+      "bakery_cafe": "Bakery café",
+      "other_food_service": "Food service",
+      "supermarket": "Supermarket",
+      "grocery_store": "Grocery store",
+      "convenience_store": "Convenience store",
+      "clothing_store": "Clothing store",
+      "electronics_store": "Electronics store",
+      "other_retail": "Shop",
+      "pharmacy": "Pharmacy",
+      "clinic": "Clinic",
+      "other_healthcare": "Healthcare",
+      "gas_station": "Gas station",
+      "other_automotive": "Automotive",
+      "other_services": "Services",
+      "other": "Other business",
+      "unknown": "Unknown business"
+    },
+    "reason": {
+      "UNSUPPORTED_MERCHANT_CATEGORY": "Receipt verified. This business is classified as a {{type}}. Epsilon currently supports ratings and cashback only for restaurants and cafés.",
+      "MERCHANT_CATEGORY_UNKNOWN": "Epsilon could not confidently determine what kind of business this is, so ratings and cashback are off for this receipt.",
+      "NOT_EPSILON_PARTNER": "This place is not an Epsilon partner yet. You can rate your dishes, but there is no cashback.",
+      "PHONE_NOT_VERIFIED": "Verify your phone number to earn cashback on this receipt. You can still rate your dishes."
+    },
+    "scanAnother": "Scan another receipt",
+    "products": "Purchased products",
+    "merchantSection": "Business",
+    "receiptSection": "Receipt",
+    "legalName": "Registered name",
+    "voen": "VÖEN",
+    "objectName": "Establishment",
+    "objectCode": "Establishment code",
+    "address": "Address",
+    "number": "Receipt number",
+    "dateTime": "Date and time",
+    "fiscalId": "Fiscal ID",
+    "payment": "Payment",
+    "paymentMethod": {
+      "cash": "Cash",
+      "cashless": "Card",
+      "mixed": "Cash and card",
+      "bonus": "Bonus",
+      "other": "Other"
+    },
+    "subtotal": "Subtotal",
+    "discount": "Discount",
+    "vat": "VAT",
+    "vatRate": "VAT {{rate}}%",
+    "total": "Total",
+    "moreDetails": "More receipt details",
+    "lessDetails": "Fewer details",
+    "documentId": "Document ID",
+    "receiptType": "Receipt type",
+    "receiptTypes": {
+      "sale": "Sale",
+      "return": "Return",
+      "prepayment": "Prepayment",
+      "credit": "Credit",
+      "other": "Other"
+    },
+    "cash": "Paid in cash",
+    "cashless": "Paid by card",
+    "bonus": "Paid with bonus",
+    "change": "Change",
+    "deviceModel": "Cash register model",
+    "deviceSerial": "Cash register serial number",
+    "nmq": "NMQ registration number",
+    "classifiedBy": "Category source",
+    "source": "Data source",
+    "method": {
+      "epsilon_partner": "Epsilon partner record",
+      "cache": "Earlier decision",
+      "name_rule": "Business name",
+      "ai_assisted": "AI suggestion",
+      "none": "Not determined"
+    },
+    "devJson": "Developer: show JSON",
+    "linePrice": "{{qty}} {{unit}} × {{price}} = {{total}}",
+    "cashbackClaimed": "Cashback for this item was already claimed"
   }
 }

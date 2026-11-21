@@ -13,6 +13,7 @@ import {
   notificationPreferencesSchema,
   paginatedSchema,
   profileUpdateResultSchema,
+  receiptListSchema,
   receiptSchema,
   restaurantSchema,
   restaurantPageSchema,
@@ -187,6 +188,17 @@ export const httpReceiptService: ReceiptService = {
       undefined,
       options,
     );
+  },
+
+  async list(options) {
+    const page = await requestWithAuth(
+      'GET',
+      '/receipts',
+      receiptListSchema,
+      undefined,
+      options,
+    );
+    return page.items.map((item) => item.id);
   },
 };
 

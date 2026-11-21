@@ -50,6 +50,7 @@ const schemaNames = {
   Receipt: 'receiptSchema',
   ReceiptItem: 'receiptItemSchema',
   PurchaseReference: 'purchaseReferenceSchema',
+  ReceiptList: 'receiptListSchema',
   FeedbackInput: 'feedbackInputSchema',
   FeedbackResult: 'feedbackResultSchema',
   FeedbackReview: 'feedbackReviewSchema',
@@ -321,6 +322,7 @@ operation(
   'Receipt',
   'PurchaseReference',
 );
+operation('get', '/receipts', 'myReceipts', 'ReceiptList');
 operation('get', '/receipts/{id}', 'receipt', 'Receipt');
 operation(
   'post',

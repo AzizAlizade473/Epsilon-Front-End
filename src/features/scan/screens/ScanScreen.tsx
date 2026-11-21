@@ -49,6 +49,8 @@ const errorKeys: Record<string, string> = {
   RECEIPT_NOT_FOUND: 'notFound',
   NETWORK: 'network',
   TIMEOUT: 'network',
+  RECEIPT_SOURCE_UNAVAILABLE: 'sourceUnavailable',
+  RECEIPT_VERIFICATION_FAILED: 'verificationFailed',
 };
 export default function ScanScreen() {
   const { t } = useTranslation();

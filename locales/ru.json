@@ -296,6 +296,14 @@
       "unknown": {
         "title": "Не удалось проверить чек",
         "body": "Попробуйте снова."
+      },
+      "sourceUnavailable": {
+        "title": "Официальный сервис чеков недоступен",
+        "body": "Epsilon не смог получить этот чек из сервиса e-kassa. Ничего не сохранено. Попробуйте позже или отсканируйте другой чек."
+      },
+      "verificationFailed": {
+        "title": "Чек не удалось проверить",
+        "body": "Официальные данные чека не сошлись, поэтому Epsilon их не использовал."
       }
     }
   },
@@ -798,5 +806,104 @@
     "tryEdit": "Изменить",
     "noVerifiedTitle": "Пока нет проверенных товаров",
     "noVerifiedBody": "В открытом каталоге этой сети не удалось проверить товары, поэтому мы их не выдумываем."
+  },
+  "fiscal": {
+    "sectorLine": "Сфера: {{sector}}",
+    "verified": "Фискальный чек подтверждён",
+    "testData": "Тестовые данные, не официальные",
+    "aiAssisted": "Категорию предложил ИИ",
+    "partner": "Партнёр Epsilon",
+    "sector": {
+      "horeca": "Рестораны и кафе",
+      "retail": "Розница",
+      "healthcare": "Здравоохранение",
+      "automotive": "Авто",
+      "services": "Услуги",
+      "other": "Другое",
+      "unknown": "Не подтверждено"
+    },
+    "type": {
+      "restaurant": "Ресторан",
+      "cafe": "Кафе",
+      "coffee_shop": "Кофейня",
+      "fast_food": "Фастфуд",
+      "bakery_cafe": "Пекарня-кафе",
+      "other_food_service": "Общепит",
+      "supermarket": "Супермаркет",
+      "grocery_store": "Продуктовый магазин",
+      "convenience_store": "Минимаркет",
+      "clothing_store": "Магазин одежды",
+      "electronics_store": "Магазин электроники",
+      "other_retail": "Магазин",
+      "pharmacy": "Аптека",
+      "clinic": "Клиника",
+      "other_healthcare": "Здравоохранение",
+      "gas_station": "АЗС",
+      "other_automotive": "Авто",
+      "other_services": "Услуги",
+      "other": "Другое предприятие",
+      "unknown": "Неизвестное предприятие"
+    },
+    "reason": {
+      "UNSUPPORTED_MERCHANT_CATEGORY": "Чек подтверждён. Это предприятие определено как {{type}}. Оценки и кешбэк в Epsilon сейчас доступны только для ресторанов и кафе.",
+      "MERCHANT_CATEGORY_UNKNOWN": "Epsilon не смог уверенно определить тип предприятия, поэтому оценки и кешбэк для этого чека отключены.",
+      "NOT_EPSILON_PARTNER": "Это заведение пока не партнёр Epsilon. Блюда можно оценить, но без кешбэка.",
+      "PHONE_NOT_VERIFIED": "Подтвердите номер телефона, чтобы получить кешбэк по этому чеку. Оценивать блюда можно и так."
+    },
+    "scanAnother": "Сканировать другой чек",
+    "products": "Купленные товары",
+    "merchantSection": "Предприятие",
+    "receiptSection": "Чек",
+    "legalName": "Юридическое название",
+    "voen": "VÖEN",
+    "objectName": "Объект",
+    "objectCode": "Код объекта",
+    "address": "Адрес",
+    "number": "Номер чека",
+    "dateTime": "Дата и время",
+    "fiscalId": "Фискальный ID",
+    "payment": "Оплата",
+    "paymentMethod": {
+      "cash": "Наличные",
+      "cashless": "Карта",
+      "mixed": "Наличные и карта",
+      "bonus": "Бонусы",
+      "other": "Другое"
+    },
+    "subtotal": "Подытог",
+    "discount": "Скидка",
+    "vat": "НДС",
+    "vatRate": "НДС {{rate}}%",
+    "total": "Итого",
+    "moreDetails": "Подробнее о чеке",
+    "lessDetails": "Меньше",
+    "documentId": "ID документа",
+    "receiptType": "Тип чека",
+    "receiptTypes": {
+      "sale": "Продажа",
+      "return": "Возврат",
+      "prepayment": "Предоплата",
+      "credit": "В долг",
+      "other": "Другое"
+    },
+    "cash": "Оплачено наличными",
+    "cashless": "Оплачено картой",
+    "bonus": "Оплачено бонусами",
+    "change": "Сдача",
+    "deviceModel": "Модель кассы",
+    "deviceSerial": "Заводской номер кассы",
+    "nmq": "Регистрационный номер NMQ",
+    "classifiedBy": "Источник категории",
+    "source": "Источник данных",
+    "method": {
+      "epsilon_partner": "Запись партнёра Epsilon",
+      "cache": "Прежнее решение",
+      "name_rule": "Название предприятия",
+      "ai_assisted": "Предложение ИИ",
+      "none": "Не определено"
+    },
+    "devJson": "Разработчик: показать JSON",
+    "linePrice": "{{qty}} {{unit}} × {{price}} = {{total}}",
+    "cashbackClaimed": "Кешбэк за эту позицию уже получен"
   }
 }

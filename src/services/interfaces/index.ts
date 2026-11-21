@@ -77,6 +77,8 @@ export interface ReceiptService {
     options?: MutationOptions,
   ): Promise<Receipt>;
   get(id: string, options?: ReadOptions): Promise<Receipt>;
+  /** Ids of the receipts this account holds, newest first (incl. scanned fiscal receipts). */
+  list(options?: ReadOptions): Promise<string[]>;
 }
 
 export interface FeedbackService {

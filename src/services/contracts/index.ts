@@ -164,6 +164,21 @@ export const receiptItemSchema = z
     canRate: z.boolean(),
     /** Already-submitted rating for this item, or null if not yet rated. */
     rating: z.number().int().min(1).max(5).nullable(),
+    /** The printed fiscal receipt line, exactly as the official record states it. */
+    line: z
+      .object({
+        lineNo: z.number().int().positive(),
+        originalName: z.string().min(1),
+        /** Thousandths: 0.37 kg = 370, 2 pieces = 2000. */
+        quantityMilli: z.number().int().positive(),
+        unit: z.string().nullable(),
+        unitPriceMinor: qepik,
+        lineTotalMinor: z.number().int(),
+        /** This line's one-time cashback was already taken (by anyone). */
+        cashbackClaimed: z.boolean(),
+      })
+      .strict()
+      .optional(),
   })
   .strict();
 
@@ -177,6 +192,115 @@ const receiptBranchSchema = z
   })
   .strict();
 
+const minorOrNull = z.number().int().nullable();
+const textOrNull = z.string().nullable();
+const fiscalInfoSchema = z
+  .object({
+    verification: z
+      .object({
+        /** test_data = local fixture, never official. */
+        status: z.enum(['verified', 'test_data']),
+        provider: z.string(),
+        retrievedAt: isoDate,
+      })
+      .strict(),
+    classification: z
+      .object({
+        sector: z.enum([
+          'horeca',
+          'retail',
+          'healthcare',
+          'automotive',
+          'services',
+          'other',
+          'unknown',
+        ]),
+        businessType: z.string().min(1),
+        method: z.enum([
+          'epsilon_partner',
+          'cache',
+          'name_rule',
+          'ai_assisted',
+          'none',
+        ]),
+        status: z.enum(['verified', 'rule', 'ai', 'unverified']),
+        evidence: z.array(z.string()),
+      })
+      .strict(),
+    partner: z
+      .object({
+        isPartner: z.boolean(),
+        restaurantId: textOrNull,
+        branchId: textOrNull,
+      })
+      .strict(),
+    eligibility: z
+      .object({
+        ratingAllowed: z.boolean(),
+        cashbackAllowed: z.boolean(),
+        reason: z
+          .enum([
+            'UNSUPPORTED_MERCHANT_CATEGORY',
+            'MERCHANT_CATEGORY_UNKNOWN',
+            'NOT_EPSILON_PARTNER',
+            'PHONE_NOT_VERIFIED',
+          ])
+          .nullable(),
+      })
+      .strict(),
+    merchant: z
+      .object({
+        displayName: z.string().min(1),
+        legalName: textOrNull,
+        voen: textOrNull,
+        objectName: textOrNull,
+        objectCode: textOrNull,
+        address: textOrNull,
+        city: textOrNull,
+      })
+      .strict(),
+    receipt: z
+      .object({
+        fiscalId: z.string().min(1),
+        number: textOrNull,
+        documentId: textOrNull,
+        type: textOrNull,
+        issuedAt: isoDate,
+        currency: currencyCode,
+        totalMinor: qepik,
+        subtotalMinor: minorOrNull,
+        discountMinor: minorOrNull,
+        vatMinor: minorOrNull,
+        vatBreakdown: z.array(
+          z
+            .object({ ratePercent: z.number(), amountMinor: z.number().int() })
+            .strict(),
+        ),
+        payment: z
+          .object({
+            method: textOrNull,
+            cashMinor: minorOrNull,
+            cashlessMinor: minorOrNull,
+            bonusMinor: minorOrNull,
+            changeMinor: minorOrNull,
+          })
+          .strict(),
+      })
+      .strict(),
+    device: z
+      .object({
+        model: textOrNull,
+        serialNumber: textOrNull,
+        nmqRegistrationNumber: textOrNull,
+      })
+      .strict(),
+    additionalFields: z.record(
+      z.string(),
+      z.union([z.string(), z.number(), z.boolean(), z.null()]),
+    ),
+  })
+  .strict();
+
 export const receiptSchema = z
   .object({
     id: z.string().min(1),
@@ -187,6 +311,8 @@ export const receiptSchema = z
     currency: currencyCode,
     status: z.enum(['verified', 'claimed', 'expired']),
     items: z.array(receiptItemSchema),
+    /** Present for scanned fiscal (e-kassa) receipts; decided entirely by the backend. */
+    fiscal: fiscalInfoSchema.optional(),
     /**
      * A hint about the potential reward for submitting feedback.
      * The actual reward is computed and confirmed server-side (SEC-4).
@@ -202,6 +328,13 @@ export const receiptSchema = z
   .strict();
 
 export type Receipt = z.infer<typeof receiptSchema>;
+export type FiscalInfo = NonNullable<Receipt['fiscal']>;
+export const receiptListSchema = z
+  .object({
+    items: z.array(z.object({ id: z.string().min(1) }).strict()),
+    nextCursor: z.string().nullable(),
+  })
+  .strict();
 export const purchaseReferenceSchema = z
   .object({
     kind: z.enum(['qr', 'code']),

@@ -16,6 +16,7 @@ import { formatMoney } from '@/lib/money';
 import { formatDate, formatTime } from '@/lib/date';
 import type { Receipt, ReceiptItem } from '@/services/contracts';
 import { DishCard } from './DishCard';
+import { FiscalFooter, FiscalSummary } from './FiscalDetails';
 
 /** Port of original HomeScreen's receipt-detail bottom sheet. */
 export function ReceiptContent({
@@ -25,6 +26,7 @@ export function ReceiptContent({
   onRate,
   onHome,
   onClose,
+  onScanAnother,
 }: {
   receipt: Receipt;
   pendingIds: readonly string[];
@@ -32,6 +34,7 @@ export function ReceiptContent({
   onRate: (item: ReceiptItem, rating?: number) => void;
   onHome: () => void;
   onClose?: () => void;
+  onScanAnother?: () => void;
 }) {
   const { t, i18n } = useTranslation();
   const readOnly = receipt.status !== 'verified';
@@ -52,19 +55,24 @@ export function ReceiptContent({
           >
             {formatMoney(receipt.totalMinor)}
           </Text>
-          <Text style={styles.sub}>{'#' + receipt.id}</Text>
+          {/* Scanned receipts show their real number and address below; skip internal ids and duplicates. */}
+          {!receipt.fiscal && (
+            <Text style={styles.sub}>{'#' + receipt.id}</Text>
+          )}
           <Text style={styles.name}>{receipt.restaurant.name}</Text>
-          <View style={styles.branch}>
-            <Icon
-              icon={MapPin}
-              size="small"
-              color={o.colors.rated}
-              decorative
-            />
-            <Text style={[styles.sub, styles.branchText]}>
-              {receipt.branch.name}
-            </Text>
-          </View>
+          {(!receipt.fiscal || receipt.fiscal.partner.isPartner) && (
+            <View style={styles.branch}>
+              <Icon
+                icon={MapPin}
+                size="small"
+                color={o.colors.rated}
+                decorative
+              />
+              <Text style={[styles.sub, styles.branchText]}>
+                {receipt.branch.name}
+              </Text>
+            </View>
+          )}
           <Text style={styles.sub}>
             {formatDate(receipt.issuedAt, { locale: i18n.language }) +
               ' · ' +
@@ -79,10 +87,14 @@ export function ReceiptContent({
           />
         )}
       </View>
-      <Chip
-        label={t('receipt.status.' + receipt.status)}
-        tone={readOnly ? 'neutral' : 'success'}
-      />
+      {receipt.fiscal ? (
+        <FiscalSummary fiscal={receipt.fiscal} onScanAnother={onScanAnother} />
+      ) : (
+        <Chip
+          label={t('receipt.status.' + receipt.status)}
+          tone={readOnly ? 'neutral' : 'success'}
+        />
+      )}
       {receipt.rewardHint && (
         <View style={styles.hint}>
           <Icon icon={Gift} size="small" color={o.colors.ink} decorative />
@@ -94,7 +106,11 @@ export function ReceiptContent({
         </View>
       )}
       <Text style={styles.section} accessibilityRole="header">
-        {t('receipt.items')}
+        {t(
+          receipt.fiscal && receipt.fiscal.classification.sector !== 'horeca'
+            ? 'fiscal.products'
+            : 'receipt.items',
+        )}
       </Text>
     </View>
   );
@@ -117,6 +133,7 @@ export function ReceiptContent({
       )}
       ListFooterComponent={
         <View style={styles.footer}>
+          {receipt.fiscal && <FiscalFooter fiscal={receipt.fiscal} />}
           {!remaining && <Button label={t('feedback.home')} onPress={onHome} />}
           <MockDataNotice />
         </View>

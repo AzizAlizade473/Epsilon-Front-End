@@ -313,6 +313,11 @@ export const mockReceiptService: ReceiptService = {
     checkMockScenario('receipt');
     return currentReceipt();
   },
+
+  // Demo receipts are reachable through wallet transactions already.
+  async list() {
+    return [];
+  },
 };
 
 export const mockFeedbackService: FeedbackService = {

@@ -2,6 +2,7 @@ import { useCallback, useSyncExternalStore } from 'react';
 import {
   notifyManager,
   useQueries,
+  useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
 import { safeIdSchema } from '@/lib/deep-link';
@@ -49,8 +50,17 @@ export function useReceiptLibrary(
   const cached = client
     .getQueriesData<Receipt>({ queryKey: queryKeys.receipt.all })
     .flatMap(([key, value]) => (key[1] === 'detail' && value ? [value] : []));
+  // Receipts held without a wallet transaction (scanned fiscal receipts without cashback).
+  const held = useQuery({
+    queryKey: queryKeys.receipt.list,
+    queryFn: ({ signal }) => services.receipt.list({ signal }),
+  });
   const ids = [
-    ...new Set([...references, ...cached.map((receipt) => receipt.id)]),
+    ...new Set([
+      ...references,
+      ...(held.data ?? []),
+      ...cached.map((receipt) => receipt.id),
+    ]),
   ].filter(
     (id): id is string =>
       typeof id === 'string' && safeIdSchema.safeParse(id).success,
