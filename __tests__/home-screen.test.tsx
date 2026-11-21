@@ -66,6 +66,27 @@ beforeEach(async () => {
   await initializeI18n();
 });
 afterEach(() => client.clear());
+it('prioritizes purchased-dish ratings and bills ahead of activity', async () => {
+  await home();
+  await waitFor(() =>
+    expect(screen.getAllByText(az.homeFocus.rateNow).length).toBeGreaterThan(0),
+  );
+  const headings = screen
+    .getAllByRole('header')
+    .map((node) => node.props.children);
+  expect(headings.indexOf(az.premium.waiting)).toBeLessThan(
+    headings.indexOf(az.home.recent),
+  );
+  expect(headings.indexOf(az.originalReceipts.bills)).toBeLessThan(
+    headings.indexOf(az.home.recent),
+  );
+  expect(
+    screen.getByRole('progressbar', { name: az.premium.waiting }),
+  ).toHaveProp(
+    'accessibilityValue',
+    expect.objectContaining({ now: 0, max: 3 }),
+  );
+});
 async function home() {
   await render(
     <SafeAreaProvider
@@ -96,28 +117,27 @@ it('renders server money with speech, pending state and at most three recent row
   await waitFor(() =>
     expect(
       screen.getByLabelText(
-        i18n.t('home.balanceSpeech', { sign: '', manat: 34, qepik: 50 }),
+        i18n.t('home.balanceSpeech', { sign: '', manat: 0, qepik: 85 }),
       ),
     ).toBeOnTheScreen(),
   );
   expect(
-    screen.getByText(i18n.t('home.pending', { amount: '2.50 ₼' })),
+    screen.getByText(i18n.t('home.pending', { amount: '0.25 ₼' })),
   ).toBeOnTheScreen();
   expect(screen.getByText('Demo 2')).toBeOnTheScreen();
   expect(screen.queryByText('Demo 3')).toBeNull();
 });
-it('keeps Scan usable during errors and prevents duplicate modal navigation', async () => {
+it('keeps Home usable during errors with retries and no scan shortcut duplicating the tab bar', async () => {
   mockWalletGet.mockRejectedValue(new Error('unavailable'));
   mockTransactionsGet.mockRejectedValue(new Error('unavailable'));
   await home();
   await waitFor(() =>
     expect(screen.getAllByRole('alert').length).toBeGreaterThan(0),
   );
-  const scan = screen.getByRole('button', { name: az.home.scan });
-  await fireEvent.press(scan);
-  await fireEvent.press(scan);
-  expect(mockNavigate).toHaveBeenCalledTimes(1);
-  expect(mockNavigate).toHaveBeenCalledWith('/scan');
+  expect(
+    screen.getAllByRole('button', { name: az.common.retry }).length,
+  ).toBeGreaterThan(0);
+  expect(screen.queryByRole('button', { name: az.home.scan })).toBeNull();
   expect(screen.getByRole('button', { name: az.home.viewAll })).toBeEnabled();
 });
 it('shows an honest empty state and routes the secondary actions to existing screens', async () => {

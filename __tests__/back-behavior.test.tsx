@@ -40,7 +40,11 @@ jest.mock('expo-router/js-tabs', () => {
   const MockScreen = () => null;
   MockScreen.displayName = 'MockTabsScreen';
   MockTabs.Screen = MockScreen;
-  return { Tabs: MockTabs };
+  const { createContext } = jest.requireActual<typeof import('react')>('react');
+  return {
+    Tabs: MockTabs,
+    BottomTabBarHeightContext: createContext<number | undefined>(undefined),
+  };
 });
 
 const initialMetrics = {

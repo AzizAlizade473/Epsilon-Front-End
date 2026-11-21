@@ -5,13 +5,14 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import type { ReactNode } from 'react';
 import PublicDishScreen from '@/features/restaurants/screens/PublicDishScreen';
 import { WaitingDishes } from '@/features/home/components/WaitingDishes';
-import { readCatalog } from '@/features/restaurants/catalog';
+import { readCatalog, readDishReviews } from '@/features/restaurants/catalog';
 import { createQueryClient, queryKeys } from '@/services/query';
 import { mockReceipt } from '@/services/mock/fixtures';
 import { initializeI18n } from '@/lib/i18n';
 import az from '../locales/az.json';
 
 let mockAppEnv = 'development';
+let mockDishId = '';
 jest.mock('@/lib/env', () => ({
   env: {
     get EXPO_PUBLIC_APP_ENV() {
@@ -21,7 +22,7 @@ jest.mock('@/lib/env', () => ({
   },
 }));
 jest.mock('expo-router', () => ({
-  useLocalSearchParams: () => ({ id: 'rest_01', dishId: 'pasta' }),
+  useLocalSearchParams: () => ({ id: 'rest_01', dishId: mockDishId }),
   useRouter: () => ({
     push: jest.fn(),
     back: jest.fn(),
@@ -56,19 +57,24 @@ async function page(children: ReactNode) {
     </SafeAreaProvider>,
   );
 }
-it('shows public comments without authentication or rating controls', async () => {
+it('shows public ratings and reviews without authentication or rating controls', async () => {
+  const dish = (await readCatalog('rest_01'))!.dishes[0]!;
+  const reviews = (await readDishReviews('rest_01', dish.id))!;
+  mockDishId = dish.id;
   await page(<PublicDishScreen />);
+  await waitFor(() => expect(screen.getByText(dish.name)).toBeOnTheScreen());
   await waitFor(() =>
-    expect(screen.getByText(az.premium.pasta)).toBeOnTheScreen(),
+    expect(screen.getByText(reviews[0]!.comment)).toBeOnTheScreen(),
   );
-  expect(screen.getByText(az.premium.commentPasta)).toBeOnTheScreen();
-  expect(screen.getByText(az.premium.sampleMenu)).toBeOnTheScreen();
+  expect(screen.getByText(az.dining.verifiedOnly)).toBeOnTheScreen();
   expect(screen.queryByRole('radiogroup')).toBeNull();
   expect(screen.queryByRole('radio')).toBeNull();
+  expect(screen.queryByText(/rate this|qiymət ver$/i)).toBeNull();
 });
 it('does not substitute sample menus or ratings in production', async () => {
   mockAppEnv = 'production';
   expect(await readCatalog('rest_01')).toBeNull();
+  expect(await readDishReviews('rest_01', 'any')).toBeNull();
 });
 it('only invites feedback on verified purchases that are neither completed nor queued', async () => {
   client.setQueryData(queryKeys.receipt.detail(mockReceipt.id), mockReceipt);

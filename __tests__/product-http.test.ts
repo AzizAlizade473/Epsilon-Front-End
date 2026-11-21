@@ -22,7 +22,9 @@ function respond(body: unknown) {
 }
 it('normalizes legacy restaurant arrays and validates cursor pages at the boundary', async () => {
   respond(mockRestaurants);
-  expect((await httpRestaurantService.list()).items).toHaveLength(3);
+  expect((await httpRestaurantService.list()).items).toHaveLength(
+    mockRestaurants.length,
+  );
   respond({ items: [mockRestaurants[0]], nextCursor: 'page two/+' });
   expect(
     (

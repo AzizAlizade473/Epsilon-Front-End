@@ -69,7 +69,7 @@ it('renders the server balance independently of transaction totals and opens exa
   );
   const button = screen
     .getAllByRole('button')
-    .find((node) => String(node.props.accessibilityLabel).includes('+2.50'))!;
+    .find((node) => String(node.props.accessibilityLabel).includes('+0.60'))!;
   await fireEvent.press(button);
   expect(mockPush).toHaveBeenCalledWith({
     pathname: '/cashback/transaction/[id]',
@@ -83,7 +83,7 @@ it('distinguishes empty history from load failure and preserves a cached balance
     expect(screen.getByText(az.wallet.loadError)).toBeOnTheScreen(),
   );
   expect(screen.queryByText(az.wallet.emptyTitle)).toBeNull();
-  expect(screen.getByLabelText('34.50 ₼')).toBeOnTheScreen();
+  expect(screen.getByLabelText('0.85 ₼')).toBeOnTheScreen();
 });
 it('provides a scan action for an actually empty history', async () => {
   mockList.mockResolvedValue({ items: [], nextCursor: null });

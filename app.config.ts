@@ -93,7 +93,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         android: {
           enableProguardInReleaseBuilds: true,
           enableShrinkResourcesInReleaseBuilds: true,
-          // Local backend over http://10.0.2.2 only; opt-in flag lives in .env.local, never in EAS.
+          // Local backend over plain http: only development builds that opt in
+          // (.env.local, or the internal eas.json "live-local" profile). Never store builds.
           usesCleartextTraffic:
             process.env.EXPO_PUBLIC_APP_ENV === 'development' &&
             process.env.ALLOW_DEV_CLEARTEXT === 'true',
