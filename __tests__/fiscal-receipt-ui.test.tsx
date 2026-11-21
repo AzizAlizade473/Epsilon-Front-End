@@ -266,7 +266,9 @@ describe('no AI or provider secrets in the app', () => {
     });
   it('never references Gemini keys or calls Gemini from the app', () => {
     const hits = [...files('src'), 'app.config.ts', 'eas.json'].filter((f) =>
-      /GEMINI|generativelanguage|@google\/genai/i.test(readFileSync(f, 'utf8')),
+      /GEMINI_API_KEY|EXPO_PUBLIC_GEMINI|generativelanguage|@google\/genai|AIza[0-9A-Za-z_-]{20}/.test(
+        readFileSync(f, 'utf8'),
+      ),
     );
     expect(hits).toEqual([]);
   });

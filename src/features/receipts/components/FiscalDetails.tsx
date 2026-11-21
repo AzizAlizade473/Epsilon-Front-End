@@ -217,6 +217,16 @@ export function FiscalFooter({ fiscal }: { fiscal: FiscalInfo }) {
             label={t('fiscal.source')}
             value={fiscal.verification.provider}
           />
+          <Row
+            label={t('fiscal.readBy')}
+            value={
+              fiscal.verification.engine
+                ? t(`fiscal.engine.${fiscal.verification.engine}`, {
+                    defaultValue: fiscal.verification.engine,
+                  })
+                : null
+            }
+          />
         </View>
       )}
       {__DEV__ && (

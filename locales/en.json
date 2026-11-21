@@ -879,7 +879,13 @@
     "linePrice": "{{qty}} {{unit}} × {{price}} = {{total}}",
     "cashbackClaimed": "Cashback for this item was already claimed",
     "officialImage": "From official receipt image",
-    "paperPhoto": "Read from paper receipt photo"
+    "paperPhoto": "Read from paper receipt photo",
+    "readBy": "Read by",
+    "engine": {
+      "structured": "Structured data",
+      "on_device_ocr": "Phone text recognition",
+      "gemini": "AI reading"
+    }
   },
   "scanImport": {
     "title": "Get this receipt's details",
@@ -912,6 +918,26 @@
       "receipt_total": "products do not add up to the total",
       "line": "product line {{n}}",
       "lineTotal": "total of line {{n}}"
+    }
+  },
+  "capture": {
+    "qrDetected": "QR detected",
+    "showFull": "QR detected. Now show the full receipt and take a photo.",
+    "nextPart": "Add the next part of the receipt, or read it now.",
+    "photos_one": "{{count}} photo of this receipt",
+    "photos_other": "{{count}} photos of this receipt",
+    "shutter": "Take photo",
+    "read": "Read receipt",
+    "restart": "Start over",
+    "official": "Use official receipt image",
+    "step": {
+      "reading": "Reading receipt…",
+      "extracting": "Extracting products…",
+      "identifying": "Identifying business…"
+    },
+    "problem": {
+      "blurry": "The photo is too blurry, dark or far away. Hold the receipt flat and closer.",
+      "capture": "Could not take the photo. Try again."
     }
   }
 }

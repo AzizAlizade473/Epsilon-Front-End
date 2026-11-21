@@ -209,6 +209,18 @@ const fiscalInfoSchema = z
           'test_data',
         ]),
         provider: z.string(),
+        /** How the receipt was obtained (see docs/FISCAL_RECEIPTS.md). */
+        acquisition: z
+          .enum([
+            'authorized_fiscal_api',
+            'partner_pos_verified',
+            'printed_receipt_ocr',
+            'customer_supplied_official_image',
+            'test_fixture',
+          ])
+          .optional(),
+        /** structured (provider/POS data), on_device_ocr or gemini. */
+        engine: z.string().optional(),
         retrievedAt: isoDate,
       })
       .strict(),
@@ -338,6 +350,23 @@ export const receiptSchema = z
 
 export type Receipt = z.infer<typeof receiptSchema>;
 export type FiscalInfo = NonNullable<Receipt['fiscal']>;
+/** On-device OCR (ML Kit) lines of one photo, with [left, top, right, bottom] boxes. */
+export const ocrPageSchema = z
+  .object({
+    lines: z
+      .array(
+        z
+          .object({
+            text: z.string().min(1).max(500),
+            box: z.tuple([z.number(), z.number(), z.number(), z.number()]),
+          })
+          .strict(),
+      )
+      .max(2000),
+  })
+  .strict();
+export type OcrPage = z.infer<typeof ocrPageSchema>;
+
 /** POST /receipts/fiscal/import: complete a scanned fiscal QR with a customer-supplied image. */
 export const fiscalImportSchema = z
   .object({
@@ -355,6 +384,8 @@ export const fiscalImportSchema = z
       )
       .min(1)
       .max(4),
+    /** On-device OCR per image, same order; lets the server skip AI when it is enough. */
+    ocr: z.array(ocrPageSchema).max(4).optional(),
   })
   .strict();
 export type FiscalImport = z.infer<typeof fiscalImportSchema>;

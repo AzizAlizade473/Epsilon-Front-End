@@ -879,7 +879,13 @@
     "linePrice": "{{qty}} {{unit}} × {{price}} = {{total}}",
     "cashbackClaimed": "Bu məhsul üçün keşbek artıq alınıb",
     "officialImage": "Rəsmi çek şəklindən",
-    "paperPhoto": "Kağız çekin şəklindən oxunub"
+    "paperPhoto": "Kağız çekin şəklindən oxunub",
+    "readBy": "Oxuyan",
+    "engine": {
+      "structured": "Strukturlu məlumat",
+      "on_device_ocr": "Telefonda mətn tanıma",
+      "gemini": "AI ilə oxuma"
+    }
   },
   "scanImport": {
     "title": "Çekin məlumatlarını alın",
@@ -912,6 +918,26 @@
       "receipt_total": "məhsulların cəmi yekun məbləğə uyğun gəlmir",
       "line": "{{n}}-ci məhsul sətri",
       "lineTotal": "{{n}}-ci sətrin məbləği"
+    }
+  },
+  "capture": {
+    "qrDetected": "QR tapıldı",
+    "showFull": "QR tapıldı. İndi çekin hamısını göstərin və şəklini çəkin.",
+    "nextPart": "Çekin növbəti hissəsini əlavə edin və ya indi oxuyun.",
+    "photos_one": "Bu çekin {{count}} şəkli",
+    "photos_other": "Bu çekin {{count}} şəkli",
+    "shutter": "Şəkil çək",
+    "read": "Çeki oxu",
+    "restart": "Yenidən başla",
+    "official": "Rəsmi çek şəklindən istifadə et",
+    "step": {
+      "reading": "Çek oxunur…",
+      "extracting": "Məhsullar çıxarılır…",
+      "identifying": "Obyekt müəyyən edilir…"
+    },
+    "problem": {
+      "blurry": "Şəkil çox bulanıq, qaranlıq və ya uzaqdır. Çeki düz və daha yaxın tutun.",
+      "capture": "Şəkil çəkilmədi. Yenidən cəhd edin."
     }
   }
 }
