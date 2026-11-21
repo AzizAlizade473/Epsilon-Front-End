@@ -1,6 +1,20 @@
 # Fiscal receipt scanning: status and manual testing guide
 
-## Status: partially implemented, e-kassa integration blocked
+## Status: implemented, awaiting manual live testing (automatic e-kassa retrieval blocked)
+
+Since 2026-11-21: after scanning, if no authorised source returns the receipt, the app
+offers **Open official receipt** (opens the QR's official page in the browser; save or
+screenshot the receipt there), **Import receipt image** and **Photograph paper receipt**.
+The backend reads the image with Gemini, which is off by default: set
+`GEMINI_ENABLED=true` (and keep `GEMINI_MODEL=gemini-3.8-flash`) in the backend `.env`,
+then restart it. Image-derived receipts are labelled by source ("From official receipt
+image", "Read from paper receipt photo"), can be rated at restaurants and cafés, and never
+earn cashback. Endpoint: `POST /v1/receipts/fiscal/import {qr, source, images}`.
+
+Test APK backend: a Cloudflare tunnel,
+`C:\Users\ACER\AppData\Local\EpsilonTools\cloudflared.exe tunnel --protocol http2 --url http://localhost:3000`
+(local `live-tunnel` profile in `eas.json`, not committed; rebuild the APK if the tunnel
+address changes).
 
 | Part                                                                                                    | State                                                                                                                                                                                                                                                                                                           |
 | ------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
