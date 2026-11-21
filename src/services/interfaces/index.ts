@@ -15,6 +15,7 @@ import type {
   Paginated,
   ProfileUpdateResult,
   PurchaseReference,
+  FiscalImport,
   Receipt,
   Restaurant,
   Session,
@@ -79,6 +80,11 @@ export interface ReceiptService {
   get(id: string, options?: ReadOptions): Promise<Receipt>;
   /** Ids of the receipts this account holds, newest first (incl. scanned fiscal receipts). */
   list(options?: ReadOptions): Promise<string[]>;
+  /** Read a scanned fiscal receipt from an image the customer supplied (server-side AI). */
+  importFiscalImage(
+    input: FiscalImport,
+    options?: MutationOptions,
+  ): Promise<Receipt>;
 }
 
 export interface FeedbackService {

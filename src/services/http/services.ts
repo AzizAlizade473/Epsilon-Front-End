@@ -200,6 +200,22 @@ export const httpReceiptService: ReceiptService = {
     );
     return page.items.map((item) => item.id);
   },
+
+  async importFiscalImage(input, options) {
+    return requestWithAuth(
+      'POST',
+      '/receipts/fiscal/import',
+      receiptSchema,
+      input,
+      {
+        ...options,
+        // The server reads the image with an AI model: allow for its response time.
+        timeoutMs: 120_000,
+        idempotencyKey:
+          options?.idempotencyKey ?? generateIdempotencyKey('receipt-import'),
+      },
+    );
+  },
 };
 
 export const httpFeedbackService: FeedbackService = {

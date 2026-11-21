@@ -198,8 +198,16 @@ const fiscalInfoSchema = z
   .object({
     verification: z
       .object({
-        /** test_data = local fixture, never official. */
-        status: z.enum(['verified', 'test_data']),
+        /**
+         * verified = authorised fiscal provider; official_image / paper_photo =
+         * read from an image the customer supplied; test_data = local fixture.
+         */
+        status: z.enum([
+          'verified',
+          'official_image',
+          'paper_photo',
+          'test_data',
+        ]),
         provider: z.string(),
         retrievedAt: isoDate,
       })
@@ -243,6 +251,7 @@ const fiscalInfoSchema = z
             'UNSUPPORTED_MERCHANT_CATEGORY',
             'MERCHANT_CATEGORY_UNKNOWN',
             'NOT_EPSILON_PARTNER',
+            'VERIFICATION_REQUIRED',
             'PHONE_NOT_VERIFIED',
           ])
           .nullable(),
@@ -329,6 +338,26 @@ export const receiptSchema = z
 
 export type Receipt = z.infer<typeof receiptSchema>;
 export type FiscalInfo = NonNullable<Receipt['fiscal']>;
+/** POST /receipts/fiscal/import: complete a scanned fiscal QR with a customer-supplied image. */
+export const fiscalImportSchema = z
+  .object({
+    qr: z.string().min(1).max(2048),
+    /** official_page = image of the official e-kassa receipt; paper_photo = photo of the printed receipt. */
+    source: z.enum(['official_page', 'paper_photo']),
+    images: z
+      .array(
+        z
+          .object({
+            mime: z.enum(['image/jpeg', 'image/png', 'image/webp']),
+            data: z.string().min(100),
+          })
+          .strict(),
+      )
+      .min(1)
+      .max(4),
+  })
+  .strict();
+export type FiscalImport = z.infer<typeof fiscalImportSchema>;
 export const receiptListSchema = z
   .object({
     items: z.array(z.object({ id: z.string().min(1) }).strict()),

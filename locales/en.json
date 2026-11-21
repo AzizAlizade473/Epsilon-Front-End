@@ -820,7 +820,8 @@
       "UNSUPPORTED_MERCHANT_CATEGORY": "Receipt verified. This business is classified as a {{type}}. Epsilon currently supports ratings and cashback only for restaurants and cafés.",
       "MERCHANT_CATEGORY_UNKNOWN": "Epsilon could not confidently determine what kind of business this is, so ratings and cashback are off for this receipt.",
       "NOT_EPSILON_PARTNER": "This place is not an Epsilon partner yet. You can rate your dishes, but there is no cashback.",
-      "PHONE_NOT_VERIFIED": "Verify your phone number to earn cashback on this receipt. You can still rate your dishes."
+      "PHONE_NOT_VERIFIED": "Verify your phone number to earn cashback on this receipt. You can still rate your dishes.",
+      "VERIFICATION_REQUIRED": "This receipt was read from an image, so it can be rated but does not earn cashback. Cashback needs officially verified receipt data."
     },
     "scanAnother": "Scan another receipt",
     "products": "Purchased products",
@@ -876,6 +877,41 @@
     },
     "devJson": "Developer: show JSON",
     "linePrice": "{{qty}} {{unit}} × {{price}} = {{total}}",
-    "cashbackClaimed": "Cashback for this item was already claimed"
+    "cashbackClaimed": "Cashback for this item was already claimed",
+    "officialImage": "From official receipt image",
+    "paperPhoto": "Read from paper receipt photo"
+  },
+  "scanImport": {
+    "title": "Get this receipt's details",
+    "body": "The official e-kassa service cannot send receipt details to apps automatically. Open the official receipt, save it or take a screenshot, then import it here. Or photograph the paper receipt.",
+    "openOfficial": "Open official receipt",
+    "importImage": "Import receipt image",
+    "photograph": "Photograph paper receipt",
+    "reading": "Reading receipt…",
+    "scanAgain": "Scan again",
+    "trust": "Receipts read from images can be rated, but they do not earn cashback.",
+    "unreadable": "Could not read: {{fields}}. Import a clearer or complete image.",
+    "problem": {
+      "incomplete": "Part of the receipt could not be read",
+      "mismatch": "This image shows a different receipt",
+      "unavailable": "Receipt reading is not available right now",
+      "quota": "Receipt reading limit reached for today",
+      "network": "Could not connect. Try again.",
+      "camera": "Camera access is needed to photograph the receipt",
+      "format": "This image type is not supported. Use JPG, PNG or WebP.",
+      "unknown": "Could not read the receipt. Try again."
+    },
+    "field": {
+      "total": "total",
+      "date": "date and time",
+      "items": "all product lines",
+      "merchant": "business name",
+      "fiscalId": "Fiscal ID",
+      "currency": "currency",
+      "format": "receipt format",
+      "receipt_total": "products do not add up to the total",
+      "line": "product line {{n}}",
+      "lineTotal": "total of line {{n}}"
+    }
   }
 }

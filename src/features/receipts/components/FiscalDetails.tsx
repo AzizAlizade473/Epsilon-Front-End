@@ -26,6 +26,20 @@ function Row({ label, value }: { label: string; value: string | null }) {
   );
 }
 
+/** Where the data came from, said plainly: only an authorised provider is "verified". */
+const SOURCE_LABEL = {
+  verified: 'fiscal.verified',
+  official_image: 'fiscal.officialImage',
+  paper_photo: 'fiscal.paperPhoto',
+  test_data: 'fiscal.testData',
+} as const;
+const SOURCE_TONE = {
+  verified: 'success',
+  official_image: 'brand',
+  paper_photo: 'brand',
+  test_data: 'warning',
+} as const;
+
 const money = (minor: number | null) =>
   minor === null ? null : formatMoney(minor);
 
@@ -56,14 +70,8 @@ export function FiscalSummary({
         </Text>
         <View style={styles.chips}>
           <Chip
-            label={t(
-              fiscal.verification.status === 'test_data'
-                ? 'fiscal.testData'
-                : 'fiscal.verified',
-            )}
-            tone={
-              fiscal.verification.status === 'test_data' ? 'warning' : 'success'
-            }
+            label={t(SOURCE_LABEL[fiscal.verification.status])}
+            tone={SOURCE_TONE[fiscal.verification.status]}
           />
           {c.status === 'ai' && (
             <Chip label={t('fiscal.aiAssisted')} tone="brand" />

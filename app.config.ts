@@ -75,6 +75,16 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         recordAudioAndroid: false,
       },
     ],
+    [
+      'expo-image-picker',
+      {
+        // Android uses the system photo picker: no storage permission is requested.
+        photosPermission:
+          'Allow Epsilon to import a photo or screenshot of your receipt.',
+        cameraPermission: 'Allow Epsilon to photograph your receipt.',
+        microphonePermission: false,
+      },
+    ],
     'expo-secure-store',
     'expo-web-browser',
     ['expo-notifications', { defaultChannel: 'cashback-updates' }],

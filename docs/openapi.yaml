@@ -712,6 +712,54 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /receipts/fiscal/import:
+    post:
+      operationId: importFiscalReceiptImage
+      parameters:
+        - $ref: '#/components/parameters/Language'
+        - $ref: '#/components/parameters/RequestId'
+        - $ref: '#/components/parameters/Idempotency'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FiscalImport'
+      responses:
+        '200':
+          description: Validated server projection
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Receipt'
+          headers:
+            X-Request-Id:
+              schema: *a1
+            Date:
+              schema:
+                type: string
+              description:
+                HTTP server date anchors client time; authorization/expiry remain
+                server enforced.
+        '429':
+          description: Rate limited; delta-seconds Retry-After
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                minimum: 0
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description:
+            Machine-readable error. HTTP status remains authoritative; 403 is
+            generic forbidden, unknown codes never become typed domain codes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /receipts/{id}:
     get:
       operationId: receipt
@@ -1617,6 +1665,8 @@ components:
                   type: string
                   enum:
                     - verified
+                    - official_image
+                    - paper_photo
                     - test_data
                 provider:
                   type: string
@@ -1703,6 +1753,7 @@ components:
                         - UNSUPPORTED_MERCHANT_CATEGORY
                         - MERCHANT_CATEGORY_UNKNOWN
                         - NOT_EPSILON_PARTNER
+                        - VERIFICATION_REQUIRED
                         - PHONE_NOT_VERIFIED
                     - type: 'null'
               required:
@@ -2037,6 +2088,43 @@ components:
         - items
         - nextCursor
       additionalProperties: false
+    FiscalImport:
+      type: object
+      properties:
+        qr:
+          type: string
+          minLength: 1
+          maxLength: 2048
+        source:
+          type: string
+          enum:
+            - official_page
+            - paper_photo
+        images:
+          minItems: 1
+          maxItems: 4
+          type: array
+          items:
+            type: object
+            properties:
+              mime:
+                type: string
+                enum:
+                  - image/jpeg
+                  - image/png
+                  - image/webp
+              data:
+                type: string
+                minLength: 100
+            required:
+              - mime
+              - data
+            additionalProperties: false
+      required:
+        - qr
+        - source
+        - images
+      additionalProperties: false
     FeedbackInput:
       type: object
       properties:
@@ -2327,6 +2415,10 @@ components:
                 - RECEIPT_EXPIRED
                 - RECEIPT_SOURCE_UNAVAILABLE
                 - RECEIPT_VERIFICATION_FAILED
+                - RECEIPT_READER_UNAVAILABLE
+                - RECEIPT_READER_QUOTA
+                - RECEIPT_IMAGE_INCOMPLETE
+                - RECEIPT_IMAGE_MISMATCH
                 - FEEDBACK_ALREADY_SUBMITTED
                 - AGE_RESTRICTED
                 - VALIDATION_FAILED

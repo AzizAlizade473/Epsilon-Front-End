@@ -76,6 +76,8 @@ export interface RequestOptions {
   headers?: Record<string, string>;
   /** AbortSignal for external cancellation. Combined with internal 15s timeout. */
   signal?: AbortSignal;
+  /** Overrides the 15 s timeout for slow server work (receipt image reading). */
+  timeoutMs?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -88,6 +90,7 @@ const serverErrorDetailSchema = z
     message: z.string().optional(),
     requestId: z.string().min(1).max(128).optional(),
     retryAfterSeconds: z.number().int().safe().nonnegative().optional(),
+    fields: z.array(z.string().max(100)).max(50).optional(),
   })
   .passthrough();
 // Canonical envelope; retain the previously accepted flat shape during handoff.
@@ -173,7 +176,10 @@ async function executeRequest<T>(
   options?: RequestOptions,
 ): Promise<T> {
   const timeoutController = new AbortController();
-  const timeoutId = setTimeout(() => timeoutController.abort(), TIMEOUT_MS);
+  const timeoutId = setTimeout(
+    () => timeoutController.abort(),
+    options?.timeoutMs ?? TIMEOUT_MS,
+  );
 
   // Combine external signal with internal timeout by listening on both.
   // AbortSignal.any is not yet guaranteed in all Hermes builds.
@@ -250,6 +256,7 @@ async function executeRequest<T>(
     let code: ApiErrorCode = codeFromStatus(response.status);
     let message = `HTTP ${response.status}`;
     const retryHeader = response.headers.get('Retry-After');
+    let fields: string[] = [];
     let retryAfterSeconds: number | null =
       retryHeader && /^\d+$/.test(retryHeader) ? Number(retryHeader) : null;
     if (!Number.isSafeInteger(retryAfterSeconds)) retryAfterSeconds = null;
@@ -265,6 +272,7 @@ async function executeRequest<T>(
           parsed.data.requestId ??
           requestId;
         retryAfterSeconds = parsed.data.retryAfterSeconds ?? retryAfterSeconds;
+        fields = parsed.data.fields ?? [];
       }
     } catch {
       // Non-JSON error body; keep defaults
@@ -276,6 +284,7 @@ async function executeRequest<T>(
       status: response.status,
       requestId: serverRequestId,
       retryAfterSeconds,
+      fields,
     });
   }
 

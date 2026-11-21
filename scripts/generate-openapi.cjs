@@ -51,6 +51,7 @@ const schemaNames = {
   ReceiptItem: 'receiptItemSchema',
   PurchaseReference: 'purchaseReferenceSchema',
   ReceiptList: 'receiptListSchema',
+  FiscalImport: 'fiscalImportSchema',
   FeedbackInput: 'feedbackInputSchema',
   FeedbackResult: 'feedbackResultSchema',
   FeedbackReview: 'feedbackReviewSchema',
@@ -323,6 +324,13 @@ operation(
   'PurchaseReference',
 );
 operation('get', '/receipts', 'myReceipts', 'ReceiptList');
+operation(
+  'post',
+  '/receipts/fiscal/import',
+  'importFiscalReceiptImage',
+  'Receipt',
+  'FiscalImport',
+);
 operation('get', '/receipts/{id}', 'receipt', 'Receipt');
 operation(
   'post',

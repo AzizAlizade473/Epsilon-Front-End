@@ -10,6 +10,7 @@ import {
   Linking,
   Modal,
   Platform,
+  ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
@@ -41,6 +42,10 @@ import { useToast } from '@/providers/ToastProvider';
 import { Viewfinder } from '../components/Viewfinder';
 import { useScanMachine } from '../hooks/useScanMachine';
 import { manualCodeSchema } from '../machine';
+import { ReceiptImageImport } from '../components/ReceiptImageImport';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/services/query';
+import type { Receipt } from '@/services';
 
 const errorKeys: Record<string, string> = {
   RECEIPT_UNSUPPORTED: 'unsupported',
@@ -72,6 +77,9 @@ export default function ScanScreen() {
   );
   const [torch, setTorch] = useState(false);
   const [code, setCode] = useState('');
+  const client = useQueryClient();
+  // The last scanned fiscal QR, kept so the customer can complete it with an image.
+  const [lastQr, setLastQr] = useState<string | null>(null);
   const navigateTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const slide = useAnimatedValue(0);
   const close = useCallback(() => {
@@ -121,6 +129,7 @@ export default function ScanScreen() {
     return () => animation.stop();
   }, [scan.state, slide, motion.reduceMotion]);
   const resolve = async (kind: 'qr' | 'code', value: string) => {
+    setLastQr(kind === 'qr' ? value : null);
     const receipt = await scan.resolve(kind, value);
     if (!receipt) return;
     setCode('');
@@ -144,6 +153,19 @@ export default function ScanScreen() {
   );
   const manual = scan.state === 'manual-entry';
   const errorKey = errorKeys[scan.error] ?? 'unknown';
+  // No authorised source returned this fiscal receipt: offer the customer-assisted import.
+  const importQr =
+    scan.state === 'error' && scan.error === 'RECEIPT_SOURCE_UNAVAILABLE'
+      ? lastQr
+      : null;
+  const openImported = (receipt: Receipt) => {
+    client.setQueryData(queryKeys.receipt.detail(receipt.id), receipt);
+    void client.invalidateQueries({ queryKey: queryKeys.receipt.list });
+    router.replace({
+      pathname: '/receipt/[receiptId]',
+      params: { receiptId: receipt.id },
+    });
+  };
   const parsed = manualCodeSchema.safeParse(code);
   return (
     <>
@@ -288,19 +310,33 @@ export default function ScanScreen() {
             },
           ]}
         >
-          <Text variant="title2" accessibilityRole="alert">
-            {t(`scan.errors.${errorKey}.title`)}
-          </Text>
-          <Text>{t(`scan.errors.${errorKey}.body`)}</Text>
-          <Button
-            label={t('scan.retry')}
-            onPress={() => event(permission?.granted ? 'retry' : 'denied')}
-          />
-          <Button
-            variant="ghost"
-            label={t('navigation.close')}
-            onPress={close}
-          />
+          {importQr ? (
+            <ScrollView bounces={false}>
+              <ReceiptImageImport
+                qr={importQr}
+                onImported={openImported}
+                onScanAgain={() =>
+                  event(permission?.granted ? 'retry' : 'denied')
+                }
+              />
+            </ScrollView>
+          ) : (
+            <>
+              <Text variant="title2" accessibilityRole="alert">
+                {t(`scan.errors.${errorKey}.title`)}
+              </Text>
+              <Text>{t(`scan.errors.${errorKey}.body`)}</Text>
+              <Button
+                label={t('scan.retry')}
+                onPress={() => event(permission?.granted ? 'retry' : 'denied')}
+              />
+              <Button
+                variant="ghost"
+                label={t('navigation.close')}
+                onPress={close}
+              />
+            </>
+          )}
         </Animated.View>
       )}
       {manual && (
@@ -372,6 +408,7 @@ const styles = StyleSheet.create({
     padding: spacing[12],
   },
   error: {
+    maxHeight: '88%',
     position: 'absolute',
     bottom: 0,
     left: 0,

@@ -318,6 +318,16 @@ export const mockReceiptService: ReceiptService = {
   async list() {
     return [];
   },
+
+  // The demo has no receipt reader: never fabricate a reading.
+  async importFiscalImage() {
+    await simulateDelay();
+    throw new ApiError({
+      code: 'RECEIPT_READER_UNAVAILABLE',
+      message: 'Demo mode cannot read receipt images',
+      status: 503,
+    });
+  },
 };
 
 export const mockFeedbackService: FeedbackService = {

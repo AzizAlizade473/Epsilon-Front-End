@@ -220,6 +220,32 @@ describe('scanned restaurant receipt', () => {
   });
 });
 
+describe('receipt read from a customer image', () => {
+  it('is labelled by its source and explains why there is no cashback', async () => {
+    const receipt = tamStore();
+    receipt.fiscal!.verification.status = 'official_image';
+    receipt.fiscal!.classification = {
+      sector: 'horeca',
+      businessType: 'restaurant',
+      method: 'epsilon_partner',
+      status: 'verified',
+      evidence: [],
+    };
+    receipt.fiscal!.partner.isPartner = true;
+    receipt.fiscal!.eligibility = {
+      ratingAllowed: true,
+      cashbackAllowed: false,
+      reason: 'VERIFICATION_REQUIRED',
+    };
+    await show(receipt);
+    expect(screen.getByText(az.fiscal.officialImage)).toBeOnTheScreen();
+    expect(screen.queryByText(az.fiscal.verified)).toBeNull();
+    expect(
+      screen.getByText(az.fiscal.reason.VERIFICATION_REQUIRED),
+    ).toBeOnTheScreen();
+  });
+});
+
 describe('printed quantities', () => {
   it.each([
     [1000, '1'],

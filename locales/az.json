@@ -820,7 +820,8 @@
       "UNSUPPORTED_MERCHANT_CATEGORY": "Çek təsdiqləndi. Bu obyekt {{type}} kimi müəyyən edilib. Epsilon-da qiymətləndirmə və keşbek hazırda yalnız restoran və kafelər üçün mövcuddur.",
       "MERCHANT_CATEGORY_UNKNOWN": "Epsilon bu obyektin növünü dəqiq müəyyən edə bilmədi, ona görə bu çek üçün qiymətləndirmə və keşbek bağlıdır.",
       "NOT_EPSILON_PARTNER": "Bu məkan hələ Epsilon tərəfdaşı deyil. Yeməklərinizi qiymətləndirə bilərsiniz, lakin keşbek yoxdur.",
-      "PHONE_NOT_VERIFIED": "Bu çekdən keşbek qazanmaq üçün telefon nömrənizi təsdiqləyin. Yeməkləri yenə qiymətləndirə bilərsiniz."
+      "PHONE_NOT_VERIFIED": "Bu çekdən keşbek qazanmaq üçün telefon nömrənizi təsdiqləyin. Yeməkləri yenə qiymətləndirə bilərsiniz.",
+      "VERIFICATION_REQUIRED": "Bu çek şəkildən oxunub, ona görə qiymətləndirmək olar, lakin keşbek verilmir. Keşbek üçün rəsmi təsdiqlənmiş çek məlumatı lazımdır."
     },
     "scanAnother": "Başqa çek skan et",
     "products": "Alınmış məhsullar",
@@ -876,6 +877,41 @@
     },
     "devJson": "Developer: JSON göstər",
     "linePrice": "{{qty}} {{unit}} × {{price}} = {{total}}",
-    "cashbackClaimed": "Bu məhsul üçün keşbek artıq alınıb"
+    "cashbackClaimed": "Bu məhsul üçün keşbek artıq alınıb",
+    "officialImage": "Rəsmi çek şəklindən",
+    "paperPhoto": "Kağız çekin şəklindən oxunub"
+  },
+  "scanImport": {
+    "title": "Çekin məlumatlarını alın",
+    "body": "Rəsmi e-kassa xidməti çek məlumatlarını tətbiqlərə avtomatik göndərmir. Rəsmi çeki açın, onu yadda saxlayın və ya ekran şəklini çəkin, sonra burada idxal edin. Və ya kağız çekin şəklini çəkin.",
+    "openOfficial": "Rəsmi çeki aç",
+    "importImage": "Çek şəklini idxal et",
+    "photograph": "Kağız çekin şəklini çək",
+    "reading": "Çek oxunur…",
+    "scanAgain": "Yenidən skan et",
+    "trust": "Şəkildən oxunan çekləri qiymətləndirmək olar, lakin keşbek verilmir.",
+    "unreadable": "Oxunmadı: {{fields}}. Daha aydın və ya tam şəkil idxal edin.",
+    "problem": {
+      "incomplete": "Çekin bir hissəsi oxunmadı",
+      "mismatch": "Bu şəkil başqa çekə aiddir",
+      "unavailable": "Çek oxuma hazırda əlçatan deyil",
+      "quota": "Bu günlük çek oxuma limiti dolub",
+      "network": "Bağlantı alınmadı. Yenidən cəhd edin.",
+      "camera": "Çekin şəklini çəkmək üçün kameraya icazə lazımdır",
+      "format": "Bu şəkil növü dəstəklənmir. JPG, PNG və ya WebP istifadə edin.",
+      "unknown": "Çek oxunmadı. Yenidən cəhd edin."
+    },
+    "field": {
+      "total": "yekun məbləğ",
+      "date": "tarix və vaxt",
+      "items": "bütün məhsul sətirləri",
+      "merchant": "obyektin adı",
+      "fiscalId": "Fiskal İD",
+      "currency": "valyuta",
+      "format": "çekin formatı",
+      "receipt_total": "məhsulların cəmi yekun məbləğə uyğun gəlmir",
+      "line": "{{n}}-ci məhsul sətri",
+      "lineTotal": "{{n}}-ci sətrin məbləği"
+    }
   }
 }

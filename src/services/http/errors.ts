@@ -19,6 +19,10 @@ export const serverErrorCodes = [
   'RECEIPT_EXPIRED',
   'RECEIPT_SOURCE_UNAVAILABLE',
   'RECEIPT_VERIFICATION_FAILED',
+  'RECEIPT_READER_UNAVAILABLE',
+  'RECEIPT_READER_QUOTA',
+  'RECEIPT_IMAGE_INCOMPLETE',
+  'RECEIPT_IMAGE_MISMATCH',
   'FEEDBACK_ALREADY_SUBMITTED',
   'AGE_RESTRICTED',
   'VALIDATION_FAILED',
@@ -42,6 +46,8 @@ export class ApiError extends Error {
   readonly status: number;
   readonly requestId: string | null;
   readonly retryAfterSeconds: number | null;
+  /** Server-named fields the error is about (e.g. receipt parts that could not be read). */
+  readonly fields: readonly string[];
 
   constructor({
     code,
@@ -49,12 +55,14 @@ export class ApiError extends Error {
     status,
     requestId,
     retryAfterSeconds,
+    fields,
   }: {
     code: ApiErrorCode;
     message: string;
     status: number;
     requestId?: string | null;
     retryAfterSeconds?: number | null;
+    fields?: readonly string[];
   }) {
     super(message);
     this.name = 'ApiError';
@@ -62,6 +70,7 @@ export class ApiError extends Error {
     this.status = status;
     this.requestId = requestId ?? null;
     this.retryAfterSeconds = retryAfterSeconds ?? null;
+    this.fields = fields ?? [];
     // Maintains proper stack trace in V8 environments.
     const errCtor = Error as unknown as {
       captureStackTrace?: (target: object, constructorOpt?: Function) => void;
