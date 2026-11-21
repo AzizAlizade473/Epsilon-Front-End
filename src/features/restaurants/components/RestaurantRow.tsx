@@ -1,28 +1,50 @@
 import { useRouter } from 'expo-router';
-import ArrowUpRight from 'lucide-react-native/icons/arrow-up-right';
-import MapPin from 'lucide-react-native/icons/map-pin';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
+import Award from 'lucide-react-native/icons/award';
 import { PressSurface } from '@/components/ui/PressSurface';
 import { Icon } from '@/components/ui/Icon';
 import { Text } from '@/components/ui/Text';
 import { colors, layout, radius, spacing } from '@/design';
 import { premium } from '@/design/premium';
 import type { Restaurant } from '@/services/contracts';
-import { useCatalog } from '../catalog';
+import type { DirectoryEntry } from '../catalog';
 import { FoodImage } from '@/components/food/FoodImage';
+import { ScoreLine } from '@/components/ratings/Ratings';
 
-export function RestaurantRow({ restaurant }: { restaurant: Restaurant }) {
+/** Directory card: leads with verified dish scores, not distance or maps. */
+export const RestaurantRow = memo(function RestaurantRow({
+  restaurant,
+  entry,
+}: {
+  restaurant: Restaurant;
+  entry?: DirectoryEntry;
+}) {
   const { t } = useTranslation();
   const router = useRouter();
-  const catalog = useCatalog(restaurant.id);
   const { width } = useWindowDimensions();
   const imageWidth =
     Math.min(width, layout.contentMaxWidth) - spacing.screenMargin * 2;
   const branches = t('restaurants.branches', { count: restaurant.branchCount });
+  const meta = entry
+    ? [
+        t(`dining.cuisine.${entry.cuisine}`),
+        entry.district,
+        t('dining.dishes', { count: entry.dishCount }),
+      ].join('  ·  ')
+    : branches;
   return (
     <PressSurface
-      accessibilityLabel={`${restaurant.name}, ${branches}`}
+      accessibilityLabel={[
+        restaurant.name,
+        meta,
+        entry &&
+          t('dining.scoreLabel', { score: entry.rating.average.toFixed(1) }),
+        entry && t('dining.ratings', { count: entry.rating.count }),
+      ]
+        .filter(Boolean)
+        .join(', ')}
       onPress={() =>
         router.push({
           pathname: '/restaurant/[id]',
@@ -33,62 +55,75 @@ export function RestaurantRow({ restaurant }: { restaurant: Restaurant }) {
       contentStyle={styles.content}
       spring
     >
-      <FoodImage
-        photo={catalog.data?.cover}
-        uri={restaurant.logoUrl}
-        width={imageWidth}
-        height={premium.heroHeight}
-        rounded={false}
-      />
+      <View>
+        <FoodImage
+          uri={entry?.coverUrl ?? restaurant.logoUrl}
+          cover={Boolean(entry)}
+          width={imageWidth}
+          height={premium.coverHeight}
+          rounded={false}
+        />
+        {entry && (
+          <View style={styles.badge}>
+            <ScoreLine rating={entry.rating} />
+          </View>
+        )}
+      </View>
       <View style={styles.info}>
-        <View style={styles.copy}>
-          <Text variant="caption" style={styles.cuisine}>
-            {t(catalog.data?.cuisineKey ?? 'visual.partner')}
-          </Text>
-          <Text variant="title2">{restaurant.name}</Text>
-          <View style={styles.location}>
+        <Text variant="title2" numberOfLines={2}>
+          {restaurant.name}
+        </Text>
+        <Text variant="caption" tone="secondary" numberOfLines={2}>
+          {meta}
+        </Text>
+        {entry && (
+          <View style={styles.signature}>
             <Icon
-              icon={MapPin}
+              icon={Award}
               size="small"
-              color={colors.inkSecondary}
+              color={colors.brand.accent}
               decorative
             />
-            <Text variant="caption" tone="secondary">
-              {branches}
+            <Text variant="caption" style={styles.accent}>
+              {t('dining.signature')}
+            </Text>
+            <Text variant="callout" numberOfLines={1} style={styles.dish}>
+              {entry.signature}
             </Text>
           </View>
-        </View>
-        <View style={styles.arrow}>
-          <Icon icon={ArrowUpRight} color={colors.brand.primary} decorative />
-        </View>
+        )}
       </View>
     </PressSurface>
   );
-}
+});
 const styles = StyleSheet.create({
   card: {
     ...premium.shadow,
     backgroundColor: colors.surface,
     borderRadius: radius[24],
-    marginBottom: spacing[24],
+    marginBottom: spacing[20],
     overflow: 'hidden',
   },
   content: { alignItems: 'stretch', justifyContent: 'flex-start' },
-  info: {
-    padding: spacing[20],
+  badge: {
+    position: 'absolute',
+    left: spacing[12],
+    bottom: spacing[12],
+    paddingHorizontal: spacing[12],
+    paddingVertical: spacing[4],
+    borderRadius: radius.pill,
+    backgroundColor: colors.surface,
+  },
+  info: { padding: spacing[16], gap: spacing[8] },
+  signature: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing[12],
-  },
-  copy: { flex: 1, gap: spacing[8], minWidth: 0 },
-  cuisine: { color: colors.brand.accent },
-  location: { flexDirection: 'row', gap: spacing[4], alignItems: 'center' },
-  arrow: {
-    width: layout.tapTarget,
-    height: layout.tapTarget,
-    borderRadius: radius.pill,
+    gap: spacing[8],
+    paddingHorizontal: spacing[12],
+    paddingVertical: spacing[8],
+    borderRadius: radius[12],
     backgroundColor: colors.brand.tint,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
+  accent: { color: colors.brand.accent },
+  dish: { flex: 1, minWidth: 0, color: colors.brand.primary },
 });

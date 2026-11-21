@@ -1,12 +1,14 @@
-import { useCallback, useRef, useState } from 'react';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useContext, useRef, useState } from 'react';
+import { BottomTabBarHeightContext } from 'expo-router/js-tabs';
+import { useRouter } from 'expo-router';
 import Bell from 'lucide-react-native/icons/bell';
-import ScanLine from 'lucide-react-native/icons/scan-line';
+import CircleHelp from 'lucide-react-native/icons/circle-question-mark';
 import ArrowUpRight from 'lucide-react-native/icons/arrow-up-right';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { PullToRefresh } from '@/components/ui/PullToRefresh';
 import { Button } from '@/components/ui/Button';
+import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { Icon } from '@/components/ui/Icon';
 import { Brand } from '@/components/ui/Brand';
 import { WalletSurface } from '@/components/wallet/WalletSurface';
@@ -33,6 +35,9 @@ import { queryKeys } from '@/services/query';
 import { BillsSection } from '@/components/receipts/BillsSection';
 import { WaitingDishes } from '../components/WaitingDishes';
 import { StaggeredRow } from '../components/StaggeredRow';
+import { ExploreSection } from '../components/ExploreSection';
+import { WaitingProducts } from '../components/WaitingProducts';
+import { useExplore } from '../exploreFeed';
 
 export default function HomeScreen() {
   const { t } = useTranslation();
@@ -43,20 +48,12 @@ export default function HomeScreen() {
   const walletCard = useRef<WalletCardRef>(null);
   const transactions = useWalletTransactions({ limit: 3 });
   useStaleRefetchOnFocus(queryKeys.wallet.all);
-  const locked = useRef(false);
   const refreshing = useRef(false);
   const [pulling, setPulling] = useState(false);
-  useFocusEffect(
-    useCallback(() => {
-      locked.current = false;
-    }, []),
+  const hasProducts = Boolean(useExplore().data?.products.length);
+  const [pendingTab, setPendingTab] = useState<'dishes' | 'products' | 'bills'>(
+    'dishes',
   );
-  const scan = () => {
-    if (!locked.current) {
-      locked.current = true;
-      router.navigate('/scan');
-    }
-  };
   const refresh = async () => {
     if (refreshing.current) return;
     refreshing.current = true;
@@ -77,12 +74,15 @@ export default function HomeScreen() {
           manat: Math.trunc(Math.abs(minor) / 100),
           qepik: Math.abs(minor) % 100,
         });
+  // Floating tab bar: pad inside the white sheet so the canvas never shows below it.
+  const tabBarHeight = useContext(BottomTabBarHeightContext) ?? 0;
   const receipts = transactions.data?.items.map((item) => item.receiptId) ?? [];
   return (
     <Screen
       surface="wallet"
       edges={['top', 'left', 'right']}
       contentStyle={styles.screen}
+      tabInset={false}
       refreshControl={
         <PullToRefresh
           testID="home-refresh"
@@ -96,79 +96,86 @@ export default function HomeScreen() {
       <View style={styles.hero}>
         <View style={styles.heading}>
           <Brand inverse />
-          <IconButton
-            icon={Bell}
-            tone="inverse"
-            accessibilityLabel={t('navigation.notifications')}
-            onPress={() => router.push('/profile/notifications')}
-          />
-        </View>
-        <View style={styles.greeting}>
-          <Text variant="caption" style={styles.muted}>
-            {t('premium.yourEpsilon')}
-          </Text>
-          <Text variant="title2" tone="inverse">
-            {t('home.greeting', { firstName: auth.user?.firstName ?? '' })}
-          </Text>
-        </View>
-        <PressSurface
-          accessibilityLabel={t('navigation.cashback')}
-          onPress={() =>
-            journey
-              ? journey.open(walletCard.current)
-              : router.navigate('/cashback')
-          }
-          contentStyle={styles.walletPress}
-          spring
-        >
-          <View
-            ref={walletCard}
-            onLayout={() => journey?.registerHome(walletCard.current)}
-            collapsable={false}
-            style={[styles.walletWidth, { opacity: journey?.active ? 0 : 1 }]}
-          >
-            <WalletSurface pendingMinor={wallet.data?.pendingMinor}>
-              <View style={styles.balanceValue}>
-                {minor !== undefined ? (
-                  <BalanceAmount
-                    minor={minor}
-                    accessibilityLabel={speech}
-                    inverse
-                  />
-                ) : wallet.isPending ? (
-                  <Skeleton
-                    width={layout.balanceSkeletonWidth}
-                    height={layout.controlHeight}
-                    accessibilityLabel={t('common.loading')}
-                  />
-                ) : (
-                  <Text tone="inverse" accessibilityRole="alert">
-                    {t('home.balanceUnavailable')}
-                  </Text>
-                )}
-              </View>
-            </WalletSurface>
+          <View style={styles.actions}>
+            <IconButton
+              icon={CircleHelp}
+              tone="inverse"
+              accessibilityLabel={t('howItWorks.open')}
+              onPress={() => router.push('/how-it-works')}
+            />
+            <IconButton
+              icon={Bell}
+              tone="inverse"
+              accessibilityLabel={t('navigation.notifications')}
+              onPress={() => router.push('/profile/notifications')}
+            />
           </View>
-        </PressSurface>
-        <PressSurface
-          accessibilityLabel={t('premium.walletDetails')}
-          onPress={() =>
-            journey
-              ? journey.open(walletCard.current)
-              : router.navigate('/cashback')
-          }
-          contentStyle={styles.walletLink}
-        >
-          <Text variant="caption" tone="inverse">
-            {t('premium.walletDetails')}
-          </Text>
-          <Icon
-            icon={ArrowUpRight}
-            size="small"
-            color={colors.surface}
-            decorative
-          />
-        </PressSurface>
+        </View>
+        <Text variant="callout" style={styles.muted}>
+          {t('home.greeting', { firstName: auth.user?.firstName ?? '' })}
+        </Text>
+        <View style={styles.walletSection} accessibilityRole="summary">
+          <PressSurface
+            accessibilityLabel={t('navigation.cashback')}
+            onPress={() =>
+              journey
+                ? journey.open(walletCard.current)
+                : router.navigate('/cashback')
+            }
+            pressedColor={colors.transparent}
+            contentStyle={styles.walletPress}
+            spring
+          >
+            <View
+              ref={walletCard}
+              onLayout={() => journey?.registerHome(walletCard.current)}
+              collapsable={false}
+              style={[styles.walletWidth, { opacity: journey?.active ? 0 : 1 }]}
+            >
+              <WalletSurface pendingMinor={wallet.data?.pendingMinor}>
+                <View style={styles.balanceValue}>
+                  {minor !== undefined ? (
+                    <BalanceAmount
+                      minor={minor}
+                      accessibilityLabel={speech}
+                      inverse
+                    />
+                  ) : wallet.isPending ? (
+                    <Skeleton
+                      width={layout.balanceSkeletonWidth}
+                      height={layout.controlHeight}
+                      accessibilityLabel={t('common.loading')}
+                    />
+                  ) : (
+                    <Text tone="inverse" accessibilityRole="alert">
+                      {t('home.balanceUnavailable')}
+                    </Text>
+                  )}
+                </View>
+              </WalletSurface>
+            </View>
+          </PressSurface>
+          <PressSurface
+            accessibilityLabel={t('premium.walletDetails')}
+            onPress={() =>
+              journey
+                ? journey.open(walletCard.current)
+                : router.navigate('/cashback')
+            }
+            pressedColor={colors.transparent}
+            contentStyle={styles.walletLink}
+          >
+            <Text variant="caption" tone="inverse">
+              {t('premium.walletDetails')}
+            </Text>
+            <Icon
+              icon={ArrowUpRight}
+              size="small"
+              color={colors.surface}
+              decorative
+            />
+          </PressSurface>
+        </View>
         {wallet.isError && (
           <>
             <Text tone="inverse" accessibilityRole="alert">
@@ -185,29 +192,43 @@ export default function HomeScreen() {
           </>
         )}
       </View>
-      <View style={styles.body}>
-        <PressSurface
-          accessibilityLabel={t('home.scan')}
-          onPress={scan}
-          contentStyle={styles.action}
-          spring
-        >
-          <View style={styles.scanMark}>
-            <Icon
-              icon={ScanLine}
-              color={colors.brand.primary}
-              size="large"
-              decorative
-            />
-          </View>
-          <View style={styles.actionCopy}>
-            <Text variant="headline">{t('home.scan')}</Text>
-            <Text variant="caption" tone="secondary">
-              {t('home.scanHelper')}
-            </Text>
-          </View>
-          <Icon icon={ArrowUpRight} color={colors.brand.primary} decorative />
-        </PressSurface>
+      <View
+        style={[styles.body, { paddingBottom: tabBarHeight + spacing[20] }]}
+      >
+        <View style={styles.section}>
+          <Text
+            variant="title2"
+            accessibilityRole="header"
+            style={styles.sectionTitle}
+          >
+            {t('home.pendingTitle')}
+          </Text>
+          <SegmentedControl
+            label={t('home.pendingTitle')}
+            options={[
+              { value: 'dishes', label: t('home.pendingDishes') },
+              // Sample products exist only in non-production builds.
+              ...(hasProducts
+                ? [
+                    {
+                      value: 'products' as const,
+                      label: t('home.pendingProducts'),
+                    },
+                  ]
+                : []),
+              { value: 'bills', label: t('home.pendingBills') },
+            ]}
+            value={pendingTab}
+            onValueChange={setPendingTab}
+          />
+          {pendingTab === 'dishes' ? (
+            <WaitingDishes receiptIds={receipts} embedded />
+          ) : pendingTab === 'products' && hasProducts ? (
+            <WaitingProducts />
+          ) : (
+            <BillsSection receiptIds={receipts} embedded />
+          )}
+        </View>
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text
@@ -262,8 +283,7 @@ export default function HomeScreen() {
             </>
           )}
         </View>
-        <WaitingDishes receiptIds={receipts} />
-        <BillsSection receiptIds={receipts} />
+        <ExploreSection />
         <PhoneVerificationBanner />
         <MockDataNotice />
       </View>
@@ -285,15 +305,17 @@ const styles = StyleSheet.create({
   },
   greeting: { gap: spacing[8] },
   muted: { color: premium.nightText },
-  walletPress: { alignItems: 'stretch' },
+  walletPress: { alignItems: 'stretch', borderRadius: radius[24] },
   walletWidth: { width: '100%' },
   balanceValue: { minHeight: layout.controlHeight, justifyContent: 'center' },
+  walletSection: { gap: spacing[8] },
   walletLink: {
     flexDirection: 'row',
     gap: spacing[8],
     justifyContent: 'center',
   },
   body: {
+    flexGrow: 1,
     backgroundColor: colors.surface,
     borderTopLeftRadius: radius[24],
     borderTopRightRadius: radius[24],
@@ -301,22 +323,8 @@ const styles = StyleSheet.create({
     padding: spacing[20],
     gap: spacing[32],
   },
-  action: {
-    flexDirection: 'row',
-    gap: spacing[12],
-    alignItems: 'center',
-    padding: spacing[16],
-    borderRadius: radius[20],
-    backgroundColor: colors.brand.tint,
-  },
-  scanMark: {
-    width: layout.tapTarget,
-    height: layout.tapTarget,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  actionCopy: { flex: 1, gap: spacing[4] },
   section: { gap: spacing[12] },
+  actions: { flexDirection: 'row', alignItems: 'center' },
   sectionHeader: {
     flexDirection: 'row',
     flexWrap: 'wrap',

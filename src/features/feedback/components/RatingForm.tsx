@@ -22,6 +22,9 @@ export const reasonCodes = [
   'price',
   'presentation',
   'wait_time',
+  'freshness',
+  'service',
+  'other',
 ] as const;
 export type RatingDraft = {
   rating: number;

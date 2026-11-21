@@ -5,12 +5,12 @@ import { Modal, View } from 'react-native';
 import { ListRow } from '@/components/ui/ListRow';
 import { Switch } from '@/components/ui/Switch';
 import { Text } from '@/components/ui/Text';
-import { Button } from '@/components/ui/Button';
+import { PressSurface } from '@/components/ui/PressSurface';
 import { authOperation } from '@/lib/auth-lifecycle';
 import { readCrashConsent, saveCrashConsent } from '@/lib/preferences';
 import { useProfile } from '@/hooks/useProfile';
 import { useToast } from '@/providers/ToastProvider';
-import { spacing } from '@/design';
+import { colors, spacing } from '@/design';
 import { ProfilePage } from '../components/ProfilePage';
 import { DeleteAccountFlow } from '../components/DeleteAccountFlow';
 export default function PrivacyScreen() {
@@ -82,12 +82,17 @@ export default function PrivacyScreen() {
         />
         <Text variant="caption">{t('profile.crashBody')}</Text>
       </View>
-      <Button
-        variant="destructive"
-        label={t('profile.deleteAccount')}
+      <PressSurface
+        accessibilityLabel={t('profile.deleteAccount')}
         disabled={!user.data}
         onPress={() => setDeleting(true)}
-      />
+        style={{ alignSelf: 'flex-start' }}
+        contentStyle={{ paddingHorizontal: spacing[8] }}
+      >
+        <Text variant="caption" style={{ color: colors.inkSecondary }}>
+          {t('profile.deleteAccount')}
+        </Text>
+      </PressSurface>
       <Modal
         testID="account-deletion-modal"
         transparent

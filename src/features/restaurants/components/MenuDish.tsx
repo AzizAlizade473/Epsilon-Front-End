@@ -1,76 +1,73 @@
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
-import Star from 'lucide-react-native/icons/star';
 import { PressSurface } from '@/components/ui/PressSurface';
 import { Text } from '@/components/ui/Text';
-import { Icon } from '@/components/ui/Icon';
 import { colors, radius, spacing } from '@/design';
 import { premium } from '@/design/premium';
 import { formatMoney } from '@/lib/money';
 import type { CatalogDish } from '../catalog';
 import { FoodImage } from '@/components/food/FoodImage';
+import { ScoreLine } from '@/components/ratings/Ratings';
 
-/** Public browsing card: deliberately no rating control or mutation. */
-export function MenuDish({
+/** Public menu row: deliberately no rating control or mutation. */
+export const MenuDish = memo(function MenuDish({
   dish,
-  width,
   onPress,
 }: {
   dish: CatalogDish;
-  width: number;
-  onPress: () => void;
+  onPress: (dishId: string) => void;
 }) {
   const { t } = useTranslation();
   return (
     <PressSurface
-      accessibilityLabel={`${t(dish.nameKey)}, ${formatMoney(dish.priceMinor)}, ${t('premium.reviewCount', { count: dish.count })}`}
-      onPress={onPress}
-      contentStyle={[styles.card, { width }]}
-      style={styles.outer}
-      spring
+      accessibilityLabel={[
+        dish.name,
+        dish.priceMinor === null ? null : formatMoney(dish.priceMinor),
+        t('dining.scoreLabel', { score: dish.rating.average.toFixed(1) }),
+        t('dining.ratings', { count: dish.rating.count }),
+      ]
+        .filter(Boolean)
+        .join(', ')}
+      onPress={() => onPress(dish.id)}
+      contentStyle={styles.row}
+      pressedColor={colors.divider}
     >
-      <FoodImage photo={dish.photo} width={width} height={premium.dishHeight} />
       <View style={styles.copy}>
-        <Text variant="headline">{t(dish.nameKey)}</Text>
-        <View style={styles.meta}>
-          <Text variant="callout">{formatMoney(dish.priceMinor)}</Text>
-          <View style={styles.score}>
-            <Icon
-              icon={Star}
-              size="small"
-              color={colors.brand.accent}
-              decorative
-            />
-            <Text variant="caption">{dish.score.toFixed(1)}</Text>
-          </View>
-        </View>
-        <Text variant="caption" tone="secondary">
-          {t('premium.reviewCount', { count: dish.count })}
+        <Text variant="headline" numberOfLines={2}>
+          {dish.name}
         </Text>
-        {dish.comments[0] && (
+        <ScoreLine rating={dish.rating} />
+        {dish.preview && (
           <Text variant="caption" tone="secondary" numberOfLines={2}>
-            {t(dish.comments[0].textKey)}
+            {`“${dish.preview.comment}”`}
+          </Text>
+        )}
+        {dish.priceMinor !== null && (
+          <Text variant="callout" style={styles.price}>
+            {formatMoney(dish.priceMinor)}
           </Text>
         )}
       </View>
+      <FoodImage
+        uri={dish.imageUrl}
+        cover
+        width={premium.menuThumb}
+        height={premium.menuThumb}
+      />
     </PressSurface>
   );
-}
+});
 const styles = StyleSheet.create({
-  outer: { marginBottom: spacing[16] },
-  card: {
-    backgroundColor: colors.surface,
-    borderRadius: radius[24],
-    alignItems: 'stretch',
-    overflow: 'hidden',
-    justifyContent: 'flex-start',
-  },
-  copy: { padding: spacing[12], gap: spacing[8] },
-  meta: {
+  row: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    gap: spacing[8],
+    gap: spacing[16],
+    paddingVertical: spacing[16],
+    paddingHorizontal: spacing.screenMargin,
+    borderRadius: radius[16],
   },
-  score: { flexDirection: 'row', alignItems: 'center', gap: spacing[4] },
+  copy: { flex: 1, minWidth: 0, gap: spacing[8] },
+  price: { color: colors.brand.primary },
 });

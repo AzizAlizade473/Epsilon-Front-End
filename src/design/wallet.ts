@@ -16,6 +16,8 @@ export const walletDesign = {
   },
   card: { radius: radius[24], inset: spacing[12], lift: spacing[8], turn: 3 },
   spring: { damping: 23, stiffness: 210, mass: 0.85 },
+  /** Contour lines on the card stay faint so the balance always reads first. */
+  contourOpacity: 0.16,
   rise: 24,
   stagger: 55,
   settle: 420,

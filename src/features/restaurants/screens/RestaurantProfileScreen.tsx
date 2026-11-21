@@ -1,23 +1,46 @@
-import { FlashList } from '@shopify/flash-list';
+import { FlashList, type ListRenderItemInfo } from '@shopify/flash-list';
 import { useQuery } from '@tanstack/react-query';
+import { StatusBar } from 'expo-status-bar';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View, useWindowDimensions } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import ArrowLeft from 'lucide-react-native/icons/arrow-left';
-import { Screen } from '@/components/ui/Screen';
-import { IconButton } from '@/components/ui/IconButton';
+import ShieldCheck from 'lucide-react-native/icons/shield-check';
 import { Text } from '@/components/ui/Text';
-import { PressSurface } from '@/components/ui/PressSurface';
+import { Chip } from '@/components/ui/Chip';
+import { Icon } from '@/components/ui/Icon';
 import { ErrorState } from '@/components/feedback/ErrorState';
 import { Skeleton } from '@/components/feedback/Skeleton';
-import { colors, layout, radius, spacing } from '@/design';
+import { MockDataNotice } from '@/components/feedback/MockDataNotice';
+import { colors, layout, radius, spacing, typography } from '@/design';
 import { premium } from '@/design/premium';
 import { services } from '@/services';
 import { safeIdSchema } from '@/lib/deep-link';
-import { useCatalog } from '../catalog';
-import { FoodImage } from '@/components/food/FoodImage';
+import { useCatalog, type Catalog, type CatalogDish } from '../catalog';
 import { MenuDish } from '../components/MenuDish';
+import { Hero, RoundButton } from '../components/Hero';
+import { RatingBars, Stars } from '@/components/ratings/Ratings';
+import { Reveal } from '@/components/ratings/Reveal';
+
+type Row =
+  | { type: 'category'; id: string; name: string }
+  | { type: 'dish'; dish: CatalogDish };
+
+function menuRows(catalog: Catalog | null | undefined, only: string | null) {
+  if (!catalog) return [];
+  return catalog.categories
+    .filter((c) => !only || c.id === only)
+    .flatMap<Row>((c) => {
+      const dishes = catalog.dishes.filter((d) => d.categoryId === c.id);
+      return dishes.length
+        ? [
+            { type: 'category', id: c.id, name: c.name },
+            ...dishes.map((dish) => ({ type: 'dish' as const, dish })),
+          ]
+        : [];
+    });
+}
 
 export default function RestaurantProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -30,151 +53,214 @@ export default function RestaurantProfileScreen() {
   const catalog = useCatalog(valid ? id : '');
   const { t } = useTranslation();
   const router = useRouter();
-  const [section, setSection] = useState('');
-  const width =
-    Math.min(useWindowDimensions().width, layout.contentMaxWidth) -
-    spacing[20] * 2;
-  const dishes =
-    catalog.data?.dishes.filter((d) => !section || d.sectionKey === section) ??
-    [];
+  const [category, setCategory] = useState<string | null>(null);
+  const data = catalog.data;
+  const rows = useMemo(() => menuRows(data, category), [data, category]);
+  const open = useCallback(
+    (dishId: string) =>
+      router.push({
+        pathname: '/restaurant/[id]/dish/[dishId]',
+        params: { id, dishId },
+      }),
+    [router, id],
+  );
+  const renderItem = useCallback(
+    ({ item }: ListRenderItemInfo<Row>) =>
+      item.type === 'category' ? (
+        <Text
+          variant="headline"
+          accessibilityRole="header"
+          style={styles.category}
+        >
+          {item.name}
+        </Text>
+      ) : (
+        <MenuDish dish={item.dish} onPress={open} />
+      ),
+    [open],
+  );
+  const back = (
+    <RoundButton
+      icon={ArrowLeft}
+      label={t('navigation.back')}
+      onPress={() =>
+        router.canGoBack() ? router.back() : router.replace('/restaurants')
+      }
+    />
+  );
   const header = (
-    <View style={styles.header}>
-      <View style={styles.top}>
-        <IconButton
-          icon={ArrowLeft}
-          accessibilityLabel={t('navigation.back')}
-          onPress={() =>
-            router.canGoBack() ? router.back() : router.replace('/restaurants')
-          }
-        />
-        <Text variant="caption" tone="secondary">
-          {t('premium.restaurantProfile')}
-        </Text>
-      </View>
-      <FoodImage
-        photo={catalog.data?.cover}
-        uri={query.data?.logoUrl}
-        width={width}
-        height={premium.dishHeight}
+    <View>
+      <Hero
+        uri={data?.coverUrl}
+        height={premium.restaurantHero}
+        leading={back}
       />
-      <Text variant="caption" style={styles.accent}>
-        {t(catalog.data?.cuisineKey ?? 'visual.partner')}
-      </Text>
-      <Text variant="title1" accessibilityRole="header">
-        {query.data?.name}
-      </Text>
-      {query.data && (
-        <Text tone="secondary">
-          {t('restaurants.branches', { count: query.data.branchCount })}
-        </Text>
-      )}
-      {catalog.data && (
-        <Text variant="caption" tone="secondary">
-          {t('premium.sampleMenu')}
-        </Text>
-      )}
-      <View style={styles.menuTitle}>
-        <Text variant="title2" accessibilityRole="header">
-          {t('premium.menu')}
-        </Text>
-        <Text variant="caption" tone="secondary">
-          {t('premium.purchaseOnly')}
-        </Text>
-      </View>
-      {catalog.data && (
-        <View style={styles.sections}>
-          {['', ...new Set(catalog.data.dishes.map((d) => d.sectionKey))].map(
-            (key) => (
-              <PressSurface
-                key={key}
-                accessibilityLabel={t(key || 'premium.all')}
-                accessibilityState={{ selected: section === key }}
-                onPress={() => setSection(key)}
-                contentStyle={[styles.chip, section === key && styles.active]}
-              >
-                <Text
-                  variant="caption"
-                  style={{
-                    color:
-                      section === key ? colors.surface : colors.inkSecondary,
-                  }}
-                >
-                  {t(key || 'premium.all')}
-                </Text>
-              </PressSurface>
-            ),
+      <View style={styles.sheet}>
+        <Reveal order={0} style={styles.block}>
+          <Text variant="title1" accessibilityRole="header">
+            {query.data?.name ?? ' '}
+          </Text>
+          {data && (
+            <Text variant="caption" tone="secondary">
+              {[
+                t(`dining.cuisine.${data.cuisine}`),
+                data.district,
+                t('dining.dishes', { count: data.dishes.length }),
+                query.data &&
+                  t('restaurants.branches', { count: query.data.branchCount }),
+              ]
+                .filter(Boolean)
+                .join('  ·  ')}
+            </Text>
           )}
-        </View>
-      )}
+          {data && <Text tone="secondary">{data.about}</Text>}
+        </Reveal>
+        {data && (
+          <Reveal order={1} style={styles.summary}>
+            <View style={styles.big}>
+              <Text style={styles.score}>{data.rating.average.toFixed(1)}</Text>
+              <Stars value={data.rating.average} />
+              <Text variant="caption" tone="secondary" style={styles.center}>
+                {t('dining.ratings', { count: data.rating.count })}
+              </Text>
+            </View>
+            <RatingBars rating={data.rating} />
+          </Reveal>
+        )}
+        {data && (
+          <Reveal order={2} style={styles.notice}>
+            <Icon
+              icon={ShieldCheck}
+              size="small"
+              color={colors.brand.accent}
+              decorative
+            />
+            <Text variant="caption" style={styles.noticeText}>
+              {t('dining.verifiedOnly')}
+            </Text>
+          </Reveal>
+        )}
+        <MockDataNotice />
+        {data && (
+          <View style={styles.block}>
+            <Text variant="title2" accessibilityRole="header">
+              {t('dining.menu')}
+            </Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.rail}
+              contentContainerStyle={styles.chips}
+            >
+              <Chip
+                label={t('dining.allDishes', { count: data.dishes.length })}
+                tone="brand"
+                selected={category === null}
+                onPress={() => setCategory(null)}
+              />
+              {data.categories.map((c) => (
+                <Chip
+                  key={c.id}
+                  label={c.name}
+                  tone="brand"
+                  selected={category === c.id}
+                  onPress={() => setCategory(category === c.id ? null : c.id)}
+                />
+              ))}
+            </ScrollView>
+          </View>
+        )}
+      </View>
     </View>
   );
   return (
-    <Screen
-      scroll={false}
-      edges={['top', 'left', 'right']}
-      contentStyle={styles.screen}
-    >
-      <FlashList
-        data={dishes}
-        numColumns={2}
-        keyExtractor={(d) => d.id}
-        contentContainerStyle={styles.list}
-        ListHeaderComponent={header}
-        renderItem={({ item, index }) => (
-          <View
-            style={{
-              paddingLeft: index % 2 ? spacing[8] : 0,
-              paddingRight: index % 2 ? 0 : spacing[8],
-            }}
-          >
-            <MenuDish
-              dish={item}
-              width={(width - spacing[16]) / 2}
-              onPress={() =>
-                router.push({
-                  pathname: '/restaurant/[id]/dish/[dishId]',
-                  params: { id, dishId: item.id },
-                })
-              }
-            />
-          </View>
-        )}
-        ListEmptyComponent={
-          query.isLoading || catalog.isLoading ? (
-            <Skeleton
-              width="100%"
-              height={premium.heroHeight}
-              accessibilityLabel={t('common.loading')}
-            />
-          ) : query.isError || !valid ? (
-            <ErrorState
-              title={t('product.loadError')}
-              retryLabel={t('common.retry')}
-              onRetry={() => {
-                void query.refetch();
-              }}
-            />
-          ) : (
-            <Text tone="secondary">{t('premium.menuUnavailable')}</Text>
-          )
-        }
-      />
-    </Screen>
+    <View style={styles.root}>
+      <StatusBar style="light" />
+      <View style={styles.column}>
+        <FlashList
+          data={rows}
+          renderItem={renderItem}
+          getItemType={(item) => item.type}
+          keyExtractor={(item) =>
+            item.type === 'category' ? `c_${item.id}` : item.dish.id
+          }
+          contentContainerStyle={styles.list}
+          ListHeaderComponent={header}
+          ListEmptyComponent={
+            query.isLoading || catalog.isLoading ? (
+              <View style={styles.pad}>
+                <Skeleton
+                  width="100%"
+                  height={premium.menuThumb}
+                  accessibilityLabel={t('common.loading')}
+                />
+              </View>
+            ) : query.isError || catalog.isError || !valid ? (
+              <ErrorState
+                title={t('product.loadError')}
+                retryLabel={t('common.retry')}
+                onRetry={() => {
+                  void query.refetch();
+                  void catalog.refetch();
+                }}
+              />
+            ) : (
+              <Text tone="secondary" style={styles.pad}>
+                {t('premium.menuUnavailable')}
+              </Text>
+            )
+          }
+        />
+      </View>
+    </View>
   );
 }
 const styles = StyleSheet.create({
-  screen: { padding: 0, gap: 0 },
-  list: { padding: spacing[20] },
-  header: { gap: spacing[16], paddingBottom: spacing[20] },
-  top: { flexDirection: 'row', alignItems: 'center', gap: spacing[8] },
-  accent: { color: colors.brand.accent },
-  menuTitle: { gap: spacing[8], paddingTop: spacing[12] },
-  sections: { flexDirection: 'row', gap: spacing[8], flexWrap: 'wrap' },
-  chip: {
-    paddingHorizontal: spacing[16],
-    minHeight: layout.tapTarget,
-    borderRadius: radius.pill,
-    backgroundColor: colors.surface,
+  root: { flex: 1, backgroundColor: colors.surface },
+  column: {
+    flex: 1,
+    width: '100%',
+    maxWidth: layout.contentMaxWidth,
+    alignSelf: 'center',
   },
-  active: { backgroundColor: colors.brand.primary },
+  list: { paddingBottom: spacing[48] },
+  sheet: {
+    marginTop: -premium.sheetOverlap,
+    borderTopLeftRadius: premium.sheetRadius,
+    borderTopRightRadius: premium.sheetRadius,
+    backgroundColor: colors.surface,
+    paddingTop: spacing[24],
+    paddingHorizontal: spacing.screenMargin,
+    gap: spacing[20],
+  },
+  block: { gap: spacing[8] },
+  summary: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[20],
+    padding: spacing[16],
+    borderRadius: radius[20],
+    backgroundColor: premium.canvas,
+  },
+  big: { alignItems: 'center', gap: spacing[4], maxWidth: '40%' },
+  score: { ...typography.display, color: colors.brand.primary },
+  center: { textAlign: 'center' },
+  notice: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[8],
+    padding: spacing[12],
+    borderRadius: radius[16],
+    backgroundColor: colors.brand.tint,
+  },
+  noticeText: { flex: 1, color: colors.brand.accent },
+  rail: { marginHorizontal: -spacing.screenMargin, marginTop: spacing[8] },
+  chips: { gap: spacing[8], paddingHorizontal: spacing.screenMargin },
+  category: {
+    paddingHorizontal: spacing.screenMargin,
+    paddingTop: spacing[24],
+    paddingBottom: spacing[4],
+    color: colors.brand.primary,
+  },
+  pad: { padding: spacing.screenMargin },
 });

@@ -74,7 +74,11 @@ export default function WalletScreen() {
             tone="inverse"
             accessibilityLabel={t('navigation.back')}
             onPress={() =>
-              journey ? journey.close() : router.navigate('/home')
+              journey
+                ? journey.close()
+                : router.canGoBack()
+                  ? router.back()
+                  : router.replace('/home')
             }
           />
           <Text variant="title2" tone="inverse" accessibilityRole="header">

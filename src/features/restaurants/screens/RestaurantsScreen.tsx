@@ -3,9 +3,10 @@ import Store from 'lucide-react-native/icons/store';
 import Search from 'lucide-react-native/icons/search';
 import X from 'lucide-react-native/icons/x';
 import { StatusBar } from 'expo-status-bar';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useContext, useMemo, useRef, useState } from 'react';
+import { BottomTabBarHeightContext } from 'expo-router/js-tabs';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/ui/Header';
 import { Icon } from '@/components/ui/Icon';
@@ -23,10 +24,10 @@ import type { Restaurant } from '@/services/contracts';
 import { queryKeys } from '@/services/query';
 import { RestaurantRow } from '../components/RestaurantRow';
 import { useRestaurants, useRestaurantSearch } from '../hooks/useRestaurants';
+import { useDirectory, type Cuisine } from '../catalog';
+import { Reveal } from '@/components/ratings/Reveal';
+import { Chip } from '@/components/ui/Chip';
 
-const renderItem = ({ item }: ListRenderItemInfo<Restaurant>) => (
-  <RestaurantRow restaurant={item} />
-);
 const keyExtractor = (item: Restaurant) => item.id;
 const maintainPosition = { disabled: true };
 export default function RestaurantsScreen() {
@@ -35,6 +36,29 @@ export default function RestaurantsScreen() {
   const search = useRestaurantSearch(input);
   const query = useRestaurants(search);
   useStaleRefetchOnFocus(queryKeys.restaurant.all);
+  const directory = useDirectory();
+  const entries = useMemo(
+    () => new Map(directory.data?.map((e) => [e.restaurantId, e])),
+    [directory.data],
+  );
+  const cuisines = useMemo(
+    () => [...new Set(directory.data?.map((e) => e.cuisine))],
+    [directory.data],
+  );
+  const [cuisine, setCuisine] = useState<Cuisine | null>(null);
+  const items = cuisine
+    ? query.items.filter((r) => entries.get(r.id)?.cuisine === cuisine)
+    : query.items;
+  const renderItem = useCallback(
+    ({ item, index }: ListRenderItemInfo<Restaurant>) => (
+      <Reveal order={index}>
+        <RestaurantRow restaurant={item} entry={entries.get(item.id)} />
+      </Reveal>
+    ),
+    [entries],
+  );
+  // The floating tab bar overlays content; keep the last card clear of it.
+  const tabBarHeight = useContext(BottomTabBarHeightContext) ?? 0;
   const [collapsed, setCollapsed] = useState(false);
   const collapsedRef = useRef(false);
   const titleHeight = useRef<number>(typography.title1.lineHeight);
@@ -79,7 +103,7 @@ export default function RestaurantsScreen() {
           {t('navigation.restaurants')}
         </Text>
       </View>
-      <Text tone="secondary">{t('visual.restaurants')}</Text>
+      <Text tone="secondary">{t('dining.subtitle')}</Text>
       <View style={styles.search}>
         <Icon icon={Search} decorative />
         <TextInput
@@ -103,6 +127,30 @@ export default function RestaurantsScreen() {
           />
         )}
       </View>
+      {cuisines.length > 1 && (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.chips}
+          style={styles.chipRail}
+        >
+          <Chip
+            label={t('dining.allCuisines')}
+            tone="brand"
+            selected={cuisine === null}
+            onPress={() => setCuisine(null)}
+          />
+          {cuisines.map((c) => (
+            <Chip
+              key={c}
+              label={t(`dining.cuisine.${c}`)}
+              tone="brand"
+              selected={cuisine === c}
+              onPress={() => setCuisine(cuisine === c ? null : c)}
+            />
+          ))}
+        </ScrollView>
+      )}
       <MockDataNotice />
       {query.isError &&
         query.items.length > 0 &&
@@ -140,7 +188,7 @@ export default function RestaurantsScreen() {
           void query.refetch();
         }}
       />
-    ) : search ? (
+    ) : search || cuisine ? (
       <EmptyState
         icon={Search}
         title={t('restaurants.noResults')}
@@ -155,13 +203,17 @@ export default function RestaurantsScreen() {
       <Header title={t('navigation.restaurants')} titleVisible={collapsed} />
       <View style={styles.column}>
         <FlashList
-          data={waiting ? [] : query.items}
+          data={waiting ? [] : items}
+          extraData={entries}
           renderItem={renderItem}
           keyExtractor={keyExtractor}
           maintainVisibleContentPosition={maintainPosition}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
-          contentContainerStyle={styles.content}
+          contentContainerStyle={[
+            styles.content,
+            { paddingBottom: tabBarHeight + spacing[16] },
+          ]}
           ListHeaderComponent={header}
           ListEmptyComponent={empty}
           refreshing={pulling}
@@ -252,5 +304,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[8],
   },
   skeleton: { gap: 0 },
+  chipRail: { marginHorizontal: -spacing.screenMargin },
+  chips: { gap: spacing[8], paddingHorizontal: spacing.screenMargin },
   footer: { gap: spacing[8], paddingTop: spacing[16] },
 });
