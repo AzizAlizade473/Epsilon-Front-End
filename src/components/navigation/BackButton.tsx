@@ -9,6 +9,7 @@ export type BackButtonProps = {
   modal?: boolean;
   onPress?: () => void;
   accessibilityLabel?: string;
+  tone?: 'default' | 'inverse';
 };
 
 /** Screen-defined back/close button; uses Lucide stroke-2 icons and localized labels. */
@@ -16,6 +17,7 @@ export function BackButton({
   modal = false,
   onPress,
   accessibilityLabel,
+  tone,
 }: BackButtonProps) {
   const router = useRouter();
   const { t } = useTranslation();
@@ -29,6 +31,7 @@ export function BackButton({
       icon={modal ? X : ArrowLeft}
       accessibilityLabel={label}
       onPress={handlePress}
+      tone={tone}
     />
   );
 }

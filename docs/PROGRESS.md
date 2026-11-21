@@ -1136,3 +1136,18 @@ The current scope at the top and subsequent batch entries supersede this history
   dish disappears from invitations. 320px/Russian/reduced-motion menu reviewed.
   Fifteen screenshots/gallery: `reports/premium-four-tab/` (ignored). Android/device
   motion, haptics, TalkBack and live backend authorization remain pending.
+
+## Home action hierarchy and scanner correction (2026-11-14)
+
+- [x] UI.home.focus - Pending purchased-dish ratings and bills now precede wallet
+      and recent activity. Clear purpose, actual rating progress, receipt-linked Rate now
+      actions and a first-purchase scan state; AZ/EN/RU copy added. Wallet motion retained.
+- Disabled the wallet's pale press tint only, preserving its spring feedback.
+  Delete-account entry is compact/muted with a 44pt target; confirmation gates unchanged.
+- Scanner manual entry is pinned above the floating tab bar. Camera/error controls
+  reserve the measured tab height, including safe area, instead of sitting behind it.
+- Targeted types/lint/format/locales and Home, public dining, scanner, profile,
+  deletion and press tests verified. Actual web screenshots: reports/home-focus/.
+  Manual button bottom 756px versus visible tab top 783px at 390x844; clickable.
+  Android camera/device verification pending. Existing uncommitted work preserved;
+  these focused edits were not bundled into a commit with that unrelated work.

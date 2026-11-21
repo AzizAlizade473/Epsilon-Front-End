@@ -222,30 +222,33 @@ function SheetBody({
           appearance !== 'default' && { maxHeight: '80%' },
         ]}
       >
-        <GestureDetector gesture={panGesture}>
-          <Animated.View
-            onLayout={handleLayout}
-            accessibilityLabel={accessibilityLabel}
-            style={[
-              styles.sheet,
-              appearance !== 'default' && styles.originalSheet,
-              appearance === 'feedback' && { paddingHorizontal: spacing[32] },
-              { paddingBottom: Math.max(insets.bottom, spacing[16]) },
-              sheetAnimatedStyle,
-            ]}
-          >
-            <Pressable
-              ref={handle}
-              accessibilityRole="button"
-              accessibilityLabel={t('navigation.close')}
-              onPress={dismiss}
-              style={styles.handleContainer}
-            >
-              <View style={styles.handle} />
-            </Pressable>
-            <View style={styles.content}>{children}</View>
-          </Animated.View>
-        </GestureDetector>
+        <Animated.View
+          onLayout={handleLayout}
+          accessibilityLabel={accessibilityLabel}
+          style={[
+            styles.sheet,
+            appearance !== 'default' && styles.originalSheet,
+            appearance === 'feedback' && { paddingHorizontal: spacing[32] },
+            { paddingBottom: Math.max(insets.bottom, spacing[16]) },
+            sheetAnimatedStyle,
+          ]}
+        >
+          {/* Drag-to-close lives on the handle only so inner lists can scroll. */}
+          <GestureDetector gesture={panGesture}>
+            <View>
+              <Pressable
+                ref={handle}
+                accessibilityRole="button"
+                accessibilityLabel={t('navigation.close')}
+                onPress={dismiss}
+                style={styles.handleContainer}
+              >
+                <View style={styles.handle} />
+              </Pressable>
+            </View>
+          </GestureDetector>
+          <View style={styles.content}>{children}</View>
+        </Animated.View>
       </KeyboardAvoidingView>
     </GestureHandlerRootView>
   );

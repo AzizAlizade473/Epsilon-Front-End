@@ -1,5 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
-import { useRef, useState, type ReactNode, type ReactElement } from 'react';
+import {
+  useContext,
+  useRef,
+  useState,
+  type ReactNode,
+  type ReactElement,
+} from 'react';
+import { BottomTabBarHeightContext } from 'expo-router/js-tabs';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -7,12 +14,14 @@ import {
   StyleSheet,
   View,
   type RefreshControlProps,
+  type ScrollViewInstance,
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
 import { SafeAreaView, type Edges } from 'react-native-safe-area-context';
 
 import { Header, type HeaderProps } from './Header';
+import { useKeyboardReveal } from '@/hooks/useKeyboardReveal';
 import { Text } from './Text';
 
 import { colors, layout, spacing, theme, typography } from '@/design';
@@ -28,6 +37,8 @@ export type ScreenProps = Pick<HeaderProps, 'leading' | 'trailing'> & {
   refreshControl?: ReactElement<RefreshControlProps>;
   surface?: 'background' | 'surface' | 'brandTint' | 'receiptCanvas' | 'wallet';
   contentStyle?: StyleProp<ViewStyle>;
+  /** false when the screen pads for the floating tab bar inside its own surface. */
+  tabInset?: boolean;
 };
 
 export function Screen({
@@ -41,10 +52,19 @@ export function Screen({
   refreshControl,
   surface = 'background',
   contentStyle,
+  tabInset = true,
 }: ScreenProps) {
   const [collapsed, setCollapsed] = useState(false);
+  // The tab bar floats over content; reserve its height so nothing hides under it.
+  const tabBarHeight = useContext(BottomTabBarHeightContext) ?? 0;
+  const floatInset =
+    tabInset && tabBarHeight
+      ? { paddingBottom: tabBarHeight + spacing[16] }
+      : null;
   const collapsedRef = useRef(false);
   const titleHeight = useRef<number>(typography.title1.lineHeight);
+  const scrollRef = useRef<ScrollViewInstance>(null);
+  const trackOffset = useKeyboardReveal(scrollRef, scroll);
   const content = (
     <>
       {scroll && title && (
@@ -88,7 +108,8 @@ export function Screen({
       />
       <KeyboardAvoidingView
         style={styles.fill}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        // Android is edge-to-edge (window no longer resizes), so pad there too.
+        behavior={Platform.OS === 'web' ? undefined : 'padding'}
       >
         {(title || leading || trailing) && (
           <Header
@@ -101,12 +122,14 @@ export function Screen({
         {scroll ? (
           <ScrollView
             testID="screen-scroll"
+            ref={scrollRef}
             refreshControl={refreshControl}
-            contentContainerStyle={[styles.content, contentStyle]}
+            contentContainerStyle={[styles.content, contentStyle, floatInset]}
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="on-drag"
             scrollEventThrottle={spacing[16]}
             onScroll={(event) => {
+              trackOffset(event);
               const next =
                 Boolean(title) &&
                 event.nativeEvent.contentOffset.y >=
@@ -120,11 +143,11 @@ export function Screen({
             {content}
           </ScrollView>
         ) : (
-          <View style={[styles.content, styles.fill, contentStyle]}>
+          <View style={[styles.content, styles.fill, contentStyle, floatInset]}>
             {content}
           </View>
         )}
-        {footer && <View style={styles.footer}>{footer}</View>}
+        {footer && <View style={[styles.footer, floatInset]}>{footer}</View>}
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

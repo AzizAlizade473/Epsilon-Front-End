@@ -115,7 +115,10 @@ export function WalletJourney({ children }: { children: ReactNode }) {
       progress.set(0);
       setFlight({ from: target.current, to: source.current, closing: true });
     }
-    router.navigate('/home');
+    // Pop the Wallet screen. navigate('/home') would push a SECOND (tabs)
+    // navigator on top of the first: duplicated tab bars and ghost screens.
+    if (router.canGoBack()) router.back();
+    else router.replace('/home');
   }, [motion.reduceMotion, progress, router]);
   useEffect(() => {
     if (!flight) return;

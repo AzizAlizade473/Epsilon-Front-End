@@ -15,8 +15,11 @@ import { BillRow } from './BillRow';
 
 export function BillsSection({
   receiptIds,
+  embedded = false,
 }: {
   receiptIds: readonly (string | null | undefined)[];
+  /** Inside Home's combined section: the parent owns the heading. */
+  embedded?: boolean;
 }) {
   const { t } = useTranslation();
   const router = useRouter();
@@ -29,10 +32,12 @@ export function BillsSection({
   );
   return (
     <View style={styles.section}>
-      <View style={styles.heading}>
-        <Text style={styles.title} accessibilityRole="header">
-          {t('originalReceipts.bills')}
-        </Text>
+      <View style={[styles.heading, embedded && styles.embeddedHeading]}>
+        {!embedded && (
+          <Text style={styles.title} accessibilityRole="header">
+            {t('originalReceipts.bills')}
+          </Text>
+        )}
         <PressSurface
           accessibilityLabel={t('originalReceipts.allBills')}
           onPress={() => router.push('/receipts')}
@@ -91,6 +96,7 @@ const styles = StyleSheet.create({
     gap: spacing[12],
     marginBottom: spacing[12],
   },
+  embeddedHeading: { justifyContent: 'flex-end', marginBottom: spacing[8] },
   title: { ...o.type.title, fontSize: 17, color: o.colors.ink },
   all: {
     backgroundColor: o.colors.primaryTint,

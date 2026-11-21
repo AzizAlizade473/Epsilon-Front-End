@@ -10,6 +10,9 @@ import ArrowUpRight from 'lucide-react-native/icons/arrow-up-right';
 import { Icon } from '@/components/ui/Icon';
 import { Text } from '@/components/ui/Text';
 import { Brand } from '@/components/ui/Brand';
+import { ContourPattern } from '@/components/ui/ContourPattern';
+import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
+import { decorativeSvgProps } from '@/lib/decorative-svg';
 import { colors, layout, radius, spacing, useMotion } from '@/design';
 import { walletDesign as w } from '@/design/wallet';
 import { formatMoney } from '@/lib/money';
@@ -55,7 +58,21 @@ export function WalletSurface({
         style={[styles.layer, styles.fold, fold]}
       />
       <View style={styles.wallet}>
-        <View pointerEvents="none" style={styles.arc} />
+        {/* Business-card identity: blue-to-indigo field with faint contour lines. */}
+        <Svg
+          pointerEvents="none"
+          style={StyleSheet.absoluteFill}
+          {...decorativeSvgProps}
+        >
+          <Defs>
+            <LinearGradient id="walletField" x1="0" y1="0" x2="1" y2="1">
+              <Stop offset="0" stopColor={colors.brand.secondary} />
+              <Stop offset="1" stopColor={colors.brand.primary} />
+            </LinearGradient>
+          </Defs>
+          <Rect width="100%" height="100%" fill="url(#walletField)" />
+        </Svg>
+        <ContourPattern composition="card" opacity={w.contourOpacity} />
         <View style={styles.top}>
           <Brand inverse />
           <View style={styles.seal}>
@@ -109,15 +126,6 @@ const styles = StyleSheet.create({
     padding: spacing[24],
     gap: spacing[16],
     overflow: 'hidden',
-  },
-  arc: {
-    position: 'absolute',
-    width: layout.scanViewfinderSize,
-    height: layout.scanViewfinderSize,
-    borderRadius: radius.pill,
-    backgroundColor: w.colors.sheen,
-    right: -layout.authLogoSize,
-    top: -spacing[20],
   },
   top: {
     flexDirection: 'row',

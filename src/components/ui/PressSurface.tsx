@@ -49,9 +49,23 @@ export function PressSurface({
   accessibilityState,
 }: PressSurfaceProps) {
   const scale = useAnimatedValue(1);
+  const tint = useAnimatedValue(0);
   const motion = useMotion();
   const blocked = disabled || loading;
+  // Highlight fades in fast and out slower, instead of snapping on and off.
+  const highlight = (on: boolean) =>
+    Animated.timing(tint, {
+      toValue: on ? 1 : 0,
+      duration: motion.reduceMotion
+        ? 0
+        : on
+          ? motion.duration.fast
+          : motion.duration.slow,
+      easing: motion.easing,
+      useNativeDriver: true,
+    }).start();
   const animate = (value: number) => {
+    highlight(value !== 1);
     scale.stopAnimation();
     if (motion.reduceMotion) {
       scale.setValue(value);
@@ -92,12 +106,7 @@ export function PressSurface({
           busy: loading,
         }}
         disabled={blocked}
-        android_ripple={{ color: colors.brand.border }}
-        style={({ pressed }) => [
-          styles.target,
-          contentStyle,
-          pressed && { backgroundColor: pressedColor },
-        ]}
+        style={[styles.target, contentStyle, styles.clip]}
         onPressIn={() =>
           animate(motion.reduceMotion ? 1 : (pressScale ?? motion.pressScale))
         }
@@ -112,6 +121,16 @@ export function PressSurface({
           onPress();
         }}
       >
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            StyleSheet.absoluteFill,
+            {
+              backgroundColor: pressedColor ?? colors.brand.tint,
+              opacity: tint,
+            },
+          ]}
+        />
         {children}
       </Pressable>
     </Animated.View>
@@ -125,4 +144,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  clip: { overflow: 'hidden' },
 });

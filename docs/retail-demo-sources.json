@@ -1,0 +1,1821 @@
+{
+  "checkedOn": "2026-11-16",
+  "chains": [
+    {
+      "id": "araz",
+      "name": "Araz",
+      "description_en": "Araz Supermarket is a supermarket chain in Azerbaijan (Araz also operates SPAR Azerbaijan, per spar-international.com).",
+      "sourceUrl": "https://www.arazmarket.az/az",
+      "privateLabels": ["Tac", "Soba", "Mastero", "Bloom", "Dalğa", "Südçü"],
+      "notes": "PL page https://www.arazmarket.az/az/pages/yalniz-arazda names the six brands (25 food and non-food categories, 1,000+ varieties) but lists no specific products or sizes. Product data taken from Next.js payload of arazmarket.az category pages; is_araz_brand=true seen only for Tac and Soba items. Prices are site shelf prices."
+    },
+    {
+      "id": "bravo",
+      "name": "Bravo",
+      "description_en": "Bravo Supermarket runs Hiper, Super, Market and Ekspres store formats across Azerbaijan, many open 24/7.",
+      "sourceUrl": "https://www.bravosupermarket.az/branches/",
+      "privateLabels": [],
+      "notes": "Products come from Wolt venue Bravo Supermarket Globus Centre; official site has no product catalogue."
+    },
+    {
+      "id": "tamstore",
+      "name": "Tamstore",
+      "description_en": "Tamstore serves as a chain of mini, city and supermarket-type markets (official site wording).",
+      "sourceUrl": "https://www.tamstore.az/az",
+      "privateLabels": [],
+      "notes": "Products come from Wolt venue Tamstore Supermarket Khatai. Brand Tamli (eggs) probably own label but not confirmed, so not flagged."
+    },
+    {
+      "id": "rahat",
+      "name": "Rahat Market",
+      "description_en": "Rahat supermarket network started trading in the Azerbaijani market in May 2009 under the RAHAT trade mark and is a subsidiary of ANC Group.",
+      "sourceUrl": "https://rahatmarket.az/en/haqqimizda/rahat-market-haqqinda",
+      "privateLabels": [],
+      "notes": "No product data available (official site shows promo banners only; no Wolt venue URL verified)."
+    },
+    {
+      "id": "spar",
+      "name": "SPAR Azerbaijan",
+      "description_en": "Azerbaijan was the second country in the Caucasus region to join the global SPAR network; local retailer Araz operates convenience stores and neighbourhood supermarkets.",
+      "sourceUrl": "https://spar-international.com/country/azerbaijan-2/",
+      "privateLabels": [],
+      "notes": "Products come from Wolt venue araz-spar-1-3mkr (SPAR 3rd Microdistrict Superstore). Venue also sells Araz-PL-named brands (Tac, Soba, Bloom) but PL status for the SPAR chain is not confirmed on a page, so not flagged."
+    }
+  ],
+  "products": [
+    {
+      "id": "atena_milk_15_1l",
+      "brand": "Atena",
+      "name_az": "Atena Süd 1.5% 1 l",
+      "name_en": "Atena Milk 1.5% 1 L",
+      "name_ru": "Молоко Atena 1,5% 1 л",
+      "variant": "1.5%",
+      "size": "1 L",
+      "category": "dairy",
+      "privateLabel": false,
+      "chains": ["araz", "tamstore"],
+      "priceAzn": 2.7,
+      "sources": [
+        {
+          "url": "https://www.arazmarket.az/az/categories/sade-sud-953",
+          "type": "official-site",
+          "chain": "araz",
+          "listedAs": "Atena Süd 1.5% 1 l",
+          "priceAzn": 2.7
+        },
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/tamstore-xetai/items/sud-v-sud-mhsullari-76",
+          "type": "wolt-listing",
+          "chain": "tamstore",
+          "listedAs": "Atena Süd 1.5% 1l",
+          "priceAzn": 2.69
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "milla_milk_32_1l",
+      "brand": "Milla",
+      "name_az": "Milla Süd 3.2% 1l",
+      "name_en": "Milla Milk 3.2% 1 L",
+      "name_ru": "Молоко Milla 3,2% 1 л",
+      "variant": "3.2%",
+      "size": "1 L",
+      "category": "dairy",
+      "privateLabel": false,
+      "chains": ["araz", "tamstore"],
+      "priceAzn": 2.9,
+      "sources": [
+        {
+          "url": "https://www.arazmarket.az/az/categories/sade-sud-953",
+          "type": "official-site",
+          "chain": "araz",
+          "listedAs": "Milla Süd 3.2% 1l",
+          "priceAzn": 2.9
+        },
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/tamstore-xetai/items/sud-v-sud-mhsullari-76",
+          "type": "wolt-listing",
+          "chain": "tamstore",
+          "listedAs": "Milla Sud Yagli 3.2% 1 1l",
+          "priceAzn": 2.49
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "azersud_lactosefree_15_1l",
+      "brand": "Azər Süd",
+      "name_az": "Azər Süd Laktozasız 1.5% 1 l",
+      "name_en": "Azər Süd Lactose-Free Milk 1.5% 1 L",
+      "name_ru": "Безлактозное молоко Azər Süd 1,5% 1 л",
+      "variant": "Lactose-free 1.5%",
+      "size": "1 L",
+      "category": "dairy",
+      "privateLabel": false,
+      "chains": ["araz", "tamstore"],
+      "priceAzn": 3.35,
+      "sources": [
+        {
+          "url": "https://www.arazmarket.az/az/categories/sade-sud-953",
+          "type": "official-site",
+          "chain": "araz",
+          "listedAs": "Azər Süd Laktozasız 1.5% 1 l",
+          "priceAzn": 3.35
+        },
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/tamstore-xetai/items/sud-v-sud-mhsullari-76",
+          "type": "wolt-listing",
+          "chain": "tamstore",
+          "listedAs": "Azərsüd Laktozasız Süd 1.5% 1L",
+          "priceAzn": 3.39
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "milla_milk_25_1l",
+      "brand": "Milla",
+      "name_az": "Süd Milla 2,5% 1lt",
+      "name_en": "Milla Milk 2.5% 1 L",
+      "name_ru": "Молоко Milla 2,5% 1 л",
+      "variant": "2.5%",
+      "size": "1 L",
+      "category": "dairy",
+      "privateLabel": false,
+      "chains": ["araz", "tamstore"],
+      "priceAzn": 2.8,
+      "sources": [
+        {
+          "url": "https://www.arazmarket.az/az/categories/sade-sud-953",
+          "type": "official-site",
+          "chain": "araz",
+          "listedAs": "Süd Milla 2,5% 1lt",
+          "priceAzn": 2.8
+        },
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/tamstore-xetai/items/sud-v-sud-mhsullari-76",
+          "type": "wolt-listing",
+          "chain": "tamstore",
+          "listedAs": "Milla Süd 2.5% 1l",
+          "priceAzn": 2.79
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "slavyanskoe_milk_15_1l",
+      "brand": "Slavyanskoe",
+      "name_az": "Slavyanskoe Süd 1.5% 1 Lt",
+      "name_en": "Slavyanskoe Milk 1.5% 1 L",
+      "name_ru": "Молоко Славянское 1,5% 1 л",
+      "variant": "1.5%",
+      "size": "1 L",
+      "category": "dairy",
+      "privateLabel": false,
+      "chains": ["araz", "tamstore"],
+      "priceAzn": 2.85,
+      "sources": [
+        {
+          "url": "https://www.arazmarket.az/az/categories/sade-sud-953",
+          "type": "official-site",
+          "chain": "araz",
+          "listedAs": "Slavyanskoe Süd 1.5% 1 Lt",
+          "priceAzn": 2.85
+        },
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/tamstore-xetai/items/sud-v-sud-mhsullari-76",
+          "type": "wolt-listing",
+          "chain": "tamstore",
+          "listedAs": "Slavyanskoe Sud 1.5% 1 Lt",
+          "priceAzn": 2.79
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "milla_village_katiq_6_1kg",
+      "brand": "Milla",
+      "name_az": "Milla Qaymaqlı Kənd Qatığı 6% 1kq",
+      "name_en": "Milla Creamy Village Qatiq (fermented milk) 6% 1 kg",
+      "name_ru": "Катык деревенский сливочный Milla 6% 1 кг",
+      "variant": "Creamy village qatiq 6%",
+      "size": "1 kg",
+      "category": "dairy",
+      "privateLabel": false,
+      "chains": ["tamstore"],
+      "priceAzn": 3.59,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/tamstore-xetai/items/yoqurt-v-ksmik-106",
+          "type": "wolt-listing",
+          "chain": "tamstore",
+          "listedAs": "Milla Qaymaqlı Kənd Qatığı 6% 1kq",
+          "priceAzn": 3.59
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "milla_katiq_15_500",
+      "brand": "Milla",
+      "name_az": "Milla Qatıq 1.5% 500qr",
+      "name_en": "Milla Qatiq (fermented milk) 1.5% 500 g",
+      "name_ru": "Катык Milla 1,5% 500 г",
+      "variant": "1.5%",
+      "size": "500 g",
+      "category": "dairy",
+      "privateLabel": false,
+      "chains": ["araz"],
+      "priceAzn": 2.0,
+      "sources": [
+        {
+          "url": "https://www.arazmarket.az/az/categories/qatiq-inek-sudu-1011",
+          "type": "official-site",
+          "chain": "araz",
+          "listedAs": "Milla Qatıq 1.5% 500qr",
+          "priceAzn": 2.0
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "milla_white_cheese_250",
+      "brand": "Milla",
+      "name_az": "Milla Ağ Pendir 250qr",
+      "name_en": "Milla White Cheese 250 g",
+      "name_ru": "Белый сыр Milla 250 г",
+      "variant": null,
+      "size": "250 g",
+      "category": "dairy",
+      "privateLabel": false,
+      "chains": ["spar"],
+      "priceAzn": 3.5,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/araz-spar-1-3mkr/items/sud-sud-mhsullaryeni-kateqoriya-22",
+          "type": "wolt-listing",
+          "chain": "spar",
+          "listedAs": "Milla Ağ Pendir 250qr",
+          "priceAzn": 3.5
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "atena_white_cheese_400",
+      "brand": "Atena",
+      "name_az": "Atena Bəyaz Pendir 400 gr Qapaqlı",
+      "name_en": "Atena White Cheese 400 g, lidded tub",
+      "name_ru": "Белый сыр Atena 400 г, в контейнере с крышкой",
+      "variant": "Lidded tub",
+      "size": "400 g",
+      "category": "dairy",
+      "privateLabel": false,
+      "chains": ["spar"],
+      "priceAzn": 5.9,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/araz-spar-1-3mkr/items/sud-mhsullar-38",
+          "type": "wolt-listing",
+          "chain": "spar",
+          "listedAs": "Atena Bəyaz Pendir 400 gr Qapaqlı",
+          "priceAzn": 5.9
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "anchor_butter_180",
+      "brand": "Anchor",
+      "name_az": "Anchor Kərə Yağı 180qr",
+      "name_en": "Anchor Butter 180 g",
+      "name_ru": "Сливочное масло Anchor 180 г",
+      "variant": null,
+      "size": "180 g",
+      "category": "dairy",
+      "privateLabel": false,
+      "chains": ["bravo"],
+      "priceAzn": 5.45,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/bravo-supermarket-globus-centre/items/sud-mhsullar-42",
+          "type": "wolt-listing",
+          "chain": "bravo",
+          "listedAs": "Anchor Kərə Yağı 180qr",
+          "priceAzn": 5.45
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "valio_butter_200",
+      "brand": "Valio",
+      "name_az": "Valio Kərə Yağı 200qr",
+      "name_en": "Valio Butter 200 g",
+      "name_ru": "Сливочное масло Valio 200 г",
+      "variant": null,
+      "size": "200 g",
+      "category": "dairy",
+      "privateLabel": false,
+      "chains": ["bravo"],
+      "priceAzn": 4.99,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/bravo-supermarket-globus-centre/items/sud-mhsullar-42",
+          "type": "wolt-listing",
+          "chain": "bravo",
+          "listedAs": "Valio Kərə Yağı 200qr",
+          "priceAzn": 4.99
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "savuskin_tvorog_9_300",
+      "brand": "Savuşkin",
+      "name_az": "Savuşkin Tvoroq 9% 300qr",
+      "name_en": "Savushkin Tvorog (curd) 9% 300 g",
+      "name_ru": "Творог Савушкин 9% 300 г",
+      "variant": "9%",
+      "size": "300 g",
+      "category": "dairy",
+      "privateLabel": false,
+      "chains": ["spar"],
+      "priceAzn": 3.9,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/araz-spar-1-3mkr/items/sud-mhsullar-38",
+          "type": "wolt-listing",
+          "chain": "spar",
+          "listedAs": "Savuşkin Tvoroq 9% 300qr",
+          "priceAzn": 3.9
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "milvana_white_eggs_10",
+      "brand": "Milvana",
+      "name_az": "Milvana Ağ Yumurta 10əd.",
+      "name_en": "Milvana White Eggs, 10 pcs",
+      "name_ru": "Яйца белые Milvana, 10 шт.",
+      "variant": "White",
+      "size": "10 pcs",
+      "category": "dairy",
+      "privateLabel": false,
+      "chains": ["bravo"],
+      "priceAzn": 2.9,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/bravo-supermarket-globus-centre/items/yumurtalar-7",
+          "type": "wolt-listing",
+          "chain": "bravo",
+          "listedAs": "Milvana Ağ Yumurta 10əd.",
+          "priceAzn": 2.9
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "tac_village_eggs_10",
+      "brand": "Tac",
+      "name_az": "Tac Kənd Yumurtası 10əd",
+      "name_en": "Tac Village Eggs, 10 pcs",
+      "name_ru": "Яйца деревенские Tac, 10 шт.",
+      "variant": "Village",
+      "size": "10 pcs",
+      "category": "dairy",
+      "privateLabel": false,
+      "chains": ["spar"],
+      "priceAzn": 3.9,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/araz-spar-1-3mkr/items/yumurta-42",
+          "type": "wolt-listing",
+          "chain": "spar",
+          "listedAs": "Tac Kənd Yumurtası 10əd",
+          "priceAzn": 3.9
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "danone_peach_100",
+      "brand": "Danone",
+      "name_az": "Danone Şaftalı Yoğurt 100qr",
+      "name_en": "Danone Peach Yogurt 100 g",
+      "name_ru": "Йогурт Danone персик 100 г",
+      "variant": "Peach",
+      "size": "100 g",
+      "category": "yogurt",
+      "privateLabel": false,
+      "chains": ["spar", "tamstore"],
+      "priceAzn": 0.7,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/tamstore-xetai/items/ozl-yoqurtlar-108",
+          "type": "wolt-listing",
+          "chain": "tamstore",
+          "listedAs": "Danone Şaftalı Yoğurt 100qr",
+          "priceAzn": 0.7
+        },
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/araz-spar-1-3mkr/items/yoqurt-31",
+          "type": "wolt-listing",
+          "chain": "spar",
+          "listedAs": "Danone Yogurt 100qr Saftali Kz",
+          "priceAzn": 0.49
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "danone_banana_100",
+      "brand": "Danone",
+      "name_az": "Danone Bananlı Yoqurt 100 qr",
+      "name_en": "Danone Banana Yogurt 100 g",
+      "name_ru": "Йогурт Danone банан 100 г",
+      "variant": "Banana",
+      "size": "100 g",
+      "category": "yogurt",
+      "privateLabel": false,
+      "chains": ["spar", "tamstore"],
+      "priceAzn": 0.7,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/tamstore-xetai/items/ozl-yoqurtlar-108",
+          "type": "wolt-listing",
+          "chain": "tamstore",
+          "listedAs": "Danone Bananlı Yoqurt 100 qr",
+          "priceAzn": 0.7
+        },
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/araz-spar-1-3mkr/items/yoqurt-31",
+          "type": "wolt-listing",
+          "chain": "spar",
+          "listedAs": "Danone Yogurt 100qr Banan Kz",
+          "priceAzn": 0.49
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "danone_strawberry_100",
+      "brand": "Danone",
+      "name_az": "Danone Yogurt 100qr Ciyelek Kz",
+      "name_en": "Danone Strawberry Yogurt 100 g",
+      "name_ru": "Йогурт Danone клубника 100 г",
+      "variant": "Strawberry",
+      "size": "100 g",
+      "category": "yogurt",
+      "privateLabel": false,
+      "chains": ["spar"],
+      "priceAzn": 0.49,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/araz-spar-1-3mkr/items/yoqurt-31",
+          "type": "wolt-listing",
+          "chain": "spar",
+          "listedAs": "Danone Yogurt 100qr Ciyelek Kz",
+          "priceAzn": 0.49
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "activia_bilberry_110",
+      "brand": "Activia",
+      "name_az": "AKTIVIA QARAGILE YOQURT 110 GR",
+      "name_en": "Activia Bilberry/Blueberry Yogurt 110 g (listed as Qaragilə)",
+      "name_ru": "Йогурт Activia черника 110 г",
+      "variant": "Qaragilə (bilberry/blueberry)",
+      "size": "110 g",
+      "category": "yogurt",
+      "privateLabel": false,
+      "chains": ["tamstore"],
+      "priceAzn": 1.55,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/tamstore-xetai/items/ozl-yoqurtlar-108",
+          "type": "wolt-listing",
+          "chain": "tamstore",
+          "listedAs": "AKTIVIA QARAGILE YOQURT 110 GR",
+          "priceAzn": 1.55
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "activia_strawberry_110",
+      "brand": "Activia",
+      "name_az": "AKTIVIA YOGURT CIYELEK 110GR",
+      "name_en": "Activia Strawberry Yogurt 110 g",
+      "name_ru": "Йогурт Activia клубника 110 г",
+      "variant": "Strawberry",
+      "size": "110 g",
+      "category": "yogurt",
+      "privateLabel": false,
+      "chains": ["tamstore"],
+      "priceAzn": 1.55,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/tamstore-xetai/items/ozl-yoqurtlar-108",
+          "type": "wolt-listing",
+          "chain": "tamstore",
+          "listedAs": "AKTIVIA YOGURT CIYELEK 110GR",
+          "priceAzn": 1.55
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "imuni_yo_peach_32_120",
+      "brand": "Imuni Yo",
+      "name_az": "Imuni Yo Yogurt Şaftalı 3.2% 120 qr",
+      "name_en": "Imuni Yo Peach Yogurt 3.2% 120 g",
+      "name_ru": "Йогурт Imuni Yo персик 3,2% 120 г",
+      "variant": "Peach 3.2%",
+      "size": "120 g",
+      "category": "yogurt",
+      "privateLabel": false,
+      "chains": ["spar"],
+      "priceAzn": 0.79,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/araz-spar-1-3mkr/items/yoqurt-31",
+          "type": "wolt-listing",
+          "chain": "spar",
+          "listedAs": "Imuni Yo Yogurt Şaftalı 3.2% 120 qr",
+          "priceAzn": 0.79
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "imuni_yo_apricot_32_120",
+      "brand": "Imuni Yo",
+      "name_az": "Imuni Yo Yogurt Ərik 3.2% 120 qr",
+      "name_en": "Imuni Yo Apricot Yogurt 3.2% 120 g",
+      "name_ru": "Йогурт Imuni Yo абрикос 3,2% 120 г",
+      "variant": "Apricot 3.2%",
+      "size": "120 g",
+      "category": "yogurt",
+      "privateLabel": false,
+      "chains": ["spar"],
+      "priceAzn": 0.79,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/araz-spar-1-3mkr/items/yoqurt-31",
+          "type": "wolt-listing",
+          "chain": "spar",
+          "listedAs": "Imuni Yo Yogurt Ərik 3.2% 120 qr",
+          "priceAzn": 0.79
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "cudo_strawberry_25_115",
+      "brand": "Çudo (Cudo)",
+      "name_az": "Cudo Yoğurt Çiyələk 2.5% 115qr",
+      "name_en": "Chudo Strawberry Yogurt 2.5% 115 g",
+      "name_ru": "Йогурт Чудо клубника 2,5% 115 г",
+      "variant": "Strawberry 2.5%",
+      "size": "115 g",
+      "category": "yogurt",
+      "privateLabel": false,
+      "chains": ["spar", "tamstore"],
+      "priceAzn": 0.89,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/tamstore-xetai/items/ozl-yoqurtlar-108",
+          "type": "wolt-listing",
+          "chain": "tamstore",
+          "listedAs": "Cudo Yoğurt Çiyələk 2.5% 115qr",
+          "priceAzn": 0.89
+        },
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/araz-spar-1-3mkr/items/sud-mhsullar-38",
+          "type": "wolt-listing",
+          "chain": "spar",
+          "listedAs": "Çudo Yoqurt Çiyələk 2.5% 115qr",
+          "priceAzn": 0.9
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "ermigurt_strawberry_03_100",
+      "brand": "Ehrmann",
+      "name_az": "Ehrmann Ermiqurt Yoqurt Çiyələkli 0.3% 100qr",
+      "name_en": "Ehrmann Ermigurt Strawberry Yogurt 0.3% 100 g",
+      "name_ru": "Йогурт Ehrmann Ermigurt клубника 0,3% 100 г",
+      "variant": "Strawberry 0.3%",
+      "size": "100 g",
+      "category": "yogurt",
+      "privateLabel": false,
+      "chains": ["tamstore"],
+      "priceAzn": 0.99,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/tamstore-xetai/items/ozl-yoqurtlar-108",
+          "type": "wolt-listing",
+          "chain": "tamstore",
+          "listedAs": "Ehrmann Ermiqurt Yoqurt Çiyələkli 0.3% 100qr",
+          "priceAzn": 0.99
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "ankara_pasta_thin_long_500",
+      "brand": "Ankara",
+      "name_az": "Ankara Makarna İncə Uzun 500qr",
+      "name_en": "Ankara Pasta, thin long, 500 g",
+      "name_ru": "Макароны Ankara тонкие длинные 500 г",
+      "variant": "Thin long",
+      "size": "500 g",
+      "category": "pantry",
+      "privateLabel": false,
+      "chains": ["araz", "bravo", "tamstore"],
+      "priceAzn": 1.9,
+      "sources": [
+        {
+          "url": "https://www.arazmarket.az/az/categories/makaron-qablasdirilmis-1511",
+          "type": "official-site",
+          "chain": "araz",
+          "listedAs": "Ankara Makarna İncə Uzun 500qr",
+          "priceAzn": 1.9
+        },
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/bravo-supermarket-globus-centre/items/makaron-duyu-v-bakliyyat-mhsullar-94",
+          "type": "wolt-listing",
+          "chain": "bravo",
+          "listedAs": "Ankara Makaron İncə Uzun 500qr",
+          "priceAzn": 1.9
+        },
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/tamstore-xetai/items/makaron-v-souslar-190",
+          "type": "wolt-listing",
+          "chain": "tamstore",
+          "listedAs": "Ankara Makaron 500 G Ince Uzun",
+          "priceAzn": 1.49
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "ankara_pasta_manti_500",
+      "brand": "Ankara",
+      "name_az": "Ankara Makaron Mantı 500qr",
+      "name_en": "Ankara Pasta, manti shape, 500 g",
+      "name_ru": "Макароны Ankara «манты» 500 г",
+      "variant": "Manti",
+      "size": "500 g",
+      "category": "pantry",
+      "privateLabel": false,
+      "chains": ["araz", "bravo", "spar"],
+      "priceAzn": 1.9,
+      "sources": [
+        {
+          "url": "https://www.arazmarket.az/az/categories/makaron-qablasdirilmis-1511",
+          "type": "official-site",
+          "chain": "araz",
+          "listedAs": "Ankara Makaron Mantı 500qr",
+          "priceAzn": 1.9
+        },
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/bravo-supermarket-globus-centre/items/makaron-duyu-v-bakliyyat-mhsullar-94",
+          "type": "wolt-listing",
+          "chain": "bravo",
+          "listedAs": "Ankara Makaron Manti 500qr",
+          "priceAzn": 1.9
+        },
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/araz-spar-1-3mkr/items/makaron-v-duyu-119",
+          "type": "wolt-listing",
+          "chain": "spar",
+          "listedAs": "Ankara Makaron Mantı 500qr",
+          "priceAzn": 1.49
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "ankara_pasta_penne_500",
+      "brand": "Ankara",
+      "name_az": "Ankara Makaron Penne 500qr",
+      "name_en": "Ankara Penne Pasta 500 g",
+      "name_ru": "Макароны Ankara пенне 500 г",
+      "variant": "Penne",
+      "size": "500 g",
+      "category": "pantry",
+      "privateLabel": false,
+      "chains": ["araz", "spar"],
+      "priceAzn": 1.9,
+      "sources": [
+        {
+          "url": "https://www.arazmarket.az/az/categories/makaron-qablasdirilmis-1511",
+          "type": "official-site",
+          "chain": "araz",
+          "listedAs": "Ankara Makaron Penne 500qr",
+          "priceAzn": 1.9
+        },
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/araz-spar-1-3mkr/items/makaron-v-duyu-119",
+          "type": "wolt-listing",
+          "chain": "spar",
+          "listedAs": "Ankara Makaron Penne 500qr",
+          "priceAzn": 1.49
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "barilla_spaghetti_450",
+      "brand": "Barilla",
+      "name_az": "Barilla Klassik Spaghetti 450qr",
+      "name_en": "Barilla Classic Spaghetti 450 g",
+      "name_ru": "Спагетти Barilla классические 450 г",
+      "variant": "Classic",
+      "size": "450 g",
+      "category": "pantry",
+      "privateLabel": false,
+      "chains": ["araz"],
+      "priceAzn": 2.85,
+      "sources": [
+        {
+          "url": "https://www.arazmarket.az/az/categories/vermesil-qablasdirilmis-1510",
+          "type": "official-site",
+          "chain": "araz",
+          "listedAs": "Barilla Klassik Spaghetti 450qr",
+          "priceAzn": 2.85
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "final_corn_oil_1l",
+      "brand": "Final",
+      "name_az": "Final Qarğıdalı Yağı 1l",
+      "name_en": "Final Corn Oil 1 L",
+      "name_ru": "Кукурузное масло Final 1 л",
+      "variant": "Corn oil",
+      "size": "1 L",
+      "category": "pantry",
+      "privateLabel": false,
+      "chains": ["araz"],
+      "priceAzn": 6.75,
+      "sources": [
+        {
+          "url": "https://www.arazmarket.az/az/categories/qargidali-yaglari-1761",
+          "type": "official-site",
+          "chain": "araz",
+          "listedAs": "Final Qarğıdalı Yağı 1l",
+          "priceAzn": 6.75
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "tac_corn_oil_1l",
+      "brand": "Tac",
+      "name_az": "Tac Qarğıdalı Yağı 1 l",
+      "name_en": "Tac Corn Oil 1 L",
+      "name_ru": "Кукурузное масло Tac 1 л",
+      "variant": "Corn oil",
+      "size": "1 L",
+      "category": "pantry",
+      "privateLabel": false,
+      "chains": ["spar"],
+      "priceAzn": 4.79,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/araz-spar-1-3mkr/items/yaglar-39",
+          "type": "wolt-listing",
+          "chain": "spar",
+          "listedAs": "Tac Qarğıdalı Yağı 1 l",
+          "priceAzn": 4.79
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "tac_pickled_cucumber_680",
+      "brand": "Tac",
+      "name_az": "TAC XİYAR TURŞUSU 680 QR",
+      "name_en": "Tac Pickled Cucumbers 680 g",
+      "name_ru": "Маринованные огурцы Tac 680 г",
+      "variant": "Pickled cucumber",
+      "size": "680 g",
+      "category": "pantry",
+      "privateLabel": true,
+      "chains": ["araz"],
+      "priceAzn": 2.4,
+      "sources": [
+        {
+          "url": "https://www.arazmarket.az/az/categories/xiyar-tursusu-4412",
+          "type": "official-site",
+          "chain": "araz",
+          "listedAs": "TAC XİYAR TURŞUSU 680 QR",
+          "priceAzn": 2.4
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "bostan_green_peas_700",
+      "brand": "Bostan",
+      "name_az": "Bostan Yaşıl Noxud 700qr",
+      "name_en": "Bostan Canned Green Peas 700 g",
+      "name_ru": "Зелёный горошек Bostan 700 г",
+      "variant": "Canned green peas",
+      "size": "700 g",
+      "category": "pantry",
+      "privateLabel": false,
+      "chains": ["araz"],
+      "priceAzn": 3.7,
+      "sources": [
+        {
+          "url": "https://www.arazmarket.az/az/categories/yasil-noxud-konservasi-4418",
+          "type": "official-site",
+          "chain": "araz",
+          "listedAs": "Bostan Yaşıl Noxud 700qr",
+          "priceAzn": 3.7
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "tac_sugar_cubes_500",
+      "brand": "Tac",
+      "name_az": "Tac Kəllə Qənd 500 qr",
+      "name_en": "Tac Sugar Cubes 500 g",
+      "name_ru": "Кусковой сахар Tac 500 г",
+      "variant": "Sugar cubes",
+      "size": "500 g",
+      "category": "pantry",
+      "privateLabel": false,
+      "chains": ["spar"],
+      "priceAzn": 1.79,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/araz-spar-1-3mkr/items/skr-tozu-v-qnd-129",
+          "type": "wolt-listing",
+          "chain": "spar",
+          "listedAs": "Tac Kəllə Qənd 500 qr",
+          "priceAzn": 1.79
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "coca_cola_1l",
+      "brand": "Coca-Cola",
+      "name_az": "Coca-Cola® 1 l",
+      "name_en": "Coca-Cola 1 L",
+      "name_ru": "Coca-Cola 1 л",
+      "variant": null,
+      "size": "1 L",
+      "category": "beverages",
+      "privateLabel": false,
+      "chains": ["bravo", "spar", "tamstore"],
+      "priceAzn": 1.4,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/araz-spar-1-3mkr/items/spirtsiz-ickilr-51",
+          "type": "wolt-listing",
+          "chain": "spar",
+          "listedAs": "Coca-Cola® 1 l",
+          "priceAzn": 1.4
+        },
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/bravo-supermarket-globus-centre/items/spirtsiz-ickilr-11",
+          "type": "wolt-listing",
+          "chain": "bravo",
+          "listedAs": "Coca-cola 1l",
+          "priceAzn": 1.4
+        },
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/tamstore-xetai/items/alkoqolsuz-ickilr-95",
+          "type": "wolt-listing",
+          "chain": "tamstore",
+          "listedAs": "Coca-Cola® 1l Pet",
+          "priceAzn": 1.4
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "coca_cola_2l",
+      "brand": "Coca-Cola",
+      "name_az": "Coca-Cola® 2 l",
+      "name_en": "Coca-Cola 2 L",
+      "name_ru": "Coca-Cola 2 л",
+      "variant": null,
+      "size": "2 L",
+      "category": "beverages",
+      "privateLabel": false,
+      "chains": ["bravo", "spar"],
+      "priceAzn": 2.3,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/araz-spar-1-3mkr/items/spirtsiz-ickilr-51",
+          "type": "wolt-listing",
+          "chain": "spar",
+          "listedAs": "Coca-Cola® 2 l",
+          "priceAzn": 2.3
+        },
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/bravo-supermarket-globus-centre/items/spirtsiz-ickilr-11",
+          "type": "wolt-listing",
+          "chain": "bravo",
+          "listedAs": "Coca-cola 2l",
+          "priceAzn": 2.3
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "red_bull_250",
+      "brand": "Red Bull",
+      "name_az": "Red Bull 250 ml",
+      "name_en": "Red Bull Energy Drink 250 ml",
+      "name_ru": "Энергетик Red Bull 250 мл",
+      "variant": "Original",
+      "size": "250 ml",
+      "category": "beverages",
+      "privateLabel": false,
+      "chains": ["araz"],
+      "priceAzn": 3.8,
+      "sources": [
+        {
+          "url": "https://www.arazmarket.az/az/categories/enerji-ickisi-sade-1073",
+          "type": "official-site",
+          "chain": "araz",
+          "listedAs": "Red Bull 250 ml",
+          "priceAzn": 3.8
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "sarikiz_lemon_200",
+      "brand": "Sarıkız",
+      "name_az": "Sarıkız Limon 200ml(Kapakli)",
+      "name_en": "Sarıkız Lemon Sparkling Drink 200 ml",
+      "name_ru": "Газированный напиток Sarıkız лимон 200 мл",
+      "variant": "Lemon",
+      "size": "200 ml",
+      "category": "beverages",
+      "privateLabel": false,
+      "chains": ["araz"],
+      "priceAzn": 1.15,
+      "sources": [
+        {
+          "url": "https://www.arazmarket.az/az/categories/qazli-meyve-aromali-ickiler-1065",
+          "type": "official-site",
+          "chain": "araz",
+          "listedAs": "Sarıkız Limon 200ml(Kapakli)",
+          "priceAzn": 1.15
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "natura_peach_juice_1l",
+      "brand": "Natura",
+      "name_az": "Natura Şaftalı Soku 1lt",
+      "name_en": "Natura Peach Juice 1 L",
+      "name_ru": "Сок Natura персик 1 л",
+      "variant": "Peach",
+      "size": "1 L",
+      "category": "beverages",
+      "privateLabel": false,
+      "chains": ["araz"],
+      "priceAzn": 2.4,
+      "sources": [
+        {
+          "url": "https://www.arazmarket.az/az/categories/meyve-sireleri-1049",
+          "type": "official-site",
+          "chain": "araz",
+          "listedAs": "Natura Şaftalı Soku 1lt",
+          "priceAzn": 2.4
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "nescafe_3in1_classic_145",
+      "brand": "Nescafe",
+      "name_az": "Nescafe 3in1 Classic 14.5qr",
+      "name_en": "Nescafé 3-in-1 Classic, 14.5 g sachet",
+      "name_ru": "Nescafé 3 в 1 Классик, саше 14,5 г",
+      "variant": "3-in-1 Classic",
+      "size": "14.5 g",
+      "category": "beverages",
+      "privateLabel": false,
+      "chains": ["bravo", "spar"],
+      "priceAzn": 0.25,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/araz-spar-1-3mkr/items/cay-v-kofe-127",
+          "type": "wolt-listing",
+          "chain": "spar",
+          "listedAs": "Nescafe 3in1 Classic 14.5qr",
+          "priceAzn": 0.25
+        },
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/bravo-supermarket-globus-centre/items/qhv-v-kakaolar-31",
+          "type": "wolt-listing",
+          "chain": "bravo",
+          "listedAs": "Nestle Nescafe Klassik 3-ü 1-də Qəhvə 14.5qr",
+          "priceAzn": 0.25
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "nescafe_classic_jar_190",
+      "brand": "Nescafe",
+      "name_az": "Nescafe Classic Şüşə 190qr",
+      "name_en": "Nescafé Classic instant coffee, jar 190 g",
+      "name_ru": "Растворимый кофе Nescafé Classic, банка 190 г",
+      "variant": "Classic, jar",
+      "size": "190 g",
+      "category": "beverages",
+      "privateLabel": false,
+      "chains": ["araz"],
+      "priceAzn": 15.5,
+      "sources": [
+        {
+          "url": "https://www.arazmarket.az/az/categories/kofe-uyudulmus-1770",
+          "type": "official-site",
+          "chain": "araz",
+          "listedAs": "Nescafe Classic Şüşə 190qr",
+          "priceAzn": 15.5
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "beta_earl_grey_100",
+      "brand": "Beta",
+      "name_az": "Beta Earl Grey Çay 100 qr",
+      "name_en": "Beta Earl Grey Tea 100 g",
+      "name_ru": "Чай Beta Эрл Грей 100 г",
+      "variant": "Earl Grey",
+      "size": "100 g",
+      "category": "beverages",
+      "privateLabel": false,
+      "chains": ["spar"],
+      "priceAzn": 3.4,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/araz-spar-1-3mkr/items/cay-v-kofe-127",
+          "type": "wolt-listing",
+          "chain": "spar",
+          "listedAs": "Beta Earl Grey Çay 100 qr",
+          "priceAzn": 3.4
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "lays_paprika_140",
+      "brand": "Lay's",
+      "name_az": "Lays Paprika 140 qr",
+      "name_en": "Lay's Paprika Chips 140 g",
+      "name_ru": "Чипсы Lay's паприка 140 г",
+      "variant": "Paprika",
+      "size": "140 g",
+      "category": "snacks",
+      "privateLabel": false,
+      "chains": ["bravo", "spar", "tamstore"],
+      "priceAzn": 3.89,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/araz-spar-1-3mkr/items/tumlar-v-cipslr-112",
+          "type": "wolt-listing",
+          "chain": "spar",
+          "listedAs": "Lays Paprika 140 qr",
+          "priceAzn": 3.89
+        },
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/bravo-supermarket-globus-centre/items/cips-crz-v-qlyanaltlar-54",
+          "type": "wolt-listing",
+          "chain": "bravo",
+          "listedAs": "Lays Paprika 140qr",
+          "priceAzn": 3.89
+        },
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/tamstore-xetai/items/sneklr-112",
+          "type": "wolt-listing",
+          "chain": "tamstore",
+          "listedAs": "Lays Paprika 140qr",
+          "priceAzn": 3.49
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "lays_sour_cream_onion_70",
+      "brand": "Lay's",
+      "name_az": "Lays Xama Soğan 70 qr",
+      "name_en": "Lay's Sour Cream & Onion Chips 70 g",
+      "name_ru": "Чипсы Lay's сметана и лук 70 г",
+      "variant": "Sour cream & onion",
+      "size": "70 g",
+      "category": "snacks",
+      "privateLabel": false,
+      "chains": ["bravo", "spar", "tamstore"],
+      "priceAzn": 1.59,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/araz-spar-1-3mkr/items/tumlar-v-cipslr-112",
+          "type": "wolt-listing",
+          "chain": "spar",
+          "listedAs": "Lays Xama Soğan 70 qr",
+          "priceAzn": 1.59
+        },
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/bravo-supermarket-globus-centre/items/cips-crz-v-qlyanaltlar-54",
+          "type": "wolt-listing",
+          "chain": "bravo",
+          "listedAs": "Lays Xama Soğan Cips 70qr",
+          "priceAzn": 2.0
+        },
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/tamstore-xetai/items/sneklr-112",
+          "type": "wolt-listing",
+          "chain": "tamstore",
+          "listedAs": "Lays Çips 70qr Xama Soğan",
+          "priceAzn": 1.99
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "popsy_classic_140",
+      "brand": "Popsy",
+      "name_az": "Popsy  Çips  Klassik 140 q",
+      "name_en": "Popsy Classic Chips 140 g",
+      "name_ru": "Чипсы Popsy классические 140 г",
+      "variant": "Classic",
+      "size": "140 g",
+      "category": "snacks",
+      "privateLabel": false,
+      "chains": ["bravo"],
+      "priceAzn": 1.99,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/bravo-supermarket-globus-centre/items/cips-crz-v-qlyanaltlar-54",
+          "type": "wolt-listing",
+          "chain": "bravo",
+          "listedAs": "Popsy  Çips  Klassik 140 q",
+          "priceAzn": 1.99
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "kitkat_4finger_415",
+      "brand": "Kit Kat",
+      "name_az": "Kit Kat 4 Fingers Şokolad Baton 41.5qr",
+      "name_en": "Kit Kat 4 Fingers Chocolate Bar 41.5 g",
+      "name_ru": "Шоколадный батончик Kit Kat 4 Fingers 41,5 г",
+      "variant": "4 Fingers",
+      "size": "41.5 g",
+      "category": "snacks",
+      "privateLabel": false,
+      "chains": ["bravo", "tamstore"],
+      "priceAzn": 1.49,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/bravo-supermarket-globus-centre/items/sirniyyatlar-77",
+          "type": "wolt-listing",
+          "chain": "bravo",
+          "listedAs": "Kit Kat 4 Fingers Şokolad Baton 41.5qr",
+          "priceAzn": 1.49
+        },
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/tamstore-xetai/items/sokolad-v-sirniyyat-62",
+          "type": "wolt-listing",
+          "chain": "tamstore",
+          "listedAs": "Nestle Kit Kat 4 Finger (41.5 qr.)",
+          "priceAzn": 1.99
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "snickers_50",
+      "brand": "Snickers",
+      "name_az": "Snickers 50qr",
+      "name_en": "Snickers Bar 50 g",
+      "name_ru": "Батончик Snickers 50 г",
+      "variant": null,
+      "size": "50 g",
+      "category": "snacks",
+      "privateLabel": false,
+      "chains": ["bravo", "tamstore"],
+      "priceAzn": 1.6,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/bravo-supermarket-globus-centre/items/sirniyyatlar-77",
+          "type": "wolt-listing",
+          "chain": "bravo",
+          "listedAs": "Snickers 50qr",
+          "priceAzn": 1.6
+        },
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/tamstore-xetai/items/sokolad-v-sirniyyat-62",
+          "type": "wolt-listing",
+          "chain": "tamstore",
+          "listedAs": "Snickers 50 qr",
+          "priceAzn": 1.59
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "twix_50",
+      "brand": "Twix",
+      "name_az": "Twix Şokolad Baton 50qr",
+      "name_en": "Twix Chocolate Bar 50 g",
+      "name_ru": "Шоколадный батончик Twix 50 г",
+      "variant": null,
+      "size": "50 g",
+      "category": "snacks",
+      "privateLabel": false,
+      "chains": ["bravo", "tamstore"],
+      "priceAzn": 1.6,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/bravo-supermarket-globus-centre/items/sirniyyatlar-77",
+          "type": "wolt-listing",
+          "chain": "bravo",
+          "listedAs": "Twix Şokolad Baton 50qr",
+          "priceAzn": 1.6
+        },
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/tamstore-xetai/items/sokolad-v-sirniyyat-62",
+          "type": "wolt-listing",
+          "chain": "tamstore",
+          "listedAs": "Twix 50 qr",
+          "priceAzn": 1.59
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "kinder_bueno_43",
+      "brand": "Kinder",
+      "name_az": "Kinder Bueno 43qr",
+      "name_en": "Kinder Bueno 43 g",
+      "name_ru": "Kinder Bueno 43 г",
+      "variant": null,
+      "size": "43 g",
+      "category": "snacks",
+      "privateLabel": false,
+      "chains": ["bravo"],
+      "priceAzn": 2.3,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/bravo-supermarket-globus-centre/items/sirniyyatlar-77",
+          "type": "wolt-listing",
+          "chain": "bravo",
+          "listedAs": "Kinder Bueno 43qr",
+          "priceAzn": 2.3
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "lacrema_croissant_cocoa_65",
+      "brand": "La Crema",
+      "name_az": "La Crema Kruassan Kakao 65qr",
+      "name_en": "La Crema Cocoa Croissant 65 g",
+      "name_ru": "Круассан La Crema с какао 65 г",
+      "variant": "Cocoa",
+      "size": "65 g",
+      "category": "snacks",
+      "privateLabel": false,
+      "chains": ["araz"],
+      "priceAzn": 1.05,
+      "sources": [
+        {
+          "url": "https://www.arazmarket.az/az/categories/kruassan-dolgulu-702",
+          "type": "official-site",
+          "chain": "araz",
+          "listedAs": "La Crema Kruassan Kakao 65qr",
+          "priceAzn": 1.05
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "n1_extra_baton_400",
+      "brand": "N1",
+      "name_az": "N1 Extra Baton 400qr",
+      "name_en": "N1 Extra Baton Loaf 400 g",
+      "name_ru": "Батон N1 Extra 400 г",
+      "variant": "Extra baton",
+      "size": "400 g",
+      "category": "bakery",
+      "privateLabel": false,
+      "chains": ["araz", "spar"],
+      "priceAzn": 1.15,
+      "sources": [
+        {
+          "url": "https://www.arazmarket.az/az/categories/baton-coreyi-2531",
+          "type": "official-site",
+          "chain": "araz",
+          "listedAs": "N1 Extra Baton 400qr",
+          "priceAzn": 1.15
+        },
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/araz-spar-1-3mkr/items/cork-v-lavas-6",
+          "type": "wolt-listing",
+          "chain": "spar",
+          "listedAs": "N1 Extra Baton 400qr",
+          "priceAzn": 0.99
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "gilan_n1_croissant_65",
+      "brand": "Gilan N1",
+      "name_az": "Gilan N1 Kruassan 65qr",
+      "name_en": "Gilan N1 Croissant 65 g",
+      "name_ru": "Круассан Gilan N1 65 г",
+      "variant": null,
+      "size": "65 g",
+      "category": "bakery",
+      "privateLabel": false,
+      "chains": ["araz"],
+      "priceAzn": 0.85,
+      "sources": [
+        {
+          "url": "https://www.arazmarket.az/az/categories/kruassan-2502",
+          "type": "official-site",
+          "chain": "araz",
+          "listedAs": "Gilan N1 Kruassan 65qr",
+          "priceAzn": 0.85
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "tac_choc_croissant_75",
+      "brand": "Tac",
+      "name_az": "Tac Kruassan Şokoladlı 75 qr",
+      "name_en": "Tac Chocolate Croissant 75 g",
+      "name_ru": "Круассан Tac с шоколадом 75 г",
+      "variant": "Chocolate",
+      "size": "75 g",
+      "category": "bakery",
+      "privateLabel": false,
+      "chains": ["spar"],
+      "priceAzn": 0.69,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/araz-spar-1-3mkr/items/cork-v-lavas-6",
+          "type": "wolt-listing",
+          "chain": "spar",
+          "listedAs": "Tac Kruassan Şokoladlı 75 qr",
+          "priceAzn": 0.69
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "oven_medium_baton_200",
+      "brand": "Oven",
+      "name_az": "Oven Orta Baton 200qr",
+      "name_en": "Oven Medium Baton 200 g",
+      "name_ru": "Батон Oven средний 200 г",
+      "variant": "Medium baton",
+      "size": "200 g",
+      "category": "bakery",
+      "privateLabel": false,
+      "chains": ["bravo"],
+      "priceAzn": 0.49,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/bravo-supermarket-globus-centre/items/corklr-v-un-mmulatlar-8",
+          "type": "wolt-listing",
+          "chain": "bravo",
+          "listedAs": "Oven Orta Baton 200qr 29075",
+          "priceAzn": 0.49
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "fairy_dish_lemon_750",
+      "brand": "Fairy",
+      "name_az": "Fairy Qab Yuyan Maye Limon 750ml",
+      "name_en": "Fairy Dishwashing Liquid Lemon 750 ml",
+      "name_ru": "Средство для мытья посуды Fairy лимон 750 мл",
+      "variant": "Lemon",
+      "size": "750 ml",
+      "category": "household",
+      "privateLabel": false,
+      "chains": ["araz"],
+      "priceAzn": 6.7,
+      "sources": [
+        {
+          "url": "https://www.arazmarket.az/az/categories/qabyuyan-mehsullar-elde-yuma-356",
+          "type": "official-site",
+          "chain": "araz",
+          "listedAs": "Fairy Qab Yuyan Maye Limon 750ml",
+          "priceAzn": 6.7
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "colgate_fresh_mint_100",
+      "brand": "Colgate",
+      "name_az": "Colgate Fresh Mint 100ml",
+      "name_en": "Colgate Fresh Mint Toothpaste 100 ml",
+      "name_ru": "Зубная паста Colgate Fresh Mint 100 мл",
+      "variant": "Fresh Mint",
+      "size": "100 ml",
+      "category": "household",
+      "privateLabel": false,
+      "chains": ["araz"],
+      "priceAzn": 3.5,
+      "sources": [
+        {
+          "url": "https://www.arazmarket.az/az/categories/dis-pastasi-4334",
+          "type": "official-site",
+          "chain": "araz",
+          "listedAs": "Colgate Fresh Mint 100ml",
+          "priceAzn": 3.5
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "cleverest_bleach_lemon_1l",
+      "brand": "Cleverest",
+      "name_az": "Cleverest Ağardıcı Maye Limon 1l",
+      "name_en": "Cleverest Liquid Bleach Lemon 1 L",
+      "name_ru": "Жидкий отбеливатель Cleverest лимон 1 л",
+      "variant": "Lemon",
+      "size": "1 L",
+      "category": "household",
+      "privateLabel": false,
+      "chains": ["bravo"],
+      "priceAzn": 1.99,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/bravo-supermarket-globus-centre/items/tmizlik-v-mist-mhsullar-142",
+          "type": "wolt-listing",
+          "chain": "bravo",
+          "listedAs": "Cleverest Ağardıcı Maye Limon 1l",
+          "priceAzn": 1.99
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "ariel_powder_color_3kg",
+      "brand": "Ariel",
+      "name_az": "Ariel Yuyucu Toz 3kg Rəngli",
+      "name_en": "Ariel Washing Powder Color 3 kg",
+      "name_ru": "Стиральный порошок Ariel Color 3 кг",
+      "variant": "Color",
+      "size": "3 kg",
+      "category": "household",
+      "privateLabel": false,
+      "chains": ["tamstore"],
+      "priceAzn": 10.99,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/tamstore-xetai/items/yuyucu-vasitlr-249",
+          "type": "wolt-listing",
+          "chain": "tamstore",
+          "listedAs": "Ariel Yuyucu Toz 3kg Rəngli",
+          "priceAzn": 10.99
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "selpak_toilet_paper_4",
+      "brand": "Selpak",
+      "name_az": "Selpak Tualet 4 əd",
+      "name_en": "Selpak Toilet Paper, 4 rolls",
+      "name_ru": "Туалетная бумага Selpak, 4 рулона",
+      "variant": null,
+      "size": "4 pcs",
+      "category": "household",
+      "privateLabel": false,
+      "chains": ["spar"],
+      "priceAzn": 4.99,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/araz-spar-1-3mkr/items/tmizlik-140",
+          "type": "wolt-listing",
+          "chain": "spar",
+          "listedAs": "Selpak Tualet 4 əd",
+          "priceAzn": 4.99
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "potato_gedebey_kg",
+      "brand": "—",
+      "name_az": "Kartof Gədəbəy kq",
+      "name_en": "Gədəbəy Potatoes (per kg)",
+      "name_ru": "Картофель Гедебей (за кг)",
+      "variant": "Gədəbəy",
+      "size": "sold per kg",
+      "category": "produce",
+      "privateLabel": false,
+      "chains": ["bravo"],
+      "priceAzn": 1.39,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/bravo-supermarket-globus-centre/items/meyv-v-trvzlr-3",
+          "type": "wolt-listing",
+          "chain": "bravo",
+          "listedAs": "Kartof Gədəbəy kq",
+          "priceAzn": 1.39
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": false
+      }
+    },
+    {
+      "id": "banana_kg",
+      "brand": "—",
+      "name_az": "Banan kq",
+      "name_en": "Bananas (per kg)",
+      "name_ru": "Бананы (за кг)",
+      "variant": null,
+      "size": "sold per kg",
+      "category": "produce",
+      "privateLabel": false,
+      "chains": ["spar"],
+      "priceAzn": 2.59,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/araz-spar-1-3mkr/items/meyv-trvz-2",
+          "type": "wolt-listing",
+          "chain": "spar",
+          "listedAs": "Banan kq",
+          "priceAzn": 2.59
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": false
+      }
+    },
+    {
+      "id": "ostankino_klassik_sausage_300",
+      "brand": "Ostankino",
+      "name_az": "Ostankino Klassik Kolbasa 300qr",
+      "name_en": "Ostankino Classic Sausage 300 g",
+      "name_ru": "Колбаса Останкино Классическая 300 г",
+      "variant": "Classic",
+      "size": "300 g",
+      "category": "meat",
+      "privateLabel": false,
+      "chains": ["tamstore"],
+      "priceAzn": 5.5,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/tamstore-xetai/items/kolbasa-v-sosis-233",
+          "type": "wolt-listing",
+          "chain": "tamstore",
+          "listedAs": "Ostankino Klassik Kolbasa 300qr",
+          "priceAzn": 5.5
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    },
+    {
+      "id": "mercan_chicken_1kg",
+      "brand": "Mercan",
+      "name_az": "Mercan Təzə Toyuq Paket Soyudulmuş 1kq",
+      "name_en": "Mercan Fresh Chilled Chicken, packed, 1 kg",
+      "name_ru": "Охлаждённая курица Mercan, упаковка 1 кг",
+      "variant": "Chilled whole chicken",
+      "size": "1 kg",
+      "category": "meat",
+      "privateLabel": false,
+      "chains": ["spar"],
+      "priceAzn": 6.59,
+      "sources": [
+        {
+          "url": "https://wolt.com/en/aze/baku/venue/araz-spar-1-3mkr/items/toyuq-mhsullar-16",
+          "type": "wolt-listing",
+          "chain": "spar",
+          "listedAs": "Mercan Təzə Toyuq Paket Soyudulmuş 1kq",
+          "priceAzn": 6.59
+        }
+      ],
+      "confirmed": {
+        "name": true,
+        "size": true
+      }
+    }
+  ],
+  "coverage": {
+    "araz": "arazmarket.az category pages reachable via raw HTML (WebFetch summariser saw nothing; curl showed embedded Next.js JSON, 741 products over ~100 categories). PL page lists brand names only.",
+    "bravo": "Official site: store list only. Wolt Globus Centre venue category pages parsed from embedded page JSON (up to 50 items per category).",
+    "tamstore": "Official site: corporate info only. Wolt Khatai venue category pages parsed (up to 50 items per category).",
+    "rahat": "Home and promo pages reachable but contain no product names/sizes; zero products recorded.",
+    "spar": "spar-international.com has no products. Wolt araz-spar-1-3mkr venue parsed (up to 50 items/category). Venue is Araz-operated SPAR.",
+    "mergeNotes": "Danone 100 g yogurts at SPAR carry a 'Kz' suffix (e.g. 'Danone Yogurt 100qr Ciyelek Kz'); merged with Tamstore Danone 100 qr on brand+flavour+size, origin not verified. Cross-chain merges (Ankara, Coca-Cola, Lays, Kit Kat etc.) on brand+variant+size. Activia Qaragile = bilberry/blueberry; seed spelling Qara Gilə differs. Wolt prices converted from qepik to AZN. Produce sizes are per kg only. Per-source 'listedAs' keeps the exact chain-specific listing name.",
+    "unverifiedSeeds": [
+      "Bravo: Belous Kefir 1% 930 g - no kefir item found in any fetched Bravo category (Belous Sud 2.5%/3.2% 1l only at Tamstore)",
+      "Araz seeds verified on arazmarket.az: Atena Sud 1.5% 1 l, Milla Sud 3.2% 1l, Azer Sud Laktozasiz 1.5% 1 l (all three confirmed, so not unverified)",
+      "Tamstore seeds verified (Danone Saftali, Bananli 100 qr; Aktivia Qaragile 110 GR; Milla Qaymaqli Kend Qatigi 6% 1kq). SPAR seeds verified: Danone strawberry/peach/banana 100qr, Imuni Yo."
+    ]
+  }
+}
