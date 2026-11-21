@@ -3,6 +3,12 @@
 Android-first verified dish feedback from linked purchases, with one universal
 server-authoritative rewards wallet. Built with Expo Router and React Native.
 
+The API server lives in its own repository,
+[Epsilon-Back-End](https://github.com/AzizAlizade473/Epsilon-Back-End); clone it
+next to this one. This app owns the API contract (`src/services/contracts`,
+generated `docs/openapi.yaml`); the backend's `npm run test:contract` checks its
+responses against it.
+
 Start with [development setup](docs/DEV_SETUP.md), [current progress](docs/PROGRESS.md)
 and [architecture](docs/ARCHITECTURE.md). Use `npm ci`, configure an ignored local
 environment from `.env.example`, rebuild the development client after native

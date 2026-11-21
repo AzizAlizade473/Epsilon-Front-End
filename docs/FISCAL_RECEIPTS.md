@@ -70,4 +70,5 @@ https://e-kassa.gov.az/az/operatorlarla-elaqe and the State Tax Service
 (https://e-kassa.gov.az/az/onlayn-elaqe, call centre 195). Request a server-to-server
 API returning one receipt by its 12-character Fiscal ID as JSON (merchant, VÖEN,
 establishment code, items with quantity/price/VAT, totals, payment, status).
-Then implement `FiscalProvider` in `Epsilon-Back-End/src/fiscal/provider.ts`.
+Then implement `FiscalProvider` in
+[Epsilon-Back-End `src/fiscal/provider.ts`](https://github.com/AzizAlizade473/Epsilon-Back-End/blob/master/src/fiscal/provider.ts).
