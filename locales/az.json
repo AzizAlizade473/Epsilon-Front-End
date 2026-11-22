@@ -201,9 +201,9 @@
     "pendingTitle": "Rəyinizi gözləyənlər və hesablar",
     "pendingDishes": "Yeməklər",
     "pendingBills": "Hesablar",
-    "exploreTitle": "Məhsulları və yeməkləri kəşf et",
+    "exploreTitle": "Yeməkləri kəşf et",
     "kindDish": "Yemək",
-    "exploreNote": "Market qiymətləndirmələri demo məlumatdır: bu marketlər hələ Epsilon-a qoşulmayıb.",
+    "exploreNote": "Bu restoran qiymətləndirmələri demo məlumatdır.",
     "productsNote": "Nümunə məhsullar: hələ market çeki yoxlana bilmir. Qiymətiniz bu cihazda qalır, keşbek vermir və alışa bağlı deyil."
   },
   "wallet": {

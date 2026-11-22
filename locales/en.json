@@ -201,9 +201,9 @@
     "pendingTitle": "Waiting for your feedback & bills",
     "pendingDishes": "Dishes",
     "pendingBills": "Bills",
-    "exploreTitle": "Explore products & dishes",
+    "exploreTitle": "Explore dishes",
     "kindDish": "Dish",
-    "exploreNote": "Supermarket ratings are demo data: these retailers are not connected to Epsilon yet.",
+    "exploreNote": "These restaurant ratings are demo data.",
     "productsNote": "Sample products: supermarket receipts can’t be verified yet. Your rating stays on this device, earns no cashback and isn’t linked to a purchase."
   },
   "wallet": {
