@@ -888,11 +888,9 @@
     }
   },
   "scanImport": {
-    "title": "Get this receipt's details",
-    "body": "The official e-kassa service cannot send receipt details to apps automatically. Open the official receipt, save it or take a screenshot, then import it here. Or photograph the paper receipt.",
-    "openOfficial": "Open official receipt",
+    "title": "Choose a saved receipt image",
+    "body": "If the automatic import did not work, choose the receipt image you downloaded from the official page.",
     "importImage": "Import receipt image",
-    "photograph": "Photograph paper receipt",
     "reading": "Reading receipt…",
     "scanAgain": "Scan again",
     "trust": "Receipts read from images can be rated, but they do not earn cashback.",
@@ -921,23 +919,17 @@
     }
   },
   "capture": {
-    "qrDetected": "QR detected",
-    "showFull": "QR detected. Now show the full receipt and take a photo.",
-    "nextPart": "Add the next part of the receipt, or read it now.",
-    "photos_one": "{{count}} photo of this receipt",
-    "photos_other": "{{count}} photos of this receipt",
-    "shutter": "Take photo",
-    "read": "Read receipt",
-    "restart": "Start over",
-    "official": "Use official receipt image",
     "step": {
       "reading": "Reading receipt…",
       "extracting": "Extracting products…",
       "identifying": "Identifying business…"
-    },
-    "problem": {
-      "blurry": "The photo is too blurry, dark or far away. Hold the receipt flat and closer.",
-      "capture": "Could not take the photo. Try again."
     }
+  },
+  "officialImport": {
+    "title": "Official e-kassa receipt",
+    "hint": "Tap ÇEKİ YÜKLƏ to add the receipt to Epsilon.",
+    "loading": "Opening the official receipt…",
+    "pageError": "The official receipt page did not open",
+    "manual": "Choose a saved receipt image"
   }
 }

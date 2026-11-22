@@ -10,7 +10,6 @@ import {
   Linking,
   Modal,
   Platform,
-  ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
@@ -42,21 +41,7 @@ import { useToast } from '@/providers/ToastProvider';
 import { Viewfinder } from '../components/Viewfinder';
 import { useScanMachine } from '../hooks/useScanMachine';
 import { manualCodeSchema } from '../machine';
-import {
-  officialReceiptUrl,
-  ReceiptImageImport,
-} from '../components/ReceiptImageImport';
-import { ReceiptCaptureControls } from '../components/ReceiptCaptureControls';
-import {
-  snapPhoto,
-  takeFrame,
-  toFrame,
-  useReceiptCapture,
-  type Frame,
-} from '../hooks/useReceiptCapture';
-import { useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from '@/services/query';
-import type { Receipt } from '@/services';
+import { officialReceiptUrl } from '../ekassa/exportBridge';
 
 const errorKeys: Record<string, string> = {
   RECEIPT_UNSUPPORTED: 'unsupported',
@@ -88,15 +73,8 @@ export default function ScanScreen() {
   );
   const [torch, setTorch] = useState(false);
   const [code, setCode] = useState('');
-  const client = useQueryClient();
-  // The last scanned fiscal QR, kept so the customer can complete it with an image.
+  // The last scanned fiscal QR: opened on the official e-kassa page when no partner has it.
   const [lastQr, setLastQr] = useState<string | null>(null);
-  const camera = useRef<CameraView>(null);
-  // The photo taken the moment a fiscal QR is detected (same frame, one scan).
-  const firstFrame = useRef<Promise<Frame | null> | null>(null);
-  const snapping = useRef(false);
-  // The customer chose to use the official receipt image instead of the camera.
-  const [official, setOfficial] = useState(false);
   const navigateTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const slide = useAnimatedValue(0);
   const close = useCallback(() => {
@@ -146,16 +124,7 @@ export default function ScanScreen() {
     return () => animation.stop();
   }, [scan.state, slide, motion.reduceMotion]);
   const resolve = async (kind: 'qr' | 'code', value: string) => {
-    if (snapping.current) return;
-    setLastQr(kind === 'qr' ? value : null);
-    setOfficial(false);
-    if (kind === 'qr' && officialReceiptUrl(value)) {
-      // Photograph the receipt while the camera is still live; read it while the QR resolves.
-      snapping.current = true;
-      const shot = await snapPhoto(camera);
-      snapping.current = false;
-      firstFrame.current = shot ? toFrame(shot) : Promise.resolve(null);
-    }
+    setLastQr(kind === 'qr' ? officialReceiptUrl(value) : null);
     const receipt = await scan.resolve(kind, value);
     if (!receipt) return;
     setCode('');
@@ -174,45 +143,22 @@ export default function ScanScreen() {
       motion.reduceMotion ? 0 : motionTokens.scanSuccessDelay,
     );
   };
-  const openImported = useCallback(
-    (receipt: Receipt) => {
-      client.setQueryData(queryKeys.receipt.detail(receipt.id), receipt);
-      void client.invalidateQueries({ queryKey: queryKeys.receipt.list });
-      router.replace({
-        pathname: '/receipt/[receiptId]',
-        params: { receiptId: receipt.id },
-      });
-    },
-    [client, router],
-  );
-  const capture = useReceiptCapture(openImported);
-  // No authorised source has this fiscal receipt: read it from the camera instead.
+  // No partner source has this fiscal receipt: open the official e-kassa page for it.
   const sourceMissing =
-    scan.state === 'error' && scan.error === 'RECEIPT_SOURCE_UNAVAILABLE';
-  const capturing = sourceMissing && !official && lastQr !== null;
-  const { start: startCapture, qr: captureQr } = capture;
+    scan.state === 'error' &&
+    scan.error === 'RECEIPT_SOURCE_UNAVAILABLE' &&
+    lastQr !== null;
   useEffect(() => {
-    if (!capturing || captureQr || !lastQr) return;
-    const pending = firstFrame.current ?? Promise.resolve(null);
-    firstFrame.current = null;
-    void pending.then((frame) => startCapture(lastQr, frame));
-  }, [capturing, captureQr, lastQr, startCapture]);
-  const stopCapture = () => {
-    capture.end();
-    setOfficial(false);
-    event(permission?.granted ? 'retry' : 'denied');
-  };
+    if (!sourceMissing || !lastQr) return;
+    // Back to scanning first, so returning from the official page shows a live camera.
+    event('retry');
+    router.push({ pathname: '/receipt-import', params: { qr: lastQr } });
+  }, [sourceMissing, lastQr, event, router]);
   const cameraActive = Boolean(
-    permission?.granted &&
-    focused &&
-    active &&
-    (scan.state === 'scanning' ||
-      (capturing && captureQr !== null && capture.status === 'needMore')),
+    permission?.granted && focused && active && scan.state === 'scanning',
   );
   const manual = scan.state === 'manual-entry';
   const errorKey = errorKeys[scan.error] ?? 'unknown';
-  // No authorised source returned this fiscal receipt: offer the customer-assisted import.
-  const importQr = sourceMissing && official ? lastQr : null;
   const parsed = manualCodeSchema.safeParse(code);
   return (
     <>
@@ -273,13 +219,12 @@ export default function ScanScreen() {
           <StatusBar style="light" />
           {cameraActive && (
             <CameraView
-              ref={camera}
               style={StyleSheet.absoluteFill}
               facing="back"
               enableTorch={torch}
               barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
               onBarcodeScanned={({ data }) => {
-                if (cameraActive && !capturing) void resolve('qr', data);
+                if (cameraActive) void resolve('qr', data);
               }}
               onMountError={() => {
                 event('detect');
@@ -315,49 +260,33 @@ export default function ScanScreen() {
               />
             </View>
             <View style={styles.bottom}>
-              {capturing ? (
-                <ReceiptCaptureControls
-                  status={captureQr ? capture.status : 'processing'}
-                  problem={capture.problem}
-                  frames={capture.frames.length}
-                  onShutter={() => void takeFrame(camera).then(capture.add)}
-                  onRead={capture.read}
-                  onRestart={capture.restart}
-                  onOfficial={() => {
-                    capture.end();
-                    setOfficial(true);
-                  }}
-                  onCancel={stopCapture}
+              <>
+                <Text
+                  style={styles.instructions}
+                  accessibilityLiveRegion="polite"
+                >
+                  {t(
+                    scan.state === 'resolving'
+                      ? 'scan.resolving'
+                      : scan.state === 'success'
+                        ? 'scan.resolved'
+                        : 'scan.position',
+                  )}
+                </Text>
+                <Button
+                  variant="secondary"
+                  label={t('scan.manual')}
+                  disabled={
+                    scan.state === 'resolving' || scan.state === 'success'
+                  }
+                  onPress={() => event('manual')}
                 />
-              ) : (
-                <>
-                  <Text
-                    style={styles.instructions}
-                    accessibilityLiveRegion="polite"
-                  >
-                    {t(
-                      scan.state === 'resolving'
-                        ? 'scan.resolving'
-                        : scan.state === 'success'
-                          ? 'scan.resolved'
-                          : 'scan.position',
-                    )}
-                  </Text>
-                  <Button
-                    variant="secondary"
-                    label={t('scan.manual')}
-                    disabled={
-                      scan.state === 'resolving' || scan.state === 'success'
-                    }
-                    onPress={() => event('manual')}
-                  />
-                </>
-              )}
+              </>
             </View>
           </SafeAreaView>
         </View>
       )}
-      {scan.state === 'error' && !capturing && (
+      {scan.state === 'error' && !sourceMissing && (
         <Animated.View
           accessibilityViewIsModal
           style={[
@@ -376,31 +305,21 @@ export default function ScanScreen() {
             },
           ]}
         >
-          {importQr ? (
-            <ScrollView bounces={false}>
-              <ReceiptImageImport
-                qr={importQr}
-                onImported={openImported}
-                onScanAgain={stopCapture}
-              />
-            </ScrollView>
-          ) : (
-            <>
-              <Text variant="title2" accessibilityRole="alert">
-                {t(`scan.errors.${errorKey}.title`)}
-              </Text>
-              <Text>{t(`scan.errors.${errorKey}.body`)}</Text>
-              <Button
-                label={t('scan.retry')}
-                onPress={() => event(permission?.granted ? 'retry' : 'denied')}
-              />
-              <Button
-                variant="ghost"
-                label={t('navigation.close')}
-                onPress={close}
-              />
-            </>
-          )}
+          <>
+            <Text variant="title2" accessibilityRole="alert">
+              {t(`scan.errors.${errorKey}.title`)}
+            </Text>
+            <Text>{t(`scan.errors.${errorKey}.body`)}</Text>
+            <Button
+              label={t('scan.retry')}
+              onPress={() => event(permission?.granted ? 'retry' : 'denied')}
+            />
+            <Button
+              variant="ghost"
+              label={t('navigation.close')}
+              onPress={close}
+            />
+          </>
         </Animated.View>
       )}
       {manual && (

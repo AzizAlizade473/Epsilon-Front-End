@@ -888,11 +888,9 @@
     }
   },
   "scanImport": {
-    "title": "Çekin məlumatlarını alın",
-    "body": "Rəsmi e-kassa xidməti çek məlumatlarını tətbiqlərə avtomatik göndərmir. Rəsmi çeki açın, onu yadda saxlayın və ya ekran şəklini çəkin, sonra burada idxal edin. Və ya kağız çekin şəklini çəkin.",
-    "openOfficial": "Rəsmi çeki aç",
+    "title": "Saxlanmış çek şəklini seç",
+    "body": "Avtomatik idxal alınmadısa, rəsmi səhifədən yüklədiyiniz çek şəklini seçin.",
     "importImage": "Çek şəklini idxal et",
-    "photograph": "Kağız çekin şəklini çək",
     "reading": "Çek oxunur…",
     "scanAgain": "Yenidən skan et",
     "trust": "Şəkildən oxunan çekləri qiymətləndirmək olar, lakin keşbek verilmir.",
@@ -921,23 +919,17 @@
     }
   },
   "capture": {
-    "qrDetected": "QR tapıldı",
-    "showFull": "QR tapıldı. İndi çekin hamısını göstərin və şəklini çəkin.",
-    "nextPart": "Çekin növbəti hissəsini əlavə edin və ya indi oxuyun.",
-    "photos_one": "Bu çekin {{count}} şəkli",
-    "photos_other": "Bu çekin {{count}} şəkli",
-    "shutter": "Şəkil çək",
-    "read": "Çeki oxu",
-    "restart": "Yenidən başla",
-    "official": "Rəsmi çek şəklindən istifadə et",
     "step": {
       "reading": "Çek oxunur…",
       "extracting": "Məhsullar çıxarılır…",
       "identifying": "Obyekt müəyyən edilir…"
-    },
-    "problem": {
-      "blurry": "Şəkil çox bulanıq, qaranlıq və ya uzaqdır. Çeki düz və daha yaxın tutun.",
-      "capture": "Şəkil çəkilmədi. Yenidən cəhd edin."
     }
+  },
+  "officialImport": {
+    "title": "Rəsmi e-kassa çeki",
+    "hint": "Çeki Epsilon-a əlavə etmək üçün ÇEKİ YÜKLƏ düyməsinə toxunun.",
+    "loading": "Rəsmi çek açılır…",
+    "pageError": "Rəsmi çek səhifəsi açılmadı",
+    "manual": "Saxlanmış çek şəklini seç"
   }
 }

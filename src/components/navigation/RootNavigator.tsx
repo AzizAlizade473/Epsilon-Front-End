@@ -34,6 +34,13 @@ export function RootNavigator() {
             contentStyle: { backgroundColor: walletDesign.colors.canvas },
           }}
         />
+        <Stack.Screen
+          name="receipt-import"
+          options={{
+            animation: reduceMotion ? 'none' : 'slide_from_bottom',
+            contentStyle: { backgroundColor: colors.surface },
+          }}
+        />
         <Stack.Screen name="receipt/[receiptId]" options={transparentSheet} />
         <Stack.Screen
           name="receipts"
