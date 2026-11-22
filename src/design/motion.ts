@@ -32,6 +32,28 @@ export const motionTokens = {
   pressScale: 0.97,
   listStagger: 40,
   listStaggerMax: 8,
+  /** Launch intro (BrandIntro): draw, settle, wordmark, wait, exit. */
+  intro: {
+    settleDelay: 120,
+    rise: 700,
+    letterDuration: 520,
+    letterStagger: 38,
+    letterRise: 0.45,
+    shortMarkIn: 320,
+    shortMarkScale: 0.96,
+    shortLetterDelay: 60,
+    shortLetterDuration: 420,
+    shortLetterStagger: 28,
+    waitDelay: 200,
+    hairlineFade: 240,
+    hairlineLoop: 1200,
+    exit: 280,
+    exitScale: 0.985,
+    exitBackgroundDelay: 60,
+    reducedFade: 200,
+    firstFrameTimeout: 900,
+    endGrace: 1500,
+  },
 } as const;
 
 export type MotionConfig = {

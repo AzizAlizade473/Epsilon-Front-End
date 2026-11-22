@@ -19,6 +19,8 @@ export const colors = {
     deep: '#282973',
     deepRaised: '#2F3D8F',
     onDeep: '#B8CAFF',
+    /** Solid logo blue of the official Epsilon mark (launch intro). */
+    logo: '#2B569F',
   },
   ink: '#333333',
   inkSecondary: '#555555',

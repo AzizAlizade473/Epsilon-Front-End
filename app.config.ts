@@ -92,7 +92,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       'expo-splash-screen',
       {
-        image: './assets/brand/app-icon.png',
+        // Plain white: the in-app intro (BrandIntro) draws the logo from a blank page.
+        image: './assets/brand/splash-blank.png',
         imageWidth: 120,
         backgroundColor: '#FFFFFF',
       },

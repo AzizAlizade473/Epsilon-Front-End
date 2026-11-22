@@ -15,6 +15,28 @@ const { act, fireEvent, render, userEvent } = ui;
 jest.mock('expo-splash-screen', () => ({
   hideAsync: jest.fn(async () => undefined),
 }));
+// The intro itself is covered on device; here it only reports layout and finishes once ready.
+jest.mock('@/components/brand/BrandIntro', () => {
+  const { useEffect } = jest.requireActual<typeof import('react')>('react');
+  const { View } =
+    jest.requireActual<typeof import('react-native')>('react-native');
+  return {
+    BrandIntro: ({
+      ready,
+      onFinished,
+      onLayout,
+    }: {
+      ready: boolean;
+      onFinished: () => void;
+      onLayout?: () => void;
+    }) => {
+      useEffect(() => {
+        if (ready) onFinished();
+      }, [ready, onFinished]);
+      return <View testID="brand-intro" onLayout={onLayout} />;
+    },
+  };
+});
 afterEach(() => {
   jest.clearAllMocks();
 });
@@ -23,16 +45,17 @@ const metrics = {
   frame: { x: 0, y: 0, width: 360, height: 640 },
   insets: { top: 24, bottom: 24, left: 0, right: 0 },
 };
+const decideIntro = async () => 'short' as const;
 const renderGate = (load: () => Promise<BootData>) =>
   render(
     <SafeAreaProvider initialMetrics={metrics}>
-      <BootstrapGate load={load}>
+      <BootstrapGate load={load} decideIntro={decideIntro}>
         <Text>Ready</Text>
       </BootstrapGate>
     </SafeAreaProvider>,
   );
 
-test('splash stays held until boot succeeds and ready content has laid out', async () => {
+test('the intro takes over from the splash at once and clears into the app when boot succeeds', async () => {
   await initializeI18n();
   let finish: (value: BootData) => void = () => {};
   const promise = new Promise<BootData>((resolve) => {
@@ -41,13 +64,13 @@ test('splash stays held until boot succeeds and ready content has laid out', asy
   await renderGate(() => promise);
   expect(ui.screen.queryByText('Ready')).toBeNull();
   expect(Splash.hideAsync).not.toHaveBeenCalled();
+  await fireEvent(ui.screen.getByTestId('brand-intro'), 'layout', {});
+  expect(Splash.hideAsync).toHaveBeenCalledTimes(1);
   await act(async () => {
     finish(boot);
   });
   expect(ui.screen.getByText('Ready')).toBeOnTheScreen();
-  expect(Splash.hideAsync).not.toHaveBeenCalled();
-  await fireEvent(ui.screen.getByTestId('boot-layout'), 'layout', {});
-  expect(Splash.hideAsync).toHaveBeenCalledTimes(1);
+  expect(ui.screen.queryByTestId('brand-intro')).toBeNull();
 });
 
 test('boot failures show a generic retry and can recover', async () => {
