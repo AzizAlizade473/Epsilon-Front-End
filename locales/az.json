@@ -797,7 +797,8 @@
     "engine": {
       "structured": "Strukturlu məlumat",
       "on_device_ocr": "Telefonda mətn tanıma",
-      "gemini": "AI ilə oxuma"
+      "gemini": "AI ilə oxuma",
+      "customer_corrected": "Müştəri tərəfindən düzəldilib"
     }
   },
   "scanImport": {
@@ -846,5 +847,23 @@
     "loading": "Rəsmi çek açılır…",
     "pageError": "Rəsmi çek səhifəsi açılmadı",
     "manual": "Saxlanmış çek şəklini seç"
+  },
+  "correction": {
+    "title": "Məhsulları təsdiqləyin",
+    "body": "Çekin bir hissəsi oxunmadı. Obyekt, tarix və yekun məbləğ rəsmi çekdən götürülüb. Məhsulları yoxlayın, düzəldin və ya əlavə edin.",
+    "unknownMerchant": "Obyekt oxunmadı",
+    "total": "Yekun: {{total}}",
+    "image": "Rəsmi çekin şəkli",
+    "item": "Məhsul {{n}}",
+    "remove": "{{n}}-ci məhsulu sil",
+    "name": "Məhsulun adı",
+    "quantity": "Say",
+    "price": "Qiymət (₼)",
+    "add": "Məhsul əlavə et",
+    "sum": "Məhsulların cəmi: {{sum}} / {{total}}",
+    "sumOnly": "Məhsulların cəmi: {{sum}}",
+    "mismatch": "Məhsulların cəmi çekin yekun məbləğinə bərabər olmalıdır.",
+    "submit": "Təsdiqlə və davam et",
+    "noCashback": "Əl ilə düzəldilmiş çeklər qiymətləndirilə bilər, lakin keşbek qazandırmır."
   }
 }

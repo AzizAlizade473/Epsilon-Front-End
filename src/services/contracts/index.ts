@@ -368,6 +368,29 @@ export const ocrPageSchema = z
 export type OcrPage = z.infer<typeof ocrPageSchema>;
 
 /** POST /receipts/fiscal/import: complete a scanned fiscal QR with a customer-supplied image. */
+/** One product line confirmed by the customer: qəpik amounts, quantity in thousandths. */
+export const correctedLineSchema = z
+  .object({
+    name: z.string().trim().min(1).max(200),
+    quantityMilli: z.number().int().min(1).max(100_000_000),
+    unitPriceMinor: z.number().int().min(0).max(1_000_000_000),
+    lineTotalMinor: z.number().int().min(0).max(1_000_000_000),
+  })
+  .strict();
+export type CorrectedLine = z.infer<typeof correctedLineSchema>;
+/** What the server could read from a receipt image, for the customer to complete. */
+export const receiptDraftSchema = z
+  .object({
+    merchantName: z.string().nullable(),
+    issuedAt: z.string().nullable(),
+    totalMinor: z.number().int().nullable(),
+    items: z
+      .array(correctedLineSchema.extend({ name: z.string().min(1) }))
+      .max(100),
+    unread: z.array(z.string()).max(100),
+  })
+  .strict();
+export type ReceiptDraft = z.infer<typeof receiptDraftSchema>;
 export const fiscalImportSchema = z
   .object({
     qr: z.string().min(1).max(2048),
@@ -386,6 +409,8 @@ export const fiscalImportSchema = z
       .max(4),
     /** On-device OCR per image, same order; lets the server skip AI when it is enough. */
     ocr: z.array(ocrPageSchema).max(4).optional(),
+    /** Product lines the customer completed after a partial read (needs `ocr`). */
+    corrections: z.array(correctedLineSchema).min(1).max(100).optional(),
   })
   .strict();
 export type FiscalImport = z.infer<typeof fiscalImportSchema>;

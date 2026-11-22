@@ -37,11 +37,19 @@ import {
   parseExportMessage,
   parseStageMessage,
   type ImportStage,
+  type ReceiptExport,
 } from '../ekassa/exportBridge';
+import { ReceiptCorrection } from '../components/ReceiptCorrection';
+import {
+  receiptDraftSchema,
+  type CorrectedLine,
+  type ReceiptDraft,
+} from '@/services/contracts';
 import { importOfficialReceipt } from '../ekassa/importOfficialReceipt';
 import { env } from '@/lib/env';
 
-type Phase = 'page' | 'importing' | 'failed' | 'pageError' | 'manual';
+type Phase =
+  'page' | 'importing' | 'failed' | 'pageError' | 'manual' | 'correct';
 type Problem = { key: string; fields: readonly string[]; code?: string };
 /** Development builds show which pipeline stages were reached (no receipt content). */
 const DIAGNOSTICS = env.EXPO_PUBLIC_APP_ENV === 'development';
@@ -81,6 +89,14 @@ export function OfficialReceiptScreen() {
   const [loading, setLoading] = useState(true);
   const [problem, setProblem] = useState<Problem | null>(null);
   const [stages, setStages] = useState<string[]>([]);
+  // A partly read receipt: the customer completes the product lines (same image, same QR).
+  const [draft, setDraft] = useState<ReceiptDraft | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [correctionProblem, setCorrectionProblem] = useState<string | null>(
+    null,
+  );
+  const lastExport = useRef<ReceiptExport | null>(null);
+  const [exportUri, setExportUri] = useState<string | null>(null);
   const mark = (stage: ImportStage | 'DOWNLOAD_FAILED') =>
     setStages((done) => (done.includes(stage) ? done : [...done, stage]));
 
@@ -131,6 +147,8 @@ export function OfficialReceiptScreen() {
       return;
     }
     mark('JPG_VALIDATED');
+    lastExport.current = exported;
+    setExportUri(`data:${exported.mime};base64,${exported.data}`);
     busy.current = true;
     setProblem(null);
     setPhase('importing');
@@ -141,19 +159,56 @@ export function OfficialReceiptScreen() {
       mark('RATING_SCREEN_OPENED');
       open(receipt);
     } catch (cause) {
-      setProblem({
-        key: problemKeys[isApiError(cause) ? cause.code : ''] ?? 'unknown',
-        fields: isApiError(cause) ? cause.fields : [],
-        code: isApiError(cause) ? cause.code : String(cause),
-      });
-      setPhase('failed');
+      fail(cause);
     } finally {
       busy.current = false;
     }
   };
 
+  /** A partial read with a usable draft opens the correction step; anything else is a failure. */
+  const fail = (cause: unknown) => {
+    const partial =
+      isApiError(cause) && cause.code === 'RECEIPT_IMAGE_INCOMPLETE'
+        ? receiptDraftSchema.safeParse(cause.draft)
+        : null;
+    if (partial?.success) {
+      setDraft(partial.data);
+      setPhase('correct');
+      return;
+    }
+    setProblem({
+      key: problemKeys[isApiError(cause) ? cause.code : ''] ?? 'unknown',
+      fields: isApiError(cause) ? cause.fields : [],
+      code: isApiError(cause) ? cause.code : String(cause),
+    });
+    setPhase('failed');
+  };
+
+  const submitCorrections = async (lines: CorrectedLine[]) => {
+    if (!url || !lastExport.current || busy.current) return;
+    busy.current = true;
+    setSubmitting(true);
+    setCorrectionProblem(null);
+    try {
+      open(await importOfficialReceipt(url, lastExport.current, lines));
+    } catch (cause) {
+      // Stay on the form; say what the server could not accept.
+      setCorrectionProblem(
+        isApiError(cause) && cause.fields.includes('receipt total')
+          ? t('correction.mismatch')
+          : t(
+              `scanImport.problem.${problemKeys[isApiError(cause) ? cause.code : ''] ?? 'unknown'}`,
+            ),
+      );
+    } finally {
+      busy.current = false;
+      setSubmitting(false);
+    }
+  };
+
   const retry = () => {
     setProblem(null);
+    setDraft(null);
     setStages([]);
     setPhase('page');
     setLoading(true);
@@ -261,6 +316,18 @@ export function OfficialReceiptScreen() {
           />
         </View>
       )}
+      {phase === 'correct' && draft && (
+        <View style={[styles.panel, styles.tall]}>
+          <ReceiptCorrection
+            draft={draft}
+            imageUri={exportUri}
+            busy={submitting}
+            problem={correctionProblem}
+            onSubmit={(lines) => void submitCorrections(lines)}
+            onCancel={close}
+          />
+        </View>
+      )}
       {phase === 'manual' && url && (
         <ScrollView style={styles.panel} bounces={false}>
           <ReceiptImageImport qr={url} onImported={open} onScanAgain={close} />
@@ -289,6 +356,7 @@ const styles = StyleSheet.create({
     padding: spacing[24],
     backgroundColor: colors.surface,
   },
+  tall: { maxHeight: '92%', top: spacing[48] },
   panel: {
     maxHeight: '70%',
     position: 'absolute',

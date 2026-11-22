@@ -2163,6 +2163,35 @@ components:
             required:
               - lines
             additionalProperties: false
+        corrections:
+          minItems: 1
+          maxItems: 100
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                minLength: 1
+                maxLength: 200
+              quantityMilli:
+                type: integer
+                minimum: 1
+                maximum: 100000000
+              unitPriceMinor:
+                type: integer
+                minimum: 0
+                maximum: 1000000000
+              lineTotalMinor:
+                type: integer
+                minimum: 0
+                maximum: 1000000000
+            required:
+              - name
+              - quantityMilli
+              - unitPriceMinor
+              - lineTotalMinor
+            additionalProperties: false
       required:
         - qr
         - source

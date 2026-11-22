@@ -1,6 +1,6 @@
 import { File, Paths } from 'expo-file-system';
 import { services, type Receipt } from '@/services';
-import type { OcrPage } from '@/services/contracts';
+import type { CorrectedLine, OcrPage } from '@/services/contracts';
 import { MIN_RECEIPT_LINES, recognizeReceipt } from '../receiptOcr';
 import type { ReceiptExport } from './exportBridge';
 
@@ -37,6 +37,8 @@ async function readOnDevice(image: ReceiptExport): Promise<OcrPage | null> {
 export async function importOfficialReceipt(
   qr: string,
   image: ReceiptExport,
+  /** Product lines the customer completed after a partial read. */
+  corrections?: CorrectedLine[],
 ): Promise<Receipt> {
   const ocr = await readOnDevice(image);
   const usable =
@@ -46,5 +48,6 @@ export async function importOfficialReceipt(
     source: 'official_page',
     images: [{ mime: image.mime, data: image.data }],
     ...(usable ? { ocr: usable } : {}),
+    ...(corrections ? { corrections } : {}),
   });
 }

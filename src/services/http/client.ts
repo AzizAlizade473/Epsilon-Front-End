@@ -257,6 +257,7 @@ async function executeRequest<T>(
     let message = `HTTP ${response.status}`;
     const retryHeader = response.headers.get('Retry-After');
     let fields: string[] = [];
+    let draft: unknown = null;
     let retryAfterSeconds: number | null =
       retryHeader && /^\d+$/.test(retryHeader) ? Number(retryHeader) : null;
     if (!Number.isSafeInteger(retryAfterSeconds)) retryAfterSeconds = null;
@@ -273,6 +274,7 @@ async function executeRequest<T>(
           requestId;
         retryAfterSeconds = parsed.data.retryAfterSeconds ?? retryAfterSeconds;
         fields = parsed.data.fields ?? [];
+        draft = (parsed.data as { draft?: unknown }).draft ?? null;
       }
     } catch {
       // Non-JSON error body; keep defaults
@@ -285,6 +287,7 @@ async function executeRequest<T>(
       requestId: serverRequestId,
       retryAfterSeconds,
       fields,
+      draft,
     });
   }
 

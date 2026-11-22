@@ -16,6 +16,11 @@ import {
   officialReceiptUrl,
   parseExportMessage,
 } from '@/features/scan/ekassa/exportBridge';
+import {
+  toLine,
+  toMilli,
+  toMinor,
+} from '@/features/scan/components/ReceiptCorrection';
 import { initializeI18n } from '@/lib/i18n';
 import { createQueryClient } from '@/services/query';
 import type {
@@ -287,6 +292,100 @@ describe('official receipt page', () => {
       }),
     );
     expect(screen.getByText(az.scanImport.problem.download)).toBeOnTheScreen();
+  });
+
+  it('lets the customer complete a partly read receipt; lines must match the printed total', async () => {
+    mockImport.mockRejectedValueOnce(
+      new ApiError({
+        code: 'RECEIPT_IMAGE_INCOMPLETE',
+        message: 'incomplete',
+        status: 422,
+        fields: ['line 2'],
+        draft: {
+          merchantName: 'NARGIZ RESTORAN',
+          issuedAt: '2026-11-20T19:40:00+04:00',
+          totalMinor: 1350,
+          items: [
+            {
+              name: 'TOYUQ ŞİŞ KABAB',
+              quantityMilli: 1000,
+              unitPriceMinor: 850,
+              lineTotalMinor: 850,
+            },
+            {
+              name: 'PAXLAVA',
+              quantityMilli: 1000,
+              unitPriceMinor: 200,
+              lineTotalMinor: 200,
+            },
+          ],
+          unread: ['#2 AYRAN 0.5L  2  1,50  3,OO'],
+        },
+      }),
+    );
+    await showPage();
+    await download();
+    await waitFor(() =>
+      expect(screen.getByText(az.correction.title)).toBeOnTheScreen(),
+    );
+    expect(screen.getByText('NARGIZ RESTORAN')).toBeOnTheScreen();
+    expect(screen.getByDisplayValue('TOYUQ ŞİŞ KABAB')).toBeOnTheScreen();
+    expect(screen.getByDisplayValue('AYRAN 0.5L')).toBeOnTheScreen(); // unreadable row, numbers stripped
+    const submit = () =>
+      screen.getByRole('button', { name: az.correction.submit });
+    expect(submit()).toBeDisabled(); // the AYRAN price is still empty
+    const prices = screen.getAllByLabelText(az.correction.price);
+    const quantities = screen.getAllByLabelText(az.correction.quantity);
+    await fireEvent.changeText(quantities[2]!, '2');
+    await fireEvent.changeText(prices[2]!, '1,50');
+    await waitFor(() => expect(submit()).toBeEnabled()); // 8.50 + 2.00 + 3.00 = 13.50
+    await fireEvent.press(submit());
+    await waitFor(() => expect(mockImport).toHaveBeenCalledTimes(2));
+    const sent = mockImport.mock.calls[1]![0];
+    expect(sent.images).toEqual([{ mime: 'image/jpeg', data: JPEG }]); // same official image
+    expect(sent.corrections).toEqual([
+      {
+        name: 'TOYUQ ŞİŞ KABAB',
+        quantityMilli: 1000,
+        unitPriceMinor: 850,
+        lineTotalMinor: 850,
+      },
+      {
+        name: 'PAXLAVA',
+        quantityMilli: 1000,
+        unitPriceMinor: 200,
+        lineTotalMinor: 200,
+      },
+      {
+        name: 'AYRAN 0.5L',
+        quantityMilli: 2000,
+        unitPriceMinor: 150,
+        lineTotalMinor: 300,
+      },
+    ]);
+    await waitFor(() =>
+      expect(mockReplace).toHaveBeenCalledWith({
+        pathname: '/receipt/[receiptId]',
+        params: { receiptId: mockReceipt.id },
+      }),
+    );
+  });
+
+  it('parses customer amounts strictly', () => {
+    expect(toMilli('1,5')).toBe(1500);
+    expect(toMilli('0')).toBeNull();
+    expect(toMilli('abc')).toBeNull();
+    expect(toMinor('1,79')).toBe(179);
+    expect(toMinor('2')).toBe(200);
+    expect(toMinor('1.799')).toBeNull();
+    expect(
+      toLine({ key: 0, name: ' ÇAY ', quantity: '3', price: '0.50' }),
+    ).toEqual({
+      name: 'ÇAY',
+      quantityMilli: 3000,
+      unitPriceMinor: 50,
+      lineTotalMinor: 150,
+    });
   });
 
   it('never imports a file that is not an image', async () => {

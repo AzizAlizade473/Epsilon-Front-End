@@ -797,7 +797,8 @@
     "engine": {
       "structured": "Structured data",
       "on_device_ocr": "Phone text recognition",
-      "gemini": "AI reading"
+      "gemini": "AI reading",
+      "customer_corrected": "Corrected by the customer"
     }
   },
   "scanImport": {
@@ -846,5 +847,23 @@
     "loading": "Opening the official receipt…",
     "pageError": "The official receipt page did not open",
     "manual": "Choose a saved receipt image"
+  },
+  "correction": {
+    "title": "Confirm the products",
+    "body": "Part of the receipt could not be read. The merchant, date and total come from the official receipt. Check, correct or add the products.",
+    "unknownMerchant": "Merchant not read",
+    "total": "Total: {{total}}",
+    "image": "Official receipt image",
+    "item": "Item {{n}}",
+    "remove": "Remove item {{n}}",
+    "name": "Product name",
+    "quantity": "Quantity",
+    "price": "Price (₼)",
+    "add": "Add a product",
+    "sum": "Products add up to {{sum}} of {{total}}",
+    "sumOnly": "Products add up to {{sum}}",
+    "mismatch": "The products must add up to the receipt total.",
+    "submit": "Confirm and continue",
+    "noCashback": "Corrected receipts can be rated but do not earn cashback."
   }
 }

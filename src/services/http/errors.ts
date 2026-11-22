@@ -49,6 +49,8 @@ export class ApiError extends Error {
   readonly retryAfterSeconds: number | null;
   /** Server-named fields the error is about (e.g. receipt parts that could not be read). */
   readonly fields: readonly string[];
+  /** Server payload of a partly read receipt (validated where it is used). */
+  readonly draft: unknown;
 
   constructor({
     code,
@@ -57,6 +59,7 @@ export class ApiError extends Error {
     requestId,
     retryAfterSeconds,
     fields,
+    draft,
   }: {
     code: ApiErrorCode;
     message: string;
@@ -64,6 +67,7 @@ export class ApiError extends Error {
     requestId?: string | null;
     retryAfterSeconds?: number | null;
     fields?: readonly string[];
+    draft?: unknown;
   }) {
     super(message);
     this.name = 'ApiError';
@@ -72,6 +76,7 @@ export class ApiError extends Error {
     this.requestId = requestId ?? null;
     this.retryAfterSeconds = retryAfterSeconds ?? null;
     this.fields = fields ?? [];
+    this.draft = draft ?? null;
     // Maintains proper stack trace in V8 environments.
     const errCtor = Error as unknown as {
       captureStackTrace?: (target: object, constructorOpt?: Function) => void;
