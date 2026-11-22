@@ -37,6 +37,19 @@ export function isAllowedTopNavigation(url: string): boolean {
 export const MIN_RECEIPT_BYTES = 1024;
 export const MAX_RECEIPT_BYTES = 8 * 1024 * 1024;
 const MESSAGE = 'epsilon:ekassa-export';
+const STAGE = 'epsilon:ekassa-stage';
+
+/** Pipeline stages, for development diagnostics only (no receipt content). */
+export type ImportStage =
+  | 'EKASSA_PAGE_OPENED'
+  | 'RECEIPT_VISIBLE'
+  | 'DOWNLOAD_STARTED'
+  | 'DOWNLOAD_CAPTURED'
+  | 'JPG_BYTES_RECEIVED'
+  | 'JPG_VALIDATED'
+  | 'PARSING_STARTED'
+  | 'PARSING_FINISHED'
+  | 'RATING_SCREEN_OPENED';
 
 /**
  * Runs in the official page before its own scripts. Remembers blobs the page creates and,
@@ -46,6 +59,13 @@ export const EXPORT_BRIDGE_SCRIPT = `(function () {
   if (window.__epsilonExport) return;
   window.__epsilonExport = true;
   var blobs = {};
+  function stage(name) {
+    window.ReactNativeWebView.postMessage(JSON.stringify({ type: '${STAGE}', stage: name }));
+  }
+  // Reports once when the official page shows a receipt image (presence only, never its content).
+  var watch = setInterval(function () {
+    if (document.querySelector('img[src^="data:image/"]')) { clearInterval(watch); stage('RECEIPT_VISIBLE'); }
+  }, 1000);
   var create = URL.createObjectURL;
   URL.createObjectURL = function (value) {
     var url = create.apply(URL, arguments);
@@ -56,8 +76,11 @@ export const EXPORT_BRIDGE_SCRIPT = `(function () {
     var link = event.target && event.target.closest ? event.target.closest('a[download]') : null;
     var blob = link && blobs[link.href];
     if (!blob) return;
+    stage('DOWNLOAD_STARTED');
     var reader = new FileReader();
+    reader.onerror = function () { stage('DOWNLOAD_FAILED'); };
     reader.onload = function () {
+      stage('DOWNLOAD_CAPTURED');
       window.ReactNativeWebView.postMessage(JSON.stringify({
         type: '${MESSAGE}', size: blob.size, data: String(reader.result).split(',')[1] || ''
       }));
@@ -109,4 +132,26 @@ export function parseExportMessage(
       : null;
   if (!mime) return { problem: 'format' };
   return { mime, data, bytes };
+}
+
+/** A pipeline stage reported by the bridge, or null. */
+export function parseStageMessage(
+  raw: string,
+): ImportStage | 'DOWNLOAD_FAILED' | null {
+  try {
+    const message = JSON.parse(raw) as { type?: unknown; stage?: unknown };
+    const known = [
+      'RECEIPT_VISIBLE',
+      'DOWNLOAD_STARTED',
+      'DOWNLOAD_CAPTURED',
+      'DOWNLOAD_FAILED',
+    ];
+    return message.type === STAGE &&
+      typeof message.stage === 'string' &&
+      known.includes(message.stage)
+      ? (message.stage as ImportStage | 'DOWNLOAD_FAILED')
+      : null;
+  } catch {
+    return null;
+  }
 }

@@ -2460,6 +2460,7 @@ components:
                 - RECEIPT_VERIFICATION_FAILED
                 - RECEIPT_READER_UNAVAILABLE
                 - RECEIPT_READER_QUOTA
+                - RECEIPT_READER_BUSY
                 - RECEIPT_IMAGE_INCOMPLETE
                 - RECEIPT_IMAGE_MISMATCH
                 - FEEDBACK_ALREADY_SUBMITTED

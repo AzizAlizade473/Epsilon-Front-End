@@ -903,7 +903,9 @@
       "network": "Could not connect. Try again.",
       "camera": "Camera access is needed to photograph the receipt",
       "format": "This image type is not supported. Use JPG, PNG or WebP.",
-      "unknown": "Could not read the receipt. Try again."
+      "unknown": "Could not read the receipt. Try again.",
+      "busy": "The receipt reader is busy right now. Try again in a minute.",
+      "download": "The receipt file was not received. Tap ÇEKİ YÜKLƏ again."
     },
     "field": {
       "total": "total",

@@ -19,6 +19,7 @@ const problemKeys: Record<string, string> = {
   RECEIPT_IMAGE_MISMATCH: 'mismatch',
   RECEIPT_READER_UNAVAILABLE: 'unavailable',
   RECEIPT_READER_QUOTA: 'quota',
+  RECEIPT_READER_BUSY: 'busy',
   NETWORK: 'network',
   TIMEOUT: 'network',
 };

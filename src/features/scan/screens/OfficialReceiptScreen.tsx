@@ -35,11 +35,16 @@ import {
   isAllowedTopNavigation,
   officialReceiptUrl,
   parseExportMessage,
+  parseStageMessage,
+  type ImportStage,
 } from '../ekassa/exportBridge';
 import { importOfficialReceipt } from '../ekassa/importOfficialReceipt';
+import { env } from '@/lib/env';
 
 type Phase = 'page' | 'importing' | 'failed' | 'pageError' | 'manual';
-type Problem = { key: string; fields: readonly string[] };
+type Problem = { key: string; fields: readonly string[]; code?: string };
+/** Development builds show which pipeline stages were reached (no receipt content). */
+const DIAGNOSTICS = env.EXPO_PUBLIC_APP_ENV === 'development';
 
 // The library's combined iOS/Android/Windows props type collapses to `never` with
 // this React types version; Epsilon is Android-first, so type it with the Android props.
@@ -53,6 +58,7 @@ const problemKeys: Record<string, string> = {
   RECEIPT_IMAGE_MISMATCH: 'mismatch',
   RECEIPT_READER_UNAVAILABLE: 'unavailable',
   RECEIPT_READER_QUOTA: 'quota',
+  RECEIPT_READER_BUSY: 'busy',
   NETWORK: 'network',
   TIMEOUT: 'network',
 };
@@ -74,6 +80,9 @@ export function OfficialReceiptScreen() {
   const [phase, setPhase] = useState<Phase>('page');
   const [loading, setLoading] = useState(true);
   const [problem, setProblem] = useState<Problem | null>(null);
+  const [stages, setStages] = useState<string[]>([]);
+  const mark = (stage: ImportStage | 'DOWNLOAD_FAILED') =>
+    setStages((done) => (done.includes(stage) ? done : [...done, stage]));
 
   const close = useCallback(() => {
     if (router.canGoBack()) router.back();
@@ -103,23 +112,39 @@ export function OfficialReceiptScreen() {
 
   const onMessage = async (event: WebViewMessageEvent) => {
     if (!url) return;
+    const stage = parseStageMessage(event.nativeEvent.data);
+    if (stage) {
+      mark(stage);
+      if (stage === 'DOWNLOAD_FAILED' && !busy.current) {
+        setProblem({ key: 'download', fields: [] });
+        setPhase('failed');
+      }
+      return;
+    }
     const exported = parseExportMessage(event.nativeEvent.data);
     // Ignore unrelated messages and repeated taps while one import runs.
     if (!exported || busy.current) return;
+    mark('JPG_BYTES_RECEIVED');
     if ('problem' in exported) {
-      setProblem({ key: 'format', fields: [] });
+      setProblem({ key: 'format', fields: [], code: exported.problem });
       setPhase('failed');
       return;
     }
+    mark('JPG_VALIDATED');
     busy.current = true;
     setProblem(null);
     setPhase('importing');
     try {
-      open(await importOfficialReceipt(url, exported));
+      mark('PARSING_STARTED');
+      const receipt = await importOfficialReceipt(url, exported);
+      mark('PARSING_FINISHED');
+      mark('RATING_SCREEN_OPENED');
+      open(receipt);
     } catch (cause) {
       setProblem({
         key: problemKeys[isApiError(cause) ? cause.code : ''] ?? 'unknown',
         fields: isApiError(cause) ? cause.fields : [],
+        code: isApiError(cause) ? cause.code : String(cause),
       });
       setPhase('failed');
     } finally {
@@ -129,6 +154,7 @@ export function OfficialReceiptScreen() {
 
   const retry = () => {
     setProblem(null);
+    setStages([]);
     setPhase('page');
     setLoading(true);
     web.current?.reload();
@@ -163,7 +189,10 @@ export function OfficialReceiptScreen() {
               request.isTopFrame === false ||
               isAllowedTopNavigation(request.url)
             }
-            onLoadEnd={() => setLoading(false)}
+            onLoadEnd={() => {
+              setLoading(false);
+              mark('EKASSA_PAGE_OPENED');
+            }}
             onError={() => setPhase('pageError')}
             onHttpError={(event) => {
               if (event.nativeEvent.url.startsWith(url.split('#')[0]!))
@@ -210,6 +239,11 @@ export function OfficialReceiptScreen() {
                   )
                   .join(', '),
               })}
+            </Text>
+          )}
+          {DIAGNOSTICS && (
+            <Text variant="caption" tone="secondary" selectable>
+              {[...stages, problem?.code].filter(Boolean).join(' → ')}
             </Text>
           )}
           {url && <Button label={t('scan.retry')} onPress={retry} />}

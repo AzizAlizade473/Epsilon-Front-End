@@ -128,6 +128,9 @@ jest.mock('expo-router', () => {
     useFocusEffect: (effect: () => void) => React.useEffect(effect, [effect]),
   };
 });
+jest.mock('@/lib/env', () => ({
+  env: { EXPO_PUBLIC_APP_ENV: 'development', EXPO_PUBLIC_API_MODE: 'live' },
+}));
 jest.mock('@/providers/ToastProvider', () => ({ useToast: () => jest.fn() }));
 jest.mock('@/services', () => ({
   services: {
@@ -259,6 +262,33 @@ describe('official receipt page', () => {
     expect(mockImport).toHaveBeenCalledTimes(1);
   });
 
+  it('reports a busy receipt reader distinctly, and a failed file read', async () => {
+    mockImport.mockRejectedValue(
+      new ApiError({
+        code: 'RECEIPT_READER_BUSY',
+        message: 'busy',
+        status: 503,
+      }),
+    );
+    await showPage();
+    await download();
+    await waitFor(() =>
+      expect(screen.getByText(az.scanImport.problem.busy)).toBeOnTheScreen(),
+    );
+    await fireEvent.press(screen.getByRole('button', { name: az.scan.retry }));
+    await act(async () =>
+      mockPage!.onMessage({
+        nativeEvent: {
+          data: JSON.stringify({
+            type: 'epsilon:ekassa-stage',
+            stage: 'DOWNLOAD_FAILED',
+          }),
+        },
+      }),
+    );
+    expect(screen.getByText(az.scanImport.problem.download)).toBeOnTheScreen();
+  });
+
   it('never imports a file that is not an image', async () => {
     await showPage();
     await download(`JVBER${'A'.repeat(2000)}`); // a PDF signature
@@ -283,6 +313,12 @@ describe('official receipt page', () => {
       ).toBeOnTheScreen(),
     );
     expect(mockReplace).not.toHaveBeenCalled();
+    // Development builds show how far the pipeline got.
+    expect(
+      screen.getByText(
+        'JPG_BYTES_RECEIVED → JPG_VALIDATED → PARSING_STARTED → RECEIPT_IMAGE_INCOMPLETE',
+      ),
+    ).toBeOnTheScreen();
     await fireEvent.press(screen.getByRole('button', { name: az.scan.retry }));
     expect(mockReload).toHaveBeenCalled();
   });

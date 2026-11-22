@@ -903,7 +903,9 @@
       "network": "Bağlantı alınmadı. Yenidən cəhd edin.",
       "camera": "Çekin şəklini çəkmək üçün kameraya icazə lazımdır",
       "format": "Bu şəkil növü dəstəklənmir. JPG, PNG və ya WebP istifadə edin.",
-      "unknown": "Çek oxunmadı. Yenidən cəhd edin."
+      "unknown": "Çek oxunmadı. Yenidən cəhd edin.",
+      "busy": "Çek oxuma xidməti hazırda məşğuldur. Bir dəqiqədən sonra yenidən cəhd edin.",
+      "download": "Çek faylı alınmadı. ÇEKİ YÜKLƏ düyməsinə yenidən toxunun."
     },
     "field": {
       "total": "yekun məbləğ",
