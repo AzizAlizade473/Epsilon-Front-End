@@ -46,7 +46,7 @@ WAYPOINTS = [
     (768, 196, 0), (738, 150, 0), (705, 105, 1), (660, 62, 1), (600, 42, 1),
     (533, 37, 1), (460, 40, 1), (400, 47, 1), (330, 60, 1), (267, 80, 1),
     (220, 120, 1), (190, 180, 1), (172, 250, 1), (167, 327, 1), (187, 400, 1),
-    (225, 452, 0), (262, 478, 0), (300, 490, 2),
+    (225, 452, 0), (262, 478, 2), (300, 490, 2),
     # tail: out on its upper half, hairpin round the bulb, back on its lower half
     # (lanes sit at ~28% / 72% of the measured band thickness)
     (350, 497, 2), (420, 489, 2), (500, 473, 2), (560, 463, 2), (592, 461, 2),
@@ -76,6 +76,8 @@ ARROWHEAD = ((1243, 218), (1055, 434), (1299, 459))  # tip, left barb, right bar
 # four arms; the first pass owns bowl + core + loop-right, the second loop-left + arrow.
 CROSSING = ((671, 853), (723, 796), (789, 804), (738, 871))
 CROSSING_SPLIT = 3300.0  # arc length between the two passes (top of the loop)
+
+SS = 3  # supersampling of the reveal field: every edge is antialiased when scaled to video size
 
 STEP = 0.5  # arc-length sample spacing, source px
 
@@ -132,9 +134,8 @@ def build_path(dt):
     return resample(path, STEP)
 
 
-def pen_radius(path, dt, mask):
-    """Pen disc radius = farther band edge along the normal, so one disc spans the
-    whole cross-section even where the path is slightly off-centre."""
+def edge_distances(path, mask):
+    """Unit normals and the distance to the silhouette edge on each side of the path."""
     d = np.gradient(path, axis=0)
     n = np.stack([-d[:, 1], d[:, 0]], 1) / (np.linalg.norm(d, axis=1)[:, None] + 1e-9)
     ts = np.arange(0, 160, 0.5)
@@ -142,41 +143,54 @@ def pen_radius(path, dt, mask):
     for sign in (1, -1):
         ray = path[:, None, :] + sign * ts[None, :, None] * n[:, None, :]
         vals = map_coordinates(mask, [ray[..., 1].ravel(), ray[..., 0].ravel()], order=1).reshape(len(path), -1)
-        ext.append(np.argmax(vals < 0.5, axis=1) * 0.5)
-    w = np.maximum(*ext)
-    # Junctions and crossings make rays run on into the other stroke; cap at the
-    # local typical half-width so the pen never reveals a neighbouring stroke early.
-    # Samples whose cross-section jumps above the stroke's running width are inside a
-    # junction or crossing: carry the radius straight through from either side instead.
-    typical = median_filter(w, size=401, mode="nearest")
-    bad = w > typical * 1.08
-    bad = np.convolve(bad, np.ones(41), mode="same") > 0  # widen by 10 px so the pen does not bulge entering a junction
-    bad[: int(120 / STEP)] = False  # the ball terminal is genuinely wide
-    r = w.copy()
-    idx = np.arange(len(w))
-    r[bad] = np.interp(idx[bad], idx[~bad], w[~bad]) * 0.92  # stay inside the strand; gaps fill on the later pass
-    # Inside junctions the pen is a band instead of a disc: its left and right edges are
-    # each carried straight through from the strand's real edges on either side, so the
-    # strand keeps clean continuous edges where it crosses another stroke.
-    ep, em = ext[0].astype(np.float64), ext[1].astype(np.float64)
-    ep[bad] = np.interp(idx[bad], idx[~bad], ep[~bad])
-    em[bad] = np.interp(idx[bad], idx[~bad], em[~bad])
-    # Each edge follows the real silhouette edge wherever its ray is not running into the
-    # other stroke (measured <= straight estimate + 2 px), and only bridges the gap where
-    # the other arm attaches; otherwise the edge steps where the arm begins.
-    ep, em = gaussian_filter1d(ep, 6), gaussian_filter1d(em, 6)
+        out = vals < 0.5
+        ext.append(np.where(out.any(axis=1), np.argmax(out, axis=1) * 0.5, ts[-1]))  # never left the logo: far
+    lane_pts = np.array([(x, y) for x, y, _ in WAYPOINTS], np.float64)
+    lane = np.array([f == 2 for _, _, f in WAYPOINTS])[cKDTree(lane_pts).query(path)[1]]
+    # A cross-section much wider than the stroke's running width is a junction or the
+    # crossing, where a ray runs on into the other stroke.
+    w = ext[0] + ext[1]
+    junction = w > median_filter(w, size=401, mode="nearest") * 1.08
+    junction = np.convolve(junction, np.ones(41), mode="same") > 0
+    junction[: int(120 / STEP)] = False  # the ball terminal is genuinely wide
+    return n, ext[0].astype(np.float64), ext[1].astype(np.float64), lane, junction
+
+
+def centre_path(path, mask):
+    """Shift the hand-placed centreline onto the stroke's true midline wherever both edges
+    are clean, so the round pen tip is tangent to both edges instead of overshooting one."""
+    n, ep, em, lane, junction = edge_distances(path, mask)
+    off = (ep - em) / 2
+    ok = ~lane & ~junction & (np.abs(off) < 0.35 * np.minimum(ep, em) + 2)
+    idx = np.arange(len(path))
+    off = np.interp(idx, idx[ok], off[ok])
+    off[lane] = 0.0  # the tail's two lanes are placed on purpose
+    off = gaussian_filter1d(off, 20, mode="nearest")
+    return resample(path + n * off[:, None], STEP)
+
+
+def pen_radius(path, dt, mask):
+    """Pen = round disc spanning the stroke's cross-section exactly (tangent to both edges).
+    Where a ray runs on into a neighbouring stroke (junctions, the crossing, a stroke
+    passing close by) its width and centre are carried through from clean neighbours."""
+    n, ep, em, lane, junction = edge_distances(path, mask)
+    half, mid = (ep + em) / 2, (ep - em) / 2
+    clean = ~junction & (np.abs(mid) < 0.35 * np.minimum(ep, em) + 2)
+    idx = np.arange(len(path))
+    half = gaussian_filter1d(np.interp(idx, idx[clean], half[clean]), 6)
+    mid = gaussian_filter1d(np.interp(idx, idx[clean], mid[clean]), 6)
     # Hairpin lanes share one band: each lane only covers its own half.
-    pts = np.array([(x, y) for x, y, _ in WAYPOINTS], np.float64)
-    lane = np.array([f == 2 for _, _, f in WAYPOINTS])[cKDTree(pts).query(path)[1]]
-    r[lane] = gaussian_filter1d(sample(dt, path[lane]), 30, mode="nearest")  # smooth: raw DT steps show as a staircase edge
-    return gaussian_filter1d(r, 6) + 1.0, (bad & ~lane, n, ep, em, lane)
+    half[lane] = gaussian_filter1d(sample(dt, path[lane]), 30, mode="nearest")
+    mid[lane] = 0.0
+    return half + 1.0, (np.zeros(len(path), bool), n, half + mid, half - mid, lane)
 
 
-def split_crossing(lab, mask, path, s, radius, band, reach=130, core_r=75):
+def split_crossing(lab, mask, path, s, radius, band, scale=1, reach=130, core_r=75):
     """Give each pixel near the self-crossing to the pass that owns its arm, so the first
     pass's edges run straight between the real corners instead of stepping or bulging."""
-    corners = np.array(CROSSING, np.float64)
+    corners = np.array(CROSSING, np.float64) * scale + (scale - 1) / 2
     c = corners.mean(0)
+    reach, core_r = reach * scale, core_r * scale
     h, w = mask.shape
     y0, y1, x0, x1 = int(c[1] - reach), int(c[1] + reach) + 1, int(c[0] - reach), int(c[0] + reach) + 1
     yy, xx = np.mgrid[y0:y1, x0:x1]
@@ -194,9 +208,9 @@ def split_crossing(lab, mask, path, s, radius, band, reach=130, core_r=75):
     # Sectors are only reliable close to the core (the arrow arm curves round further out);
     # beyond that the global field already gives every arm pixel to its own pass.
     second = np.where(rr_all <= core_r, sector2, lab[y0:y1, x0:x1] > CROSSING_SPLIT)
-    close = np.linalg.norm(path - c, axis=1) < reach + 150
+    close = np.linalg.norm(path - c, axis=1) < reach + 150 * scale
     sub = lab[y0:y1, x0:x1]
-    n = band[1]
+    quad, n, ep, em, _ = band
     for want_second in (False, True):
         ids = np.flatnonzero(close & ((s > CROSSING_SPLIT) if want_second else (s < CROSSING_SPLIT)))
         sel = near & (second == want_second)
@@ -204,28 +218,20 @@ def split_crossing(lab, mask, path, s, radius, band, reach=130, core_r=75):
         pos = cKDTree(path[ids]).query(q)[1]
         k = ids[pos]
         dl = np.einsum("ij,ij->i", q - path[k], n[k])
-        # Lateral extent of the pixels this pass owns at each centreline sample, so the
-        # round tip spans the arm's real width (fillets included), not just the band.
-        lo = np.full(len(ids), np.nan); hi = np.full(len(ids), np.nan)
-        np.fmin.at(lo, pos, dl); np.fmax.at(hi, pos, dl)
-        have = np.isfinite(lo)
-        j = np.arange(len(ids))
-        lo = np.interp(j, j[have], lo[have]); hi = np.interp(j, j[have], hi[have])
-        lo = gaussian_filter1d(-maximum_filter1d(-lo, 9), 3); hi = gaussian_filter1d(maximum_filter1d(hi, 9), 3)
-        mid, half = (lo + hi) / 2, np.maximum((hi - lo) / 2, 1.0)
-        d = dl - mid[pos]
-        ana = s[k] - np.sqrt(np.clip(half[pos] ** 2 - d ** 2, 0, None))
-        # Blend from the pen-disc labels (outer ring) into the analytic ones (inner zone).
-        rr = np.hypot(q[:, 0] - c[0], q[:, 1] - c[1])
-        wgt = np.clip((reach - rr) / (reach - core_r), 0, 1)
-        wgt = wgt * wgt * (3 - 2 * wgt)
+        # Round tip centred between the band edges, the same shape as the pen discs painted
+        # everywhere else, so the tip keeps one consistent round cap through the crossing.
+        mid = (ep[k] - em[k]) / 2
+        half = (ep[k] + em[k]) / 2 + 1.5 * scale  # same margin as the painted pen discs
+        ana = s[k] - np.sqrt(np.clip(half ** 2 - (dl - mid) ** 2, 0, None)) / scale  # px -> arc length
+        # Keep the painted pen labels wherever they already belong to this pass (no seam);
+        # only pixels the painted field gave to the other pass get the analytic tip.
         old = sub[sel]
         right = np.isfinite(old) & ((old > CROSSING_SPLIT) == want_second)
-        sub[sel] = np.where(right, wgt * ana + (1 - wgt) * old, ana)
+        sub[sel] = np.where(right, old, ana)
     return lab
 
 
-def paint_pen(lab, path, s, radius, band, indices):
+def paint_pen(lab, path, s, radius, band, indices, scale=1):
     """Paint the pen shape of each sample (late->early, so the earliest arc length wins)."""
     sh = 4  # cv2 fixed-point sub-pixel bits
     quad, n, ep, em, lane = band
@@ -246,17 +252,17 @@ def paint_pen(lab, path, s, radius, band, indices):
             # centred between the stroke's two edges, so the round tip is symmetric even
             # where the centreline runs a little off-centre
             m = path[i] + (ep[i] - em[i]) / 2 * n[i]
-            cv2.circle(lab, (int(round(m[0] * 16)), int(round(m[1] * 16))), int(round(((ep[i] + em[i]) / 2 + 1.0) * 16)),
+            cv2.circle(lab, (int(round(m[0] * 16)), int(round(m[1] * 16))), int(round(((ep[i] + em[i]) / 2 + 1.5 * scale) * 16)),
                        float(s[i]), -1, lineType=cv2.LINE_8, shift=sh)
     return lab
 
 
-def label_field(mask, path, radius, band):
+def label_field(mask, path, radius, band, scale=1):
     """Arc length at which each pixel is first covered by the pen."""
     h, w = mask.shape
     lab = np.full((h, w), np.inf, np.float32)
     s = np.arange(len(path)) * STEP
-    paint_pen(lab, path, s, radius, band, range(len(path)))
+    paint_pen(lab, path, s, radius, band, range(len(path)), scale)
     inside = mask > 0.0
     miss = inside & ~np.isfinite(lab)
     if miss.any():  # silhouette pixels no disc reached (rims, junctions, arrowhead corners)
@@ -272,19 +278,33 @@ def label_field(mask, path, radius, band):
             # Among discs whose edge is (nearly) the closest, take the latest pass: at a
             # crossing a pixel then waits for the stroke that owns it instead of leaking early.
             i0 = np.argmin(d, axis=1)
-            later = (d <= d.min(axis=1, keepdims=True) + 12.0) & (s[sub][None] - s[sub][i0][:, None] > 300)
+            later = (d <= d.min(axis=1, keepdims=True) + 12.0 * scale) & (s[sub][None] - s[sub][i0][:, None] > 300)
             i1 = np.where(later, d, np.inf).argmin(axis=1)
             best[k:k + 4096] = sub[np.where(later.any(axis=1), i1, i0)]
         lab[yy, xx] = s[best]
-    lab = split_crossing(lab, mask, path, s, radius, band)
+    lab = split_crossing(lab, mask, path, s, radius, band, scale)
+    # Ball terminal: the pen touches down and the dot swells round from the ball's centre
+    # until the stroke leaves it (a disc entering from the rim leaves clipped notches).
+    dt = distance_transform_edt(mask > 0.5)
+    near0 = np.linalg.norm(np.stack(np.mgrid[0:h, 0:w][::-1], -1) - path[0], axis=-1) < 70 * scale
+    cy, cx = np.unravel_index(np.argmax(np.where(near0, dt, 0)), dt.shape)
+    rb = dt[cy, cx]
+    far = np.linalg.norm(path - [cx, cy], axis=1) > rb
+    i_exit = int(np.argmax(far & (np.arange(len(path)) > np.argmin(np.linalg.norm(path - [cx, cy], axis=1)))))
+    yy, xx = np.mgrid[0:h, 0:w]
+    dist = np.hypot(xx - cx, yy - cy)
+    # swell to the ball's radius by the time the stroke leaves it, then keep pace with the pen
+    grow = s[i_exit] * np.minimum(dist, rb) / rb + np.maximum(dist - rb, 0) / scale
+    ball = inside  # nothing may appear ahead of the swelling dot (no effect far away: the path is longer)
+    lab[ball] = np.maximum(lab[ball], grow[ball])
     # Arrowhead: once the pen reaches the base it fills the head from the base centre,
     # reaching the barbs part-way and the tip last (a disc cannot reach thin barbs in order).
-    tip, left, right = (np.array(p, np.float64) for p in ARROWHEAD)
+    tip, left, right = (np.array(p, np.float64) * scale + (scale - 1) / 2 for p in ARROWHEAD)
     base = (left + right) / 2
     u = (tip - base) / np.linalg.norm(tip - base)
     head = np.zeros_like(mask, np.uint8)
     tri = np.array([tip, left, right])
-    tri = tri + 8 * (tri - tri.mean(0)) / np.linalg.norm(tri - tri.mean(0), axis=1)[:, None]  # include antialiased rim
+    tri = tri + 8 * scale * (tri - tri.mean(0)) / np.linalg.norm(tri - tri.mean(0), axis=1)[:, None]  # include antialiased rim
     cv2.fillPoly(head, [np.round(tri).astype(np.int32)], 1)
     yy, xx = np.nonzero(head.astype(bool) & inside)
     rel = np.stack([xx, yy], 1) - base
@@ -323,9 +343,16 @@ class Animation:
     def __init__(self):
         self.mask = load_mask()
         dt = distance_transform_edt(self.mask > 0.5)
-        self.path = build_path(dt)
+        self.path = centre_path(build_path(dt), self.mask)
         self.radius, band = pen_radius(self.path, dt, self.mask)
-        self.label, self.length = label_field(self.mask, self.path, self.radius, band)
+        self.mask_src = self.mask
+        h, w = self.mask.shape
+        self.mask = np.clip(cv2.resize(self.mask, (w * SS, h * SS), interpolation=cv2.INTER_CUBIC), 0, 1)
+        self.path_ss = self.path * SS + (SS - 1) / 2
+        self.radius_ss = self.radius * SS
+        quad, n, ep, em, lane = band
+        self.label, self.length = label_field(self.mask, self.path_ss, self.radius_ss,
+                                              (quad, n, ep * SS, em * SS, lane), SS)
         self.n_lead = round(LEAD_IN * FPS)
         self.n_draw = round(DRAW * FPS)
         self.n_hold = round(HOLD * FPS)
@@ -364,7 +391,7 @@ class Animation:
 
 
 def debug(anim):
-    rgb = np.dstack([anim.mask * 200] * 3).astype(np.uint8)
+    rgb = np.dstack([anim.mask_src * 200] * 3).astype(np.uint8)
     im = Image.fromarray(rgb)
     d = ImageDraw.Draw(im)
     d.line([tuple(p) for p in anim.path], fill=(255, 0, 0), width=3)
@@ -434,14 +461,14 @@ def self_check(anim):
             i = int(anim.pen_at(f) / STEP)
             j = max(0, int(anim.pen_at(f - 1) / STEP) - 1)
             # every new pixel must lie within reach of the pen segment traversed this frame
-            seg = anim.path[j:i + 1]
+            seg = anim.path_ss[j:i + 1]
             dist, _ = cKDTree(seg).query(np.stack([xx, yy], 1))
-            reach = anim.radius[j:i + 1].max()
-            worst = max(worst, float((dist - reach).max()))
+            reach = anim.radius_ss[j:i + 1].max()
+            worst = max(worst, float((dist - reach).max()) / SS)
             # new pixels must form one blob attached to what is already drawn (or the very first dab)
             _, _, stats, _ = cv2.connectedComponentsWithStats(
-                cv2.dilate(new.astype(np.uint8), np.ones((5, 5), np.uint8)))
-            if (stats[1:, cv2.CC_STAT_AREA] > 60).sum() > 1:  # ignore 1-4 px antialias specks
+                cv2.dilate(new.astype(np.uint8), np.ones((5 * SS, 5 * SS), np.uint8)))
+            if (stats[1:, cv2.CC_STAT_AREA] > 60 * SS * SS).sum() > 1:  # ignore 1-4 px antialias specks
                 split.append(f)
         prev = cur
     print(f"frames where new pixels form >1 separate blob: {split}")
