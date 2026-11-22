@@ -5,7 +5,7 @@ import Utensils from 'lucide-react-native/icons/utensils';
 import { Icon } from '@/components/ui/Icon';
 import { colors, radius } from '@/design';
 import { premium } from '@/design/premium';
-import { env } from '@/lib/env';
+import { demoContent } from '@/lib/demoContent';
 import type { FoodPhoto } from '@/services/contracts/restaurant-catalog';
 
 /**
@@ -44,11 +44,7 @@ export function FoodImage({
   } | null>(null);
   useEffect(() => {
     let current = true;
-    if (
-      env.EXPO_PUBLIC_APP_ENV !== 'production' &&
-      env.EXPO_PUBLIC_API_MODE === 'mock' &&
-      photo
-    ) {
+    if (demoContent() && photo) {
       void import('@/services/mock/food-assets').then((module) => {
         if (current) setLoaded({ photo, source: module.foodAssets[photo] });
       });

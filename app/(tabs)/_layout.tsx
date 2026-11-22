@@ -57,10 +57,6 @@ export default function TabsLayout() {
       />
       <Tabs.Screen name="scan" options={{ title: t('navigation.scan') }} />
       <Tabs.Screen
-        name="supermarkets"
-        options={{ title: t('navigation.supermarkets') }}
-      />
-      <Tabs.Screen
         name="profile"
         options={{ title: t('navigation.profile') }}
       />

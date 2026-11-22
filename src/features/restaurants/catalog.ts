@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { env } from '@/lib/env';
+import { demoContent } from '@/lib/demoContent';
 import {
   catalogSchema,
   directorySchema,
@@ -24,14 +24,9 @@ export type {
   Review,
 } from '@/services/contracts/restaurant-catalog';
 
-/** No public-menu API exists in the current backend contract. Mock-only fixtures
- * are dynamically loaded; live mode returns an honest unavailable state. */
-function mockOnly() {
-  return (
-    env.EXPO_PUBLIC_APP_ENV !== 'production' &&
-    env.EXPO_PUBLIC_API_MODE === 'mock'
-  );
-}
+/** No public-menu API exists in the current backend contract. Demo fixtures are
+ * dynamically loaded where allowed; elsewhere an honest unavailable state. */
+const mockOnly = demoContent;
 export function catalogLanguage(language: string): CatalogLanguage {
   return language === 'en' || language === 'ru' ? language : 'az';
 }

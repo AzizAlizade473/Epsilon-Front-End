@@ -1,5 +1,4 @@
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import type { LucideIcon } from 'lucide-react-native';
@@ -11,14 +10,12 @@ import Wallet from 'lucide-react-native/icons/wallet';
 import { Screen } from '@/components/ui/Screen';
 import { IconButton } from '@/components/ui/IconButton';
 import { Icon } from '@/components/ui/Icon';
-import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { Text } from '@/components/ui/Text';
 import { Reveal } from '@/components/ratings/Reveal';
 import { colors, layout, radius, spacing, typography } from '@/design';
 import { computeCashbackMinor } from '@/lib/cashback';
 import { formatMoney } from '@/lib/money';
 
-type Sector = 'restaurants' | 'supermarkets';
 const STEPS = [1, 2, 3, 4, 5, 6] as const;
 const LEVELS: [LucideIcon, string][] = [
   [Eye, 'levelGeneral'],
@@ -31,8 +28,7 @@ const EXAMPLE_RECEIPT_MINOR = 2500;
 export default function HowItWorksScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const [sector, setSector] = useState<Sector>('restaurants');
-  const key = sector === 'restaurants' ? 'r' : 's';
+  const key = 'r';
   return (
     <Screen
       surface="surface"
@@ -53,15 +49,6 @@ export default function HowItWorksScreen() {
         </Text>
         <Text tone="secondary">{t('howItWorks.intro')}</Text>
       </View>
-      <SegmentedControl
-        label={t('howItWorks.sectorLabel')}
-        options={[
-          { value: 'restaurants', label: t('howItWorks.sectorRestaurants') },
-          { value: 'supermarkets', label: t('howItWorks.sectorSupermarkets') },
-        ]}
-        value={sector}
-        onValueChange={setSector}
-      />
       <View accessibilityRole="list" style={styles.steps}>
         {STEPS.map((n, index) => (
           <Reveal key={`${key}${n}`} order={index} style={styles.step}>
@@ -82,11 +69,7 @@ export default function HowItWorksScreen() {
       </View>
       <View style={styles.use}>
         <Text variant="callout" style={styles.useText}>
-          {t(
-            sector === 'restaurants'
-              ? 'howItWorks.useRestaurants'
-              : 'howItWorks.useSupermarkets',
-          )}
+          {t('howItWorks.useRestaurants')}
         </Text>
       </View>
       <View style={styles.block}>

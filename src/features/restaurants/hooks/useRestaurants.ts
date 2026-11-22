@@ -1,14 +1,27 @@
 import { infiniteQueryOptions, useInfiniteQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { services } from '@/services';
+import { demoContent } from '@/lib/demoContent';
+import { env } from '@/lib/env';
 import { queryKeys } from '@/services/query';
+
+/**
+ * Live development builds list the labelled demo restaurants (their menus exist only
+ * there); mock builds already run on them, production only ever on the real API.
+ */
+export async function restaurantService() {
+  if (!demoContent() || env.EXPO_PUBLIC_API_MODE === 'mock')
+    return services.restaurant;
+  const { mockServices } = await import('@/services/mock/services');
+  return mockServices.restaurant;
+}
 
 export function restaurantOptions(search: string, limit = 20) {
   return infiniteQueryOptions({
     queryKey: queryKeys.restaurant.list({ search, limit }),
     initialPageParam: null as string | null,
-    queryFn: ({ pageParam, signal }) =>
-      services.restaurant.list(
+    queryFn: async ({ pageParam, signal }) =>
+      (await restaurantService()).list(
         { search, limit, ...(pageParam ? { cursor: pageParam } : {}) },
         { signal },
       ),

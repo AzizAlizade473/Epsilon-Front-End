@@ -25,6 +25,10 @@ const mockList =
       options?: { signal?: AbortSignal },
     ) => Promise<{ items: typeof mockRestaurants; nextCursor: string | null }>
   >();
+// A live staging build: the real restaurant API, never the demo catalogue.
+jest.mock('@/lib/env', () => ({
+  env: { EXPO_PUBLIC_APP_ENV: 'staging', EXPO_PUBLIC_API_MODE: 'live' },
+}));
 jest.mock('@/services', () => ({
   services: {
     wallet: {

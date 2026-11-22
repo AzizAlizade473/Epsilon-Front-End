@@ -5,7 +5,6 @@ import {
 import House from 'lucide-react-native/icons/house';
 import Utensils from 'lucide-react-native/icons/utensils';
 import UserRound from 'lucide-react-native/icons/user-round';
-import ShoppingBasket from 'lucide-react-native/icons/shopping-basket';
 import ScanLine from 'lucide-react-native/icons/scan-line';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -30,7 +29,6 @@ import { colors, layout, radius, spacing } from '@/design';
 const pillTabs = [
   { name: 'home', icon: House, label: 'home' },
   { name: 'restaurants', icon: Utensils, label: 'restaurants' },
-  { name: 'supermarkets', icon: ShoppingBasket, label: 'supermarketsTab' },
   { name: 'profile', icon: UserRound, label: 'profile' },
 ] as const;
 const settle = { duration: 380, dampingRatio: 0.9 } as const;
@@ -69,7 +67,7 @@ export function TabBar({
   const reduced = useReducedMotion();
   const reportHeight = useContext(BottomTabBarHeightCallbackContext);
   const [slots, setSlots] = useState<Record<string, Slot>>({});
-  // Four tabs + Scan must fit a 360 dp phone: slots shrink to the space left.
+  // Three tabs + Scan must fit a 360 dp phone: slots shrink to the space left.
   const screen = useWindowDimensions().width;
   const slot = Math.min(
     slotWidth,

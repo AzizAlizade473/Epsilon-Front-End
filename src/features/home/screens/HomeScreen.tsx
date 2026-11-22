@@ -36,8 +36,6 @@ import { BillsSection } from '@/components/receipts/BillsSection';
 import { WaitingDishes } from '../components/WaitingDishes';
 import { StaggeredRow } from '../components/StaggeredRow';
 import { ExploreSection } from '../components/ExploreSection';
-import { WaitingProducts } from '../components/WaitingProducts';
-import { useExplore } from '../exploreFeed';
 
 export default function HomeScreen() {
   const { t } = useTranslation();
@@ -50,10 +48,7 @@ export default function HomeScreen() {
   useStaleRefetchOnFocus(queryKeys.wallet.all);
   const refreshing = useRef(false);
   const [pulling, setPulling] = useState(false);
-  const hasProducts = Boolean(useExplore().data?.products.length);
-  const [pendingTab, setPendingTab] = useState<'dishes' | 'products' | 'bills'>(
-    'dishes',
-  );
+  const [pendingTab, setPendingTab] = useState<'dishes' | 'bills'>('dishes');
   const refresh = async () => {
     if (refreshing.current) return;
     refreshing.current = true;
@@ -207,15 +202,6 @@ export default function HomeScreen() {
             label={t('home.pendingTitle')}
             options={[
               { value: 'dishes', label: t('home.pendingDishes') },
-              // Sample products exist only in non-production builds.
-              ...(hasProducts
-                ? [
-                    {
-                      value: 'products' as const,
-                      label: t('home.pendingProducts'),
-                    },
-                  ]
-                : []),
               { value: 'bills', label: t('home.pendingBills') },
             ]}
             value={pendingTab}
@@ -223,8 +209,6 @@ export default function HomeScreen() {
           />
           {pendingTab === 'dishes' ? (
             <WaitingDishes receiptIds={receipts} embedded />
-          ) : pendingTab === 'products' && hasProducts ? (
-            <WaitingProducts />
           ) : (
             <BillsSection receiptIds={receipts} embedded />
           )}

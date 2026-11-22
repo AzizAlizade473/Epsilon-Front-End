@@ -15,7 +15,7 @@ import { Skeleton } from '@/components/feedback/Skeleton';
 import { MockDataNotice } from '@/components/feedback/MockDataNotice';
 import { colors, layout, radius, spacing, typography } from '@/design';
 import { premium } from '@/design/premium';
-import { services } from '@/services';
+import { restaurantService } from '../hooks/useRestaurants';
 import { safeIdSchema } from '@/lib/deep-link';
 import { useCatalog, type Catalog, type CatalogDish } from '../catalog';
 import { MenuDish } from '../components/MenuDish';
@@ -47,7 +47,7 @@ export default function RestaurantProfileScreen() {
   const valid = typeof id === 'string' && safeIdSchema.safeParse(id).success;
   const query = useQuery({
     queryKey: ['restaurant', 'detail', id],
-    queryFn: () => services.restaurant.get(id),
+    queryFn: async () => (await restaurantService()).get(id),
     enabled: valid,
   });
   const catalog = useCatalog(valid ? id : '');

@@ -17,7 +17,7 @@ export type ReviewCardData = {
 };
 
 /**
- * One review, shared by restaurants and supermarkets. `tagKeys` are full i18n
+ * One review card for restaurant dishes. `tagKeys` are full i18n
  * keys. `sample` marks demo content so it is never presented as a verified buyer.
  */
 export const ReviewCard = memo(function ReviewCard({

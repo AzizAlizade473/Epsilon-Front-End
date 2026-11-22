@@ -15,12 +15,7 @@ import { scheduleOnRN } from 'react-native-worklets';
 import { spacing } from '@/design';
 
 /** Swipe order matches the pill; Scan is a deliberate action, never swiped into. */
-export const swipeOrder = [
-  'home',
-  'restaurants',
-  'supermarkets',
-  'profile',
-] as const;
+export const swipeOrder = ['home', 'restaurants', 'profile'] as const;
 
 const commitDistance = 72;
 const commitVelocity = 600;

@@ -1,28 +1,25 @@
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { env } from '@/lib/env';
+import { demoContent } from '@/lib/demoContent';
 import type {
   Catalog,
   CatalogLanguage,
 } from '@/services/contracts/restaurant-catalog';
-import type { RetailCatalog } from '@/services/contracts/retail';
 
-/** One card in "Explore products & dishes", from either sector. */
+/** One card in "Explore dishes". */
 export type ExploreItem = {
   key: string;
-  kind: 'dish' | 'product';
+  kind: 'dish';
   title: string;
   subtitle: string;
   imageUrl: string | null;
   rating: { average: number; count: number };
 };
-export type ExploreTarget =
-  | { pathname: '/restaurant/[id]/dish/[dishId]'; id: string; dishId: string }
-  | {
-      pathname: '/supermarket/[id]/product/[productId]';
-      id: string;
-      productId: string;
-    };
+export type ExploreTarget = {
+  pathname: '/restaurant/[id]/dish/[dishId]';
+  id: string;
+  dishId: string;
+};
 export type ExploreEntry = ExploreItem & { target: ExploreTarget };
 
 type NamedCatalog = { name: string; catalog: Catalog };
@@ -63,71 +60,9 @@ export function pickDishes(restaurants: NamedCatalog[], limit: number) {
     .slice(0, limit);
 }
 
-/** Own-brand products first, then best-rated; real packshots only. */
-export function pickProducts(catalog: RetailCatalog, limit: number) {
-  const chains = new Map(catalog.supermarkets.map((s) => [s.id, s.name]));
-  return catalog.products
-    .filter((p) => p.imageUrl)
-    .flatMap<ExploreEntry & { own: boolean }>((p) => {
-      const reviews = catalog.reviews.filter((r) => r.productId === p.id);
-      const listing = catalog.listings.find((l) => l.productId === p.id);
-      if (!reviews.length || !listing) return [];
-      const average =
-        Math.round(
-          (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length) * 10,
-        ) / 10;
-      return [
-        {
-          key: `product_${p.id}`,
-          kind: 'product',
-          title: p.name,
-          subtitle: `${p.brand === '—' ? '' : `${p.brand} · `}${p.size} · ${chains.get(listing.supermarketId) ?? ''}`,
-          imageUrl: p.imageUrl,
-          rating: { average, count: reviews.length },
-          own: p.privateLabel,
-          target: {
-            pathname: '/supermarket/[id]/product/[productId]',
-            id: listing.supermarketId,
-            productId: p.id,
-          },
-        },
-      ];
-    })
-    .sort(
-      (a, b) =>
-        Number(b.own) - Number(a.own) ||
-        b.rating.average - a.rating.average ||
-        a.key.localeCompare(b.key),
-    )
-    .slice(0, limit);
-}
-
-/** Alternate sectors (dish, product, dish, …) so neither dominates; deterministic. */
-export function interleave<T>(first: T[], second: T[]): T[] {
-  const out: T[] = [];
-  for (let i = 0; i < Math.max(first.length, second.length); i++) {
-    if (first[i]) out.push(first[i]!);
-    if (second[i]) out.push(second[i]!);
-  }
-  return out;
-}
-
-export type ExploreFilter = 'all' | 'restaurants' | 'supermarkets';
-export function filterFeed(
-  dishes: ExploreEntry[],
-  products: ExploreEntry[],
-  filter: ExploreFilter,
-) {
-  return filter === 'restaurants'
-    ? dishes
-    : filter === 'supermarkets'
-      ? products
-      : interleave(dishes, products);
-}
-
 /**
- * Both sectors come from the isolated demo data layer; production builds get
- * nothing (no restaurant or retail demo ever ships), and the section hides.
+ * Dishes come from the isolated demo data layer; production builds get nothing
+ * (no restaurant demo ever ships), and the section hides.
  */
 export function useExplore() {
   const { i18n } = useTranslation();
@@ -137,11 +72,9 @@ export function useExplore() {
     queryKey: ['home', 'explore', language],
     staleTime: Infinity,
     queryFn: async () => {
-      if (env.EXPO_PUBLIC_APP_ENV === 'production')
-        return { dishes: [], products: [] };
-      const [dining, retail, fixtures] = await Promise.all([
+      if (!demoContent()) return { dishes: [] };
+      const [dining, fixtures] = await Promise.all([
         import('@/services/mock/restaurant-catalog'),
-        import('@/services/mock/retail'),
         import('@/services/mock/fixtures'),
       ]);
       const restaurants = fixtures.mockRestaurants
@@ -150,10 +83,7 @@ export function useExplore() {
           const catalog = dining.mockCatalog(r.id, language);
           return catalog ? [{ name: r.name, catalog }] : [];
         });
-      return {
-        dishes: pickDishes(restaurants, 6),
-        products: pickProducts(retail.mockRetailCatalog(language), 6),
-      };
+      return { dishes: pickDishes(restaurants, 6) };
     },
   });
 }

@@ -30,10 +30,6 @@ jest.mock('@/features/restaurants/screens/RestaurantsScreen', () => ({
   __esModule: true,
   default: () => null,
 }));
-jest.mock('@/features/supermarkets/screens/SupermarketsScreen', () => ({
-  __esModule: true,
-  default: () => null,
-}));
 jest.mock('@/providers/AuthProvider', () => ({
   useAuth: () => ({
     session: {},
@@ -43,18 +39,15 @@ jest.mock('@/providers/AuthProvider', () => ({
   }),
 }));
 
-test('five tabs include Scan and Supermarkets and omit Cashback', async () => {
+test('four tabs include Scan and omit Market and Cashback', async () => {
   await initializeI18n();
   const result = await renderRouter(
     { appDir: 'app', overrides: { _layout: TestRoot } },
     { initialUrl: '/home' },
   );
   const user = userEvent.setup();
-  expect(screen.getAllByRole('tab')).toHaveLength(5);
-  await user.press(
-    screen.getByRole('tab', { name: az.navigation.supermarkets }),
-  );
-  expect(result.getPathname()).toBe('/supermarkets');
+  expect(screen.getAllByRole('tab')).toHaveLength(4);
+  expect(screen.queryByRole('tab', { name: /market/i })).toBeNull();
   await user.press(
     screen.getByRole('tab', { name: az.navigation.restaurants }),
   );
