@@ -865,5 +865,25 @@
     "mismatch": "Məhsulların cəmi çekin yekun məbləğinə bərabər olmalıdır.",
     "submit": "Təsdiqlə və davam et",
     "noCashback": "Əl ilə düzəldilmiş çeklər qiymətləndirilə bilər, lakin keşbek qazandırmır."
+  },
+  "notEligible": {
+    "read": "Rəsmi çek oxundu",
+    "verified": "Təsdiqlənmiş çek",
+    "badge": "Uyğun deyil",
+    "title": "{{type}} çeki",
+    "body": "Epsilon-da qiymətləndirmə və keşbek hazırda yalnız restoran və kafelər üçündür.",
+    "unknownTitle": "Obyektin növü təsdiqlənmədi",
+    "unknownBody": "Epsilon bu çeki verən obyektin növünü təsdiqləyə bilmədi, ona görə qiymətləndirmə və keşbek bu çek üçün bağlıdır.",
+    "note": "Çekinizdə problem yoxdur: o düzgün oxundu. Sadəcə hazırkı Epsilon proqramına daxil deyil.",
+    "whyTitle": "Epsilon necə işləyir",
+    "why1": "Epsilon iaşə təcrübəsi üçündür.",
+    "why2": "Restoran və kafelərdə aldığınız yemək və içkiləri qiymətləndirirsiniz.",
+    "why3": "Tərəfdaş restoran və kafelər keşbek verə bilər. Digər çeklər oxunur, amma qiymətləndirilmir.",
+    "explore": "Restoranlara bax",
+    "details": "Çekin təfərrüatları",
+    "category": "Kateqoriya",
+    "support": "Epsilon dəstəyi",
+    "reason": "Səbəb",
+    "reasonValue": "Qiymətləndirmə və keşbek yalnız restoran və kafelər üçündür"
   }
 }

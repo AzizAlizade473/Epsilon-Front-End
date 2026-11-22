@@ -17,6 +17,7 @@ import { formatDate, formatTime } from '@/lib/date';
 import type { Receipt, ReceiptItem } from '@/services/contracts';
 import { DishCard } from './DishCard';
 import { FiscalFooter, FiscalSummary } from './FiscalDetails';
+import { NotEligibleReceipt } from './NotEligibleReceipt';
 
 /** Port of original HomeScreen's receipt-detail bottom sheet. */
 export function ReceiptContent({
@@ -27,6 +28,7 @@ export function ReceiptContent({
   onHome,
   onClose,
   onScanAnother,
+  onExplore,
 }: {
   receipt: Receipt;
   pendingIds: readonly string[];
@@ -35,8 +37,21 @@ export function ReceiptContent({
   onHome: () => void;
   onClose?: () => void;
   onScanAnother?: () => void;
+  onExplore?: () => void;
 }) {
   const { t, i18n } = useTranslation();
+  // State B: a valid receipt from a business outside the programme — an outcome, not an error.
+  if (receipt.fiscal && !receipt.fiscal.eligibility.ratingAllowed)
+    return (
+      <NotEligibleReceipt
+        receipt={receipt}
+        fiscal={receipt.fiscal}
+        onHome={onHome}
+        {...(onClose ? { onClose } : {})}
+        {...(onScanAnother ? { onScanAnother } : {})}
+        {...(onExplore ? { onExplore } : {})}
+      />
+    );
   const readOnly = receipt.status !== 'verified';
   const remaining = receipt.items.some(
     (item) =>

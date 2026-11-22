@@ -133,7 +133,10 @@ const tamStore = (): Receipt =>
     },
   });
 
-const show = (receipt: Receipt, extra: { onScanAnother?: () => void } = {}) =>
+const show = (
+  receipt: Receipt,
+  extra: { onScanAnother?: () => void; onExplore?: () => void } = {},
+) =>
   render(
     <ReceiptContent
       receipt={receipt}
@@ -145,42 +148,60 @@ const show = (receipt: Receipt, extra: { onScanAnother?: () => void } = {}) =>
     />,
   );
 
-describe('scanned supermarket receipt', () => {
-  it('shows the real merchant, sector, products and totals, with ratings off and a scan-another action', async () => {
+describe('scanned supermarket receipt (valid, not eligible)', () => {
+  it('leads with the verified receipt, then explains it is outside the programme, with clear next steps', async () => {
     const onScanAnother = jest.fn();
-    await show(tamStore(), { onScanAnother });
-    expect(screen.getAllByText('TAM STORE').length).toBeGreaterThan(0);
+    const onExplore = jest.fn();
+    await show(tamStore(), { onScanAnother, onExplore });
+    expect(screen.getByText('TAM STORE')).toBeOnTheScreen();
+    expect(screen.getByText(az.notEligible.verified)).toBeOnTheScreen(); // provider-verified
+    expect(screen.getByText(az.notEligible.badge)).toBeOnTheScreen();
+    expect(
+      screen.getByText(
+        az.notEligible.title.replace('{{type}}', az.fiscal.type.supermarket),
+      ),
+    ).toBeOnTheScreen();
+    expect(screen.getByText(az.notEligible.body)).toBeOnTheScreen();
+    expect(screen.getByText(az.notEligible.whyTitle)).toBeOnTheScreen();
+    // Not an error state, and nothing is rateable.
+    expect(screen.queryByRole('alert')).toBeNull();
+    expect(screen.queryByText(az.receipt.rate)).toBeNull();
+    // Details stay folded until asked for.
+    expect(screen.queryByText('1506475881')).toBeNull();
+    await fireEvent.press(
+      screen.getByRole('button', { name: az.fiscal.scanAnother }),
+    );
+    await fireEvent.press(
+      screen.getByRole('button', { name: az.notEligible.explore }),
+    );
+    expect(onScanAnother).toHaveBeenCalled();
+    expect(onExplore).toHaveBeenCalled();
+  });
+
+  it('opens the business, receipt, products and full record on demand', async () => {
+    await show(tamStore());
+    await fireEvent.press(
+      screen.getByRole('button', { name: az.notEligible.details }),
+    );
     expect(screen.getByText(az.fiscal.type.supermarket)).toBeOnTheScreen();
+    expect(screen.getByText(az.notEligible.reasonValue)).toBeOnTheScreen();
     expect(screen.getByText('1506475881')).toBeOnTheScreen();
     expect(screen.getByText('1506475881-20001')).toBeOnTheScreen();
     expect(screen.getByText('1421')).toBeOnTheScreen();
     expect(screen.getByText('COCA COLA ZERO 2LT PET')).toBeOnTheScreen();
-    expect(
-      screen.getByText('TS MARKET TORBASI ORTA 3 1X60 SM'),
-    ).toBeOnTheScreen();
-    expect(screen.getByText(az.fiscal.products)).toBeOnTheScreen();
-    expect(
-      screen.getByText(/supermarket kimi müəyyən edilib/),
-    ).toBeOnTheScreen();
-    expect(screen.queryByText(az.receipt.rate)).toBeNull();
-    await fireEvent.press(
-      screen.getByRole('button', { name: az.fiscal.scanAnother }),
-    );
-    expect(onScanAnother).toHaveBeenCalled();
-  });
-
-  it('opens the full record on demand', async () => {
-    await show(tamStore());
-    expect(screen.queryByText(az.fiscal.cashless)).toBeNull();
+    expect(screen.getByText('1 ədəd × 2.30 ₼')).toBeOnTheScreen();
     await fireEvent.press(
       screen.getByRole('button', { name: az.fiscal.moreDetails }),
     );
     expect(screen.getByText(az.fiscal.cashless)).toBeOnTheScreen();
-    expect(
-      screen.getByText(
-        az.fiscal.method.name_rule + ' — supermarket name: "TAM STORE"',
-      ),
-    ).toBeOnTheScreen();
+  });
+
+  it('labels an image-read receipt as read, never as verified', async () => {
+    const receipt = tamStore();
+    receipt.fiscal!.verification.status = 'official_image';
+    await show(receipt);
+    expect(screen.getByText(az.notEligible.read)).toBeOnTheScreen();
+    expect(screen.queryByText(az.notEligible.verified)).toBeNull();
   });
 
   it('never presents test fixtures as an official receipt', async () => {

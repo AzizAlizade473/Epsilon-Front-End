@@ -69,6 +69,10 @@ export function ReceiptScreen() {
             completedIds={feedback.completedIds}
             onClose={close}
             onScanAnother={() => router.replace('/scan')}
+            onExplore={() => {
+              router.dismissAll();
+              router.replace('/restaurants');
+            }}
             onRate={(item, rating) => {
               clearReceiptRating();
               if (rating !== undefined) selectReceiptRating(item.id, rating);

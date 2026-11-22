@@ -865,5 +865,25 @@
     "mismatch": "The products must add up to the receipt total.",
     "submit": "Confirm and continue",
     "noCashback": "Corrected receipts can be rated but do not earn cashback."
+  },
+  "notEligible": {
+    "read": "Official receipt read",
+    "verified": "Verified receipt",
+    "badge": "Not eligible",
+    "title": "{{type}} receipt",
+    "body": "Epsilon ratings and cashback currently work only for restaurants and cafés.",
+    "unknownTitle": "Business category not confirmed",
+    "unknownBody": "Epsilon could not confirm what kind of business issued this receipt, so ratings and cashback are off for it.",
+    "note": "Nothing is wrong with your receipt: it was read correctly. It is simply outside the current Epsilon programme.",
+    "whyTitle": "How Epsilon works",
+    "why1": "Epsilon is about food-service experiences.",
+    "why2": "You rate the dishes and drinks you bought at restaurants and cafés.",
+    "why3": "Partner restaurants and cafés can reward you with cashback. Other receipts can be read, but not rated.",
+    "explore": "Explore restaurants",
+    "details": "Receipt details",
+    "category": "Category",
+    "support": "Epsilon support",
+    "reason": "Reason",
+    "reasonValue": "Ratings and cashback are only for restaurants and cafés"
   }
 }

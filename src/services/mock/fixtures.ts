@@ -317,3 +317,111 @@ export const mockTransactions: WalletTransaction[] = [
     itemName: null,
   },
 ];
+
+/**
+ * Demo only: a supermarket receipt read from an official e-kassa image (synthetic
+ * Fiscal ID), so mock builds can show the "valid but not eligible" result state.
+ */
+export const mockSupermarketReceipt: Receipt = {
+  id: 'rcpt_demo_supermarket',
+  restaurant: {
+    id: 'm-6d2f0c1e',
+    name: 'TAM STORE',
+    logoUrl: null,
+    branchCount: 0,
+  },
+  branch: { id: 'b-6d2f0c1e', name: 'AZ1025, Bakı şəhəri' },
+  issuedAt: '2026-11-16T13:16:02.000Z',
+  totalMinor: 237,
+  currency: 'AZN',
+  status: 'verified',
+  items: [
+    {
+      id: 'i1',
+      name: 'COCA COLA ZERO 2LT PET',
+      quantity: 1,
+      unitPriceMinor: 230,
+      canRate: false,
+      rating: null,
+      line: {
+        lineNo: 1,
+        originalName: 'COCA COLA ZERO 2LT PET',
+        quantityMilli: 1000,
+        unit: 'ədəd',
+        unitPriceMinor: 230,
+        lineTotalMinor: 230,
+        cashbackClaimed: false,
+      },
+    },
+    {
+      id: 'i2',
+      name: 'TS MARKET TORBASI ORTA 3 1X60 SM',
+      quantity: 1,
+      unitPriceMinor: 7,
+      canRate: false,
+      rating: null,
+      line: {
+        lineNo: 2,
+        originalName: 'TS MARKET TORBASI ORTA 3 1X60 SM',
+        quantityMilli: 1000,
+        unit: 'ədəd',
+        unitPriceMinor: 7,
+        lineTotalMinor: 7,
+        cashbackClaimed: false,
+      },
+    },
+  ],
+  fiscal: {
+    verification: {
+      status: 'official_image',
+      provider: 'customer_official_image',
+      engine: 'on_device_ocr',
+      retrievedAt: '2026-11-21T10:00:00.000Z',
+    },
+    classification: {
+      sector: 'retail',
+      businessType: 'supermarket',
+      method: 'name_rule',
+      status: 'rule',
+      evidence: ['supermarket name: "TAM STORE"'],
+    },
+    partner: { isPartner: false, restaurantId: null, branchId: null },
+    eligibility: {
+      ratingAllowed: false,
+      cashbackAllowed: false,
+      reason: 'UNSUPPORTED_MERCHANT_CATEGORY',
+    },
+    merchant: {
+      displayName: 'TAM STORE',
+      legalName: 'TAM STORE MMC',
+      voen: '1506475881',
+      objectName: null,
+      objectCode: '1506475881-20001',
+      address:
+        'AZ1025, Bakı şəhəri, Xətai rayonu, Həsən Salmanı, ev 1, 1-ci mərtəbə, qapı 11',
+      city: 'Bakı',
+    },
+    receipt: {
+      fiscalId: 'TESTFISC0001',
+      number: '1421',
+      documentId: null,
+      type: 'sale',
+      issuedAt: '2026-11-16T17:16:02+04:00',
+      currency: 'AZN',
+      totalMinor: 237,
+      subtotalMinor: null,
+      discountMinor: null,
+      vatMinor: 36,
+      vatBreakdown: [{ ratePercent: 18, amountMinor: 36 }],
+      payment: {
+        method: 'cashless',
+        cashMinor: 0,
+        cashlessMinor: 237,
+        bonusMinor: 0,
+        changeMinor: 0,
+      },
+    },
+    device: { model: null, serialNumber: null, nmqRegistrationNumber: null },
+    additionalFields: {},
+  },
+};

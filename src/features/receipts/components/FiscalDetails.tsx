@@ -51,9 +51,12 @@ const money = (minor: number | null) =>
 export function FiscalSummary({
   fiscal,
   onScanAnother,
+  compact = false,
 }: {
   fiscal: FiscalInfo;
   onScanAnother?: () => void;
+  /** Only the business and receipt records (the not-eligible state explains the rest). */
+  compact?: boolean;
 }) {
   const { t, i18n } = useTranslation();
   const { classification: c, eligibility: e, merchant: m, receipt: r } = fiscal;
@@ -63,46 +66,54 @@ export function FiscalSummary({
   });
   return (
     <View style={styles.block}>
-      <View style={styles.sector} accessibilityRole="summary">
-        <Text style={styles.sectorType}>{typeLabel}</Text>
-        <Text style={styles.label}>
-          {t('fiscal.sectorLine', { sector: t(`fiscal.sector.${c.sector}`) })}
-        </Text>
-        <View style={styles.chips}>
-          <Chip
-            label={t(SOURCE_LABEL[fiscal.verification.status])}
-            tone={SOURCE_TONE[fiscal.verification.status]}
-          />
-          {c.status === 'ai' && (
-            <Chip label={t('fiscal.aiAssisted')} tone="brand" />
+      {!compact && (
+        <>
+          <View style={styles.sector} accessibilityRole="summary">
+            <Text style={styles.sectorType}>{typeLabel}</Text>
+            <Text style={styles.label}>
+              {t('fiscal.sectorLine', {
+                sector: t(`fiscal.sector.${c.sector}`),
+              })}
+            </Text>
+            <View style={styles.chips}>
+              <Chip
+                label={t(SOURCE_LABEL[fiscal.verification.status])}
+                tone={SOURCE_TONE[fiscal.verification.status]}
+              />
+              {c.status === 'ai' && (
+                <Chip label={t('fiscal.aiAssisted')} tone="brand" />
+              )}
+              {fiscal.partner.isPartner && (
+                <Chip label={t('fiscal.partner')} tone="brand" />
+              )}
+            </View>
+          </View>
+          {e.reason && (
+            <View
+              style={[styles.notice, unsupported && styles.warning]}
+              accessibilityRole="alert"
+            >
+              <Icon
+                icon={unsupported ? TriangleAlert : Info}
+                size="small"
+                color={unsupported ? o.colors.pending : o.colors.secondary}
+                decorative
+              />
+              <Text style={styles.noticeText}>
+                {t(`fiscal.reason.${e.reason}`, {
+                  type: typeLabel.toLowerCase(),
+                })}
+              </Text>
+            </View>
           )}
-          {fiscal.partner.isPartner && (
-            <Chip label={t('fiscal.partner')} tone="brand" />
+          {unsupported && onScanAnother && (
+            <Button
+              variant="secondary"
+              label={t('fiscal.scanAnother')}
+              onPress={onScanAnother}
+            />
           )}
-        </View>
-      </View>
-      {e.reason && (
-        <View
-          style={[styles.notice, unsupported && styles.warning]}
-          accessibilityRole="alert"
-        >
-          <Icon
-            icon={unsupported ? TriangleAlert : Info}
-            size="small"
-            color={unsupported ? o.colors.pending : o.colors.secondary}
-            decorative
-          />
-          <Text style={styles.noticeText}>
-            {t(`fiscal.reason.${e.reason}`, { type: typeLabel.toLowerCase() })}
-          </Text>
-        </View>
-      )}
-      {unsupported && onScanAnother && (
-        <Button
-          variant="secondary"
-          label={t('fiscal.scanAnother')}
-          onPress={onScanAnother}
-        />
+        </>
       )}
       <View style={styles.card}>
         <Text style={styles.heading} accessibilityRole="header">

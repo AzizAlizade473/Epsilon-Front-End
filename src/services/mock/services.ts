@@ -26,6 +26,7 @@ import type {
 import {
   mockConfig,
   mockReceipt,
+  mockSupermarketReceipt,
   demoReward,
   mockRestaurants,
   mockTransactions,
@@ -295,6 +296,7 @@ export const mockReceiptService: ReceiptService = {
 
   async get(id) {
     await simulateDelay();
+    if (id === mockSupermarketReceipt.id) return mockSupermarketReceipt;
     if (id !== mockReceipt.id)
       throw new ApiError({
         code: 'RECEIPT_NOT_FOUND',
