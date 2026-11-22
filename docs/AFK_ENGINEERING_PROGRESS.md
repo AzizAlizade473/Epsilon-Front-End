@@ -12,11 +12,12 @@ Branches: front-end `fix/afk-ekassa-restaurants`, back-end `fix/ekassa-import-re
 
 | QA | Demo reviews showed "Verified purchase"; boot error swallowed | FE `fe8638f` | Demo reviews now "Demo review"; dev builds log the boot failure cause. |
 | QA | Home title still "Explore products & dishes" | FE `d94cc6b` | Dishes-only strings (az/en/ru). |
+| 2 | Official JPG parsed incomplete ("line 1, all product lines") | BE `e18a5aa` | Real dump (136,058-byte JPG, complete receipt, 49 OCR lines) showed OCR text was fine; the item regex needed a bare unit + quantity, but the official image prints `(ədəd)` (read `(ədad)`) and OCR drops the lone quantity `1`. Now: bracketed unit, optional quantity derived only when total ÷ price is exact, `№`→`Ne`, wrapped `kodu:`, `*ƏV` marker, wrapped legal name/address. Real receipt → TAM STORE, №462, 13.11.2026 20:29:34, 1 × MOLOQORSK QAT. SUD 8.5 3 40GR PET, 1.79, engine `on_device_ocr` (no Gemini); verified privately through `POST /receipts/fiscal/import`. |
 Gate after each batch: `npx tsc --noEmit`, `eslint --max-warnings=0`, `jest` 688/688, `i18n:check`, `contract:check`; backend `vitest` 95/95.
 
 ## Open / next
 
-1. **Official JPG parser tuning**: needs one real failed import. After the next phone test, files appear in `Epsilon-Back-End/private-fixtures/imports/` (JPG + ML Kit OCR JSON + reason). Use them to fix `src/fiscal/ocr.ts` so official images parse on-device (no Gemini).
+1. Parser fixed for the official layout (see row 2). Not built yet: a product-correction screen when only some fields are uncertain (prompt Step 4); today a partial read still shows the incomplete-receipt panel with retry / saved-image import.
 2. Task 5 (link scanned restaurant receipts to restaurant profiles by VÖEN + object code): backend `classify.ts` already matches partners by objectCode then VÖEN; demo restaurants have no VÖEN, so no reliable match is possible yet — by design no name-based matching.
 3. Web smoke test done in mock mode (web only supports mock previews by design): welcome → mock login → Home (wallet, pending, explore dishes) → Restaurants (populated, "Preview data") → profile (menu categories, photos, ratings, reviews) → dish page → Profile. No console errors.
 4. APK build `1d549d8b` from `fe8638f` (live-tunnel profile).
