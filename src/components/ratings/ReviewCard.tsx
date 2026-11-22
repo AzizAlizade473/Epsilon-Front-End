@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { demoContent } from '@/lib/demoContent';
 import { StyleSheet, View } from 'react-native';
 import BadgeCheck from 'lucide-react-native/icons/badge-check';
 import FlaskConical from 'lucide-react-native/icons/flask-conical';
@@ -23,7 +24,8 @@ export type ReviewCardData = {
 export const ReviewCard = memo(function ReviewCard({
   review,
   tagKeys = [],
-  sample = false,
+  // Demo builds show the demo catalogue: never present those reviews as verified buyers.
+  sample = demoContent(),
   lines,
 }: {
   review: ReviewCardData;

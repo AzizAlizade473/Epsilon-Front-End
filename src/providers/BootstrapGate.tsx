@@ -60,7 +60,9 @@ export function BootstrapGate({
       .then((value) => {
         if (active) setBoot(value);
       })
-      .catch(() => {
+      .catch((error: unknown) => {
+        // Development only: the screen shows a generic retry, the cause goes to the console.
+        if (__DEV__) console.warn('[bootstrap] failed', error);
         if (active) setFailed(true);
       });
     return () => {
