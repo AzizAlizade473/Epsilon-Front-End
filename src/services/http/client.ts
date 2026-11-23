@@ -234,9 +234,13 @@ async function executeRequest<T>(
         requestId,
       });
     }
+    const reason = err instanceof Error ? err.message : 'Network error';
+    // Internal development builds only: the platform's own failure reason, for diagnosis.
+    if (env.EXPO_PUBLIC_APP_ENV === 'development')
+      console.warn(`[http] ${method} ${path} failed: ${reason}`);
     throw new ApiError({
       code: 'NETWORK',
-      message: err instanceof Error ? err.message : 'Network error',
+      message: reason,
       status: 0,
       requestId,
     });

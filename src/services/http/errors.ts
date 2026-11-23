@@ -1,3 +1,4 @@
+import { env } from '@/lib/env';
 /**
  * Typed API error codes used across the client and service layer.
  *
@@ -120,4 +121,13 @@ export function codeFromStatus(status: number): ApiErrorCode {
   if (status === 429) return 'RATE_LIMITED';
   if (status === 422) return 'VALIDATION_FAILED';
   return 'UNKNOWN';
+}
+
+/** Internal development builds only: " (platform reason)" after a network error, else "". */
+export function devReason(cause: unknown): string {
+  return env.EXPO_PUBLIC_APP_ENV === 'development' &&
+    isApiError(cause) &&
+    (cause.code === 'NETWORK' || cause.code === 'TIMEOUT')
+    ? ` (${cause.message})`
+    : '';
 }

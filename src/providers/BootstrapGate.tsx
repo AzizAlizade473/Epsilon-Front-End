@@ -22,6 +22,7 @@ import { ErrorState } from '@/components/feedback/ErrorState';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { colors, layout, spacing } from '@/design';
 import { bootStorage, type BootData } from '@/lib/bootstrap';
+import { env } from '@/lib/env';
 import { i18n, initializeI18n } from '@/lib/i18n';
 import { initializeServices } from '@/services';
 
@@ -62,7 +63,8 @@ export function BootstrapGate({
       })
       .catch((error: unknown) => {
         // Development only: the screen shows a generic retry, the cause goes to the console.
-        if (__DEV__) console.warn('[bootstrap] failed', error);
+        if (__DEV__ || env.EXPO_PUBLIC_APP_ENV === 'development')
+          console.warn('[bootstrap] failed', String(error));
         if (active) setFailed(true);
       });
     return () => {

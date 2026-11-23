@@ -4,7 +4,7 @@ import { authOperation } from '@/lib/auth-lifecycle';
 import { GoogleFlowError, googleDriver } from '@/lib/google-signin';
 import { useAuthActions } from '@/providers/AuthProvider';
 import { services } from '@/services';
-import { isApiError } from '@/services/http/errors';
+import { devReason, isApiError } from '@/services/http/errors';
 import { routeForNextStep } from './usePhoneAuth';
 import {
   AuthIntentError,
@@ -60,7 +60,7 @@ export function useGoogleSignIn(intent?: AuthIntent) {
                     (cause.code === 'NETWORK' || cause.code === 'TIMEOUT')
                   ? 'onboarding.googleNetwork'
                   : 'onboarding.googleFailed';
-        setError(t(key));
+        setError(t(key) + devReason(cause));
         if (cause instanceof AuthIntentError) setConflict(cause.reason);
       }
       return null;

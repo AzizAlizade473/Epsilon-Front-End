@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/providers/ToastProvider';
 import { services, type NextStep } from '@/services';
-import { isApiError } from '@/services/http/errors';
+import { isApiError, devReason } from '@/services/http/errors';
 import { useAuthActions } from '@/providers/AuthProvider';
 import { authOperation, otpChallenge } from '../store';
 import { otpSchema, phoneSchema } from '../schemas';
@@ -50,7 +50,10 @@ export function usePhoneAuth(
       return;
     }
     if (code === 'NETWORK' || code === 'TIMEOUT') {
-      toast(t(code === 'NETWORK' ? 'errors.network' : 'errors.timeout'));
+      toast(
+        t(code === 'NETWORK' ? 'errors.network' : 'errors.timeout') +
+          devReason(cause),
+      );
       return;
     }
     if (code === 'OTP_TOO_MANY' || code === 'RATE_LIMITED') {
