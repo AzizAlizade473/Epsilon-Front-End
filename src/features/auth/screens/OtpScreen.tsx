@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Redirect, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Animated, Platform, StyleSheet } from 'react-native';
+import { Animated, Platform, StyleSheet, View } from 'react-native';
 import { useAnimatedValue } from '@/hooks/useAnimatedValue';
 import {
   AndroidHaptics,
@@ -15,8 +15,11 @@ import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Text';
 import { AuthHeading } from '@/components/ui/AuthHeading';
 import { Brand } from '@/components/ui/Brand';
+import Clock from 'lucide-react-native/icons/clock';
+import Mail from 'lucide-react-native/icons/mail';
 import MessageSquare from 'lucide-react-native/icons/message-square';
-import { colors, layout, useMotion } from '@/design';
+import { Icon } from '@/components/ui/Icon';
+import { colors, layout, radius, spacing, useMotion } from '@/design';
 import { OtpInput } from '../components/OtpInput';
 import { ResendTimer, useSecondsUntil } from '../components/ResendTimer';
 import { usePhoneAuth } from '../hooks/usePhoneAuth';
@@ -86,6 +89,7 @@ export default function OtpScreen({
       router.replace(route);
     }
   };
+  const email = challenge?.delivery === 'email';
   if ((!challenge || challenge.mode !== mode) && !completed)
     return <Redirect href={mode === 'link' ? '/phone-verify' : '/phone'} />;
   return (
@@ -108,9 +112,9 @@ export default function OtpScreen({
       }
     >
       <AuthHeading
-        icon={MessageSquare}
-        title={t('navigation.otp')}
-        message={t('auth.otpHelper', {
+        icon={email ? Mail : MessageSquare}
+        title={email ? t('auth.otpEmailTitle') : t('navigation.otp')}
+        message={t(email ? 'auth.otpEmailHelper' : 'auth.otpHelper', {
           phone: maskPhone(challenge?.phone ?? ''),
         })}
       />
@@ -137,6 +141,19 @@ export default function OtpScreen({
           ]}
         />
       </Animated.View>
+      {email && (
+        <View style={styles.note}>
+          <Icon
+            icon={Clock}
+            size="small"
+            color={colors.inkSecondary}
+            decorative
+          />
+          <Text variant="caption" tone="secondary" style={styles.noteText}>
+            {t('auth.otpEmailNote')}
+          </Text>
+        </View>
+      )}
       {auth.error && (
         <Text
           tone="danger"
@@ -174,3 +191,15 @@ export default function OtpScreen({
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  note: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing[8],
+    padding: spacing[12],
+    borderRadius: radius[12],
+    backgroundColor: colors.brand.tint,
+  },
+  noteText: { flex: 1 },
+});

@@ -12,6 +12,7 @@ import type {
   FeedbackResult,
   FeedbackReview,
   NotificationPreferences,
+  OtpChallengeResult,
   Paginated,
   ProfileUpdateResult,
   PurchaseReference,
@@ -30,7 +31,7 @@ export interface AuthService {
   requestOtp(input: {
     phone: string;
     intent?: AuthIntent;
-  }): Promise<{ expiresAt: string; retryAfterSeconds: number }>;
+  }): Promise<OtpChallengeResult>;
   verifyOtp(input: {
     phone: string;
     code: string;
@@ -41,9 +42,7 @@ export interface AuthService {
     intent?: AuthIntent;
   }): Promise<AuthResult>;
   signInWithApple(input: { identityToken: string }): Promise<AuthResult>;
-  requestPhoneLinkOtp(input: {
-    phone: string;
-  }): Promise<{ expiresAt: string; retryAfterSeconds: number }>;
+  requestPhoneLinkOtp(input: { phone: string }): Promise<OtpChallengeResult>;
   verifyPhoneLink(input: { phone: string; code: string }): Promise<User>;
   refresh(input: { refreshToken: string }): Promise<Session>;
   logout(): Promise<void>;

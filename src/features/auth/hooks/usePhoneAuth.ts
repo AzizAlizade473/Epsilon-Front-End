@@ -105,6 +105,7 @@ export function usePhoneAuth(
         result.retryAfterSeconds,
         mode,
         activeIntent,
+        result.delivery,
       );
       return active.current;
     } catch (cause) {

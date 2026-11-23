@@ -358,6 +358,21 @@ describe('Phone → OTP → session', () => {
     await waitFor(() => expect(mockReplace).toHaveBeenCalledWith('/home'));
   });
 
+  it('tells the user to wait for an e-mail when the server mailed the code', async () => {
+    otpChallenge.set('+994501234567', 60, 'signIn', undefined, 'email');
+    await render(<OtpScreen />, { wrapper: Wrapper });
+    expect(screen.getByText(az.auth.otpEmailTitle)).toBeTruthy();
+    expect(screen.getByText(az.auth.otpEmailNote)).toBeTruthy();
+    expect(screen.queryByText(az.navigation.otp)).toBeNull();
+  });
+
+  it('keeps the SMS wording when no delivery channel is given', async () => {
+    otpChallenge.set('+994501234567', 60);
+    await render(<OtpScreen />, { wrapper: Wrapper });
+    expect(screen.getByText(az.navigation.otp)).toBeTruthy();
+    expect(screen.queryByText(az.auth.otpEmailNote)).toBeNull();
+  });
+
   it.each(['OTP_INVALID', 'OTP_EXPIRED', 'OTP_TOO_MANY', 'NETWORK'] as const)(
     'handles %s without authenticating',
     async (code) => {

@@ -104,8 +104,12 @@ export const otpChallengeSchema = z
   .object({
     expiresAt: isoDate,
     retryAfterSeconds: z.number().int().safe().nonnegative(),
+    /** Where the code was sent; absent means SMS. "email": demo servers mail codes to one inbox. */
+    delivery: z.enum(['sms', 'email']).optional(),
   })
   .strict();
+
+export type OtpChallengeResult = z.infer<typeof otpChallengeSchema>;
 
 /** Canonical onboarding envelope; legacy User-only APIs remain supported explicitly. */
 export const profileUpdateResultSchema = z.union([
