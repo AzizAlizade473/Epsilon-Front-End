@@ -31,6 +31,8 @@ export interface AuthService {
   requestOtp(input: {
     phone: string;
     intent?: AuthIntent;
+    /** Inbox for the code while codes go by e-mail (demo server). */
+    email?: string;
   }): Promise<OtpChallengeResult>;
   verifyOtp(input: {
     phone: string;
@@ -42,7 +44,10 @@ export interface AuthService {
     intent?: AuthIntent;
   }): Promise<AuthResult>;
   signInWithApple(input: { identityToken: string }): Promise<AuthResult>;
-  requestPhoneLinkOtp(input: { phone: string }): Promise<OtpChallengeResult>;
+  requestPhoneLinkOtp(input: {
+    phone: string;
+    email?: string;
+  }): Promise<OtpChallengeResult>;
   verifyPhoneLink(input: { phone: string; code: string }): Promise<User>;
   refresh(input: { refreshToken: string }): Promise<Session>;
   logout(): Promise<void>;

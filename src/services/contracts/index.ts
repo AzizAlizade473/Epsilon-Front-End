@@ -106,6 +106,8 @@ export const otpChallengeSchema = z
     retryAfterSeconds: z.number().int().safe().nonnegative(),
     /** Where the code was sent; absent means SMS. "email": demo servers mail codes to one inbox. */
     delivery: z.enum(['sms', 'email']).optional(),
+    /** Masked inbox an e-mailed code went to, e.g. "a***@gmail.com". */
+    sentTo: z.string().max(260).optional(),
   })
   .strict();
 

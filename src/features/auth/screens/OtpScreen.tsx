@@ -116,6 +116,7 @@ export default function OtpScreen({
         title={email ? t('auth.otpEmailTitle') : t('navigation.otp')}
         message={t(email ? 'auth.otpEmailHelper' : 'auth.otpHelper', {
           phone: maskPhone(challenge?.phone ?? ''),
+          email: challenge?.sentTo ?? '',
         })}
       />
       <Animated.View

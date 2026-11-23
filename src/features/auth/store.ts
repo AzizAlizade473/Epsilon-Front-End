@@ -11,6 +11,7 @@ export type OtpChallenge = {
   mode: 'signIn' | 'link';
   intent?: AuthIntent;
   delivery: 'sms' | 'email';
+  sentTo?: string;
 };
 
 let challenge: OtpChallenge | null = null;
@@ -28,11 +29,13 @@ export const otpChallenge = {
     mode: 'signIn' | 'link' = 'signIn',
     intent?: AuthIntent,
     delivery: 'sms' | 'email' = 'sms',
+    sentTo?: string,
   ) {
     challenge = {
       phone,
       mode,
       delivery,
+      ...(sentTo ? { sentTo } : {}),
       ...(intent ? { intent } : {}),
       resendAt: monotonicNow() + retryAfterSeconds * 1000,
       lockedUntil: 0,

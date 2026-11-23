@@ -108,6 +108,10 @@ it.each(['login', 'register'] as const)(
       screen.getByLabelText(az.auth.phoneLabel),
       '+994501234567',
     );
+    await fireEvent.changeText(
+      screen.getByLabelText(az.auth.emailLabel),
+      'owner@gmail.com',
+    );
     await fireEvent.press(
       screen.getByRole('button', { name: az.common.continue }),
     );
@@ -158,6 +162,10 @@ it('locks phone, Google and entry switching during a pending phone request', asy
   await fireEvent.changeText(
     screen.getByLabelText(az.auth.phoneLabel),
     '+994501234567',
+  );
+  await fireEvent.changeText(
+    screen.getByLabelText(az.auth.emailLabel),
+    'owner@gmail.com',
   );
   const submit = screen.getByRole('button', { name: az.common.continue });
   await fireEvent.press(submit);

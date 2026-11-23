@@ -4,7 +4,8 @@ import { authOperation } from '@/lib/auth-lifecycle';
 import { GoogleFlowError, googleDriver } from '@/lib/google-signin';
 import { useAuthActions } from '@/providers/AuthProvider';
 import { services } from '@/services';
-import { devReason, isApiError } from '@/services/http/errors';
+import { isApiError } from '@/services/http/errors';
+import { devReason } from '@/services/http/devReason';
 import { routeForNextStep } from './usePhoneAuth';
 import {
   AuthIntentError,

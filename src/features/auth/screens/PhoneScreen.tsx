@@ -5,6 +5,7 @@ import { Screen } from '@/components/ui/Screen';
 import { AuthHeading } from '@/components/ui/AuthHeading';
 import { Brand } from '@/components/ui/Brand';
 import Smartphone from 'lucide-react-native/icons/smartphone';
+import { EmailField } from '../components/EmailField';
 import { PhoneField } from '../components/PhoneField';
 import { usePhoneEntry } from '../hooks/usePhoneEntry';
 
@@ -40,6 +41,15 @@ export default function PhoneScreen() {
         }}
         onChange={entry.onChange}
         error={entry.error}
+      />
+      <EmailField
+        value={entry.email}
+        onChange={entry.onEmailChange}
+        disabled={entry.busy}
+        error={entry.emailError}
+        onSubmit={() => {
+          void entry.submit();
+        }}
       />
     </Screen>
   );

@@ -14,6 +14,7 @@ import {
   type AuthIntent,
 } from '../components/AuthEntryActions';
 import { LegalLinks } from '../components/LegalLinks';
+import { EmailField } from '../components/EmailField';
 import { PhoneField } from '../components/PhoneField';
 import { Rise } from '../components/Rise';
 import { WaveHeader } from '../components/WaveHeader';
@@ -91,6 +92,14 @@ export default function AuthEntryScreen({ intent }: { intent: AuthIntent }) {
             onChange={phone.onChange}
             disabled={busy}
             error={phone.error}
+            onSubmit={submit}
+          />
+          <EmailField
+            appearance="underline"
+            value={phone.email}
+            onChange={phone.onEmailChange}
+            disabled={busy}
+            error={phone.emailError}
             onSubmit={submit}
           />
         </Rise>

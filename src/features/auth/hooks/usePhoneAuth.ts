@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/providers/ToastProvider';
 import { services, type NextStep } from '@/services';
-import { isApiError, devReason } from '@/services/http/errors';
+import { isApiError } from '@/services/http/errors';
+import { devReason } from '@/services/http/devReason';
 import { useAuthActions } from '@/providers/AuthProvider';
 import { authOperation, otpChallenge } from '../store';
 import { otpSchema, phoneSchema } from '../schemas';
@@ -63,6 +64,8 @@ export function usePhoneAuth(
         setRequestRetryAt(authOperation.retryAt());
       }
       setError(t('auth.tooMany'));
+    } else if (code === 'EMAIL_REQUIRED') {
+      setError(t('auth.emailRequired'));
     } else if (code === 'OTP_INVALID') {
       setInvalidAttempt((value) => value + 1);
       setError(t('auth.otpInvalid'));
@@ -72,7 +75,7 @@ export function usePhoneAuth(
       );
   };
 
-  const requestCode = async (phone: string) => {
+  const requestCode = async (phone: string, email?: string) => {
     if (gate.current) return false;
     if (authOperation.retryAt() > monotonicNow()) return false;
     const parsed = phoneSchema.safeParse(phone);
@@ -97,10 +100,14 @@ export function usePhoneAuth(
     setError(undefined);
     try {
       const result = await (mode === 'link'
-        ? services.auth.requestPhoneLinkOtp({ phone: parsed.data })
+        ? services.auth.requestPhoneLinkOtp({
+            phone: parsed.data,
+            ...(email ? { email } : {}),
+          })
         : services.auth.requestOtp({
             phone: parsed.data,
             ...(activeIntent ? { intent: activeIntent } : {}),
+            ...(email ? { email } : {}),
           }));
       if (!authOperation.current(epoch)) return false;
       otpChallenge.set(
@@ -109,6 +116,7 @@ export function usePhoneAuth(
         mode,
         activeIntent,
         result.delivery,
+        result.sentTo,
       );
       return active.current;
     } catch (cause) {

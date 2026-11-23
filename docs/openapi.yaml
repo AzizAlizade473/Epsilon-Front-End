@@ -1235,6 +1235,9 @@ components:
           enum:
             - sms
             - email
+        sentTo:
+          type: string
+          maxLength: 260
       required:
         - expiresAt
         - retryAfterSeconds
@@ -2483,6 +2486,7 @@ components:
                 - SOCIAL_EMAIL_UNVERIFIED
                 - OTP_INVALID
                 - OTP_EXPIRED
+                - EMAIL_REQUIRED
                 - OTP_TOO_MANY
                 - PHONE_IN_USE
                 - IDENTITY_ALREADY_LINKED

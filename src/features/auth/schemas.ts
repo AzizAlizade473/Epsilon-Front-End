@@ -28,6 +28,9 @@ export const phoneSchema = z
 
 export const otpSchema = z.string().regex(/^\d{6}$/);
 
+/** Inbox for an e-mailed login code; trimmed and lower-cased like the server. */
+export const emailSchema = z.string().trim().toLowerCase().email().max(254);
+
 export function maskPhone(phone: string): string {
   const digits = phoneDigits(phone);
   return `+994 ${digits.slice(0, 2)} ••• •• ${digits.slice(-2)}`;

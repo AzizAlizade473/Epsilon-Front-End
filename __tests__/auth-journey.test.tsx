@@ -39,6 +39,7 @@ const mockRequest =
   jest.fn<
     (input: {
       phone: string;
+      email?: string;
     }) => Promise<{ expiresAt: string; retryAfterSeconds: number }>
   >();
 const mockVerify =
@@ -285,6 +286,19 @@ describe('Phone → OTP → session', () => {
       screen.getByLabelText(az.auth.phoneLabel),
       '+994501234567',
     );
+    // The code goes to the owner's e-mail: no e-mail, no request.
+    expect(
+      screen.getByRole('button', { name: az.auth.sendCode }),
+    ).toBeDisabled();
+    await fireEvent.changeText(
+      screen.getByLabelText(az.auth.emailLabel),
+      'not-an-email',
+    );
+    expect(screen.getByText(az.auth.invalidEmail)).toBeTruthy();
+    await fireEvent.changeText(
+      screen.getByLabelText(az.auth.emailLabel),
+      ' Aysel@Gmail.com ',
+    );
     await fireEvent.press(
       screen.getByRole('button', { name: az.auth.sendCode }),
     );
@@ -292,7 +306,10 @@ describe('Phone → OTP → session', () => {
       screen.getByRole('button', { name: az.auth.sendCode }),
     );
     expect(mockRequest).toHaveBeenCalledTimes(1);
-    expect(mockRequest).toHaveBeenCalledWith({ phone: '+994501234567' });
+    expect(mockRequest).toHaveBeenCalledWith({
+      phone: '+994501234567',
+      email: 'aysel@gmail.com',
+    });
     await act(async () =>
       finish({ expiresAt: '2027-01-01T00:00:00Z', retryAfterSeconds: 60 }),
     );
@@ -359,9 +376,17 @@ describe('Phone → OTP → session', () => {
   });
 
   it('tells the user to wait for an e-mail when the server mailed the code', async () => {
-    otpChallenge.set('+994501234567', 60, 'signIn', undefined, 'email');
+    otpChallenge.set(
+      '+994501234567',
+      60,
+      'signIn',
+      undefined,
+      'email',
+      'a***@gmail.com',
+    );
     await render(<OtpScreen />, { wrapper: Wrapper });
     expect(screen.getByText(az.auth.otpEmailTitle)).toBeTruthy();
+    expect(screen.getByText(/a\*\*\*@gmail\.com/)).toBeTruthy();
     expect(screen.getByText(az.auth.otpEmailNote)).toBeTruthy();
     expect(screen.queryByText(az.navigation.otp)).toBeNull();
   });
