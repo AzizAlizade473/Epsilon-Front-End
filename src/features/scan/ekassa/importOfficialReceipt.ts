@@ -39,8 +39,12 @@ export async function importOfficialReceipt(
   image: ReceiptExport,
   /** Product lines the customer completed after a partial read. */
   corrections?: CorrectedLine[],
+  /** Real pipeline steps, for the processing screen. */
+  onStep?: (step: 'reading' | 'finding') => void,
 ): Promise<Receipt> {
+  onStep?.('reading');
   const ocr = await readOnDevice(image);
+  onStep?.('finding');
   const usable =
     ocr && ocr.lines.length >= MIN_RECEIPT_LINES ? [ocr] : undefined;
   return services.receipt.importFiscalImage({

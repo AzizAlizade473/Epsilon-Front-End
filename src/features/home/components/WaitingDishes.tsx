@@ -10,6 +10,9 @@ import { FoodImage } from '@/components/food/FoodImage';
 import { useReceiptLibrary } from '@/hooks/useReceiptLibrary';
 import { useFeedback } from '@/providers/FeedbackProvider';
 import { colors, radius, spacing } from '@/design';
+import { BrandBadge } from '@/components/brand/BrandBadge';
+import { displayMerchantName } from '@/lib/brands';
+import { dishName } from '@/lib/dish-name';
 import { premium } from '@/design/premium';
 
 /** Only actual verified purchased items can appear here. Opens the bill first. */
@@ -97,7 +100,7 @@ export function WaitingDishes({
             <PressSurface
               key={item.id}
               accessibilityLabel={t('premium.openPurchased', {
-                name: item.name,
+                name: dishName(item.name),
               })}
               onPress={() =>
                 router.push({
@@ -108,21 +111,25 @@ export function WaitingDishes({
               contentStyle={styles.card}
               spring
             >
-              <FoodImage
-                photo={
-                  item.id === 'item_01' || item.id === 'item_02'
-                    ? 'coffee'
-                    : undefined
-                }
-                width={premium.rowThumb}
-                height={premium.rowThumb}
-              />
+              {item.id === 'item_01' || item.id === 'item_02' ? (
+                <FoodImage
+                  photo="coffee"
+                  width={premium.rowThumb}
+                  height={premium.rowThumb}
+                />
+              ) : (
+                <BrandBadge
+                  name={receipt.restaurant.name}
+                  logoUrl={receipt.restaurant.logoUrl}
+                  size={premium.rowThumb}
+                />
+              )}
               <View style={styles.copy}>
                 <Text variant="headline" numberOfLines={1}>
-                  {item.name}
+                  {dishName(item.name)}
                 </Text>
                 <Text variant="caption" tone="secondary" numberOfLines={1}>
-                  {receipt.restaurant.name}
+                  {displayMerchantName(receipt.restaurant.name)}
                 </Text>
               </View>
               <View style={styles.open}>

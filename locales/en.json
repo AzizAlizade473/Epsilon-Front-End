@@ -314,6 +314,16 @@
     "rated": "Rated",
     "rate": "Rate",
     "rateItem": "Rate {{name}}",
+    "official": "Official receipt",
+    "partnerTitle": "Epsilon partner",
+    "partnerBody": "Rate your dishes to earn eligible cashback.",
+    "partnerBodyAmount": "Rate your dishes to earn eligible cashback: up to {{amount}}.",
+    "nonPartnerTitle": "You can rate your dishes",
+    "nonPartnerBody": "This restaurant hasn't joined Epsilon yet, so cashback isn't available here.",
+    "rateTitle": "Rate your dishes",
+    "tapToRate": "Tap to rate",
+    "doneTitle": "All dishes rated",
+    "doneBody": "Thank you. Your feedback goes to the restaurant.",
     "total": "Total",
     "rewardHint": "Potential cashback: {{amount}}",
     "identifier": "Receipt: {{id}}",
@@ -892,5 +902,14 @@
     "support": "Epsilon support",
     "reason": "Reason",
     "reasonValue": "Ratings and cashback are only for restaurants and cafés"
+  },
+  "processing": {
+    "title": "Preparing your receipt",
+    "step": {
+      "receiving": "Receiving your receipt…",
+      "reading": "Reading your receipt…",
+      "finding": "Finding your dishes…",
+      "ready": "Getting everything ready…"
+    }
   }
 }

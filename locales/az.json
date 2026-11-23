@@ -314,6 +314,16 @@
     "rated": "Qiymətləndirilib",
     "rate": "Qiymətləndir",
     "rateItem": "{{name}} — qiymətləndir",
+    "official": "Rəsmi çek",
+    "partnerTitle": "Epsilon tərəfdaşı",
+    "partnerBody": "Yeməklərinizi qiymətləndirin və uyğun keşbek qazanın.",
+    "partnerBodyAmount": "Yeməklərinizi qiymətləndirin və uyğun keşbek qazanın: {{amount}}-dək.",
+    "nonPartnerTitle": "Yeməklərinizi qiymətləndirə bilərsiniz",
+    "nonPartnerBody": "Bu restoran hələ Epsilon-a qoşulmayıb, ona görə burada keşbek yoxdur.",
+    "rateTitle": "Yeməklərinizi qiymətləndirin",
+    "tapToRate": "Qiymətləndirmək üçün toxunun",
+    "doneTitle": "Bütün yeməklər qiymətləndirildi",
+    "doneBody": "Təşəkkür edirik. Rəyiniz restorana çatacaq.",
     "total": "Cəmi",
     "rewardHint": "Mümkün keşbek: {{amount}}",
     "identifier": "Qəbz: {{id}}",
@@ -892,5 +902,14 @@
     "support": "Epsilon dəstəyi",
     "reason": "Səbəb",
     "reasonValue": "Qiymətləndirmə və keşbek yalnız restoran və kafelər üçündür"
+  },
+  "processing": {
+    "title": "Çekiniz hazırlanır",
+    "step": {
+      "receiving": "Çekiniz qəbul edilir…",
+      "reading": "Çekiniz oxunur…",
+      "finding": "Yeməkləriniz tapılır…",
+      "ready": "Hər şey hazırlanır…"
+    }
   }
 }

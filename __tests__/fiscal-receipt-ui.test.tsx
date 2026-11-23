@@ -230,11 +230,23 @@ describe('scanned restaurant receipt', () => {
     };
     receipt.items = receipt.items.map((item) => ({ ...item, canRate: true }));
     await show(receipt);
-    expect(screen.getByText(az.fiscal.type.restaurant)).toBeOnTheScreen();
+    // Eligibility first, in plain words; the dishes right below it.
+    expect(screen.getByText(az.receipt.nonPartnerTitle)).toBeOnTheScreen();
+    expect(screen.getByText(az.receipt.nonPartnerBody)).toBeOnTheScreen();
+    expect(screen.getAllByText(az.receipt.tapToRate)).toHaveLength(2);
     expect(
-      screen.getByText(az.fiscal.reason.NOT_EPSILON_PARTNER),
+      screen.getByText(
+        az.homeFocus.progress
+          .replace('{{done}}', '0')
+          .replace('{{total}}', '2'),
+      ),
     ).toBeOnTheScreen();
-    expect(screen.getAllByText(az.receipt.rate)).toHaveLength(2);
+    // Business records stay folded away until asked for.
+    expect(screen.queryByText(az.fiscal.merchantSection)).toBeNull();
+    await fireEvent.press(
+      screen.getByRole('button', { name: az.notEligible.details }),
+    );
+    expect(screen.getByText(az.fiscal.merchantSection)).toBeOnTheScreen();
     expect(
       screen.queryByRole('button', { name: az.fiscal.scanAnother }),
     ).toBeNull();
@@ -259,7 +271,7 @@ describe('receipt read from a customer image', () => {
       reason: 'VERIFICATION_REQUIRED',
     };
     await show(receipt);
-    expect(screen.getByText(az.fiscal.officialImage)).toBeOnTheScreen();
+    expect(screen.getByText(az.receipt.official)).toBeOnTheScreen();
     expect(screen.queryByText(az.fiscal.verified)).toBeNull();
     expect(
       screen.getByText(az.fiscal.reason.VERIFICATION_REQUIRED),

@@ -46,6 +46,10 @@ import {
   type ReceiptDraft,
 } from '@/services/contracts';
 import { importOfficialReceipt } from '../ekassa/importOfficialReceipt';
+import {
+  ReceiptProcessing,
+  type ProcessingStep,
+} from '../components/ReceiptProcessing';
 import { env } from '@/lib/env';
 
 type Phase =
@@ -89,6 +93,8 @@ export function OfficialReceiptScreen() {
   const [loading, setLoading] = useState(true);
   const [problem, setProblem] = useState<Problem | null>(null);
   const [stages, setStages] = useState<string[]>([]);
+  const [step, setStep] = useState<ProcessingStep>('receiving');
+  const cancelled = useRef(false);
   // A partly read receipt: the customer completes the product lines (same image, same QR).
   const [draft, setDraft] = useState<ReceiptDraft | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -151,15 +157,24 @@ export function OfficialReceiptScreen() {
     setExportUri(`data:${exported.mime};base64,${exported.data}`);
     busy.current = true;
     setProblem(null);
+    setStep('receiving');
+    cancelled.current = false;
     setPhase('importing');
     try {
       mark('PARSING_STARTED');
-      const receipt = await importOfficialReceipt(url, exported);
+      const receipt = await importOfficialReceipt(
+        url,
+        exported,
+        undefined,
+        setStep,
+      );
       mark('PARSING_FINISHED');
+      if (cancelled.current) return;
+      setStep('ready');
       mark('RATING_SCREEN_OPENED');
       open(receipt);
     } catch (cause) {
-      fail(cause);
+      if (!cancelled.current) fail(cause);
     } finally {
       busy.current = false;
     }
@@ -262,11 +277,14 @@ export function OfficialReceiptScreen() {
             </View>
           )}
           {phase === 'importing' && (
-            <View style={styles.overlay} accessibilityLiveRegion="polite">
-              <ActivityIndicator color={colors.brand.primary} size="large" />
-              <Text variant="headline">{t('capture.step.reading')}</Text>
-              <Text tone="secondary">{t('capture.step.extracting')}</Text>
-            </View>
+            <ReceiptProcessing
+              step={step}
+              onCancel={() => {
+                // The request cannot be recalled; its answer is ignored and the page stays usable.
+                cancelled.current = true;
+                setPhase('page');
+              }}
+            />
           )}
         </View>
       ) : (

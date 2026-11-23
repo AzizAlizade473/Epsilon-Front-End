@@ -36,7 +36,7 @@ describe('receipt eligibility and amounts', () => {
       />,
     );
     expect(screen.getByText(az.feedback.queued)).toBeOnTheScreen();
-    expect(screen.getByLabelText('48.50 ₼')).toBeOnTheScreen();
+    expect(screen.getByText(/48\.50 ₼/)).toBeOnTheScreen();
     expect(screen.getAllByRole('button')).toHaveLength(1);
     await fireEvent.press(screen.getByRole('button'));
     expect(onRate).toHaveBeenCalledWith(mockReceipt.items[2]);

@@ -1,22 +1,21 @@
+import Check from 'lucide-react-native/icons/check';
+import Clock from 'lucide-react-native/icons/clock';
 import Coffee from 'lucide-react-native/icons/coffee';
 import Croissant from 'lucide-react-native/icons/croissant';
 import Utensils from 'lucide-react-native/icons/utensils';
-import Check from 'lucide-react-native/icons/check';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import Animated, { ReduceMotion, ZoomIn } from 'react-native-reanimated';
 import { Text } from '@/components/ui/Text';
 import { Icon } from '@/components/ui/Icon';
 import { spacing } from '@/design';
 import { originalReceipts as o } from '@/design/original-receipts';
 import { formatMoney } from '@/lib/money';
+import { dishName } from '@/lib/dish-name';
 import type { ReceiptItem } from '@/services/contracts';
 import { OriginalStars } from '@/components/receipts/OriginalStars';
 import { FoodImage } from '@/components/food/FoodImage';
 
-/** Source: ProductCard.tsx / ReceiptItemCard at Epsilon@8f133b0.
- * Product category is not in this contract: icon matching is decorative only.
- * Per-product payouts, multipliers and editing controls are intentionally absent.
- */
 /** Printed quantity from thousandths, without float noise: 370 → "0.37", 2000 → "2". */
 export const formatQuantity = (milli: number) =>
   `${Math.trunc(milli / 1000)}${
@@ -27,6 +26,13 @@ export const formatQuantity = (milli: number) =>
       : ''
   }`;
 
+const checkIn = ZoomIn.duration(220).reduceMotion(ReduceMotion.System);
+
+/**
+ * One purchased dish. One way to rate: tapping a star (or the card) opens the
+ * rating sheet, the chosen star preselected. Product category is not in the
+ * contract, so the icon is decorative only.
+ */
 export function DishCard({
   item,
   readOnly,
@@ -43,13 +49,25 @@ export function DishCard({
   const { t } = useTranslation();
   const rated = item.rating !== null || completed;
   const canRate = !readOnly && item.canRate && !rated && !pending;
-  const drink = /coffee|kapu|latte|espresso|cappucc|кофе|капуч/i.test(
-    item.name,
+  const name = dishName(item.name);
+  const drink = /coffee|kapu|latte|espresso|cappucc|кофе|капуч|çay|чай/i.test(
+    name,
   );
-  const bakery = /croissant|kruasan|bread|çörək|круас/i.test(item.name);
+  const bakery = /croissant|kruasan|bread|çörək|круас/i.test(name);
   const icon = drink ? Coffee : bakery ? Croissant : Utensils;
-  return (
-    <View style={[styles.card, !item.canRate && !rated && styles.unavailable]}>
+  const price = item.line
+    ? t('fiscal.linePrice', {
+        qty: formatQuantity(item.line.quantityMilli),
+        unit: item.line.unit ?? '',
+        price: formatMoney(item.line.unitPriceMinor),
+        total: formatMoney(item.line.lineTotalMinor),
+      })
+    : t('receipt.quantityPrice', {
+        qty: item.quantity,
+        price: formatMoney(item.unitPriceMinor),
+      });
+  const body = (
+    <>
       <View style={styles.main}>
         <View
           style={[
@@ -72,76 +90,84 @@ export function DishCard({
           )}
         </View>
         <View style={styles.copy}>
-          <Text style={styles.name}>{item.name}</Text>
-          <Text style={styles.sub}>
-            {item.line
-              ? t('fiscal.linePrice', {
-                  qty: formatQuantity(item.line.quantityMilli),
-                  unit: item.line.unit ?? '',
-                  price: formatMoney(item.line.unitPriceMinor),
-                  total: formatMoney(item.line.lineTotalMinor),
-                })
-              : t('receipt.quantityPrice', {
-                  qty: item.quantity,
-                  price: formatMoney(item.unitPriceMinor),
-                })}
-          </Text>
+          <Text style={styles.name}>{name}</Text>
+          <Text style={styles.sub}>{price}</Text>
           {item.line?.cashbackClaimed && (
             <Text style={styles.sub}>{t('fiscal.cashbackClaimed')}</Text>
           )}
         </View>
-      </View>
-      {(item.canRate || rated || pending) && (
-        <View style={styles.rating}>
-          {canRate ? (
-            <OriginalStars
-              value={0}
-              onRate={(value) => onRate(value)}
-              label={t('receipt.rateItem', { name: item.name })}
+        {rated && (
+          <Animated.View entering={checkIn} style={styles.done}>
+            <Icon
+              icon={Check}
+              size="small"
+              color={o.colors.surface}
+              decorative
             />
-          ) : item.rating !== null ? (
-            <OriginalStars value={item.rating} disabled />
-          ) : null}
-          {rated ? (
-            <View style={styles.state}>
-              <Icon
-                icon={Check}
-                size="small"
-                color={o.colors.rated}
-                decorative
-              />
-              <Text style={styles.sub}>{t('receipt.rated')}</Text>
-            </View>
-          ) : pending ? (
-            <Text style={styles.sub} accessibilityLiveRegion="polite">
-              {t('feedback.queued')}
-            </Text>
-          ) : canRate ? (
-            <TouchableOpacity
-              activeOpacity={0.7}
-              accessibilityRole="button"
-              accessibilityLabel={t('receipt.rateItem', { name: item.name })}
-              onPress={() => onRate()}
-              style={styles.rate}
-            >
-              <Text style={styles.rateText}>{t('receipt.rate')}</Text>
-            </TouchableOpacity>
-          ) : null}
+          </Animated.View>
+        )}
+      </View>
+      {canRate ? (
+        <View style={styles.rating}>
+          <OriginalStars
+            value={0}
+            onRate={(value) => onRate(value)}
+            label={t('receipt.rateItem', { name })}
+          />
+          <Text style={styles.hint}>{t('receipt.tapToRate')}</Text>
         </View>
-      )}
+      ) : rated ? (
+        <View style={styles.rating}>
+          {item.rating !== null ? (
+            <OriginalStars value={item.rating} disabled />
+          ) : (
+            <View />
+          )}
+          <Text style={[styles.hint, styles.ratedText]}>
+            {t('receipt.rated')}
+          </Text>
+        </View>
+      ) : pending ? (
+        <View style={styles.state} accessibilityLiveRegion="polite">
+          <Icon icon={Clock} size="small" color={o.colors.pending} decorative />
+          <Text style={styles.sub}>{t('feedback.queued')}</Text>
+        </View>
+      ) : null}
+    </>
+  );
+  return canRate ? (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={t('receipt.rateItem', { name })}
+      onPress={() => onRate()}
+      style={({ pressed }) => [styles.card, pressed && styles.pressed]}
+    >
+      {body}
+    </Pressable>
+  ) : (
+    <View
+      style={[
+        styles.card,
+        rated && styles.cardRated,
+        !item.canRate && !rated && !pending && styles.unavailable,
+      ]}
+    >
+      {body}
     </View>
   );
 }
 const styles = StyleSheet.create({
   card: {
     ...o.dishShadow,
-    padding: spacing[12],
+    padding: spacing[16],
     borderRadius: o.radius.dish,
     borderWidth: 1,
     borderColor: o.colors.border,
     backgroundColor: o.colors.surface,
-    marginBottom: spacing[12],
+    gap: spacing[12],
   },
+  pressed: { transform: [{ scale: 0.985 }], backgroundColor: o.colors.soft },
+  cardRated: { borderColor: o.colors.ratedTint },
   unavailable: { opacity: 0.6, backgroundColor: o.colors.soft },
   main: { flexDirection: 'row', alignItems: 'center', gap: spacing[12] },
   icon: {
@@ -151,29 +177,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  copy: { flex: 1, minWidth: 0, gap: spacing[4] },
-  name: { ...o.type.product, color: o.colors.ink },
+  copy: { flex: 1, minWidth: 0, gap: 2 },
+  name: { ...o.type.product, fontSize: 15, color: o.colors.ink },
   sub: { ...o.type.caption, color: o.colors.secondary },
+  done: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: o.colors.rated,
+  },
   rating: {
-    marginTop: spacing[12],
-    paddingTop: spacing[8],
-    borderTopWidth: 1,
-    borderTopColor: o.colors.border,
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: spacing[4],
+    marginLeft: -spacing[8],
   },
-  rate: {
-    minWidth: o.size.target,
-    minHeight: o.size.target,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: spacing[8],
-    borderRadius: o.radius.badge,
-    backgroundColor: o.colors.soft,
-  },
-  rateText: { ...o.type.caption, fontWeight: '700', color: o.colors.primary },
+  hint: { ...o.type.caption, color: o.colors.secondary },
+  ratedText: { color: o.colors.rated, fontWeight: '700' },
   state: { flexDirection: 'row', alignItems: 'center', gap: spacing[4] },
 });

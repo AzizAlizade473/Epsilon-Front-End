@@ -17,8 +17,8 @@ test('an app update plays the full intro once more', () => {
   expect(chooseIntroVariant({ ...base, seenVersion: '1.1.0' })).toBe('full');
 });
 
-test('later cold starts of the same version get the short intro', () => {
-  expect(chooseIntroVariant({ ...base, seenVersion: '1.2.0' })).toBe('short');
+test('every later cold start plays the full intro too', () => {
+  expect(chooseIntroVariant({ ...base, seenVersion: '1.2.0' })).toBe('full');
 });
 
 test('builds without the native video module never try to play the video', () => {

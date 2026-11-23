@@ -4,8 +4,9 @@ import { requireOptionalNativeModule } from 'expo';
 import { AccessibilityInfo } from 'react-native';
 
 /**
- * full  — the drawn logo intro (first launch after install or update).
- * short — the finished mark with the wordmark reveal (later cold starts).
+ * full  — the drawn logo intro, on every cold start (not on resume from background:
+ *         the boot gate mounts once per app process).
+ * short — the finished mark with the wordmark reveal (builds without the video module).
  * still — Reduce Motion: a calm fade, no movement.
  */
 export type IntroVariant = 'full' | 'short' | 'still';
@@ -25,9 +26,7 @@ export function chooseIntroVariant(input: {
   videoAvailable: boolean;
 }): IntroVariant {
   if (input.reduceMotion) return 'still';
-  if (input.videoAvailable && input.seenVersion !== input.version)
-    return 'full';
-  return 'short';
+  return input.videoAvailable ? 'full' : 'short';
 }
 
 /** Never throws: an unreadable preference just means the short intro. */
