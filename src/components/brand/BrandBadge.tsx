@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image } from 'expo-image';
+import { StyleSheet, View } from 'react-native';
 import Store from 'lucide-react-native/icons/store';
 import { Icon } from '@/components/ui/Icon';
 import { originalReceipts as o } from '@/design/original-receipts';
@@ -25,16 +26,18 @@ export function BrandBadge({
   const [broken, setBroken] = useState(false);
   const brand = matchBrand(name)?.brand;
   const box = { width: size, height: size, borderRadius: size * 0.28 };
+  const inner = Math.round(size * 0.72);
   if (brand?.logo && !broken)
     return (
       // White tile, logo contained with breathing room: original colours and proportions, never cropped.
+      // Exact pixel size (no percentages): Android lays percentage images out at 0×0 inside padded boxes.
       <View style={[styles.box, box, styles.logoTile]}>
         <Image
           source={brand.logo}
-          style={styles.logo}
-          resizeMode="contain"
+          style={{ width: inner, height: inner }}
+          contentFit="contain"
           onError={() => setBroken(true)}
-          accessibilityIgnoresInvertColors
+          accessible={false}
         />
       </View>
     );
@@ -43,8 +46,9 @@ export function BrandBadge({
       <Image
         source={{ uri: logoUrl }}
         style={[styles.box, box]}
+        contentFit="cover"
         onError={() => setBroken(true)}
-        accessibilityIgnoresInvertColors
+        accessible={false}
       />
     );
   if (!fallback) return null;
@@ -60,15 +64,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
-    paddingHorizontal: 4,
   },
   logoTile: {
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: o.colors.border,
-    padding: '14%',
   },
-  logo: { width: '100%', height: '100%' },
   neutral: {
     backgroundColor: o.colors.soft,
     borderWidth: 1,

@@ -1,5 +1,3 @@
-import type { ImageSourcePropType } from 'react-native';
-
 /**
  * Known restaurant chains, matched only on a receipt's establishment name.
  *
@@ -20,7 +18,8 @@ export type Brand = {
   /** Official site, for reference and a future logo service. */
   domain: string;
   /** Absent until the asset is bundled: the badge then shows the neutral mark. */
-  logo?: ImageSourcePropType;
+  /** A bundled asset (require()). */
+  logo?: number;
 };
 
 export const brands: readonly Brand[] = [

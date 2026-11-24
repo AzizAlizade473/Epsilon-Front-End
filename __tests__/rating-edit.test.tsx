@@ -27,16 +27,24 @@ const review: FeedbackReview = {
   updatedAt: null,
 };
 const mockGet = jest.fn(async () => review);
-const mockUpdate = jest.fn(async (_id: string, input: { rating: number }) => ({
-  ...review,
-  ...input,
-  updatedAt: '2026-11-24T10:00:00Z',
-}));
+const mockUpdate = jest.fn(
+  async (
+    _id: string,
+    input: { rating: number; comment?: string; reasonCodes?: string[] },
+  ) => ({
+    ...review,
+    ...input,
+    updatedAt: '2026-11-24T10:00:00Z',
+  }),
+);
 jest.mock('@/services', () => ({
   services: {
     feedback: {
       get: () => mockGet(),
-      update: (id: string, input: { rating: number }) => mockUpdate(id, input),
+      update: (
+        id: string,
+        input: { rating: number; comment?: string; reasonCodes?: string[] },
+      ) => mockUpdate(id, input),
     },
   },
 }));
