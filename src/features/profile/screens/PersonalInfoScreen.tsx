@@ -103,16 +103,26 @@ function PersonalForm({ user }: { user: User }) {
         title={t('profile.birthDate')}
         value={user.birthDate ?? undefined}
       />
-      <Text variant="headline" accessibilityRole="header">
-        {t('profile.identities')}
-      </Text>
-      {user.identities.map((identity) => (
-        <ListRow
-          key={identity.provider}
-          title={t(`profile.provider.${identity.provider}`)}
-          value={identity.email ?? undefined}
-        />
-      ))}
+      {user.email && (
+        <ListRow title={t('auth.emailLabel')} value={user.email} />
+      )}
+      {/* The phone number is shown once, above; only other sign-in methods are listed here. */}
+      {user.identities.some((identity) => identity.provider !== 'phone') && (
+        <>
+          <Text variant="headline" accessibilityRole="header">
+            {t('profile.identities')}
+          </Text>
+          {user.identities
+            .filter((identity) => identity.provider !== 'phone')
+            .map((identity) => (
+              <ListRow
+                key={identity.provider}
+                title={t(`profile.provider.${identity.provider}`)}
+                value={identity.email ?? undefined}
+              />
+            ))}
+        </>
+      )}
       {error && (
         <Text tone="danger" accessibilityRole="alert">
           {error}

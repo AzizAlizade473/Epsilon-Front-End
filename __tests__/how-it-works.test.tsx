@@ -12,7 +12,7 @@ beforeEach(async () => {
   await initializeI18n();
 });
 
-it('explains the restaurant flow, the feedback levels, the per-receipt rule and the BHOS exception', async () => {
+it('explains the current receipt-to-rating flow and its limits, without old pilots', async () => {
   await render(
     <SafeAreaProvider
       initialMetrics={{
@@ -25,12 +25,16 @@ it('explains the restaurant flow, the feedback levels, the per-receipt rule and 
   );
   const h = az.howItWorks;
   expect(screen.getByText(h.headline)).toBeOnTheScreen();
-  expect(screen.getByText(h.r1Title)).toBeOnTheScreen();
-  expect(screen.queryByRole('radio')).toBeNull(); // no Market sector any more
-  expect(screen.getByText(h.levelCashbackTitle)).toBeOnTheScreen();
-  // A 25 ₼ eligible receipt → 0.40 ₼, straight from the central pilot policy.
-  expect(screen.getByText(/25\.00 ₼/)).toBeOnTheScreen();
-  expect(screen.getByText(/0\.40 ₼/)).toBeOnTheScreen();
-  expect(screen.getByText(h.realityBhos)).toBeOnTheScreen();
-  expect(h.realityBhos).toContain('keşbeksiz');
+  for (const name of [
+    'meal',
+    'scan',
+    'import',
+    'rate',
+    'cashback',
+    'keep',
+  ] as const)
+    expect(screen.getByText(h[`${name}Title`])).toBeOnTheScreen();
+  expect(screen.getByText(h.nonPartner)).toBeOnTheScreen();
+  expect(screen.getByText(h.oncePerItem)).toBeOnTheScreen();
+  expect(screen.queryByText(/BHOS|OBA/)).toBeNull();
 });

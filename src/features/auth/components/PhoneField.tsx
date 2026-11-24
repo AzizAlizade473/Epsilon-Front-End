@@ -8,6 +8,9 @@ import { Text } from '@/components/ui/Text';
 import { colors, layout, radius, spacing, typography } from '@/design';
 import { formatPhone } from '../schemas';
 
+/** Phone and e-mail share one leading column, so both inputs start at the same x. */
+export const AUTH_LEADING_WIDTH = 92;
+
 export function PhoneField({
   value,
   onChange,
@@ -78,7 +81,12 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   field: { flex: 1, minWidth: 0 },
-  leading: { flexDirection: 'row', alignItems: 'center', gap: spacing[8] },
+  leading: {
+    width: AUTH_LEADING_WIDTH,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[8],
+  },
   rule: {
     width: layout.borderWidth,
     height: spacing[20],
