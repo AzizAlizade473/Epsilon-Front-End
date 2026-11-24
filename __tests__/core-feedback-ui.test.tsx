@@ -93,7 +93,6 @@ describe('rating and reward presentation', () => {
       return (
         <RatingForm
           itemName="Dish"
-          restaurantName="Restaurant"
           draft={draft}
           onChange={setDraft}
           onSubmit={jest.fn()}
@@ -107,14 +106,17 @@ describe('rating and reward presentation', () => {
     expect(
       screen.getByRole('button', { name: az.feedback.send }),
     ).toBeDisabled();
+    // Details are optional and appear only once a rating is chosen.
+    expect(screen.queryByLabelText(az.feedback.comment)).toBeNull();
+    const radio = screen.getAllByRole('radio')[1]!;
+    await fireEvent.press(radio);
+    expect(screen.getAllByRole('radio')[1]).toBeChecked();
+    expect(screen.getByText(az.rate.label['2'])).toBeOnTheScreen();
+    expect(screen.getByText(az.feedback.reasons.taste)).toBeOnTheScreen();
     await fireEvent.changeText(
       screen.getByLabelText(az.feedback.comment),
       'My comment',
     );
-    const radio = screen.getAllByRole('radio')[1]!;
-    await fireEvent.press(radio);
-    expect(screen.getAllByRole('radio')[1]).toBeChecked();
-    expect(screen.getByText(az.feedback.reasons.taste)).toBeOnTheScreen();
     await fireEvent.press(screen.getAllByRole('radio')[4]!);
     expect(screen.getByText(az.feedback.reasons.taste)).toBeOnTheScreen();
     expect(screen.getByDisplayValue('My comment')).toBeOnTheScreen();

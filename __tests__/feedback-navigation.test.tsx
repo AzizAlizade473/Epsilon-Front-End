@@ -100,25 +100,30 @@ it('blocks arbitrary item IDs and server-ineligible receipts from submission', a
 });
 it('keeps the draft and mutation key across retry and confirms before discarding edits', async () => {
   const alert = jest.spyOn(Alert, 'alert');
+  // A failed save keeps the stars, the words and the key, so the retry cannot double-post.
+  mockSubmit
+    .mockRejectedValueOnce(new Error('offline'))
+    .mockResolvedValue('sent');
   await flow(<RateScreen />);
   expect(mockBeforeClose?.()).toBe(true);
+  await fireEvent.press(screen.getAllByRole('radio')[1]!);
   await fireEvent.changeText(
     screen.getByLabelText(az.feedback.comment),
     'Keep this',
   );
-  await fireEvent.press(screen.getAllByRole('radio')[1]!);
   expect(mockBeforeClose?.()).toBe(false);
   expect(alert).toHaveBeenCalledTimes(1);
   expect(mockBack).not.toHaveBeenCalled();
   await fireEvent.press(screen.getByRole('button', { name: az.feedback.send }));
   expect(screen.getByDisplayValue('Keep this')).toBeOnTheScreen();
+  expect(screen.getByText(az.feedback.saveFailed)).toBeOnTheScreen();
   await fireEvent.press(screen.getByRole('button', { name: az.feedback.send }));
   expect(mockSubmit).toHaveBeenCalledTimes(2);
   expect(mockSubmit.mock.calls[0]?.[0].idempotencyKey).toBe(
     mockSubmit.mock.calls[1]?.[0].idempotencyKey,
   );
 });
-it('locks duplicate taps and dismissal until the submit settles, then replaces the sheet', async () => {
+it('locks duplicate taps and dismissal until the submit settles, then acknowledges it in place', async () => {
   let finish: (result: 'sent') => void = () => undefined;
   mockSubmit.mockImplementation(
     () =>
@@ -133,10 +138,9 @@ it('locks duplicate taps and dismissal until the submit settles, then replaces t
   expect(mockSubmit).toHaveBeenCalledTimes(1);
   expect(mockBeforeClose?.()).toBe(false);
   await act(() => finish('sent'));
-  expect(mockDismissTo).toHaveBeenCalledWith({
-    pathname: '/receipt/[receiptId]',
-    params: { receiptId: mockReceipt.id },
-  });
+  // A saved rating is acknowledged in place; the next dish follows, the sheet stays.
+  expect(screen.getByText(az.rate.thanks)).toBeOnTheScreen();
+  expect(mockDismissTo).not.toHaveBeenCalled();
 });
 it.each(['home', 'receipt'] as const)(
   'leaves confirmation for %s once and never puts rewards in navigation parameters',
@@ -183,3 +187,14 @@ it.each(['home', 'receipt'] as const)(
     }
   },
 );
+it('lets the customer skip dishes they did not try and ends on the meal summary', async () => {
+  await flow(<RateScreen />);
+  const question = (dish: string) => az.rate.question.replace('{{dish}}', dish);
+  expect(screen.getByText(question('Kapuçino'))).toBeOnTheScreen();
+  await fireEvent.press(screen.getByRole('button', { name: az.rate.skip }));
+  expect(screen.getByText(question('Kruasan Badamlı'))).toBeOnTheScreen();
+  await fireEvent.press(screen.getByRole('button', { name: az.rate.skip }));
+  await fireEvent.press(screen.getByRole('button', { name: az.rate.skip }));
+  expect(screen.getByText(az.rate.doneSkipped)).toBeOnTheScreen();
+  expect(mockSubmit).not.toHaveBeenCalled();
+});

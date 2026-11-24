@@ -1,8 +1,5 @@
 import Check from 'lucide-react-native/icons/check';
 import Clock from 'lucide-react-native/icons/clock';
-import Coffee from 'lucide-react-native/icons/coffee';
-import Croissant from 'lucide-react-native/icons/croissant';
-import Utensils from 'lucide-react-native/icons/utensils';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { ReduceMotion, ZoomIn } from 'react-native-reanimated';
@@ -50,11 +47,6 @@ export function DishCard({
   const rated = item.rating !== null || completed;
   const canRate = !readOnly && item.canRate && !rated && !pending;
   const name = dishName(item.name);
-  const drink = /coffee|kapu|latte|espresso|cappucc|кофе|капуч|çay|чай/i.test(
-    name,
-  );
-  const bakery = /croissant|kruasan|bread|çörək|круас/i.test(name);
-  const icon = drink ? Coffee : bakery ? Croissant : Utensils;
   const price = item.line
     ? t('fiscal.linePrice', {
         qty: formatQuantity(item.line.quantityMilli),
@@ -69,26 +61,16 @@ export function DishCard({
   const body = (
     <>
       <View style={styles.main}>
-        <View
-          style={[
-            styles.icon,
-            { backgroundColor: drink ? o.colors.drinkTint : o.colors.foodTint },
-          ]}
-        >
-          {item.id === 'item_01' || item.id === 'item_02' ? (
+        {/* Only a verified product photo; otherwise the dish name carries the row. */}
+        {(item.id === 'item_01' || item.id === 'item_02') && (
+          <View style={styles.icon}>
             <FoodImage
               photo="coffee"
               width={o.size.icon}
               height={o.size.icon}
             />
-          ) : (
-            <Icon
-              icon={icon}
-              color={drink ? o.colors.drink : o.colors.food}
-              decorative
-            />
-          )}
-        </View>
+          </View>
+        )}
         <View style={styles.copy}>
           <Text style={styles.name}>{name}</Text>
           <Text style={styles.sub}>{price}</Text>
@@ -178,7 +160,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   copy: { flex: 1, minWidth: 0, gap: 2 },
-  name: { ...o.type.product, fontSize: 15, color: o.colors.ink },
+  name: {
+    ...o.type.product,
+    fontSize: 16,
+    lineHeight: 22,
+    color: o.colors.ink,
+  },
   sub: { ...o.type.caption, color: o.colors.secondary },
   done: {
     width: 28,

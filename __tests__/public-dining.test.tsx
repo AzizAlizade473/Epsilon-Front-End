@@ -79,16 +79,12 @@ it('does not substitute sample menus or ratings in production', async () => {
 it('only invites feedback on verified purchases that are neither completed nor queued', async () => {
   client.setQueryData(queryKeys.receipt.detail(mockReceipt.id), mockReceipt);
   await page(<WaitingDishes receiptIds={[mockReceipt.id]} />);
+  // One card for the visit, listing only the dish still waiting for an opinion.
   await waitFor(() =>
-    expect(
-      screen.getByRole('button', {
-        name: az.premium.openPurchased.replace(
-          '{{name}}',
-          mockReceipt.items[2]!.name,
-        ),
-      }),
-    ).toBeOnTheScreen(),
+    expect(screen.getByText(mockReceipt.items[2]!.name)).toBeOnTheScreen(),
   );
+  expect(screen.queryByText(mockReceipt.items[0]!.name)).toBeNull();
+  expect(screen.queryByText(mockReceipt.items[1]!.name)).toBeNull();
   expect(screen.getAllByRole('button')).toHaveLength(1);
   expect(screen.queryByRole('radiogroup')).toBeNull();
 });

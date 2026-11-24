@@ -69,7 +69,7 @@ afterEach(() => client.clear());
 it('prioritizes purchased-dish ratings and bills ahead of activity', async () => {
   await home();
   await waitFor(() =>
-    expect(screen.getAllByText(az.homeFocus.rateNow).length).toBeGreaterThan(0),
+    expect(screen.getAllByText(az.home.rateMeal).length).toBeGreaterThan(0),
   );
   const headings = screen
     .getAllByRole('header')

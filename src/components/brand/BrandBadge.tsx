@@ -1,15 +1,14 @@
 import { useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import Utensils from 'lucide-react-native/icons/utensils';
+import Store from 'lucide-react-native/icons/store';
 import { Icon } from '@/components/ui/Icon';
-import { Text } from '@/components/ui/Text';
 import { originalReceipts as o } from '@/design/original-receipts';
 import { matchBrand } from '@/lib/brands';
 
 /**
- * One merchant identity everywhere: a recognised chain's logo (or its name in
- * the brand colours until an authorised logo file exists), else the server's
- * logo, else the restaurant icon. A failing image falls back to the icon.
+ * One merchant identity everywhere: a recognised chain's authorised logo file,
+ * else the server's logo, else a neutral shop mark. Never a made-up brand
+ * badge: a chain without a logo file gets the neutral mark too.
  */
 export function BrandBadge({
   name,
@@ -33,29 +32,6 @@ export function BrandBadge({
         accessibilityIgnoresInvertColors
       />
     );
-  if (brand)
-    return (
-      <View
-        style={[styles.box, box, { backgroundColor: brand.color }]}
-        accessibilityElementsHidden
-        importantForAccessibility="no-hide-descendants"
-      >
-        <Text
-          numberOfLines={1}
-          adjustsFontSizeToFit
-          minimumFontScale={0.5}
-          style={[
-            styles.word,
-            {
-              color: brand.ink,
-              fontSize: size * (brand.name.length > 4 ? 0.22 : 0.3),
-            },
-          ]}
-        >
-          {brand.name}
-        </Text>
-      </View>
-    );
   if (logoUrl && !broken)
     return (
       <Image
@@ -66,8 +42,8 @@ export function BrandBadge({
       />
     );
   return (
-    <View style={[styles.box, box, { backgroundColor: o.colors.foodTint }]}>
-      <Icon icon={Utensils} color={o.colors.food} decorative />
+    <View style={[styles.box, box, styles.neutral]}>
+      <Icon icon={Store} color={o.colors.secondary} decorative />
     </View>
   );
 }
@@ -79,5 +55,9 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     paddingHorizontal: 4,
   },
-  word: { fontWeight: '800', letterSpacing: -0.2, textAlign: 'center' },
+  neutral: {
+    backgroundColor: o.colors.soft,
+    borderWidth: 1,
+    borderColor: o.colors.border,
+  },
 });

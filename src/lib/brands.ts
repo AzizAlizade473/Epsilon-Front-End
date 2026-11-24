@@ -9,16 +9,14 @@ import type { ImageSourcePropType } from 'react-native';
  * "MY KFC KEBAB") gets no brand. Brand identity says nothing about whether a
  * restaurant is an Epsilon partner: that comes only from the server.
  *
- * `logo` holds an official, authorised asset once Epsilon has one; until then
- * the badge draws the brand's name in its colours (no trademark artwork copied).
+ * `logo` holds an official, authorised asset once Epsilon has one; until then the
+ * badge shows a neutral mark (no made-up brand artwork).
  */
 export type Brand = {
   id: string;
   name: string;
   /** Upper-case, accents kept; compared after normalising the receipt name the same way. */
   aliases: readonly string[];
-  color: string;
-  ink: string;
   logo?: ImageSourcePropType;
 };
 
@@ -27,36 +25,26 @@ export const brands: readonly Brand[] = [
     id: 'kfc',
     name: 'KFC',
     aliases: ['KFC'],
-    color: '#E4002B',
-    ink: '#FFFFFF',
   },
   {
     id: 'mcdonalds',
     name: "McDonald's",
     aliases: ["MCDONALD'S", 'MCDONALDS', "MC DONALD'S", 'MC DONALDS'],
-    color: '#DA291C',
-    ink: '#FFC72C',
   },
   {
     id: 'burger-king',
     name: 'Burger King',
     aliases: ['BURGER KING'],
-    color: '#F5EBDC',
-    ink: '#D62300',
   },
   {
     id: 'pizza-hut',
     name: 'Pizza Hut',
     aliases: ['PIZZA HUT'],
-    color: '#EE3A43',
-    ink: '#FFFFFF',
   },
   {
     id: 'papa-johns',
     name: "Papa John's",
     aliases: ["PAPA JOHN'S", 'PAPA JOHNS'],
-    color: '#2D5A27',
-    ink: '#FFFFFF',
   },
 ];
 

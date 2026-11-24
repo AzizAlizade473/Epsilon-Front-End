@@ -211,7 +211,15 @@
     "exploreTitle": "Yeməkləri kəşf et",
     "kindDish": "Yemək",
     "exploreNote": "Bu restoran qiymətləndirmələri demo məlumatdır.",
-    "productsNote": "Nümunə məhsullar: hələ market çeki yoxlana bilmir. Qiymətiniz bu cihazda qalır, keşbek vermir və alışa bağlı deyil."
+    "productsNote": "Nümunə məhsullar: hələ market çeki yoxlana bilmir. Qiymətiniz bu cihazda qalır, keşbek vermir və alışa bağlı deyil.",
+    "visitA11y_one": "{{place}}, qiymətləndiriləcək {{count}} yemək",
+    "visitA11y_other": "{{place}}, qiymətləndiriləcək {{count}} yemək",
+    "toRate_one": "qiymətləndiriləcək {{count}} yemək",
+    "toRate_other": "qiymətləndiriləcək {{count}} yemək",
+    "more_one": "və daha {{count}}",
+    "more_other": "və daha {{count}}",
+    "rateMeal": "Yeməyinizi qiymətləndirin",
+    "continue": "Davam edin"
   },
   "wallet": {
     "minus": "mənfi ",
@@ -318,9 +326,9 @@
     "partnerTitle": "Epsilon tərəfdaşı",
     "partnerBody": "Yeməklərinizi qiymətləndirin və uyğun keşbek qazanın.",
     "partnerBodyAmount": "Yeməklərinizi qiymətləndirin və uyğun keşbek qazanın: {{amount}}-dək.",
-    "nonPartnerTitle": "Yeməklərinizi qiymətləndirə bilərsiniz",
+    "nonPartnerTitle": "Dadduğunuz yeməkləri qiymətləndirin",
     "nonPartnerBody": "Bu restoran hələ Epsilon-a qoşulmayıb, ona görə burada keşbek yoxdur.",
-    "rateTitle": "Yeməklərinizi qiymətləndirin",
+    "rateTitle": "Yeməyiniz necə idi?",
     "tapToRate": "Qiymətləndirmək üçün toxunun",
     "doneTitle": "Bütün yeməklər qiymətləndirildi",
     "doneBody": "Təşəkkür edirik. Rəyiniz restorana çatacaq.",
@@ -359,7 +367,7 @@
     "neutralReward": "Keşbek rəyinizin müsbət və ya mənfi olmasından asılı deyil.",
     "queued": "Göndərilir…",
     "saved": "Rəyiniz bu cihazda saxlanılıb və avtomatik yenidən göndəriləcək.",
-    "send": "Rəyi göndər",
+    "send": "Fikrimi paylaş",
     "thanks": "Təşəkkürlər!",
     "sent": "Rəyiniz göndərildi.",
     "rewardConfirmed": "Keşbek balansınıza əlavə olundu",
@@ -538,7 +546,7 @@
     "reviewCount_other": "{{count}} rəy",
     "comments": "Qonaqların fikirləri",
     "guest": "Nümunə qonaq",
-    "waiting": "Fikrinizi gözləyənlər",
+    "waiting": "Yeməyiniz necə idi?",
     "waitingHelp": "Aldığınız yeməklər. Səmimi fikriniz.",
     "openPurchased": "Alınmış yeməyi aç: {{name}}",
     "openBill": "Çeki aç",
@@ -911,5 +919,31 @@
       "finding": "Yeməkləriniz tapılır…",
       "ready": "Hər şey hazırlanır…"
     }
+  },
+  "rate": {
+    "eyebrow": "Səmimi fikriniz",
+    "question": "{{dish}} necə idi?",
+    "sub": "Fikrinizi bilmək istərdik.",
+    "label": {
+      "1": "Mənlik deyil",
+      "2": "Daha yaxşı ola bilərdi",
+      "3": "Normal idi",
+      "4": "Çox bəyəndim",
+      "5": "Əla idi"
+    },
+    "detailTitle": "Nə diqqətinizi çəkdi? (istəyə bağlı)",
+    "comment": "Əlavə etmək istədiyiniz bir şey var?",
+    "welcome": "Yaxşı və ya pis, hər fikir xoşdur.",
+    "skip": "Bu yeməyi dadmamısınız? Hələlik keçin",
+    "position": "{{n}} / {{total}}",
+    "yourMeal": "Yeməyiniz · {{date}}",
+    "thanks": "Təcrübənizi paylaşdığınız üçün təşəkkürlər.",
+    "thanksSaved": "Rəyiniz yadda saxlanıldı.",
+    "thanksQueued": "Telefonda saxlanıldı. İnternet olanda göndərəcəyik.",
+    "doneTitle": "Yeməyiniz yadda saxlanıldı",
+    "doneSkipped": "Bu dəfə qiymət verilmədi",
+    "doneBody_one": "{{place}} yerində {{count}} yemək qiymətləndirdiniz.",
+    "doneBody_other": "{{place}} yerində {{count}} yemək qiymətləndirdiniz.",
+    "viewMeal": "Yeməyə bax"
   }
 }

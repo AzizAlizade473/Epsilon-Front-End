@@ -14,8 +14,9 @@ import { BrandBadge } from '@/components/brand/BrandBadge';
 import { displayMerchantName } from '@/lib/brands';
 import { dishName } from '@/lib/dish-name';
 import { premium } from '@/design/premium';
+import { formatDate } from '@/lib/date';
 
-/** Only actual verified purchased items can appear here. Opens the bill first. */
+/** Only actual verified purchased items appear here, grouped by visit; a visit opens its first dish to rate. */
 export function WaitingDishes({
   receiptIds,
   embedded = false,
@@ -24,7 +25,7 @@ export function WaitingDishes({
   /** Inside Home's combined section: the parent owns the heading. */
   embedded?: boolean;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const library = useReceiptLibrary(receiptIds);
   const feedback = useFeedback();
@@ -43,7 +44,21 @@ export function WaitingDishes({
             )
             .map((item) => ({ receipt, item })),
     )
-    .slice(0, 6);
+    .slice(0, 12);
+  // One card per restaurant visit: the meal, not a list of chores.
+  const visits = library.receipts
+    .map((receipt) => ({
+      receipt,
+      dishes: waiting
+        .filter((entry) => entry.receipt.id === receipt.id)
+        .map((entry) => entry.item),
+      started: receipt.items.some(
+        (item) =>
+          item.rating !== null || feedback.completedIds.includes(item.id),
+      ),
+    }))
+    .filter((visit) => visit.dishes.length > 0)
+    .slice(0, 4);
   const purchased = library.receipts
     .filter((receipt) => receipt.status === 'verified')
     .flatMap((receipt) =>
@@ -94,57 +109,82 @@ export function WaitingDishes({
           </View>
         </View>
       )}
-      {waiting.length ? (
+      {visits.length ? (
         <View style={styles.rail}>
-          {waiting.map(({ receipt, item }) => (
-            <PressSurface
-              key={item.id}
-              accessibilityLabel={t('premium.openPurchased', {
-                name: dishName(item.name),
-              })}
-              onPress={() =>
-                router.push({
-                  pathname: '/receipt/[receiptId]',
-                  params: { receiptId: receipt.id },
-                })
-              }
-              contentStyle={styles.card}
-              spring
-            >
-              {item.id === 'item_01' || item.id === 'item_02' ? (
-                <FoodImage
-                  photo="coffee"
-                  width={premium.rowThumb}
-                  height={premium.rowThumb}
-                />
-              ) : (
-                <BrandBadge
-                  name={receipt.restaurant.name}
-                  logoUrl={receipt.restaurant.logoUrl}
-                  size={premium.rowThumb}
-                />
-              )}
-              <View style={styles.copy}>
-                <Text variant="headline" numberOfLines={1}>
-                  {dishName(item.name)}
-                </Text>
-                <Text variant="caption" tone="secondary" numberOfLines={1}>
-                  {displayMerchantName(receipt.restaurant.name)}
-                </Text>
-              </View>
-              <View style={styles.open}>
-                <Text variant="caption" tone="inverse">
-                  {t('homeFocus.rateNow')}
-                </Text>
-                <Icon
-                  icon={ArrowUpRight}
-                  size="small"
-                  color={colors.surface}
-                  decorative
-                />
-              </View>
-            </PressSurface>
-          ))}
+          {visits.map(({ receipt, dishes, started }) => {
+            const merchant =
+              receipt.fiscal?.merchant.objectName ?? receipt.restaurant.name;
+            const place = displayMerchantName(merchant);
+            return (
+              <PressSurface
+                key={receipt.id}
+                accessibilityLabel={t('home.visitA11y', {
+                  place,
+                  count: dishes.length,
+                })}
+                onPress={() =>
+                  router.push({
+                    pathname: '/rate/[receiptItemId]',
+                    params: {
+                      receiptItemId: dishes[0]!.id,
+                      receiptId: receipt.id,
+                    },
+                  })
+                }
+                contentStyle={styles.visit}
+                spring
+              >
+                <View style={styles.visitHead}>
+                  {dishes.some((d) => d.id === 'item_01') ? (
+                    <FoodImage
+                      photo="coffee"
+                      width={premium.rowThumb}
+                      height={premium.rowThumb}
+                    />
+                  ) : (
+                    <BrandBadge
+                      name={merchant}
+                      logoUrl={receipt.restaurant.logoUrl}
+                      size={premium.rowThumb}
+                    />
+                  )}
+                  <View style={styles.copy}>
+                    <Text variant="headline" numberOfLines={1}>
+                      {place}
+                    </Text>
+                    <Text variant="caption" tone="secondary">
+                      {formatDate(receipt.issuedAt, { locale: i18n.language }) +
+                        ' · ' +
+                        t('home.toRate', { count: dishes.length })}
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.dishes}>
+                  {dishes.slice(0, 3).map((item) => (
+                    <Text key={item.id} variant="callout" numberOfLines={2}>
+                      {dishName(item.name)}
+                    </Text>
+                  ))}
+                  {dishes.length > 3 && (
+                    <Text variant="caption" tone="secondary">
+                      {t('home.more', { count: dishes.length - 3 })}
+                    </Text>
+                  )}
+                </View>
+                <View style={styles.open}>
+                  <Text variant="callout" tone="inverse">
+                    {t(started ? 'home.continue' : 'home.rateMeal')}
+                  </Text>
+                  <Icon
+                    icon={ArrowUpRight}
+                    size="small"
+                    color={colors.surface}
+                    decorative
+                  />
+                </View>
+              </PressSurface>
+            );
+          })}
         </View>
       ) : library.isPending ? (
         <DetailRowSkeleton />
@@ -204,15 +244,19 @@ const styles = StyleSheet.create({
   },
   accent: { color: colors.brand.primary },
   rail: { gap: spacing[8] },
-  card: {
-    padding: spacing[8],
-    paddingRight: spacing[12],
+  visit: {
+    padding: spacing[16],
     backgroundColor: premium.canvas,
     borderRadius: radius[20],
-    flexDirection: 'row',
     gap: spacing[12],
-    alignItems: 'center',
-    justifyContent: 'flex-start',
+    alignItems: 'stretch',
+  },
+  visitHead: { flexDirection: 'row', gap: spacing[12], alignItems: 'center' },
+  dishes: {
+    gap: spacing[4],
+    paddingLeft: spacing[12],
+    borderLeftWidth: 2,
+    borderLeftColor: colors.brand.tint,
   },
   copy: { flex: 1, minWidth: 0, gap: spacing[4] },
   open: {
@@ -221,7 +265,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.brand.primary,
     borderRadius: radius.pill,
-    minHeight: spacing[32],
-    paddingHorizontal: spacing[12],
+    minHeight: 40,
+    paddingHorizontal: spacing[16],
+    alignSelf: 'flex-start',
   },
 });

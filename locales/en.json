@@ -211,7 +211,15 @@
     "exploreTitle": "Explore dishes",
     "kindDish": "Dish",
     "exploreNote": "These restaurant ratings are demo data.",
-    "productsNote": "Sample products: supermarket receipts can’t be verified yet. Your rating stays on this device, earns no cashback and isn’t linked to a purchase."
+    "productsNote": "Sample products: supermarket receipts can’t be verified yet. Your rating stays on this device, earns no cashback and isn’t linked to a purchase.",
+    "visitA11y_one": "{{place}}, {{count}} dish to rate",
+    "visitA11y_other": "{{place}}, {{count}} dishes to rate",
+    "toRate_one": "{{count}} dish to rate",
+    "toRate_other": "{{count}} dishes to rate",
+    "more_one": "and {{count}} more",
+    "more_other": "and {{count}} more",
+    "rateMeal": "Rate your meal",
+    "continue": "Continue rating"
   },
   "wallet": {
     "minus": "minus ",
@@ -318,9 +326,9 @@
     "partnerTitle": "Epsilon partner",
     "partnerBody": "Rate your dishes to earn eligible cashback.",
     "partnerBodyAmount": "Rate your dishes to earn eligible cashback: up to {{amount}}.",
-    "nonPartnerTitle": "You can rate your dishes",
+    "nonPartnerTitle": "Rate the dishes you tried",
     "nonPartnerBody": "This restaurant hasn't joined Epsilon yet, so cashback isn't available here.",
-    "rateTitle": "Rate your dishes",
+    "rateTitle": "How was your meal?",
     "tapToRate": "Tap to rate",
     "doneTitle": "All dishes rated",
     "doneBody": "Thank you. Your feedback goes to the restaurant.",
@@ -359,7 +367,7 @@
     "neutralReward": "Cashback does not depend on whether your rating is positive or negative.",
     "queued": "Sending…",
     "saved": "Your rating is saved on this device and will be retried automatically.",
-    "send": "Send rating",
+    "send": "Share your thoughts",
     "thanks": "Thank you!",
     "sent": "Your feedback has been sent.",
     "rewardConfirmed": "Cashback credited",
@@ -538,7 +546,7 @@
     "reviewCount_other": "{{count}} reviews",
     "comments": "What diners say",
     "guest": "Sample diner",
-    "waiting": "Waiting for your feedback",
+    "waiting": "How was your meal?",
     "waitingHelp": "Your purchased dishes. Your honest opinion.",
     "openPurchased": "Open purchased dish: {{name}}",
     "openBill": "Open bill",
@@ -911,5 +919,31 @@
       "finding": "Finding your dishes…",
       "ready": "Getting everything ready…"
     }
+  },
+  "rate": {
+    "eyebrow": "Your honest opinion",
+    "question": "How was your {{dish}}?",
+    "sub": "We'd love to know what you thought.",
+    "label": {
+      "1": "Not for me",
+      "2": "Could be better",
+      "3": "It was okay",
+      "4": "Really enjoyed it",
+      "5": "Loved it"
+    },
+    "detailTitle": "What stood out? (optional)",
+    "comment": "Anything you'd like to add?",
+    "welcome": "Good or bad, every opinion is welcome.",
+    "skip": "Didn't try this dish? Skip for now",
+    "position": "{{n}} of {{total}}",
+    "yourMeal": "Your meal · {{date}}",
+    "thanks": "Thanks for sharing your experience.",
+    "thanksSaved": "Your feedback has been saved.",
+    "thanksQueued": "Saved on this phone. We'll send it when you're back online.",
+    "doneTitle": "Your meal is saved",
+    "doneSkipped": "Nothing rated this time",
+    "doneBody_one": "You rated {{count}} dish at {{place}}.",
+    "doneBody_other": "You rated {{count}} dishes at {{place}}.",
+    "viewMeal": "View meal"
   }
 }
