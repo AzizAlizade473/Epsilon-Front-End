@@ -84,7 +84,7 @@ export default function AuthEntryScreen({ intent }: { intent: AuthIntent }) {
           />
         </Rise>
         <AuthConflictAction reason={google.conflict} />
-        <Rise order={3}>
+        <Rise order={3} style={styles.fields}>
           <PhoneField
             appearance="underline"
             autoFocus={false}
@@ -121,6 +121,7 @@ export default function AuthEntryScreen({ intent }: { intent: AuthIntent }) {
 }
 
 const styles = StyleSheet.create({
+  fields: { gap: spacing[20] },
   bleed: { padding: 0, gap: 0 },
   topRow: {
     flexDirection: 'row',
