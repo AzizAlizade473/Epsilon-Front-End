@@ -36,9 +36,12 @@ export function RateScreen() {
   const feedback = useFeedback();
   const cached = client
     .getQueriesData<Receipt>({ queryKey: queryKeys.receipt.all })
-    .flatMap(([, data]) => {
-      return data?.items.some((item) => item.id === itemId) ? [data] : [];
-    })[0];
+    // Only receipt details: ['receipt', 'list'] holds an array of ids, not a receipt.
+    .flatMap(([key, data]) =>
+      key[1] === 'detail' && data?.items.some((item) => item.id === itemId)
+        ? [data]
+        : [],
+    )[0];
   const receiptId =
     typeof params.receiptId === 'string'
       ? params.receiptId

@@ -83,6 +83,15 @@ async function flow(child: React.ReactNode) {
     </SafeAreaProvider>,
   );
 }
+it('opens next to a cached receipt list (ids, not receipts) without crashing', async () => {
+  // Regression: live builds cache ['receipt', 'list'] as string[]; reading .items of it threw a TypeError.
+  client.setQueryData(queryKeys.receipt.list, [mockReceipt.id]);
+  await flow(<RateScreen />);
+  expect(screen.getAllByRole('radio')).toHaveLength(5);
+  mockParams = { receiptItemId: 'item_01' } as typeof mockParams;
+  await flow(<RateScreen />);
+  expect(screen.getAllByRole('radio').length).toBeGreaterThan(0);
+});
 it('blocks arbitrary item IDs and server-ineligible receipts from submission', async () => {
   mockParams.receiptItemId = 'not-purchased';
   await flow(<RateScreen />);
