@@ -20,6 +20,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   android: {
     package: process.env.EXPO_PUBLIC_ANDROID_PACKAGE || 'com.epsilonup.app',
+    // Push (FCM): EAS builds get the Firebase file as the GOOGLE_SERVICES_JSON secret variable.
+    googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
     adaptiveIcon: {
       foregroundImage: './assets/brand/app-icon.png',
       backgroundColor: '#FFFFFF',
