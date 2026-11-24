@@ -112,13 +112,16 @@ describe('rating and reward presentation', () => {
     await fireEvent.press(radio);
     expect(screen.getAllByRole('radio')[1]).toBeChecked();
     expect(screen.getByText(az.rate.label['2'])).toBeOnTheScreen();
-    expect(screen.getByText(az.feedback.reasons.taste)).toBeOnTheScreen();
+    // Two stars: the comments about what could have been better.
+    expect(screen.getByText(az.rate.qc.needed_more_flavor)).toBeOnTheScreen();
     await fireEvent.changeText(
       screen.getByLabelText(az.feedback.comment),
       'My comment',
     );
     await fireEvent.press(screen.getAllByRole('radio')[4]!);
-    expect(screen.getByText(az.feedback.reasons.taste)).toBeOnTheScreen();
+    // Five stars: a different set, about what made it special.
+    expect(screen.getByText(az.rate.qc.amazing_taste)).toBeOnTheScreen();
+    expect(screen.queryByText(az.rate.qc.needed_more_flavor)).toBeNull();
     expect(screen.getByDisplayValue('My comment')).toBeOnTheScreen();
     expect(
       screen.getByRole('button', { name: az.feedback.send }),

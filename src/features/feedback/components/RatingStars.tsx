@@ -11,7 +11,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import Star from 'lucide-react-native/icons/star';
 import { colors } from '@/design';
-import { originalReceipts as o } from '@/design/original-receipts';
 import { decorativeSvgProps } from '@/lib/decorative-svg';
 
 const SIZE = 44;
@@ -66,8 +65,8 @@ function RatingStar({
         <Star
           size={SIZE}
           strokeWidth={1.25}
-          color={filled ? colors.brand.primary : o.colors.secondary}
-          fill={filled ? colors.brand.primary : 'transparent'}
+          color={filled ? colors.rating.filled : colors.rating.outline}
+          fill={filled ? colors.rating.filled : 'transparent'}
           {...decorativeSvgProps}
         />
       </Animated.View>

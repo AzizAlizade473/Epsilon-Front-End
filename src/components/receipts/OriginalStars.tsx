@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import Star from 'lucide-react-native/icons/star';
+import { colors } from '@/design';
 import { originalReceipts as o } from '@/design/original-receipts';
 import { decorativeSvgProps } from '@/lib/decorative-svg';
 
@@ -32,8 +33,8 @@ export function OriginalStars({
           <Star
             size={large ? o.size.modalStar : o.size.star}
             strokeWidth={1.5}
-            color={i <= value ? o.colors.ink : o.colors.secondary}
-            fill={i <= value ? o.colors.star : o.colors.emptyStar}
+            color={i <= value ? colors.rating.filled : colors.rating.outline}
+            fill={i <= value ? colors.rating.filled : colors.rating.empty}
             {...decorativeSvgProps}
           />
         );

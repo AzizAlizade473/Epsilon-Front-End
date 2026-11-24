@@ -1,7 +1,5 @@
-import { decorativeSvgProps } from '@/lib/decorative-svg';
 import { FlashList } from '@shopify/flash-list';
 import MessageSquare from 'lucide-react-native/icons/message-square';
-import Star from 'lucide-react-native/icons/star';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
@@ -15,10 +13,14 @@ import { EmptyState } from '@/components/feedback/EmptyState';
 import { ErrorState } from '@/components/feedback/ErrorState';
 import { DetailRowSkeleton } from '@/components/feedback/DetailRowSkeleton';
 import { MockDataNotice } from '@/components/feedback/MockDataNotice';
-import { colors, layout, spacing } from '@/design';
+import { colors, layout, radius, spacing } from '@/design';
 import { useReviews } from '@/hooks/useProfile';
 import { BrandBadge } from '@/components/brand/BrandBadge';
 import { dishName } from '@/lib/dish-name';
+import { OriginalStars } from '@/components/receipts/OriginalStars';
+import { PressSurface } from '@/components/ui/PressSurface';
+import { displayMerchantName } from '@/lib/brands';
+import { reasonLabelKey } from '@/lib/quick-comments';
 import { formatDate } from '@/lib/date';
 
 export default function ReviewsScreen() {
@@ -82,38 +84,51 @@ export default function ReviewsScreen() {
               <View style={styles.titleRow}>
                 <BrandBadge
                   name={item.restaurantName}
-                  size={28}
-                  fallback={false}
+                  logoUrl={item.restaurantLogoUrl}
+                  size={40}
                 />
-                <Text variant="headline" style={styles.title}>
-                  {dishName(item.dishName)}
-                </Text>
+                <View style={styles.title}>
+                  <Text variant="headline">{dishName(item.dishName)}</Text>
+                  <Text variant="caption" tone="secondary">
+                    {displayMerchantName(item.restaurantName) +
+                      ' · ' +
+                      formatDate(item.createdAt, { locale: i18n.language }) +
+                      (item.updatedAt ? ' · ' + t('rate.edited') : '')}
+                  </Text>
+                </View>
+                <PressSurface
+                  accessibilityRole="button"
+                  accessibilityLabel={t('rate.editA11y', {
+                    dish: dishName(item.dishName),
+                  })}
+                  onPress={() =>
+                    router.push({
+                      pathname: '/rate/[receiptItemId]',
+                      params: {
+                        receiptItemId: item.receiptItemId,
+                        receiptId: item.receiptId,
+                        feedbackId: item.feedbackId,
+                      },
+                    })
+                  }
+                  contentStyle={styles.edit}
+                >
+                  <Text variant="callout" style={styles.editText}>
+                    {t('rate.edit')}
+                  </Text>
+                </PressSurface>
               </View>
-              <Text variant="caption">
-                {item.restaurantName} ·{' '}
-                {formatDate(item.createdAt, { locale: i18n.language })}
-              </Text>
-              <View
-                accessible
-                accessibilityLabel={t('feedback.ratingValue', {
-                  count: item.rating,
-                })}
-                style={styles.stars}
-              >
-                {[1, 2, 3, 4, 5].map((score) => (
-                  <Star
-                    key={score}
-                    {...decorativeSvgProps}
-                    size={spacing[16]}
-                    strokeWidth={layout.iconStrokeWidth}
-                    color={colors.ink}
-                    fill={
-                      score <= item.rating ? colors.ink : colors.transparent
-                    }
-                  />
-                ))}
-              </View>
-              {item.comment && <Text numberOfLines={2}>{item.comment}</Text>}
+              <OriginalStars value={item.rating} disabled />
+              {item.reasonCodes.length > 0 && (
+                <View style={styles.chips}>
+                  {item.reasonCodes.map((code) => (
+                    <View key={code} style={styles.chip}>
+                      <Text variant="caption">{t(reasonLabelKey(code))}</Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+              {item.comment && <Text>{item.comment}</Text>}
             </View>
           )}
           ListEmptyComponent={
@@ -150,13 +165,25 @@ export default function ReviewsScreen() {
   );
 }
 const styles = StyleSheet.create({
-  titleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[8] },
-  title: { flex: 1 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[12] },
+  title: { flex: 1, gap: 2 },
+  edit: {
+    minHeight: layout.tapTarget,
+    paddingHorizontal: spacing[12],
+    justifyContent: 'center',
+  },
+  editText: { color: colors.brand.primary },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[8] },
+  chip: {
+    paddingHorizontal: spacing[12],
+    paddingVertical: spacing[4],
+    borderRadius: radius.pill,
+    backgroundColor: colors.brand.tint,
+  },
   row: {
     paddingVertical: spacing[16],
     borderBottomColor: colors.border,
     borderBottomWidth: layout.hairlineWidth,
     gap: spacing[8],
   },
-  stars: { flexDirection: 'row', gap: spacing[4] },
 });

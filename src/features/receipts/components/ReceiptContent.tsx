@@ -86,6 +86,7 @@ export function ReceiptContent({
   pendingIds,
   completedIds,
   onRate,
+  onEdit,
   onHome,
   onClose,
   onScanAnother,
@@ -95,6 +96,7 @@ export function ReceiptContent({
   pendingIds: readonly string[];
   completedIds: readonly string[];
   onRate: (item: ReceiptItem, rating?: number) => void;
+  onEdit?: (item: ReceiptItem) => void;
   onHome: () => void;
   onClose?: () => void;
   onScanAnother?: () => void;
@@ -249,6 +251,7 @@ export function ReceiptContent({
               onRate={(rating) =>
                 rating === undefined ? onRate(item) : onRate(item, rating)
               }
+              {...(onEdit ? { onEdit: () => onEdit(item) } : {})}
             />
           </Animated.View>
         ))}

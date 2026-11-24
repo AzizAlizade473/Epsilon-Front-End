@@ -35,11 +35,16 @@ it('reads canonical profile and review data and rejects reward-only records as r
     items: [
       {
         feedbackId: 'fb',
+        receiptId: 'r1',
+        receiptItemId: 'i1',
         dishName: 'Dish',
         restaurantName: 'Demo',
+        restaurantLogoUrl: null,
         rating: 1,
         comment: null,
+        reasonCodes: [],
         createdAt: new Date().toISOString(),
+        updatedAt: null,
       },
     ],
     nextCursor: null,

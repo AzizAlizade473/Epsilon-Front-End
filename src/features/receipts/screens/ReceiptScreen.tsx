@@ -81,6 +81,17 @@ export function ReceiptScreen() {
                 params: { receiptItemId: item.id, receiptId: id },
               });
             }}
+            onEdit={(item) => {
+              if (!item.feedbackId) return;
+              router.push({
+                pathname: '/rate/[receiptItemId]',
+                params: {
+                  receiptItemId: item.id,
+                  receiptId: id,
+                  feedbackId: item.feedbackId,
+                },
+              });
+            }}
             onHome={() => {
               router.dismissAll();
               router.replace('/home');

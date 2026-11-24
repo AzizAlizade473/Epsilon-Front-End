@@ -377,11 +377,16 @@ export const mockFeedbackService: FeedbackService = {
     mockRatings.set(item.id, input.rating);
     mockReviews.unshift({
       feedbackId: result.feedbackId,
+      receiptId: mockReceipt.id,
+      receiptItemId: item.id,
       dishName: item.name,
       restaurantName: mockReceipt.restaurant.name,
+      restaurantLogoUrl: null,
       rating: input.rating,
       comment: input.comment ?? null,
+      reasonCodes: input.reasonCodes ?? [],
       createdAt: new Date().toISOString(),
+      updatedAt: null,
     });
     if (options?.idempotencyKey)
       mockFeedbackResults.set(options.idempotencyKey, result);
@@ -401,6 +406,43 @@ export const mockFeedbackService: FeedbackService = {
       nextCursor:
         start + limit < mockReviews.length ? String(start + limit) : null,
     };
+  },
+
+  async get(feedbackId) {
+    await simulateDelay();
+    checkMockScenario();
+    const review = mockReviews.find((entry) => entry.feedbackId === feedbackId);
+    if (!review)
+      throw new ApiError({
+        code: 'FEEDBACK_NOT_FOUND',
+        message: 'Unknown mock review',
+        status: 404,
+      });
+    return review;
+  },
+
+  async update(feedbackId, input) {
+    await simulateDelay();
+    checkMockScenario('feedback');
+    const index = mockReviews.findIndex(
+      (entry) => entry.feedbackId === feedbackId,
+    );
+    if (index < 0)
+      throw new ApiError({
+        code: 'FEEDBACK_NOT_FOUND',
+        message: 'Unknown mock review',
+        status: 404,
+      });
+    const updated: FeedbackReview = {
+      ...mockReviews[index]!,
+      rating: input.rating,
+      comment: input.comment?.trim() || null,
+      reasonCodes: input.reasonCodes ?? [],
+      updatedAt: new Date().toISOString(),
+    };
+    mockReviews[index] = updated;
+    mockRatings.set(updated.receiptItemId, input.rating);
+    return updated;
   },
 };
 

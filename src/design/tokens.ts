@@ -9,6 +9,8 @@ import { StyleSheet } from 'react-native';
 export const colors = {
   transparent: 'transparent',
   cameraBackground: '#000000',
+  /** Every rating star in the app: filled in Epsilon blue, empty in a soft neutral. */
+  rating: { filled: '#282973', empty: '#E5E7EB', outline: '#9CA3AF' },
   brand: {
     primary: '#282973',
     secondary: '#2F67B2',

@@ -11,6 +11,7 @@ import type {
   FeedbackInput,
   FeedbackResult,
   FeedbackReview,
+  FeedbackUpdate,
   NotificationPreferences,
   OtpChallengeResult,
   Paginated,
@@ -103,6 +104,12 @@ export interface FeedbackService {
     },
     options?: ReadOptions,
   ): Promise<Paginated<FeedbackReview>>;
+  get(feedbackId: string, options?: ReadOptions): Promise<FeedbackReview>;
+  update(
+    feedbackId: string,
+    input: FeedbackUpdate,
+    options?: MutationOptions,
+  ): Promise<FeedbackReview>;
 }
 
 export interface WalletService {

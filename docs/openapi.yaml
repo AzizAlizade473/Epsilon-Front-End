@@ -1618,6 +1618,9 @@ components:
                     minimum: 1
                     maximum: 5
                   - type: 'null'
+              feedbackId:
+                type: string
+                minLength: 1
               line:
                 type: object
                 properties:
@@ -2023,6 +2026,9 @@ components:
               minimum: 1
               maximum: 5
             - type: 'null'
+        feedbackId:
+          type: string
+          minLength: 1
         line:
           type: object
           properties:
@@ -2219,11 +2225,12 @@ components:
           type: string
           maxLength: 500
         reasonCodes:
-          maxItems: 3
+          maxItems: 6
           type: array
           items:
             type: string
             minLength: 1
+            maxLength: 40
       required:
         - receiptItemId
         - rating
@@ -2282,12 +2289,23 @@ components:
         feedbackId:
           type: string
           minLength: 1
+        receiptId:
+          type: string
+          minLength: 1
+        receiptItemId:
+          type: string
+          minLength: 1
         dishName:
           type: string
           minLength: 1
         restaurantName:
           type: string
           minLength: 1
+        restaurantLogoUrl:
+          anyOf:
+            - type: string
+              format: uri
+            - type: 'null'
         rating:
           type: integer
           minimum: 1
@@ -2297,17 +2315,33 @@ components:
             - type: string
               maxLength: 500
             - type: 'null'
+        reasonCodes:
+          type: array
+          items:
+            type: string
+            minLength: 1
         createdAt:
           type: string
           format: date-time
           pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+        updatedAt:
+          anyOf:
+            - type: string
+              format: date-time
+              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+            - type: 'null'
       required:
         - feedbackId
+        - receiptId
+        - receiptItemId
         - dishName
         - restaurantName
+        - restaurantLogoUrl
         - rating
         - comment
+        - reasonCodes
         - createdAt
+        - updatedAt
       additionalProperties: false
     Wallet:
       type: object
@@ -2487,6 +2521,7 @@ components:
                 - OTP_INVALID
                 - OTP_EXPIRED
                 - EMAIL_REQUIRED
+                - FEEDBACK_NOT_FOUND
                 - OTP_TOO_MANY
                 - PHONE_IN_USE
                 - IDENTITY_ALREADY_LINKED

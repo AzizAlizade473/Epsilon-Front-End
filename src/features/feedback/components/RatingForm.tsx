@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import Animated, { FadeIn, ReduceMotion } from 'react-native-reanimated';
@@ -5,29 +6,12 @@ import { Text } from '@/components/ui/Text';
 import { Button } from '@/components/ui/Button';
 import { colors, spacing } from '@/design';
 import { originalReceipts as o } from '@/design/original-receipts';
+import {
+  commentsFor,
+  legacyReasonCodes,
+  reasonLabelKey,
+} from '@/lib/quick-comments';
 import { RatingStars } from './RatingStars';
-
-/** Every code the backend accepts (kept in step with its feedback route). */
-export const reasonCodes = [
-  'taste',
-  'temperature',
-  'portion',
-  'price',
-  'presentation',
-  'wait_time',
-  'freshness',
-  'service',
-  'other',
-] as const;
-/** The ones about the dish itself, offered after a rating. */
-const dishReasons = [
-  'taste',
-  'freshness',
-  'temperature',
-  'portion',
-  'presentation',
-  'price',
-] as const;
 
 export type RatingDraft = {
   rating: number;
@@ -36,6 +20,15 @@ export type RatingDraft = {
 };
 
 const reveal = FadeIn.duration(220).reduceMotion(ReduceMotion.System);
+const MAX_COMMENTS = 6;
+
+/** Keeps codes that still fit `rating` (its quick comments, or legacy codes from older reviews). */
+export const fittingCodes = (codes: readonly string[], rating: number) =>
+  codes.filter(
+    (code) =>
+      commentsFor(rating).includes(code) ||
+      (legacyReasonCodes as readonly string[]).includes(code),
+  );
 
 /**
  * The focused question for one dish: stars first, then (only once a rating is
@@ -51,7 +44,10 @@ export function RatingForm({
   busy,
   error,
   queued,
+  editing = false,
 }: {
+  /** Changing an existing review: its own title and button. */
+  editing?: boolean;
   itemName: string;
   draft: RatingDraft;
   onChange: (draft: RatingDraft) => void;
@@ -64,20 +60,33 @@ export function RatingForm({
 }) {
   const { t } = useTranslation();
   const rated = draft.rating > 0;
+  // Picks that no longer fit a changed rating are dropped, and the customer is told.
+  const [cleared, setCleared] = useState(false);
+  const rate = (rating: number) => {
+    const kept = fittingCodes(draft.reasonCodes, rating);
+    setCleared(kept.length < draft.reasonCodes.length);
+    onChange({ ...draft, rating, reasonCodes: kept });
+  };
+  const choices = [
+    ...commentsFor(draft.rating),
+    ...draft.reasonCodes.filter(
+      (code) => !commentsFor(draft.rating).includes(code),
+    ),
+  ];
   return (
     <View style={styles.form}>
       <View style={styles.ask}>
-        <Text style={styles.eyebrow}>{t('rate.eyebrow')}</Text>
+        <Text style={styles.eyebrow}>
+          {t(editing ? 'rate.editEyebrow' : 'rate.eyebrow')}
+        </Text>
         <Text style={styles.question} accessibilityRole="header">
           {t('rate.question', { dish: itemName })}
         </Text>
-        <Text style={styles.sub}>{t('rate.sub')}</Text>
+        <Text style={styles.sub}>
+          {t(editing ? 'rate.editSub' : 'rate.sub')}
+        </Text>
       </View>
-      <RatingStars
-        value={draft.rating}
-        disabled={disabled}
-        onRate={(rating) => onChange({ ...draft, rating })}
-      />
+      <RatingStars value={draft.rating} disabled={disabled} onRate={rate} />
       <Text
         style={[styles.label, !rated && styles.hidden]}
         accessibilityLiveRegion="polite"
@@ -86,16 +95,28 @@ export function RatingForm({
       </Text>
       {rated && (
         <Animated.View entering={reveal} style={styles.detail}>
-          <Text style={styles.detailTitle}>{t('rate.detailTitle')}</Text>
-          <View style={styles.options}>
-            {dishReasons.map((code) => {
+          <Text style={styles.detailTitle}>
+            {t(`rate.ask.${draft.rating}`)}
+          </Text>
+          {cleared && (
+            <Text style={styles.note} accessibilityLiveRegion="polite">
+              {t('rate.cleared')}
+            </Text>
+          )}
+          <Animated.View
+            key={draft.rating}
+            entering={reveal}
+            style={styles.options}
+          >
+            {choices.map((code) => {
               const selected = draft.reasonCodes.includes(code);
-              const full = !selected && draft.reasonCodes.length >= 3;
+              const full =
+                !selected && draft.reasonCodes.length >= MAX_COMMENTS;
               return (
                 <Pressable
                   key={code}
                   accessibilityRole="button"
-                  accessibilityLabel={t('feedback.reasons.' + code)}
+                  accessibilityLabel={t(reasonLabelKey(code))}
                   accessibilityState={{ selected, disabled: disabled || full }}
                   disabled={disabled || full}
                   onPress={() =>
@@ -114,12 +135,12 @@ export function RatingForm({
                       selected && styles.optionTextActive,
                     ]}
                   >
-                    {t('feedback.reasons.' + code)}
+                    {t(reasonLabelKey(code))}
                   </Text>
                 </Pressable>
               );
             })}
-          </View>
+          </Animated.View>
           <TextInput
             accessibilityLabel={t('feedback.comment')}
             placeholder={t('rate.comment')}
@@ -148,7 +169,9 @@ export function RatingForm({
         </Text>
       )}
       <Button
-        label={t(queued ? 'common.retry' : 'feedback.send')}
+        label={t(
+          queued ? 'common.retry' : editing ? 'rate.save' : 'feedback.send',
+        )}
         loading={busy}
         disabled={!rated || busy}
         onPress={onSubmit}
@@ -196,6 +219,7 @@ const styles = StyleSheet.create({
   hidden: { opacity: 0 },
   detail: { gap: spacing[12] },
   detailTitle: { ...o.type.product, color: o.colors.ink },
+  note: { ...o.type.caption, color: o.colors.secondary },
   options: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[8] },
   option: {
     minHeight: o.size.target,

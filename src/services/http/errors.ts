@@ -11,6 +11,7 @@ export const serverErrorCodes = [
   'OTP_INVALID',
   'OTP_EXPIRED',
   'EMAIL_REQUIRED',
+  'FEEDBACK_NOT_FOUND',
   'OTP_TOO_MANY',
   'PHONE_IN_USE',
   'IDENTITY_ALREADY_LINKED',

@@ -5,7 +5,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { ReduceMotion, ZoomIn } from 'react-native-reanimated';
 import { Text } from '@/components/ui/Text';
 import { Icon } from '@/components/ui/Icon';
-import { spacing } from '@/design';
+import { colors, spacing } from '@/design';
 import { originalReceipts as o } from '@/design/original-receipts';
 import { formatMoney } from '@/lib/money';
 import { dishName } from '@/lib/dish-name';
@@ -36,7 +36,10 @@ export function DishCard({
   pending,
   completed,
   onRate,
+  onEdit,
 }: {
+  /** Opens the saved review of a rated dish for editing. */
+  onEdit?: () => void;
   item: ReceiptItem;
   readOnly: boolean;
   pending: boolean;
@@ -105,9 +108,22 @@ export function DishCard({
           ) : (
             <View />
           )}
-          <Text style={[styles.hint, styles.ratedText]}>
-            {t('receipt.rated')}
-          </Text>
+          {onEdit && item.feedbackId ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('rate.editA11y', { dish: name })}
+              onPress={onEdit}
+              style={styles.edit}
+            >
+              <Text style={[styles.hint, styles.editText]}>
+                {t('rate.edit')}
+              </Text>
+            </Pressable>
+          ) : (
+            <Text style={[styles.hint, styles.ratedText]}>
+              {t('receipt.rated')}
+            </Text>
+          )}
         </View>
       ) : pending ? (
         <View style={styles.state} accessibilityLiveRegion="polite">
@@ -185,5 +201,13 @@ const styles = StyleSheet.create({
   },
   hint: { ...o.type.caption, color: o.colors.secondary },
   ratedText: { color: o.colors.rated, fontWeight: '700' },
+  edit: {
+    minHeight: o.size.target,
+    minWidth: o.size.target,
+    paddingHorizontal: spacing[12],
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  editText: { color: colors.brand.primary, fontWeight: '700' },
   state: { flexDirection: 'row', alignItems: 'center', gap: spacing[4] },
 });

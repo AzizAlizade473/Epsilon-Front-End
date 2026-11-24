@@ -47,8 +47,8 @@ export const Stars = memo(function Stars({
           key={n}
           size={sizes[size]}
           strokeWidth={layout.iconStrokeWidth}
-          color={n <= filled ? colors.brand.accent : colors.brand.border}
-          fill={n <= filled ? colors.brand.accent : colors.transparent}
+          color={n <= filled ? colors.rating.filled : colors.rating.outline}
+          fill={n <= filled ? colors.rating.filled : colors.transparent}
           {...decorativeSvgProps}
         />
       ))}
@@ -74,8 +74,8 @@ export function ScoreLine({
       <Star
         size={sizes.small}
         strokeWidth={layout.iconStrokeWidth}
-        color={inverse ? colors.surface : colors.brand.accent}
-        fill={inverse ? colors.surface : colors.brand.accent}
+        color={inverse ? colors.surface : colors.rating.filled}
+        fill={inverse ? colors.surface : colors.rating.filled}
         {...decorativeSvgProps}
       />
       <Text variant="callout" tone={inverse ? 'inverse' : 'default'}>
@@ -144,8 +144,8 @@ export function RatingBars({
               <Star
                 size={12}
                 strokeWidth={layout.iconStrokeWidth}
-                color={colors.brand.accent}
-                fill={colors.brand.accent}
+                color={colors.rating.filled}
+                fill={colors.rating.filled}
                 {...decorativeSvgProps}
               />
             </View>

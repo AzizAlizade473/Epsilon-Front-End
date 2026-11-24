@@ -1,4 +1,4 @@
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -34,7 +34,9 @@ import { safeIdSchema } from '@/lib/deep-link';
 import { useReceipt } from '@/hooks/useReceipt';
 import { useFeedback } from '@/providers/FeedbackProvider';
 import type { Receipt, ReceiptItem } from '@/services/contracts';
-import { queryKeys } from '@/services/query';
+import { queryInvalidations, queryKeys } from '@/services/query';
+import { services } from '@/services';
+import { isApiError } from '@/services/http/errors';
 import { generateIdempotencyKey } from '@/services/http/idempotency';
 import { trustedServerTime } from '@/lib/server-clock';
 import { OutboxFullError } from '@/services/feedback-outbox';
@@ -81,7 +83,7 @@ function MealProgress({ done, total }: { done: number; total: number }) {
  * rating is saved by the real backend, acknowledged, and the next dish comes in
  * without leaving the sheet. Dishes the customer did not try can be skipped.
  */
-export function RateScreen() {
+function NewRating() {
   const params = useLocalSearchParams<{
     receiptItemId?: string;
     receiptId?: string;
@@ -343,7 +345,7 @@ export function RateScreen() {
                       : draft
                   }
                   onChange={(next) => {
-                    if (next.reasonCodes.length <= 3) setDraft(next);
+                    if (next.reasonCodes.length <= 6) setDraft(next);
                   }}
                   onSubmit={() => {
                     void submit();
@@ -426,6 +428,171 @@ export function RateScreen() {
                   }}
                 />
               </Animated.View>
+            )}
+          </View>
+        ) : (
+          <>
+            <Text>{t('feedback.unavailable')}</Text>
+            <Button label={t('navigation.close')} onPress={close} />
+          </>
+        )}
+      </ScrollView>
+    </Sheet>
+  );
+}
+
+/** Rate a dish, or (with `feedbackId`) change an earlier rating of it. */
+export function RateScreen() {
+  const params = useLocalSearchParams<{ feedbackId?: string }>();
+  const feedbackId =
+    typeof params.feedbackId === 'string' &&
+    safeIdSchema.safeParse(params.feedbackId).success
+      ? params.feedbackId
+      : '';
+  return feedbackId ? <EditRating feedbackId={feedbackId} /> : <NewRating />;
+}
+
+/**
+ * The same focused sheet, opened on a saved review: stars, quick comments and
+ * words come back as they were; saving updates that review (never a new one,
+ * never another reward) and refreshes every screen that shows it.
+ */
+function EditRating({ feedbackId }: { feedbackId: string }) {
+  const router = useRouter();
+  const client = useQueryClient();
+  const { t, i18n } = useTranslation();
+  const review = useQuery({
+    queryKey: [...queryKeys.feedback.all, 'detail', feedbackId],
+    queryFn: ({ signal }) => services.feedback.get(feedbackId, { signal }),
+  });
+  const [draft, setDraft] = useState<RatingDraft | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string>();
+  const [saved, setSaved] = useState(false);
+  const lock = useRef(false);
+  const mounted = useRef(true);
+  useEffect(
+    () => () => {
+      mounted.current = false;
+    },
+    [],
+  );
+  const current: RatingDraft | null =
+    draft ??
+    (review.data
+      ? {
+          rating: review.data.rating,
+          comment: review.data.comment ?? '',
+          reasonCodes: review.data.reasonCodes,
+        }
+      : null);
+  const close = useCallback(() => {
+    if (router.canGoBack()) router.back();
+    else router.replace('/home');
+  }, [router]);
+  const dirty = draft !== null && !saved;
+  const beforeClose = useCallback(() => {
+    if (lock.current) return false;
+    if (!dirty) return true;
+    Alert.alert(t('feedback.discardTitle'), t('feedback.discardBody'), [
+      { text: t('feedback.stay'), style: 'cancel' },
+      { text: t('feedback.leave'), style: 'destructive', onPress: close },
+    ]);
+    return false;
+  }, [dirty, t, close]);
+  const save = async () => {
+    if (lock.current || !current || current.rating < 1) return;
+    lock.current = true;
+    setBusy(true);
+    setError(undefined);
+    try {
+      await services.feedback.update(feedbackId, {
+        rating: current.rating,
+        comment: current.comment,
+        reasonCodes: current.reasonCodes,
+      });
+      await queryInvalidations.onFeedbackSubmitted(client);
+      if (!mounted.current) return;
+      setSaved(true);
+      setTimeout(() => {
+        if (mounted.current) close();
+      }, THANKS_MS);
+    } catch (cause) {
+      if (!mounted.current) return;
+      // The stars and words stay; only the message changes.
+      setError(
+        t(
+          isApiError(cause) && cause.code === 'VALIDATION_FAILED'
+            ? 'feedback.invalid'
+            : 'feedback.saveFailed',
+        ),
+      );
+    } finally {
+      lock.current = false;
+      if (mounted.current) setBusy(false);
+    }
+  };
+  return (
+    <Sheet
+      appearance="feedback"
+      onClose={close}
+      onBeforeClose={beforeClose}
+      accessibilityLabel={t('rate.editEyebrow')}
+    >
+      <ScrollView keyboardShouldPersistTaps="handled">
+        {review.isLoading ? (
+          <ActivityIndicator accessibilityLabel={t('common.loading')} />
+        ) : review.data && current ? (
+          <View style={styles.body}>
+            <View style={styles.meal}>
+              <BrandBadge
+                name={review.data.restaurantName}
+                logoUrl={review.data.restaurantLogoUrl}
+                size={44}
+              />
+              <View style={styles.mealCopy}>
+                <Text style={styles.mealName} numberOfLines={1}>
+                  {displayMerchantName(review.data.restaurantName)}
+                </Text>
+                <Text style={styles.sub}>
+                  {t('rate.yourMeal', {
+                    date: formatDate(review.data.createdAt, {
+                      locale: i18n.language,
+                    }),
+                  })}
+                </Text>
+              </View>
+            </View>
+            {saved ? (
+              <View style={styles.thanks} accessibilityLiveRegion="polite">
+                <Animated.View
+                  entering={ZoomIn.duration(260).reduceMotion(
+                    ReduceMotion.System,
+                  )}
+                  style={styles.seal}
+                >
+                  <Icon icon={Check} color={colors.surface} decorative />
+                </Animated.View>
+                <Text style={styles.thanksTitle} accessibilityRole="header">
+                  {t('rate.updated')}
+                </Text>
+              </View>
+            ) : (
+              <RatingForm
+                editing
+                itemName={dishName(review.data.dishName)}
+                draft={current}
+                onChange={(next) => {
+                  if (next.reasonCodes.length <= 6) setDraft(next);
+                }}
+                onSubmit={() => {
+                  void save();
+                }}
+                disabled={busy}
+                busy={busy}
+                error={error}
+                queued={false}
+              />
             )}
           </View>
         ) : (

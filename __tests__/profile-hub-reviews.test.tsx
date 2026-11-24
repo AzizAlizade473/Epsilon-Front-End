@@ -20,11 +20,16 @@ const mockLogout = jest.fn(async () => undefined);
 const mockToast = jest.fn();
 const review: FeedbackReview = {
   feedbackId: 'fb',
+  receiptId: 'r1',
+  receiptItemId: 'i1',
   dishName: 'Server dish',
   restaurantName: 'Demo restaurant',
+  restaurantLogoUrl: null,
   rating: 2,
   comment: 'Server comment',
+  reasonCodes: ['needed_more_flavor'],
   createdAt: '2026-10-31T10:00:00Z',
+  updatedAt: null,
 };
 const mockList = jest.fn<() => Promise<Paginated<FeedbackReview>>>();
 jest.mock('@/services', () => ({

@@ -170,6 +170,8 @@ export const receiptItemSchema = z
     canRate: z.boolean(),
     /** Already-submitted rating for this item, or null if not yet rated. */
     rating: z.number().int().min(1).max(5).nullable(),
+    /** The current user's review of this item, when there is one (to edit it). */
+    feedbackId: z.string().min(1).optional(),
     /** The printed fiscal receipt line, exactly as the official record states it. */
     line: z
       .object({
@@ -449,12 +451,18 @@ export const feedbackInputSchema = z
     rating: z.number().int().min(1).max(5),
     /** Optional free-text comment, max 500 characters */
     comment: z.string().max(500).optional(),
-    /** Optional structured reason codes */
-    reasonCodes: z.array(z.string().min(1)).max(3).optional(),
+    /** Optional quick-comment ids (src/lib/quick-comments) or legacy reason codes */
+    reasonCodes: z.array(z.string().min(1).max(40)).max(6).optional(),
   })
   .strict();
 
 export type FeedbackInput = z.infer<typeof feedbackInputSchema>;
+
+/** Editing a review: the opinion only, never the purchased item. */
+export const feedbackUpdateSchema = feedbackInputSchema.omit({
+  receiptItemId: true,
+});
+export type FeedbackUpdate = z.infer<typeof feedbackUpdateSchema>;
 
 export const feedbackResultSchema = z
   .object({
@@ -482,11 +490,17 @@ export type FeedbackResult = z.infer<typeof feedbackResultSchema>;
 export const feedbackReviewSchema = z
   .object({
     feedbackId: z.string().min(1),
+    receiptId: z.string().min(1),
+    receiptItemId: z.string().min(1),
     dishName: z.string().min(1),
     restaurantName: z.string().min(1),
+    restaurantLogoUrl: z.string().url().nullable(),
     rating: z.number().int().min(1).max(5),
     comment: z.string().max(500).nullable(),
+    reasonCodes: z.array(z.string().min(1)),
     createdAt: isoDate,
+    /** Set when the author edited the review; createdAt stays the original time. */
+    updatedAt: isoDate.nullable(),
   })
   .strict();
 export type FeedbackReview = z.infer<typeof feedbackReviewSchema>;

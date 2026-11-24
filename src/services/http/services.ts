@@ -241,6 +241,26 @@ export const httpFeedbackService: FeedbackService = {
       options,
     );
   },
+
+  async get(feedbackId, options) {
+    return requestWithAuth(
+      'GET',
+      `/feedback/${encodeURIComponent(feedbackId)}`,
+      feedbackReviewSchema,
+      undefined,
+      options,
+    );
+  },
+
+  async update(feedbackId, input, options) {
+    return requestWithAuth(
+      'PATCH',
+      `/feedback/${encodeURIComponent(feedbackId)}`,
+      feedbackReviewSchema,
+      input,
+      options,
+    );
+  },
 };
 
 export const httpWalletService: WalletService = {
