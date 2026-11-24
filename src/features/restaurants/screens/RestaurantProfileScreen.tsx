@@ -21,6 +21,7 @@ import { useCatalog, type Catalog, type CatalogDish } from '../catalog';
 import { MenuDish } from '../components/MenuDish';
 import { Hero, RoundButton } from '../components/Hero';
 import { RatingBars, Stars } from '@/components/ratings/Ratings';
+import { BrandBadge } from '@/components/brand/BrandBadge';
 import { Reveal } from '@/components/ratings/Reveal';
 
 type Row =
@@ -97,9 +98,23 @@ export default function RestaurantProfileScreen() {
       />
       <View style={styles.sheet}>
         <Reveal order={0} style={styles.block}>
-          <Text variant="title1" accessibilityRole="header">
-            {query.data?.name ?? ' '}
-          </Text>
+          <View style={styles.titleRow}>
+            {query.data && (
+              <BrandBadge
+                name={query.data.name}
+                logoUrl={query.data.logoUrl}
+                size={44}
+                fallback={false}
+              />
+            )}
+            <Text
+              variant="title1"
+              accessibilityRole="header"
+              style={styles.title}
+            >
+              {query.data?.name ?? ' '}
+            </Text>
+          </View>
           {data && (
             <Text variant="caption" tone="secondary">
               {[
@@ -234,6 +249,8 @@ const styles = StyleSheet.create({
     gap: spacing[20],
   },
   block: { gap: spacing[8] },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[12] },
+  title: { flex: 1 },
   summary: {
     flexDirection: 'row',
     alignItems: 'center',

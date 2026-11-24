@@ -9,14 +9,17 @@ import type { ImageSourcePropType } from 'react-native';
  * "MY KFC KEBAB") gets no brand. Brand identity says nothing about whether a
  * restaurant is an Epsilon partner: that comes only from the server.
  *
- * `logo` holds an official, authorised asset once Epsilon has one; until then the
- * badge shows a neutral mark (no made-up brand artwork).
+ * Logos are bundled, unmodified renders of the official marks; sources and
+ * usage status are recorded in docs/BRAND_ASSETS.md.
  */
 export type Brand = {
   id: string;
   name: string;
   /** Upper-case, accents kept; compared after normalising the receipt name the same way. */
   aliases: readonly string[];
+  /** Official site, for reference and a future logo service. */
+  domain: string;
+  /** Absent until the asset is bundled: the badge then shows the neutral mark. */
   logo?: ImageSourcePropType;
 };
 
@@ -25,26 +28,48 @@ export const brands: readonly Brand[] = [
     id: 'kfc',
     name: 'KFC',
     aliases: ['KFC'],
+    domain: 'kfc.com',
+    logo: require('../../assets/brands/kfc.png'),
   },
   {
     id: 'mcdonalds',
     name: "McDonald's",
     aliases: ["MCDONALD'S", 'MCDONALDS', "MC DONALD'S", 'MC DONALDS'],
+    domain: 'mcdonalds.com',
+    logo: require('../../assets/brands/mcdonalds.png'),
   },
   {
     id: 'burger-king',
     name: 'Burger King',
     aliases: ['BURGER KING'],
+    domain: 'bk.com',
+    logo: require('../../assets/brands/burger-king.png'),
   },
   {
     id: 'pizza-hut',
     name: 'Pizza Hut',
     aliases: ['PIZZA HUT'],
+    domain: 'pizzahut.com',
+    logo: require('../../assets/brands/pizza-hut.png'),
   },
   {
     id: 'papa-johns',
     name: "Papa John's",
     aliases: ["PAPA JOHN'S", 'PAPA JOHNS'],
+    domain: 'papajohns.com',
+  },
+  {
+    id: 'dominos',
+    name: "Domino's",
+    aliases: ["DOMINO'S", 'DOMINOS', "DOMINO'S PIZZA", 'DOMINOS PIZZA'],
+    domain: 'dominos.com',
+    logo: require('../../assets/brands/dominos.png'),
+  },
+  {
+    id: 'starbucks',
+    name: 'Starbucks',
+    aliases: ['STARBUCKS'],
+    domain: 'starbucks.com',
   },
 ];
 
@@ -64,7 +89,10 @@ export function matchBrand(
   if (!name) return null;
   const value = normalise(name);
   for (const brand of brands)
-    for (const alias of brand.aliases) {
+    // Longest alias first: "DOMINO'S PIZZA NİZAMİ" is branch "NİZAMİ", not "PIZZA NİZAMİ".
+    for (const alias of [...brand.aliases].sort(
+      (x, y) => y.length - x.length,
+    )) {
       if (value === alias) return { brand, branch: null };
       if (!value.startsWith(alias)) continue;
       const rest = value.slice(alias.length);

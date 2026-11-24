@@ -17,6 +17,8 @@ import { DetailRowSkeleton } from '@/components/feedback/DetailRowSkeleton';
 import { MockDataNotice } from '@/components/feedback/MockDataNotice';
 import { colors, layout, spacing } from '@/design';
 import { useReviews } from '@/hooks/useProfile';
+import { BrandBadge } from '@/components/brand/BrandBadge';
+import { dishName } from '@/lib/dish-name';
 import { formatDate } from '@/lib/date';
 
 export default function ReviewsScreen() {
@@ -77,7 +79,16 @@ export default function ReviewsScreen() {
           ListHeaderComponent={<MockDataNotice />}
           renderItem={({ item }) => (
             <View style={styles.row}>
-              <Text variant="headline">{item.dishName}</Text>
+              <View style={styles.titleRow}>
+                <BrandBadge
+                  name={item.restaurantName}
+                  size={28}
+                  fallback={false}
+                />
+                <Text variant="headline" style={styles.title}>
+                  {dishName(item.dishName)}
+                </Text>
+              </View>
               <Text variant="caption">
                 {item.restaurantName} ·{' '}
                 {formatDate(item.createdAt, { locale: i18n.language })}
@@ -139,6 +150,8 @@ export default function ReviewsScreen() {
   );
 }
 const styles = StyleSheet.create({
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[8] },
+  title: { flex: 1 },
   row: {
     paddingVertical: spacing[16],
     borderBottomColor: colors.border,

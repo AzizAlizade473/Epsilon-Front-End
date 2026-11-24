@@ -1,5 +1,5 @@
 import { expect, test } from '@jest/globals';
-import { displayMerchantName, matchBrand } from '@/lib/brands';
+import { brands, displayMerchantName, matchBrand } from '@/lib/brands';
 import { dishName } from '@/lib/dish-name';
 
 test('recognises a chain only by its establishment name prefix', () => {
@@ -36,4 +36,14 @@ test('drops the VAT marker from receipt dish names only', () => {
   );
   expect(dishName('Kapuçino')).toBe('Kapuçino');
   expect(dishName('Pizza 30%')).toBe('Pizza 30%');
+});
+
+test('prefers the longest alias and knows every bundled chain', () => {
+  expect(displayMerchantName("DOMINO'S PIZZA NİZAMİ")).toBe(
+    "Domino's — Nizami",
+  );
+  expect(matchBrand('STARBUCKS 28 MALL')?.brand.id).toBe('starbucks');
+  expect(matchBrand('DOMINOS-GƏNCLIK')?.brand.id).toBe('dominos');
+  for (const id of ['kfc', 'mcdonalds', 'burger-king', 'dominos', 'pizza-hut'])
+    expect(brands.find((brand) => brand.id === id)?.logo).toBeTruthy();
 });

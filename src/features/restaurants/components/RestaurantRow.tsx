@@ -11,6 +11,7 @@ import { premium } from '@/design/premium';
 import type { Restaurant } from '@/services/contracts';
 import type { DirectoryEntry } from '../catalog';
 import { FoodImage } from '@/components/food/FoodImage';
+import { BrandBadge } from '@/components/brand/BrandBadge';
 import { ScoreLine } from '@/components/ratings/Ratings';
 
 /** Directory card: leads with verified dish scores, not distance or maps. */
@@ -70,9 +71,17 @@ export const RestaurantRow = memo(function RestaurantRow({
         )}
       </View>
       <View style={styles.info}>
-        <Text variant="title2" numberOfLines={2}>
-          {restaurant.name}
-        </Text>
+        <View style={styles.titleRow}>
+          <BrandBadge
+            name={restaurant.name}
+            logoUrl={null}
+            size={32}
+            fallback={false}
+          />
+          <Text variant="title2" numberOfLines={2} style={styles.title}>
+            {restaurant.name}
+          </Text>
+        </View>
         <Text variant="caption" tone="secondary" numberOfLines={2}>
           {meta}
         </Text>
@@ -97,6 +106,8 @@ export const RestaurantRow = memo(function RestaurantRow({
   );
 });
 const styles = StyleSheet.create({
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing[8] },
+  title: { flex: 1 },
   card: {
     ...premium.shadow,
     backgroundColor: colors.surface,

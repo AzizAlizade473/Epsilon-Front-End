@@ -14,23 +14,29 @@ export function BrandBadge({
   name,
   logoUrl,
   size = o.size.icon,
+  fallback = true,
 }: {
   name: string;
   logoUrl?: string | null;
   size?: number;
+  /** false: render nothing when there is no real logo (lists that already show a picture). */
+  fallback?: boolean;
 }) {
   const [broken, setBroken] = useState(false);
   const brand = matchBrand(name)?.brand;
   const box = { width: size, height: size, borderRadius: size * 0.28 };
   if (brand?.logo && !broken)
     return (
-      <Image
-        source={brand.logo}
-        style={[styles.box, box]}
-        resizeMode="contain"
-        onError={() => setBroken(true)}
-        accessibilityIgnoresInvertColors
-      />
+      // White tile, logo contained with breathing room: original colours and proportions, never cropped.
+      <View style={[styles.box, box, styles.logoTile]}>
+        <Image
+          source={brand.logo}
+          style={styles.logo}
+          resizeMode="contain"
+          onError={() => setBroken(true)}
+          accessibilityIgnoresInvertColors
+        />
+      </View>
     );
   if (logoUrl && !broken)
     return (
@@ -41,6 +47,7 @@ export function BrandBadge({
         accessibilityIgnoresInvertColors
       />
     );
+  if (!fallback) return null;
   return (
     <View style={[styles.box, box, styles.neutral]}>
       <Icon icon={Store} color={o.colors.secondary} decorative />
@@ -55,6 +62,13 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     paddingHorizontal: 4,
   },
+  logoTile: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: o.colors.border,
+    padding: '14%',
+  },
+  logo: { width: '100%', height: '100%' },
   neutral: {
     backgroundColor: o.colors.soft,
     borderWidth: 1,
