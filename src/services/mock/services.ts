@@ -49,6 +49,7 @@ const mockReviews: FeedbackReview[] = [];
 let mockPreferences: NotificationPreferences = {
   cashbackUpdates: true,
   partnerUpdates: false,
+  reminders: true,
 };
 export function resetMockFeedback() {
   mockRatings.clear();
@@ -221,7 +222,11 @@ export const mockUserService: UserService = {
     forgetMockAccount(_currentUser);
     _currentUser = { ...mockUser };
     resetMockFeedback();
-    mockPreferences = { cashbackUpdates: true, partnerUpdates: false };
+    mockPreferences = {
+      cashbackUpdates: true,
+      partnerUpdates: false,
+      reminders: true,
+    };
   },
 };
 
@@ -501,6 +506,18 @@ export const mockNotificationService: NotificationService = {
     return { ...mockPreferences };
   },
   async registerDevice() {
+    await simulateDelay();
+  },
+  // Mock builds have no server events: an empty, honest inbox.
+  async list() {
+    await simulateDelay();
+    checkMockScenario();
+    return { items: [], nextCursor: null, unreadCount: 0 };
+  },
+  async markRead() {
+    await simulateDelay();
+  },
+  async markAllRead() {
     await simulateDelay();
   },
 };

@@ -11,6 +11,7 @@ import {
   feedbackResultSchema,
   feedbackReviewSchema,
   notificationPreferencesSchema,
+  notificationPageSchema,
   paginatedSchema,
   profileUpdateResultSchema,
   receiptListSchema,
@@ -326,6 +327,35 @@ export const httpNotificationService: NotificationService = {
       {
         idempotencyKey: generateIdempotencyKey('device-reg'),
       },
+    );
+  },
+  async list(params, options) {
+    const query = new URLSearchParams();
+    if (params?.cursor) query.set('cursor', params.cursor);
+    if (params?.limit) query.set('limit', String(params.limit));
+    const qs = query.toString();
+    return requestWithAuth(
+      'GET',
+      qs ? `/notifications?${qs}` : '/notifications',
+      notificationPageSchema,
+      undefined,
+      options,
+    );
+  },
+  async markRead(id) {
+    await requestWithAuth(
+      'POST',
+      `/notifications/${encodeURIComponent(id)}/read`,
+      voidSchema,
+      undefined,
+    );
+  },
+  async markAllRead() {
+    await requestWithAuth(
+      'POST',
+      '/notifications/read-all',
+      voidSchema,
+      undefined,
     );
   },
 };

@@ -56,7 +56,11 @@ it('reads canonical profile and review data and rejects reward-only records as r
   expect(String(fetchMock.mock.calls[2]?.[0])).toContain('cursor=next%2F%2B+');
 });
 it('confirms notification writes with a validated server response and idempotency', async () => {
-  const preferences = { cashbackUpdates: true, partnerUpdates: false };
+  const preferences = {
+    cashbackUpdates: true,
+    partnerUpdates: false,
+    reminders: true,
+  };
   respond(preferences);
   expect(
     await httpNotificationService.updatePreferences(preferences, {

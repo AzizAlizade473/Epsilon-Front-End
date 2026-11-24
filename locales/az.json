@@ -485,7 +485,8 @@
         "answer": "Məxfilik və təhlükəsizlik bölməsində Hesabı sil seçin. Kimliyinizi yenidən təsdiqləyin və ekrandakı təsdiqi tamamlayın."
       }
     },
-    "deleteKeyword": "SİL"
+    "deleteKeyword": "SİL",
+    "reminders": "Yeməklərim barədə xatırlatmalar"
   },
   "resilience": {
     "errorTitle": "Nəsə səhv getdi",
@@ -984,5 +985,52 @@
     "edit": "Dəyiş",
     "edited": "Dəyişdirilib",
     "editA11y": "{{dish}} üçün qiymətinizi dəyişin"
+  },
+  "notifications": {
+    "remindersChannel": "Xatırlatmalar",
+    "settingsTitle": "Nə almaq istəyirsiniz",
+    "inboxTitle": "Bildirişlər",
+    "markAll": "Hamısını oxunmuş et",
+    "empty": "Hələ heç nə yoxdur. Yeməkləriniz və keşbek barədə sizə xəbər verəcəyik.",
+    "unread": "Oxunmayıb",
+    "localOnly": "Bu versiya telefonda xatırlatmalar göndərir. Epsilon serverindən mesajlar push çatdırılması qurulandan sonra gələcək.",
+    "primerTitle": "Yeməkdən sonra kiçik xatırlatma?",
+    "primerBody": "Yeməyiniz rəyinizi gözləyəndə xatırladacaq, keşbek təsdiqlənəndə xəbər verəcəyik. Gündə ən çox bir dəfə, gecə gec saatlarda yox. Bunu istədiyiniz vaxt dəyişə bilərsiniz.",
+    "primerAllow": "Bildirişləri aç",
+    "primerLater": "İndi yox",
+    "daily": {
+      "1": {
+        "title": "Bu gün dadlı nəsə yediniz?",
+        "body": "Fikrinizi bilmək istərdik."
+      },
+      "2": {
+        "title": "Növbəti sevimli yeməyiniz qiymətə layiqdir",
+        "body": "Yeməkdən sonra çeki skan edin və necə olduğunu deyin."
+      },
+      "3": {
+        "title": "Bu gün restorana getdiniz?",
+        "body": "Çeki skan edin və təcrübənizi bölüşün."
+      },
+      "4": {
+        "title": "Bəyəndiyiniz o yeməyi xatırlayırsınız?",
+        "body": "Onu Epsilon tarixçənizdə saxlayın."
+      },
+      "5": {
+        "title": "Nahar necə idi?",
+        "body": "Bir skan, bir neçə toxunuş və fikriniz yadda saxlanılır."
+      },
+      "6": {
+        "title": "Yaxşı və ya pis, fərq etməz",
+        "body": "Qiymətləndirdiyiniz hər yemək sevdiklərinizi yadda saxlamağa kömək edir."
+      },
+      "7": {
+        "title": "Bu həftə kənarda yeyirsiniz?",
+        "body": "Çeki saxlayın: yeməkləri qiymətləndirmək bir dəqiqə çəkir."
+      },
+      "8": {
+        "title": "Yemək gündəliyiniz sizi gözləyir",
+        "body": "Bugünkü yeməyi əlavə edin və indiyədək qiymətləndirdiklərinizə baxın."
+      }
+    }
   }
 }

@@ -505,8 +505,36 @@ export const feedbackReviewSchema = z
   .strict();
 export type FeedbackReview = z.infer<typeof feedbackReviewSchema>;
 export const notificationPreferencesSchema = z
-  .object({ cashbackUpdates: z.boolean(), partnerUpdates: z.boolean() })
+  .object({
+    cashbackUpdates: z.boolean(),
+    partnerUpdates: z.boolean(),
+    /** Gentle reminders: a meal still waiting for ratings, and the daily nudge. */
+    reminders: z.boolean(),
+  })
   .strict();
+
+/** One message in the in-app inbox (also sent as a push when allowed). */
+export const appNotificationSchema = z
+  .object({
+    id: z.string().min(1),
+    kind: z.enum(['cashback', 'meal_reminder', 'partner']),
+    title: z.string().min(1).max(200),
+    body: z.string().max(500),
+    /** In-app destination, checked against an allow-list before navigating. */
+    path: z.string().max(200).nullable(),
+    readAt: isoDate.nullable(),
+    createdAt: isoDate,
+  })
+  .strict();
+export type AppNotification = z.infer<typeof appNotificationSchema>;
+export const notificationPageSchema = z
+  .object({
+    items: z.array(appNotificationSchema),
+    nextCursor: z.string().nullable(),
+    unreadCount: z.number().int().nonnegative(),
+  })
+  .strict();
+export type NotificationPage = z.infer<typeof notificationPageSchema>;
 export type NotificationPreferences = z.infer<
   typeof notificationPreferencesSchema
 >;

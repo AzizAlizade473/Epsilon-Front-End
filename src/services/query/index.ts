@@ -79,6 +79,7 @@ export const queryKeys = {
   notification: {
     all: ['notification'] as const,
     settings: () => [...queryKeys.notification.all, 'settings'] as const,
+    inbox: () => [...queryKeys.notification.all, 'inbox'] as const,
   },
 } as const;
 

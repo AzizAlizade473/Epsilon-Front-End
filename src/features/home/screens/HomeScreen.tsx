@@ -35,6 +35,7 @@ import { queryKeys } from '@/services/query';
 import { BillsSection } from '@/components/receipts/BillsSection';
 import { WaitingDishes } from '../components/WaitingDishes';
 import { StaggeredRow } from '../components/StaggeredRow';
+import { NotificationPrimer } from '../components/NotificationPrimer';
 import { ExploreSection } from '../components/ExploreSection';
 
 export default function HomeScreen() {
@@ -270,6 +271,7 @@ export default function HomeScreen() {
         <ExploreSection />
         <PhoneVerificationBanner />
         <MockDataNotice />
+        <NotificationPrimer />
       </View>
     </Screen>
   );

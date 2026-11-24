@@ -13,6 +13,7 @@ import type {
   FeedbackReview,
   FeedbackUpdate,
   NotificationPreferences,
+  NotificationPage,
   OtpChallengeResult,
   Paginated,
   ProfileUpdateResult,
@@ -133,6 +134,12 @@ export interface NotificationService {
     options?: MutationOptions,
   ): Promise<NotificationPreferences>;
   registerDevice(token: string): Promise<void>;
+  list(
+    params?: { cursor?: string; limit?: number },
+    options?: ReadOptions,
+  ): Promise<NotificationPage>;
+  markRead(id: string): Promise<void>;
+  markAllRead(): Promise<void>;
 }
 
 export interface ServiceContainer {

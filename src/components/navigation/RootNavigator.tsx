@@ -3,6 +3,7 @@ import { Stack, type NativeStackNavigationOptions } from 'expo-router';
 import { colors, useMotion } from '@/design';
 import { WalletJourney } from '@/components/wallet/WalletJourney';
 import { walletDesign } from '@/design/wallet';
+import { NotificationRouter } from './NotificationRouter';
 
 const transparentSheet: NativeStackNavigationOptions = {
   presentation: 'transparentModal',
@@ -66,6 +67,7 @@ export function RootNavigator() {
           options={{ animation: 'fade', gestureEnabled: false }}
         />
       </Stack>
+      <NotificationRouter />
     </WalletJourney>
   );
 }

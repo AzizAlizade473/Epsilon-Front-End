@@ -56,6 +56,7 @@ const schemaNames = {
   FeedbackResult: 'feedbackResultSchema',
   FeedbackReview: 'feedbackReviewSchema',
   FeedbackUpdate: 'feedbackUpdateSchema',
+  NotificationPage: 'notificationPageSchema',
   Wallet: 'walletSchema',
   WalletTransaction: 'walletTransactionSchema',
   NotificationPreferences: 'notificationPreferencesSchema',
@@ -382,6 +383,17 @@ operation(
   'NotificationPreferences',
 );
 operation(
+  'get',
+  '/notifications',
+  'notificationInbox',
+  'NotificationPage',
+  null,
+  false,
+  ['Cursor', 'Limit'],
+);
+operation('post', '/notifications/{id}/read', 'markNotificationRead', null);
+operation('post', '/notifications/read-all', 'markAllNotificationsRead', null);
+operation(
   'post',
   '/devices',
   'registerPushDevice',
@@ -418,7 +430,13 @@ if (process.argv.includes('--check')) {
       wirePaths.add(node.text.split('?')[0]);
     if (ts.isTemplateExpression(node) && node.head.text.startsWith('/')) {
       const prefix = node.head.text.split('?')[0];
-      wirePaths.add(node.head.text.includes('?') ? prefix : prefix + '{id}');
+      // `/a/${x}/b` → /a/{id}/b; a query string (`/a?${qs}`) keeps only the path.
+      const full =
+        prefix +
+        node.templateSpans
+          .map((span) => '{id}' + span.literal.text.split('?')[0])
+          .join('');
+      wirePaths.add(node.head.text.includes('?') ? prefix : full);
     }
     ts.forEachChild(node, visit);
   }

@@ -13,6 +13,10 @@ type NativeNotifications = Pick<
 > & {
   AndroidImportance: Pick<typeof Notifications.AndroidImportance, 'DEFAULT'>;
 };
+let remotePush: boolean | null = null;
+/** null until enable() ran; false when this build cannot receive server pushes. */
+export const remotePushAvailable = () => remotePush;
+
 export function createNotificationDevice(
   load: () => Promise<NativeNotifications>,
   projectId: () => string | undefined,
@@ -41,9 +45,34 @@ export function createNotificationDevice(
       if (!permission.granted)
         permission = await native.requestPermissionsAsync();
       if (!permission.granted || !authOperation.current(epoch)) return false;
-      const token = await native.getExpoPushTokenAsync({ projectId: project });
-      if (!authOperation.current(epoch)) return false;
-      await register(token.data);
+      // The server sends each kind on its own channel; local reminders use 'reminders'.
+      if (android)
+        for (const [id, label] of [
+          ['reminders', 'notifications.remindersChannel'],
+          ['meal_reminder', 'notifications.remindersChannel'],
+          ['cashback', 'profile.cashbackUpdates'],
+          ['partner', 'profile.partnerUpdates'],
+        ] as const)
+          await native.setNotificationChannelAsync(id, {
+            name: i18n.t(label),
+            importance: native.AndroidImportance.DEFAULT,
+            enableVibrate: false,
+            sound: null,
+          });
+      // Permission is what the customer granted; a missing push service (no
+      // Firebase in this build) must not turn that into an error. Local
+      // reminders still work; server pushes start once a token registers.
+      try {
+        const token = await native.getExpoPushTokenAsync({
+          projectId: project,
+        });
+        if (!authOperation.current(epoch)) return false;
+        await register(token.data);
+        remotePush = true;
+      } catch (cause) {
+        remotePush = false;
+        if (__DEV__) console.warn('[push] token unavailable', String(cause));
+      }
       return authOperation.current(epoch);
     },
   };

@@ -55,7 +55,11 @@ jest.mock('@/services', () => ({
         mockUpdate(input),
     },
     notification: {
-      settings: async () => ({ cashbackUpdates: true, partnerUpdates: false }),
+      settings: async () => ({
+        cashbackUpdates: true,
+        partnerUpdates: false,
+        reminders: true,
+      }),
       updatePreferences: (input: NotificationPreferences) =>
         mockPreferences(input),
     },
@@ -168,7 +172,7 @@ it('requests notification permission only after the explanation is accepted and 
       readPermission={readPermission}
     />,
   );
-  await waitFor(() => expect(screen.getAllByRole('switch')).toHaveLength(2));
+  await waitFor(() => expect(screen.getAllByRole('switch')).toHaveLength(3));
   expect(enable).not.toHaveBeenCalled();
   await fireEvent(
     screen.getByRole('switch', { name: az.profile.partnerUpdates }),
@@ -190,7 +194,7 @@ it('saves a disabled notification preference without requesting OS permission', 
       readPermission={readPermission}
     />,
   );
-  await waitFor(() => expect(screen.getAllByRole('switch')).toHaveLength(2));
+  await waitFor(() => expect(screen.getAllByRole('switch')).toHaveLength(3));
   await fireEvent(
     screen.getByRole('switch', { name: az.profile.cashbackUpdates }),
     'valueChange',
@@ -200,6 +204,7 @@ it('saves a disabled notification preference without requesting OS permission', 
     expect(mockPreferences).toHaveBeenCalledWith({
       cashbackUpdates: false,
       partnerUpdates: false,
+      reminders: true,
     }),
   );
   expect(enable).not.toHaveBeenCalled();

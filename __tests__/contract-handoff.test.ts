@@ -245,6 +245,7 @@ it('validates every implemented mock response family, including generated projec
       await mockServices.notification.updatePreferences({
         cashbackUpdates: false,
         partnerUpdates: true,
+        reminders: true,
       }),
     ).success,
   ).toBe(true);

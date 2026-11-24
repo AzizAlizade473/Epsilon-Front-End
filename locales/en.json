@@ -485,7 +485,8 @@
         "answer": "Choose Delete account under Privacy and security. Verify your identity again and complete the confirmation shown."
       }
     },
-    "deleteKeyword": "DELETE"
+    "deleteKeyword": "DELETE",
+    "reminders": "Reminders about my meals"
   },
   "resilience": {
     "errorTitle": "Something went wrong",
@@ -984,5 +985,52 @@
     "edit": "Edit",
     "edited": "Edited",
     "editA11y": "Edit your rating of {{dish}}"
+  },
+  "notifications": {
+    "remindersChannel": "Reminders",
+    "settingsTitle": "What to receive",
+    "inboxTitle": "Inbox",
+    "markAll": "Mark all as read",
+    "empty": "Nothing here yet. We'll let you know about your meals and cashback.",
+    "unread": "Unread",
+    "localOnly": "This build gets on-device reminders. Messages from Epsilon’s server will start arriving once push delivery is set up.",
+    "primerTitle": "A gentle nudge after your meals?",
+    "primerBody": "We'll remind you when a meal is waiting for your opinion and tell you when cashback is confirmed. At most once a day, never late at night. You can change this any time.",
+    "primerAllow": "Turn on notifications",
+    "primerLater": "Not now",
+    "daily": {
+      "1": {
+        "title": "Had something delicious today?",
+        "body": "We'd love to hear what you thought."
+      },
+      "2": {
+        "title": "Your next favourite dish deserves a rating",
+        "body": "Scan your receipt after your meal and tell us how it was."
+      },
+      "3": {
+        "title": "Visited a restaurant today?",
+        "body": "Scan your receipt and share your experience."
+      },
+      "4": {
+        "title": "Remember that meal you enjoyed?",
+        "body": "Keep it in your Epsilon history."
+      },
+      "5": {
+        "title": "How was lunch?",
+        "body": "One scan, a few taps, and your opinion is saved."
+      },
+      "6": {
+        "title": "Good or bad, it counts",
+        "body": "Every dish you rate helps you remember what you loved."
+      },
+      "7": {
+        "title": "Eating out this week?",
+        "body": "Keep your receipt: rating the dishes takes a minute."
+      },
+      "8": {
+        "title": "Your food diary misses you",
+        "body": "Add today’s meal and see what you’ve rated so far."
+      }
+    }
   }
 }
