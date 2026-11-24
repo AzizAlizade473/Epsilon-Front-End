@@ -892,6 +892,96 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /feedback/{id}:
+    get:
+      operationId: myReview
+      parameters:
+        - $ref: '#/components/parameters/Language'
+        - $ref: '#/components/parameters/RequestId'
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Validated server projection
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedbackReview'
+          headers:
+            X-Request-Id:
+              schema: *a1
+            Date:
+              schema:
+                type: string
+              description:
+                HTTP server date anchors client time; authorization/expiry remain
+                server enforced.
+        '429':
+          description: Rate limited; delta-seconds Retry-After
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                minimum: 0
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description:
+            Machine-readable error. HTTP status remains authoritative; 403 is
+            generic forbidden, unknown codes never become typed domain codes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      operationId: editMyReview
+      parameters:
+        - $ref: '#/components/parameters/Language'
+        - $ref: '#/components/parameters/RequestId'
+        - $ref: '#/components/parameters/Idempotency'
+        - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeedbackUpdate'
+      responses:
+        '200':
+          description: Validated server projection
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeedbackReview'
+          headers:
+            X-Request-Id:
+              schema: *a1
+            Date:
+              schema:
+                type: string
+              description:
+                HTTP server date anchors client time; authorization/expiry remain
+                server enforced.
+        '429':
+          description: Rate limited; delta-seconds Retry-After
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                minimum: 0
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description:
+            Machine-readable error. HTTP status remains authoritative; 403 is
+            generic forbidden, unknown codes never become typed domain codes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /wallet:
     get:
       operationId: universalWallet
@@ -2342,6 +2432,26 @@ components:
         - reasonCodes
         - createdAt
         - updatedAt
+      additionalProperties: false
+    FeedbackUpdate:
+      type: object
+      properties:
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        comment:
+          type: string
+          maxLength: 500
+        reasonCodes:
+          maxItems: 6
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 40
+      required:
+        - rating
       additionalProperties: false
     Wallet:
       type: object

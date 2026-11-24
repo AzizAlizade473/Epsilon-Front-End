@@ -55,6 +55,7 @@ const schemaNames = {
   FeedbackInput: 'feedbackInputSchema',
   FeedbackResult: 'feedbackResultSchema',
   FeedbackReview: 'feedbackReviewSchema',
+  FeedbackUpdate: 'feedbackUpdateSchema',
   Wallet: 'walletSchema',
   WalletTransaction: 'walletTransactionSchema',
   NotificationPreferences: 'notificationPreferencesSchema',
@@ -343,6 +344,14 @@ operation('get', '/feedback', 'myReviews', 'FeedbackPage', null, false, [
   'Cursor',
   'Limit',
 ]);
+operation('get', '/feedback/{id}', 'myReview', 'FeedbackReview');
+operation(
+  'patch',
+  '/feedback/{id}',
+  'editMyReview',
+  'FeedbackReview',
+  'FeedbackUpdate',
+);
 operation('get', '/wallet', 'universalWallet', 'Wallet');
 operation(
   'get',
