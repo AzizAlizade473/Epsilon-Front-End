@@ -47,7 +47,7 @@ No receipt data is invented.
 FISCAL_PROVIDER=fixture        # local test receipts; never in production
 GEMINI_ENABLED=false           # set true only when you want to test Gemini
 GEMINI_API_KEY=your-key        # server only; never in the app
-GEMINI_MODEL=gemini-3.5-flash-lite
+GEMINI_MODEL=gemini-3.8-flash
 GEMINI_MAX_CALLS_PER_DAY=5
 ```
 
