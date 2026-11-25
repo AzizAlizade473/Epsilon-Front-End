@@ -1,5 +1,11 @@
-import { useId, useState, type ComponentProps, type ReactNode } from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
+import {
+  useEffect,
+  useId,
+  useState,
+  type ComponentProps,
+  type ReactNode,
+} from 'react';
+import { Animated, Easing, StyleSheet, TextInput, View } from 'react-native';
 
 import { Text } from './Text';
 
@@ -12,7 +18,7 @@ export type InputProps = Omit<
   label: string;
   error?: string;
   hint?: string;
-  /** `underline` is the auth-entry look: no box, icon/prefix row on a bottom rule. */
+  /** `underline` is the auth-entry look: one rounded container holding icon/prefix and the text. */
   appearance?: 'boxed' | 'underline';
   leading?: ReactNode;
 };
@@ -36,21 +42,37 @@ export function Input({
   const labelId = useId();
   const [focused, setFocused] = useState(false);
   const disabled = !editable || readOnly;
+  const [focus] = useState(() => new Animated.Value(0));
+  useEffect(() => {
+    Animated.timing(focus, {
+      toValue: focused ? 1 : 0,
+      duration: 160,
+      easing: Easing.out(Easing.quad),
+      useNativeDriver: false,
+    }).start();
+  }, [focus, focused]);
+  const edge = error ? colors.danger : colors.brand.primary;
+  const rest = error ? colors.danger : colors.brand.border;
   return (
     <View style={styles.group}>
       <Text nativeID={labelId} variant="callout">
         {label}
       </Text>
-      <View
+      <Animated.View
         style={
           underline && [
-            styles.underline,
+            styles.container,
             {
-              borderBottomColor: error
-                ? colors.danger
-                : focused
-                  ? colors.brand.primary
-                  : colors.brand.border,
+              borderColor: focus.interpolate({
+                inputRange: [0, 1],
+                outputRange: [rest, edge],
+              }),
+              backgroundColor: disabled
+                ? colors.divider
+                : focus.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [colors.surface, colors.surface],
+                  }),
             },
           ]
         }
@@ -100,7 +122,7 @@ export function Input({
             underline && styles.bare,
           ]}
         />
-      </View>
+      </Animated.View>
       {error ? (
         <Text
           variant="caption"
@@ -127,15 +149,20 @@ const styles = StyleSheet.create({
     borderWidth: layout.borderWidth,
     borderRadius: radius[16],
   },
-  underline: {
+  container: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[12],
-    borderBottomWidth: layout.borderWidth * 1.5,
+    minHeight: layout.controlHeight,
+    paddingHorizontal: spacing[16],
+    borderWidth: layout.borderWidth * 1.5,
+    borderRadius: radius[16],
   },
   bare: {
     flex: 1,
     minWidth: 0,
+    minHeight: 0,
+    paddingVertical: spacing[12],
     borderWidth: 0,
     borderRadius: 0,
     paddingHorizontal: 0,
