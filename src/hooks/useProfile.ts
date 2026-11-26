@@ -7,6 +7,13 @@ export function useProfile() {
     queryFn: ({ signal }) => services.user.me({ signal }),
   });
 }
+/** Empty for every customer who is not restaurant staff. */
+export function useStaffRestaurants() {
+  return useQuery({
+    queryKey: queryKeys.staff.restaurants(),
+    queryFn: ({ signal }) => services.staff.restaurants({ signal }),
+  });
+}
 export const reviewsKey = [...queryKeys.feedback.all, 'reviews'] as const;
 export function useReviews() {
   return useInfiniteQuery({

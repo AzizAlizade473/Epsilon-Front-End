@@ -13,6 +13,7 @@ import { ToastProvider } from './ToastProvider';
 import { FeedbackProvider } from './FeedbackProvider';
 import { CrashRuntime } from './CrashRuntime';
 import { WalletCacheRuntime } from './WalletCacheRuntime';
+import { OfflineFavouritesRuntime } from './OfflineFavouritesRuntime';
 import { AuthProvider, useAuth as useAuthState } from './AuthProvider';
 
 import { colors } from '@/design';
@@ -82,6 +83,7 @@ export function RuntimeProviders({
             <ToastProvider>
               <CrashRuntime />
               <WalletCacheRuntime />
+              <OfflineFavouritesRuntime />
               <OfflineBanner>
                 <UpdateGate>
                   <FeedbackProvider>

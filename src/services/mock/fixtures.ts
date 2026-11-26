@@ -42,7 +42,7 @@ export const mockUser: User = {
 export const mockConfig: Config = {
   minAppVersion: '0.1.0',
   minAge: 16,
-  requirePhoneVerification: true,
+  requirePhoneVerification: false,
 };
 
 export const mockRestaurants: Restaurant[] = [

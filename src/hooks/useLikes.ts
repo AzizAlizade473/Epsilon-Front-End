@@ -1,5 +1,7 @@
 import { useRouter } from 'expo-router';
 import {
+  infiniteQueryOptions,
+  onlineManager,
   useInfiniteQuery,
   useQuery,
   useQueryClient,
@@ -18,7 +20,9 @@ import type {
   LikeResult,
   Paginated,
 } from '@/services/contracts';
+import { isApiError } from '@/services/http/errors';
 import { queryKeys } from '@/services/query';
+import { offlineFavourites } from '@/services/query/offline-favourites';
 
 type Batch = {
   ids: Set<string>;
@@ -110,6 +114,8 @@ export async function setLike(
   const key = queryKeys.likes.state(kind, targetId);
   let undoLists = () => {};
   let previous: LikeResult | undefined;
+  const offline = offlineFavourites(client);
+  const queue = () => offline!.enqueue({ kind, targetId, liked, snapshot });
   try {
     await Promise.all([
       client.cancelQueries({ queryKey: key }),
@@ -122,15 +128,26 @@ export async function setLike(
       count: Math.max(0, (previous?.count ?? 0) + change),
     });
     if (!liked) undoLists = removeFromLists(client, kind, targetId);
+    // Without a network the wish is kept on disk and sent on reconnect.
+    if (offline && !onlineManager.isOnline()) return await queue();
     const result = liked
       ? await services.like.like(kind, targetId, snapshot)
       : await services.like.unlike(kind, targetId);
     // Never write one account's answer into the next account's cache.
     if (!authOperation.current(epoch)) return;
+    offline?.forget(kind, targetId);
     client.setQueryData(key, result);
     void client.invalidateQueries({ queryKey: queryKeys.likes.lists });
   } catch (error) {
     if (!authOperation.current(epoch)) return;
+    // The network dropped during the request: queue it instead of undoing.
+    if (
+      offline &&
+      !onlineManager.isOnline() &&
+      isApiError(error) &&
+      (error.code === 'NETWORK' || error.code === 'TIMEOUT')
+    )
+      return await queue();
     if (previous) client.setQueryData(key, previous);
     else void client.resetQueries({ queryKey: key, exact: true });
     undoLists();
@@ -166,9 +183,8 @@ export function useLike(target: LikeTarget) {
   };
 }
 
-export function useLikedList(kind: LikeKind) {
-  const client = useQueryClient();
-  return useInfiniteQuery({
+export function likedListOptions(client: QueryClient, kind: LikeKind) {
+  return infiniteQueryOptions({
     queryKey: queryKeys.likes.list(kind),
     initialPageParam: undefined as string | undefined,
     queryFn: async ({ pageParam, signal }) => {
@@ -191,6 +207,13 @@ export function useLikedList(kind: LikeKind) {
       !cursors.includes(last.nextCursor)
         ? last.nextCursor
         : undefined,
+  });
+}
+
+export function useLikedList(kind: LikeKind) {
+  const client = useQueryClient();
+  return useInfiniteQuery({
+    ...likedListOptions(client, kind),
     select: (data) => ({
       ...data,
       items: [

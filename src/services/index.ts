@@ -68,6 +68,12 @@ export const services = {
   get like() {
     return getServices().like;
   },
+  get activity() {
+    return getServices().activity;
+  },
+  get staff() {
+    return getServices().staff;
+  },
 };
 
 export * from './interfaces';

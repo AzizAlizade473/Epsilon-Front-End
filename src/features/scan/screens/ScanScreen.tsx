@@ -40,8 +40,9 @@ import { colors, motionTokens, radius, spacing, useMotion } from '@/design';
 import { useToast } from '@/providers/ToastProvider';
 import { Viewfinder } from '../components/Viewfinder';
 import { useScanMachine } from '../hooks/useScanMachine';
-import { manualCodeSchema } from '../machine';
+import { manualCodeSchema, typedFiscalUrl } from '../machine';
 import { officialReceiptUrl } from '../ekassa/exportBridge';
+import { pickQrFromImage } from '../imageQr';
 
 const errorKeys: Record<string, string> = {
   RECEIPT_UNSUPPORTED: 'unsupported',
@@ -52,6 +53,9 @@ const errorKeys: Record<string, string> = {
   TIMEOUT: 'network',
   RECEIPT_SOURCE_UNAVAILABLE: 'sourceUnavailable',
   RECEIPT_VERIFICATION_FAILED: 'verificationFailed',
+  IMAGE_NO_QR: 'imageNone',
+  IMAGE_MULTIPLE_QR: 'imageMultiple',
+  IMAGE_UNREADABLE: 'imageUnreadable',
 };
 export default function ScanScreen() {
   const { t } = useTranslation();
@@ -75,6 +79,10 @@ export default function ScanScreen() {
   const [code, setCode] = useState('');
   // The last scanned fiscal QR: opened on the official e-kassa page when no partner has it.
   const [lastQr, setLastQr] = useState<string | null>(null);
+  const [notFiscal, setNotFiscal] = useState(false);
+  const [typed, setTyped] = useState(false);
+  const [picking, setPicking] = useState(false);
+  const focusedRef = useRef(false);
   const navigateTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const slide = useAnimatedValue(0);
   const close = useCallback(() => {
@@ -84,6 +92,7 @@ export default function ScanScreen() {
   useFocusEffect(
     useCallback(() => {
       setFocused(true);
+      focusedRef.current = true;
       void getPermission().catch(() => undefined);
       const back = BackHandler.addEventListener('hardwareBackPress', () => {
         close();
@@ -91,6 +100,7 @@ export default function ScanScreen() {
       });
       return () => {
         setFocused(false);
+        focusedRef.current = false;
         cancel();
         back.remove();
         if (navigateTimer.current) clearTimeout(navigateTimer.current);
@@ -109,9 +119,12 @@ export default function ScanScreen() {
     });
     return () => subscription.remove();
   }, [getPermission, cancel]);
+  // Only a changed answer counts: the refresh after the photo picker closes must
+  // not reset a check that is already running.
+  const granted = permission?.granted;
   useEffect(() => {
-    if (permission) event(permission.granted ? 'granted' : 'denied');
-  }, [permission, event]);
+    if (granted !== undefined) event(granted ? 'granted' : 'denied');
+  }, [granted, event]);
   useEffect(() => {
     if (scan.state !== 'error') return;
     slide.setValue(motion.reduceMotion ? 1 : 0);
@@ -124,7 +137,11 @@ export default function ScanScreen() {
     return () => animation.stop();
   }, [scan.state, slide, motion.reduceMotion]);
   const resolve = async (kind: 'qr' | 'code', value: string) => {
-    setLastQr(kind === 'qr' ? officialReceiptUrl(value) : null);
+    const official =
+      kind === 'qr' ? officialReceiptUrl(value) : typedFiscalUrl(value);
+    setLastQr(official);
+    setNotFiscal(kind === 'qr' && !official);
+    setTyped(kind === 'code');
     const receipt = await scan.resolve(kind, value);
     if (!receipt) return;
     setCode('');
@@ -136,12 +153,23 @@ export default function ScanScreen() {
     void haptic.catch(() => undefined);
     navigateTimer.current = setTimeout(
       () =>
-        router.replace({
+        // Push, never replace: replacing from a tab removes the tabs under it.
+        router.push({
           pathname: '/receipt/[receiptId]',
           params: { receiptId: receipt.id },
         }),
       motion.reduceMotion ? 0 : motionTokens.scanSuccessDelay,
     );
+  };
+  const upload = async () => {
+    if (picking) return;
+    setPicking(true);
+    const result = await pickQrFromImage();
+    setPicking(false);
+    // The customer may have left the screen while the image was being read.
+    if (!result || !focusedRef.current) return;
+    if ('error' in result) scan.fail(result.error);
+    else await resolve('qr', result.data);
   };
   // No partner source has this fiscal receipt: open the official e-kassa page for it.
   const sourceMissing =
@@ -155,10 +183,21 @@ export default function ScanScreen() {
     router.push({ pathname: '/receipt-import', params: { qr: lastQr } });
   }, [sourceMissing, lastQr, event, router]);
   const cameraActive = Boolean(
-    permission?.granted && focused && active && scan.state === 'scanning',
+    permission?.granted &&
+    focused &&
+    active &&
+    !picking &&
+    scan.state === 'scanning',
   );
+  const busy = scan.state === 'resolving' || scan.state === 'success';
   const manual = scan.state === 'manual-entry';
-  const errorKey = errorKeys[scan.error] ?? 'unknown';
+  // "Check the code and try again" is no help for a scanned non-fiscal QR.
+  const errorKey =
+    notFiscal && scan.error === 'RECEIPT_NOT_FOUND'
+      ? 'unsupported'
+      : typed && scan.error === 'RECEIPT_UNSUPPORTED'
+        ? 'manualUnsupported'
+        : (errorKeys[scan.error] ?? 'unknown');
   const parsed = manualCodeSchema.safeParse(code);
   return (
     <>
@@ -166,12 +205,21 @@ export default function ScanScreen() {
         <Screen
           surface="surface"
           footer={
-            <Button
-              variant="ghost"
-              label={t('scan.manual')}
-              disabled={scan.state === 'resolving' || scan.state === 'success'}
-              onPress={() => event('manual')}
-            />
+            <>
+              <Button
+                variant="ghost"
+                label={t('scan.upload')}
+                loading={picking}
+                disabled={busy}
+                onPress={() => void upload()}
+              />
+              <Button
+                variant="ghost"
+                label={t('scan.manual')}
+                disabled={busy}
+                onPress={() => event('manual')}
+              />
+            </>
           }
           leading={
             <IconButton
@@ -275,10 +323,15 @@ export default function ScanScreen() {
                 </Text>
                 <Button
                   variant="secondary"
+                  label={t('scan.upload')}
+                  loading={picking}
+                  disabled={busy}
+                  onPress={() => void upload()}
+                />
+                <Button
+                  variant="secondary"
                   label={t('scan.manual')}
-                  disabled={
-                    scan.state === 'resolving' || scan.state === 'success'
-                  }
+                  disabled={busy}
                   onPress={() => event('manual')}
                 />
               </>
@@ -344,14 +397,16 @@ export default function ScanScreen() {
               />
               <Input
                 label={t('scan.code')}
+                hint={t('scan.codeHint')}
+                error={code.length > 44 ? t('scan.codeTooLong') : undefined}
                 value={code}
                 autoFocus
-                autoCapitalize="characters"
+                autoCapitalize="none"
                 autoCorrect={false}
-                onChangeText={(value) =>
-                  setCode(value.replace(/\s/g, '').toUpperCase())
-                }
-                maxLength={32}
+                autoComplete="off"
+                onChangeText={(value) => setCode(value.replace(/\s/g, ''))}
+                // Above the limit, so a longer paste is reported and never cut silently.
+                maxLength={64}
               />
               <Button
                 label={t('common.continue')}

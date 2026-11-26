@@ -8,6 +8,7 @@ import { generateIdempotencyKey } from '@/services/http/idempotency';
 import { queryKeys } from '@/services/query';
 import {
   candidate,
+  isIdle,
   scanTransition,
   type ScanEvent,
   type ScanState,
@@ -46,12 +47,18 @@ export function useScanMachine() {
     },
     [],
   );
+  /** A failure found on the device, before anything is sent to the server. */
+  const fail = (code: string) => {
+    if (!isIdle(stateRef.current)) return;
+    event('detect');
+    setError(code);
+    event('failed');
+  };
   const resolve = async (
     kind: 'qr' | 'code',
     value: string,
   ): Promise<Receipt | null> => {
-    if (stateRef.current !== 'scanning' && stateRef.current !== 'manual-entry')
-      return null;
+    if (!isIdle(stateRef.current)) return null;
     event('detect');
     const parsed = candidate(kind, value);
     if (!parsed.success) {
@@ -94,5 +101,5 @@ export function useScanMachine() {
       return null;
     }
   };
-  return { state, error, event, resolve, cancel };
+  return { state, error, event, resolve, fail, cancel };
 }

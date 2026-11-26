@@ -1,10 +1,11 @@
 import { AuthIntentError, type AuthIntent } from '@/lib/auth-intent';
 import type { NextStep, User } from '../contracts';
-import { mockConfig, mockUser } from './fixtures';
+import { mockUser } from './fixtures';
 import { ApiError } from '../http/errors';
 
 const accounts = new Map<string, User>([
   [`phone:${mockUser.phone}`, { ...mockUser }],
+  [`email:${mockUser.email}`, { ...mockUser }],
   ['google:existing', { ...mockUser }],
 ]);
 let nextAccountId = 0;
@@ -49,10 +50,23 @@ export function rememberMockAccount(user: User) {
     if (account.id === user.id) accounts.set(key, user);
 }
 export function mockAccountStep(user: User): NextStep {
-  if (!user.firstName || !user.lastName || !user.birthDate) return 'profile';
-  return mockConfig.requirePhoneVerification && !user.phoneVerified
-    ? 'phone'
+  return !user.firstName || !user.lastName || !user.birthDate
+    ? 'profile'
     : 'home';
+}
+/** Whether another fixture account already signs in with this address. */
+export function mockEmailTaken(email: string, userId: string) {
+  const owner = accounts.get(`email:${email}`);
+  return owner !== undefined && owner.id !== userId;
+}
+export function claimMockEmail(email: string, user: User) {
+  accounts.set(`email:${email}`, user);
+}
+export function releaseMockEmail(email: string) {
+  accounts.delete(`email:${email}`);
+}
+export function releaseMockPhone(phone: string | null) {
+  if (phone) accounts.delete(`phone:${phone}`);
 }
 export function forgetMockAccount(user: User) {
   for (const [key, account] of accounts)

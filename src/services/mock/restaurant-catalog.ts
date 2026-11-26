@@ -2684,6 +2684,7 @@ export function mockDirectory(lang: CatalogLanguage): DirectoryEntry[] {
       rating: c.rating,
       dishCount: c.dishes.length,
       signature: best.name,
+      ingredients: [...new Set(c.dishes.flatMap((d) => d.ingredients))],
     };
   });
 }

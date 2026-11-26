@@ -5,6 +5,8 @@ export const storageKeys = {
   session: 'epsilon.session',
   onboarding: 'epsilon.onboarding.completed',
   language: 'epsilon.language',
+  /** Last confirmed profile, so a signed-in customer can open the app offline. */
+  user: 'epsilon.user',
 } as const;
 
 const sessionSchema = z
@@ -33,15 +35,13 @@ export type NavigationUser = {
 
 export type AuthState = BootData & {
   user: NavigationUser | null;
-  requirePhoneVerification: boolean;
   minimumAge?: number;
   nextStep?: 'profile' | 'phone' | 'home';
   restoreStatus?: 'loading' | 'error';
   retryRestore?: () => void;
 };
 
-export type BootstrapRoute =
-  '/welcome' | '/phone' | '/profile-setup' | '/phone-verify' | '/home';
+export type BootstrapRoute = '/welcome' | '/phone' | '/profile-setup' | '/home';
 
 export function resolveBootstrapRoute(auth: AuthState): BootstrapRoute {
   if (!auth.onboardingComplete) {
@@ -54,10 +54,6 @@ export function resolveBootstrapRoute(auth: AuthState): BootstrapRoute {
   if (!auth.user?.firstName || !auth.user?.birthDate) {
     return '/profile-setup';
   }
-  if (auth.requirePhoneVerification && !auth.user.phoneVerified) {
-    return '/phone-verify';
-  }
-  if (auth.nextStep === 'phone') return '/phone-verify';
   return '/home';
 }
 

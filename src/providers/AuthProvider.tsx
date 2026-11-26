@@ -10,7 +10,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { onlineManager, useQueryClient } from '@tanstack/react-query';
 import {
   bootStorage,
   resolveBootstrapRoute,
@@ -29,6 +29,7 @@ import type {
   User,
 } from '@/services/contracts';
 import { services } from '@/services';
+import { userSchema } from '@/services/contracts';
 import { queryKeys } from '@/services/query';
 import { setAccessToken } from '@/services/http/client';
 import {
@@ -47,8 +48,15 @@ type AuthActions = {
   loadConfig: () => Promise<Config>;
   applyConfig: (config: Config) => void;
   logout: () => Promise<void>;
-  skipPhone: () => void;
 };
+async function readSavedUser(): Promise<User | null> {
+  try {
+    const raw = await SecureStore.getItemAsync(storageKeys.user);
+    return raw ? (userSchema.safeParse(JSON.parse(raw)).data ?? null) : null;
+  } catch {
+    return null;
+  }
+}
 const StateContext = createContext<AuthState | null>(null);
 const ActionsContext = createContext<AuthActions | null>(null);
 export function useAuth() {
@@ -74,7 +82,6 @@ export function AuthProvider({
   const [state, setState] = useState<AuthState>({
     ...boot,
     user: null,
-    requirePhoneVerification: true,
   });
   const snapshot = useRef(state);
   const [hasBootSession] = useState(Boolean(boot.session));
@@ -135,10 +142,7 @@ export function AuthProvider({
   }, [persist, publish, queryClient]);
   const applyConfig = useCallback(
     (config: Config) => {
-      publish({
-        requirePhoneVerification: config.requirePhoneVerification,
-        minimumAge: config.minAge,
-      });
+      publish({ minimumAge: config.minAge });
     },
     [publish],
   );
@@ -146,6 +150,8 @@ export function AuthProvider({
     const epoch = authOperation.epoch();
     const config = await queryClient.fetchQuery({
       gcTime: 0,
+      // Fail at once when offline instead of pausing the session restore.
+      networkMode: 'always',
       queryKey: queryKeys.config.current(),
       queryFn: ({ signal }) => services.config.get({ signal }),
     });
@@ -156,9 +162,18 @@ export function AuthProvider({
     (user: User, nextStep?: NextStep | null) => {
       publish({ user, nextStep: nextStep ?? undefined });
       queryClient.setQueryData(queryKeys.user.profile(), user);
+      const epoch = authOperation.epoch();
+      // Identities are not needed offline and would outgrow secure storage.
+      void persist(async () => {
+        if (authOperation.current(epoch) && session.current)
+          await SecureStore.setItemAsync(
+            storageKeys.user,
+            JSON.stringify({ ...user, identities: [] }),
+          );
+      }).catch(() => undefined);
       return resolveBootstrapRoute(snapshot.current);
     },
-    [publish, queryClient],
+    [persist, publish, queryClient],
   );
   useEffect(() => {
     onBootConsumed?.();
@@ -197,22 +212,44 @@ export function AuthProvider({
     if (!hasBootSession) return;
     let active = true;
     const epoch = authOperation.epoch();
-    const timer = setTimeout(() => {
-      void Promise.all([services.user.me(), loadConfig()])
-        .then(([user]) => {
-          if (active && authOperation.current(epoch) && session.current) {
-            updateUser(user);
-            publish({ restoreStatus: undefined });
-            setRestored(true);
-          }
-        })
-        .catch(() => {
-          if (active && authOperation.current(epoch) && session.current)
-            publish({ restoreStatus: 'error' });
+    const live = () =>
+      active && authOperation.current(epoch) && Boolean(session.current);
+    let unsubscribe = () => {};
+    const restore = async () => {
+      // A saved profile opens the app at once, with or without a network.
+      const saved = await readSavedUser();
+      if (!live()) return;
+      if (saved) {
+        updateUser(saved);
+        publish({ restoreStatus: undefined });
+        setRestored(true);
+      }
+      try {
+        const [user] = await Promise.all([services.user.me(), loadConfig()]);
+        if (!live()) return;
+        updateUser(user);
+        publish({ restoreStatus: undefined });
+        setRestored(true);
+      } catch {
+        if (!live()) return;
+        if (!saved) {
+          publish({ restoreStatus: 'error' });
+          return;
+        }
+        // Confirm the saved profile as soon as the network returns.
+        unsubscribe = onlineManager.subscribe((online) => {
+          if (!online) return;
+          unsubscribe();
+          setRestoreAttempt((attempt) => attempt + 1);
         });
+      }
+    };
+    const timer = setTimeout(() => {
+      void restore();
     }, 0);
     return () => {
       active = false;
+      unsubscribe();
       clearTimeout(timer);
     };
   }, [hasBootSession, restoreAttempt, loadConfig, updateUser, publish]);
@@ -265,10 +302,6 @@ export function AuthProvider({
           loadConfig,
           applyConfig,
           logout,
-          skipPhone: () => {
-            if (session.current && !snapshot.current.requirePhoneVerification)
-              publish({ nextStep: 'home' });
-          },
         }}
       >
         <SignedInContext.Provider value={Boolean(state.session)}>

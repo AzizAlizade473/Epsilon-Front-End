@@ -67,6 +67,15 @@ async function triggerSingleFlightRefresh(): Promise<string> {
       })
       .catch(async (err) => {
         if (!authOperation.current(epoch)) throw err;
+        // No network or a failing server says nothing about the session: keep it.
+        if (
+          err instanceof ApiError &&
+          (err.code === 'NETWORK' ||
+            err.code === 'TIMEOUT' ||
+            err.status === 429 ||
+            err.status >= 500)
+        )
+          throw err;
         setAccessToken(null);
         if (_onLogout) {
           try {

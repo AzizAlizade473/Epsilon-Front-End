@@ -8,6 +8,7 @@ import {
   authResultSchema,
   otpChallengeSchema,
   configSchema,
+  emailListSchema,
   feedbackResultSchema,
   feedbackReviewSchema,
   notificationPreferencesSchema,
@@ -27,12 +28,18 @@ import {
   likeSnapshotSchema,
   likeStateSchema,
   likeTargetIdSchema,
+  replyReportSchema,
+  scanAttemptSchema,
+  staffReplySchema,
+  staffRestaurantListSchema,
+  staffReviewSchema,
   type FeedbackInput,
 } from '../contracts';
 import { request } from '../http/client';
 import { requestWithAuth } from '../http/client-with-refresh';
 import { generateIdempotencyKey } from '../http/idempotency';
 import type {
+  ActivityService,
   AuthService,
   ConfigService,
   FeedbackService,
@@ -41,6 +48,7 @@ import type {
   ReceiptService,
   RestaurantService,
   ServiceContainer,
+  StaffService,
   UserService,
   WalletService,
 } from '../interfaces';
@@ -151,6 +159,62 @@ export const httpUserService: UserService = {
         options?.idempotencyKey ?? generateIdempotencyKey('delete-acc'),
     });
   },
+
+  async emails(options) {
+    return requestWithAuth(
+      'GET',
+      '/me/emails',
+      emailListSchema,
+      undefined,
+      options,
+    );
+  },
+
+  async requestEmail(input) {
+    return requestWithAuth(
+      'POST',
+      '/me/emails/request',
+      otpChallengeSchema,
+      input,
+      { idempotencyKey: generateIdempotencyKey('email-req') },
+    );
+  },
+
+  async verifyEmail(input) {
+    return requestWithAuth(
+      'POST',
+      '/me/emails/verify',
+      emailListSchema,
+      input,
+      { idempotencyKey: generateIdempotencyKey('email-ver') },
+    );
+  },
+
+  async cancelPendingEmail() {
+    await requestWithAuth(
+      'DELETE',
+      '/me/emails/pending',
+      voidSchema,
+      undefined,
+      { idempotencyKey: generateIdempotencyKey('email-cancel') },
+    );
+  },
+
+  async removeEmail(email) {
+    await requestWithAuth(
+      'DELETE',
+      `/me/emails/${encodeURIComponent(email)}`,
+      voidSchema,
+      undefined,
+      { idempotencyKey: generateIdempotencyKey('email-remove') },
+    );
+  },
+
+  async removePhone() {
+    await requestWithAuth('DELETE', '/me/phone', voidSchema, undefined, {
+      idempotencyKey: generateIdempotencyKey('phone-remove'),
+    });
+  },
 };
 
 export const httpConfigService: ConfigService = {
@@ -240,14 +304,12 @@ export const httpFeedbackService: FeedbackService = {
   },
 
   async list(params, options) {
-    const query = new URLSearchParams();
+    const query = new URLSearchParams({ include: 'reply' });
     if (params?.cursor) query.set('cursor', params.cursor);
     if (params?.limit) query.set('limit', String(params.limit));
-    const qs = query.toString();
-    const path = qs ? `/feedback?${qs}` : '/feedback';
     return requestWithAuth(
       'GET',
-      path,
+      `/feedback?${query.toString()}`,
       paginatedSchema(feedbackReviewSchema),
       undefined,
       options,
@@ -257,7 +319,7 @@ export const httpFeedbackService: FeedbackService = {
   async get(feedbackId, options) {
     return requestWithAuth(
       'GET',
-      `/feedback/${encodeURIComponent(feedbackId)}`,
+      `/feedback/${encodeURIComponent(feedbackId)}?include=reply`,
       feedbackReviewSchema,
       undefined,
       options,
@@ -271,6 +333,88 @@ export const httpFeedbackService: FeedbackService = {
       feedbackReviewSchema,
       input,
       options,
+    );
+  },
+
+  async reportReply(feedbackId, reason, options) {
+    await requestWithAuth(
+      'POST',
+      `/feedback/${encodeURIComponent(feedbackId)}/reply/report`,
+      voidSchema,
+      replyReportSchema.parse({ reason }),
+      {
+        ...options,
+        idempotencyKey:
+          options?.idempotencyKey ?? generateIdempotencyKey('reply-report'),
+      },
+    );
+  },
+};
+
+export const httpActivityService: ActivityService = {
+  async scans(params, options) {
+    const query = new URLSearchParams();
+    if (params?.cursor) query.set('cursor', params.cursor);
+    if (params?.limit) query.set('limit', String(params.limit));
+    const qs = query.toString();
+    return requestWithAuth(
+      'GET',
+      qs ? `/activity/scans?${qs}` : '/activity/scans',
+      paginatedSchema(scanAttemptSchema),
+      undefined,
+      options,
+    );
+  },
+};
+
+export const httpStaffService: StaffService = {
+  async restaurants(options) {
+    return requestWithAuth(
+      'GET',
+      '/staff/restaurants',
+      staffRestaurantListSchema,
+      undefined,
+      options,
+    );
+  },
+  async reviews(restaurantId, params, options) {
+    const query = new URLSearchParams();
+    if (params?.cursor) query.set('cursor', params.cursor);
+    if (params?.limit) query.set('limit', String(params.limit));
+    const qs = query.toString();
+    const path = `/staff/restaurants/${encodeURIComponent(restaurantId)}/reviews`;
+    return requestWithAuth(
+      'GET',
+      qs ? `${path}?${qs}` : path,
+      paginatedSchema(staffReviewSchema),
+      undefined,
+      options,
+    );
+  },
+  async reply(feedbackId, body, options) {
+    return requestWithAuth(
+      'PUT',
+      `/staff/reviews/${encodeURIComponent(feedbackId)}/reply`,
+      staffReviewSchema,
+      staffReplySchema.parse({ body }),
+      {
+        ...options,
+        idempotencyKey:
+          options?.idempotencyKey ?? generateIdempotencyKey('reply-put'),
+      },
+    );
+  },
+  async deleteReply(feedbackId, options) {
+    await requestWithAuth(
+      'DELETE',
+      `/staff/reviews/${encodeURIComponent(feedbackId)}/reply`,
+      voidSchema,
+      undefined,
+      {
+        ...options,
+        idempotencyKey:
+          options?.idempotencyKey ?? generateIdempotencyKey('reply-delete'),
+      },
     );
   },
 };
@@ -428,4 +572,6 @@ export const httpServices: ServiceContainer = {
   wallet: httpWalletService,
   notification: httpNotificationService,
   like: httpLikeService,
+  activity: httpActivityService,
+  staff: httpStaffService,
 };

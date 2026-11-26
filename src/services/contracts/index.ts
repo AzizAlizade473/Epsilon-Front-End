@@ -113,6 +113,30 @@ export const otpChallengeSchema = z
 
 export type OtpChallengeResult = z.infer<typeof otpChallengeSchema>;
 
+/** GET /me/emails: verified addresses and the change still waiting for its code. */
+export const emailListSchema = z
+  .object({
+    items: z.array(
+      z
+        .object({
+          email: z.string().email(),
+          primary: z.boolean(),
+          verifiedAt: isoDate,
+        })
+        .strict(),
+    ),
+    pending: z
+      .object({
+        email: z.string().email(),
+        expiresAt: isoDate,
+        makePrimary: z.boolean(),
+      })
+      .strict()
+      .nullable(),
+  })
+  .strict();
+export type EmailList = z.infer<typeof emailListSchema>;
+
 /** Canonical onboarding envelope; legacy User-only APIs remain supported explicitly. */
 export const profileUpdateResultSchema = z.union([
   z.object({ user: userSchema, nextStep: nextStepSchema }).strict(),
@@ -517,9 +541,81 @@ export const feedbackReviewSchema = z
     createdAt: isoDate,
     /** Set when the author edited the review; createdAt stays the original time. */
     updatedAt: isoDate.nullable(),
+    /** The restaurant's published answer; only sent for `?include=reply`. */
+    reply: z
+      .object({
+        restaurantName: z.string().min(1),
+        body: z.string().min(1).max(1000),
+        updatedAt: isoDate,
+      })
+      .strict()
+      .nullable()
+      .optional(),
   })
   .strict();
 export type FeedbackReview = z.infer<typeof feedbackReviewSchema>;
+export type RestaurantReply = NonNullable<FeedbackReview['reply']>;
+export const replyReportSchema = z
+  .object({ reason: z.string().trim().min(1).max(300) })
+  .strict();
+
+// ---------------------------------------------------------------------------
+// Scan activity
+// ---------------------------------------------------------------------------
+
+export const scanAttemptSchema = z
+  .object({
+    id: z.string().min(1),
+    at: isoDate,
+    status: z.enum(['success', 'failed']),
+    /** Server error code of a failed attempt; unknown codes stay readable. */
+    reason: z.string().max(100).nullable(),
+    retryable: z.boolean(),
+    restaurantName: z.string().nullable(),
+    receiptId: z.string().nullable(),
+    /** The official receipt address to try again, when the server allows it. */
+    retryQr: z.string().max(2048).nullable(),
+  })
+  .strict();
+export type ScanAttempt = z.infer<typeof scanAttemptSchema>;
+
+// ---------------------------------------------------------------------------
+// Restaurant staff
+// ---------------------------------------------------------------------------
+
+export const staffRestaurantListSchema = z
+  .object({
+    items: z.array(
+      z.object({ id: z.string().min(1), name: z.string().min(1) }).strict(),
+    ),
+  })
+  .strict();
+export type StaffRestaurant = z.infer<
+  typeof staffRestaurantListSchema
+>['items'][number];
+export const staffReplySchema = z
+  .object({ body: z.string().trim().min(1).max(1000) })
+  .strict();
+export const staffReviewSchema = z
+  .object({
+    feedbackId: z.string().min(1),
+    dishName: z.string().min(1),
+    rating: z.number().int().min(1).max(5),
+    comment: z.string().nullable(),
+    createdAt: isoDate,
+    /** First name only; staff never receive contacts or receipt ids. */
+    reviewer: z.string().nullable(),
+    reply: z
+      .object({
+        body: z.string().min(1).max(1000),
+        updatedAt: isoDate,
+        status: z.enum(['published', 'hidden']),
+      })
+      .strict()
+      .nullable(),
+  })
+  .strict();
+export type StaffReview = z.infer<typeof staffReviewSchema>;
 export const notificationPreferencesSchema = z
   .object({
     cashbackUpdates: z.boolean(),

@@ -149,6 +149,8 @@ export const directoryEntrySchema = z
     dishCount: count,
     /** Best-rated dish name, shown as the restaurant's signature. */
     signature: z.string().min(1),
+    /** Main ingredients across the menu's dishes. */
+    ingredients: z.array(ingredientSchema).optional(),
   })
   .strict();
 export const directorySchema = z.array(directoryEntrySchema);

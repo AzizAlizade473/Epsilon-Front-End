@@ -8,6 +8,7 @@
 import type {
   AuthResult,
   Config,
+  EmailList,
   FeedbackInput,
   FeedbackResult,
   FeedbackReview,
@@ -27,35 +28,35 @@ import type {
   LikeSnapshot,
   LikeState,
   Restaurant,
+  ScanAttempt,
   Session,
+  StaffRestaurant,
+  StaffReview,
   User,
   Wallet,
   WalletTransaction,
 } from '../contracts';
 import type { AuthIntent } from '@/lib/auth-intent';
 
+/** Exactly one of the two. */
+export type OtpSubject =
+  { email: string; phone?: never } | { phone: string; email?: never };
+
 export interface AuthService {
   readonly supportsAuthIntent?: boolean;
-  requestOtp(input: {
-    phone: string;
-    intent?: AuthIntent;
-    /** Inbox for the code while codes go by e-mail (demo server). */
-    email?: string;
-  }): Promise<OtpChallengeResult>;
-  verifyOtp(input: {
-    phone: string;
-    code: string;
-    intent?: AuthIntent;
-  }): Promise<AuthResult>;
+  /** The code is e-mailed. `phone` only re-authenticates accounts without an e-mail. */
+  requestOtp(
+    input: OtpSubject & { intent?: AuthIntent },
+  ): Promise<OtpChallengeResult>;
+  verifyOtp(
+    input: OtpSubject & { code: string; intent?: AuthIntent },
+  ): Promise<AuthResult>;
   signInWithGoogle(input: {
     idToken: string;
     intent?: AuthIntent;
   }): Promise<AuthResult>;
   signInWithApple(input: { identityToken: string }): Promise<AuthResult>;
-  requestPhoneLinkOtp(input: {
-    phone: string;
-    email?: string;
-  }): Promise<OtpChallengeResult>;
+  requestPhoneLinkOtp(input: { phone: string }): Promise<OtpChallengeResult>;
   verifyPhoneLink(input: { phone: string; code: string }): Promise<User>;
   refresh(input: { refreshToken: string }): Promise<Session>;
   logout(): Promise<void>;
@@ -70,6 +71,16 @@ export interface UserService {
     language?: string;
   }): Promise<ProfileUpdateResult>;
   deleteAccount(options?: MutationOptions): Promise<void>;
+  emails(options?: ReadOptions): Promise<EmailList>;
+  /** Needs a recent sign-in (REAUTH_REQUIRED otherwise), like removal. */
+  requestEmail(input: {
+    email: string;
+    makePrimary: boolean;
+  }): Promise<OtpChallengeResult>;
+  verifyEmail(input: { email: string; code: string }): Promise<EmailList>;
+  cancelPendingEmail(): Promise<void>;
+  removeEmail(email: string): Promise<void>;
+  removePhone(): Promise<void>;
 }
 
 export interface ConfigService {
@@ -120,6 +131,36 @@ export interface FeedbackService {
     input: FeedbackUpdate,
     options?: MutationOptions,
   ): Promise<FeedbackReview>;
+  /** The review's author flags the restaurant's answer; repeats change nothing. */
+  reportReply(
+    feedbackId: string,
+    reason: string,
+    options?: MutationOptions,
+  ): Promise<void>;
+}
+
+export interface ActivityService {
+  /** This account's receipt scan outcomes, newest first. */
+  scans(
+    params?: { cursor?: string; limit?: number },
+    options?: ReadOptions,
+  ): Promise<Paginated<ScanAttempt>>;
+}
+
+export interface StaffService {
+  /** Empty for everyone who is not restaurant staff. */
+  restaurants(options?: ReadOptions): Promise<{ items: StaffRestaurant[] }>;
+  reviews(
+    restaurantId: string,
+    params?: { cursor?: string; limit?: number },
+    options?: ReadOptions,
+  ): Promise<Paginated<StaffReview>>;
+  reply(
+    feedbackId: string,
+    body: string,
+    options?: MutationOptions,
+  ): Promise<StaffReview>;
+  deleteReply(feedbackId: string, options?: MutationOptions): Promise<void>;
 }
 
 export interface WalletService {
@@ -181,4 +222,6 @@ export interface ServiceContainer {
   wallet: WalletService;
   notification: NotificationService;
   like: LikeService;
+  activity: ActivityService;
+  staff: StaffService;
 }

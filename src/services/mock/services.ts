@@ -10,14 +10,19 @@ import {
   type FeedbackReview,
   type NotificationPreferences,
   type WalletTransaction,
+  type EmailList,
   type LikeItem,
   type Receipt,
   type ReceiptListParams,
   likeSnapshotSchema,
   likeTargetIdSchema,
+  replyReportSchema,
+  type PurchaseReference,
+  type ScanAttempt,
 } from '../contracts';
 import { ApiError } from '../http/errors';
 import type {
+  ActivityService,
   AuthService,
   ConfigService,
   FeedbackService,
@@ -26,6 +31,7 @@ import type {
   ReceiptService,
   RestaurantService,
   ServiceContainer,
+  StaffService,
   UserService,
   WalletService,
 } from '../interfaces';
@@ -48,9 +54,56 @@ import {
   forgetMockAccount,
   requireMockIntent,
   mockAccountOrCreate,
+  mockEmailTaken,
+  claimMockEmail,
+  releaseMockEmail,
+  releaseMockPhone,
 } from './accounts';
 
 let _currentUser: User = { ...mockUser };
+/** Secondary addresses per fixture user, and the pending change. */
+const mockSecondary = new Map<string, Set<string>>();
+let mockPending:
+  (NonNullable<EmailList['pending']> & { userId: string }) | null = null;
+function mockEmails(): EmailList {
+  const primary = _currentUser.email;
+  const all = new Set([
+    ...(primary ? [primary] : []),
+    ...(mockSecondary.get(_currentUser.id) ?? []),
+  ]);
+  const open =
+    mockPending?.userId === _currentUser.id &&
+    Date.parse(mockPending.expiresAt) > Date.now()
+      ? mockPending
+      : null;
+  return {
+    items: [...all].map((email) => ({
+      email,
+      primary: email === primary,
+      verifiedAt: _currentUser.createdAt,
+    })),
+    pending: open
+      ? {
+          email: open.email,
+          expiresAt: open.expiresAt,
+          makePrimary: open.makePrimary,
+        }
+      : null,
+  };
+}
+function fixtureError(
+  code:
+    | 'EMAIL_IN_USE'
+    | 'EMAIL_IS_PRIMARY'
+    | 'LAST_SIGN_IN_METHOD'
+    | 'OTP_INVALID'
+    | 'OTP_EXPIRED',
+  status = 409,
+) {
+  return new ApiError({ code, message: 'Fixture', status });
+}
+const subjectKey = (input: { email?: string; phone?: string }) =>
+  input.email ? `email:${input.email}` : `phone:${input.phone}`;
 const mockRatings = new Map<string, number>();
 const mockFeedbackResults = new Map<string, FeedbackResult>();
 const mockReviews: FeedbackReview[] = [];
@@ -59,7 +112,27 @@ let mockPreferences: NotificationPreferences = {
   partnerUpdates: false,
   reminders: true,
 };
+/** Scan outcomes per fixture user, newest first. */
+const mockScans = new Map<string, ScanAttempt[]>();
+function recordMockScan(
+  result: Pick<
+    ScanAttempt,
+    'status' | 'reason' | 'receiptId' | 'restaurantName'
+  >,
+) {
+  const mine = mockScans.get(_currentUser.id) ?? [];
+  mine.unshift({
+    ...result,
+    id: `scan_${mine.length + 1}`,
+    at: new Date().toISOString(),
+    // The demo has no fiscal source, so nothing can be retried.
+    retryable: false,
+    retryQr: null,
+  });
+  mockScans.set(_currentUser.id, mine);
+}
 export function resetMockFeedback() {
+  mockScans.clear();
   mockRatings.clear();
   mockFeedbackResults.clear();
   mockReviews.splice(0);
@@ -126,10 +199,11 @@ export const mockAuthService: AuthService = {
     await simulateDelay();
     checkMockScenario('auth');
     // Like the server: no code at all when the intent cannot succeed.
-    if (input.intent) requireMockIntent(`phone:${input.phone}`, input.intent);
+    if (input.intent) requireMockIntent(subjectKey(input), input.intent);
     return {
       expiresAt: new Date(Date.now() + 120_000).toISOString(),
       retryAfterSeconds: 60,
+      delivery: 'email',
     };
   },
 
@@ -143,12 +217,12 @@ export const mockAuthService: AuthService = {
         status: 400,
       });
     if (input.intent)
-      _currentUser = mockAccount(`phone:${input.phone}`, input.intent, {
+      _currentUser = mockAccount(subjectKey(input), input.intent, {
         ...mockUser,
-        phone: input.phone,
-        email: null,
-        phoneVerified: true,
-        identities: [mockUser.identities[0]!],
+        phone: input.phone ?? null,
+        email: input.email ?? null,
+        phoneVerified: Boolean(input.phone),
+        identities: input.phone ? [mockUser.identities[0]!] : [],
       });
     return {
       session: {
@@ -208,6 +282,7 @@ export const mockAuthService: AuthService = {
     return {
       expiresAt: new Date(Date.now() + 120_000).toISOString(),
       retryAfterSeconds: 60,
+      delivery: 'email',
     };
   },
 
@@ -253,13 +328,74 @@ export const mockUserService: UserService = {
       ...(input.language !== undefined ? { language: input.language } : {}),
     };
     rememberMockAccount(_currentUser);
-    return {
-      user: _currentUser,
-      nextStep:
-        mockConfig.requirePhoneVerification && !_currentUser.phoneVerified
-          ? 'phone'
-          : 'home',
+    return { user: _currentUser, nextStep: mockAccountStep(_currentUser) };
+  },
+
+  async emails() {
+    await simulateDelay();
+    checkMockScenario();
+    return mockEmails();
+  },
+
+  async requestEmail({ email, makePrimary }) {
+    await simulateDelay();
+    checkMockScenario();
+    if (mockEmailTaken(email, _currentUser.id))
+      throw fixtureError('EMAIL_IN_USE');
+    const expiresAt = new Date(Date.now() + 120_000).toISOString();
+    mockPending = { email, makePrimary, expiresAt, userId: _currentUser.id };
+    return { expiresAt, retryAfterSeconds: 60, delivery: 'email' };
+  },
+
+  async verifyEmail({ email, code }) {
+    await simulateDelay();
+    checkMockScenario();
+    const pending = mockEmails().pending;
+    if (pending?.email !== email || code === '111111')
+      throw fixtureError('OTP_EXPIRED', 400);
+    if (code === '000000') throw fixtureError('OTP_INVALID', 400);
+    const secondary = mockSecondary.get(_currentUser.id) ?? new Set<string>();
+    if (_currentUser.email) secondary.add(_currentUser.email);
+    secondary.add(email);
+    mockSecondary.set(_currentUser.id, secondary);
+    if (pending.makePrimary || !_currentUser.email)
+      _currentUser = { ..._currentUser, email };
+    rememberMockAccount(_currentUser);
+    claimMockEmail(email, _currentUser);
+    mockPending = null;
+    return mockEmails();
+  },
+
+  async cancelPendingEmail() {
+    await simulateDelay();
+    checkMockScenario();
+    mockPending = null;
+  },
+
+  async removeEmail(email) {
+    await simulateDelay();
+    checkMockScenario();
+    if (email === _currentUser.email) throw fixtureError('EMAIL_IS_PRIMARY');
+    mockSecondary.get(_currentUser.id)?.delete(email);
+    releaseMockEmail(email);
+  },
+
+  async removePhone() {
+    await simulateDelay();
+    checkMockScenario();
+    const identities = _currentUser.identities.filter(
+      (identity) => identity.provider !== 'phone',
+    );
+    if (!_currentUser.email && !identities.length)
+      throw fixtureError('LAST_SIGN_IN_METHOD');
+    releaseMockPhone(_currentUser.phone);
+    _currentUser = {
+      ..._currentUser,
+      phone: null,
+      phoneVerified: false,
+      identities,
     };
+    rememberMockAccount(_currentUser);
   },
 
   async deleteAccount() {
@@ -267,6 +403,8 @@ export const mockUserService: UserService = {
     checkMockScenario();
     forgetMockAccount(_currentUser);
     mockLikes.delete(_currentUser.id);
+    mockSecondary.delete(_currentUser.id);
+    mockPending = null;
     _currentUser = { ...mockUser };
     resetMockFeedback();
     mockPreferences = {
@@ -317,33 +455,54 @@ export const mockRestaurantService: RestaurantService = {
   },
 };
 
+async function resolveMockReceipt(input: PurchaseReference) {
+  await simulateDelay();
+  checkMockScenario('receipt');
+  purchaseReferenceSchema.parse(input);
+  if (isE2E()) {
+    const codes: Record<
+      string,
+      | 'RECEIPT_UNSUPPORTED'
+      | 'RECEIPT_ALREADY_CLAIMED'
+      | 'RECEIPT_EXPIRED'
+      | 'NETWORK'
+    > = {
+      E2E_UNSUPPORTED: 'RECEIPT_UNSUPPORTED',
+      E2E_CLAIMED: 'RECEIPT_ALREADY_CLAIMED',
+      E2E_EXPIRED: 'RECEIPT_EXPIRED',
+      E2E_NETWORK: 'NETWORK',
+    };
+    const code = codes[input.value];
+    if (code)
+      throw new ApiError({
+        code,
+        message: 'Maestro fixture',
+        status: code === 'NETWORK' ? 0 : 400,
+      });
+  }
+  return currentReceipt();
+}
+
 export const mockReceiptService: ReceiptService = {
   async resolve(input) {
-    await simulateDelay();
-    checkMockScenario('receipt');
-    purchaseReferenceSchema.parse(input);
-    if (isE2E()) {
-      const codes: Record<
-        string,
-        | 'RECEIPT_UNSUPPORTED'
-        | 'RECEIPT_ALREADY_CLAIMED'
-        | 'RECEIPT_EXPIRED'
-        | 'NETWORK'
-      > = {
-        E2E_UNSUPPORTED: 'RECEIPT_UNSUPPORTED',
-        E2E_CLAIMED: 'RECEIPT_ALREADY_CLAIMED',
-        E2E_EXPIRED: 'RECEIPT_EXPIRED',
-        E2E_NETWORK: 'NETWORK',
-      };
-      const code = codes[input.value];
-      if (code)
-        throw new ApiError({
-          code,
-          message: 'Maestro fixture',
-          status: code === 'NETWORK' ? 0 : 400,
-        });
+    try {
+      const receipt = await resolveMockReceipt(input);
+      recordMockScan({
+        status: 'success',
+        reason: null,
+        receiptId: receipt.id,
+        restaurantName: receipt.restaurant.name,
+      });
+      return receipt;
+    } catch (error) {
+      recordMockScan({
+        status: 'failed',
+        reason: error instanceof ApiError ? error.code : 'INTERNAL',
+        receiptId: null,
+        restaurantName: null,
+      });
+      throw error;
     }
-    return currentReceipt();
   },
 
   async get(id) {
@@ -505,6 +664,56 @@ export const mockFeedbackService: FeedbackService = {
     mockRatings.set(updated.receiptItemId, input.rating);
     return updated;
   },
+
+  async reportReply(feedbackId, reason) {
+    await simulateDelay();
+    checkMockScenario();
+    replyReportSchema.parse({ reason });
+    // Never invent a restaurant answer: demo reviews have none to report.
+    if (!mockReviews.find((r) => r.feedbackId === feedbackId)?.reply)
+      throw new ApiError({
+        code: 'REPLY_NOT_FOUND',
+        message: 'Unknown mock reply',
+        status: 404,
+      });
+  },
+};
+
+export const mockActivityService: ActivityService = {
+  async scans(params) {
+    await simulateDelay();
+    checkMockScenario();
+    if (getMockScenario() === 'empty') return { items: [], nextCursor: null };
+    return mockPage(
+      mockScans.get(_currentUser.id) ?? [],
+      params?.cursor,
+      params?.limit,
+    );
+  },
+};
+
+const noStaffReview = () =>
+  new ApiError({
+    code: 'FEEDBACK_NOT_FOUND',
+    message: 'Demo accounts are not restaurant staff',
+    status: 404,
+  });
+/** Demo accounts are never restaurant staff (only Epsilon grants access). */
+export const mockStaffService: StaffService = {
+  async restaurants() {
+    await simulateDelay();
+    checkMockScenario();
+    return { items: [] };
+  },
+  async reviews() {
+    throw noStaffReview();
+  },
+  async reply() {
+    throw noStaffReview();
+  },
+  async deleteReply() {
+    throw noStaffReview();
+  },
 };
 
 export const mockWalletService: WalletService = {
@@ -630,4 +839,6 @@ export const mockServices: ServiceContainer = {
   wallet: mockWalletService,
   notification: mockNotificationService,
   like: mockLikeService,
+  activity: mockActivityService,
+  staff: mockStaffService,
 };

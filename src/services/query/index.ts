@@ -44,6 +44,7 @@ export const queryKeys = {
   user: {
     all: ['user'] as const,
     profile: () => [...queryKeys.user.all, 'profile'] as const,
+    emails: () => [...queryKeys.user.all, 'emails'] as const,
   },
   config: {
     all: ['config'] as const,
@@ -65,6 +66,7 @@ export const queryKeys = {
   },
   feedback: {
     all: ['feedback'] as const,
+    detail: (id: string) => ['feedback', 'detail', id] as const,
     list: (params?: { cursor?: string; limit?: number }) =>
       [...queryKeys.feedback.all, 'list', params] as const,
   },
@@ -81,6 +83,16 @@ export const queryKeys = {
     list: (kind: string) => ['likes', 'list', kind] as const,
     state: (kind: string, targetId: string) =>
       ['likes', 'state', kind, targetId] as const,
+  },
+  activity: {
+    all: ['activity'] as const,
+    scans: () => ['activity', 'scans'] as const,
+  },
+  staff: {
+    all: ['staff'] as const,
+    restaurants: () => ['staff', 'restaurants'] as const,
+    reviews: (restaurantId: string) =>
+      ['staff', 'reviews', restaurantId] as const,
   },
   notification: {
     all: ['notification'] as const,
