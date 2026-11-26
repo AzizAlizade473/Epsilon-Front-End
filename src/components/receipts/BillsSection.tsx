@@ -49,9 +49,11 @@ export function BillsSection({
       {bills.isPending && !bills.receipts.length ? (
         <DetailRowSkeleton />
       ) : bills.receipts.length ? (
-        bills.receipts.slice(0, 3).map((receipt) => (
+        bills.receipts.slice(0, 3).map((receipt, index) => (
           <BillRow
             key={receipt.id}
+            order={index}
+            behind={embedded ? o.colors.surface : o.colors.canvas}
             receipt={receipt}
             onPress={() => {
               if (!locked.current) {

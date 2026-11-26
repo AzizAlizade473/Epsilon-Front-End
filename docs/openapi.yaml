@@ -2481,6 +2481,21 @@ components:
             - amountMinor
             - currency
           additionalProperties: false
+        cashback:
+          type: object
+          properties:
+            earnedMinor:
+              type: integer
+              minimum: -9007199254740991
+              maximum: 9007199254740991
+            pendingMinor:
+              type: integer
+              minimum: -9007199254740991
+              maximum: 9007199254740991
+          required:
+            - earnedMinor
+            - pendingMinor
+          additionalProperties: false
       required:
         - id
         - restaurant

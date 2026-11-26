@@ -43,18 +43,22 @@ export function BrandBadge({
     );
   if (logoUrl && !broken)
     return (
-      <Image
-        source={{ uri: logoUrl }}
-        style={[styles.box, box]}
-        contentFit="cover"
-        onError={() => setBroken(true)}
-        accessible={false}
-      />
+      <View style={[styles.box, box, styles.logoTile]}>
+        <Image
+          source={{ uri: logoUrl }}
+          style={{ width: inner, height: inner }}
+          contentFit="contain"
+          cachePolicy="memory-disk"
+          transition={150}
+          onError={() => setBroken(true)}
+          accessible={false}
+        />
+      </View>
     );
   if (!fallback) return null;
   return (
     <View style={[styles.box, box, styles.neutral]}>
-      <Icon icon={Store} color={o.colors.secondary} decorative />
+      <Icon icon={Store} color={o.colors.primary} decorative />
     </View>
   );
 }
@@ -70,9 +74,5 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: o.colors.border,
   },
-  neutral: {
-    backgroundColor: o.colors.soft,
-    borderWidth: 1,
-    borderColor: o.colors.border,
-  },
+  neutral: { backgroundColor: o.colors.primaryTint },
 });

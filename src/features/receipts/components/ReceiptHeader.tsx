@@ -2,15 +2,18 @@ import BadgeCheck from 'lucide-react-native/icons/badge-check';
 import X from 'lucide-react-native/icons/x';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
+import Animated, { ReduceMotion, ZoomIn } from 'react-native-reanimated';
 import { BrandBadge } from '@/components/brand/BrandBadge';
 import { Icon } from '@/components/ui/Icon';
 import { IconButton } from '@/components/ui/IconButton';
 import { Text } from '@/components/ui/Text';
-import { layout, spacing } from '@/design';
+import { spacing } from '@/design';
 import { originalReceipts as o } from '@/design/original-receipts';
-import { displayMerchantName, matchBrand } from '@/lib/brands';
+import { billIdentity } from '@/hooks/billView';
 import { formatDate, formatTime } from '@/lib/date';
 import type { Receipt } from '@/services/contracts';
+
+const LOGO = 88;
 
 /** Says where the data came from: only an authorised provider is "verified". */
 const SOURCE = {
@@ -20,7 +23,7 @@ const SOURCE = {
   test_data: 'fiscal.testData',
 } as const;
 
-/** Who and when, in reading order: logo, name, branch, visit, receipt number. */
+/** Who and when, in reading order: logo, name, branch, address, visit. */
 export function ReceiptHeader({
   receipt,
   onClose,
@@ -33,10 +36,8 @@ export function ReceiptHeader({
 }) {
   const { t, i18n } = useTranslation();
   const fiscal = receipt.fiscal;
-  const merchant = fiscal?.merchant.objectName ?? receipt.restaurant.name;
-  const name = displayMerchantName(merchant);
-  const branch = receipt.branch.name;
-  const number = fiscal?.receipt.number;
+  const { name, branch, logoName } = billIdentity(receipt);
+  const address = fiscal?.merchant.address;
   return (
     <View style={styles.header}>
       {onClose && (
@@ -48,24 +49,23 @@ export function ReceiptHeader({
           />
         </View>
       )}
-      {/* The establishment name can be only a branch; the logo may match the chain. */}
-      <BrandBadge
-        name={matchBrand(merchant) ? merchant : receipt.restaurant.name}
-        logoUrl={receipt.restaurant.logoUrl}
-        size={layout.profileAvatarSize}
-      />
+      <Animated.View
+        entering={ZoomIn.duration(300).reduceMotion(ReduceMotion.System)}
+      >
+        <BrandBadge
+          name={logoName}
+          logoUrl={receipt.restaurant.logoUrl}
+          size={LOGO}
+        />
+      </Animated.View>
       <Text style={styles.name} accessibilityRole="header">
         {name}
       </Text>
-      {branch !== merchant && <Text style={styles.branch}>{branch}</Text>}
+      {branch && <Text style={styles.branch}>{branch}</Text>}
+      {address && <Text style={styles.meta}>{address}</Text>}
       <Text style={styles.meta}>
         {`${formatDate(receipt.issuedAt, { locale: i18n.language })} · ${formatTime(receipt.issuedAt)}`}
       </Text>
-      {number && (
-        <Text style={styles.meta}>
-          {t('receipt.identifier', { id: number })}
-        </Text>
-      )}
       {showSource && receipt.status === 'verified' && (
         <View style={styles.source}>
           <Icon
@@ -86,10 +86,10 @@ const styles = StyleSheet.create({
   header: { alignItems: 'center', gap: spacing[4] },
   close: { position: 'absolute', right: 0, top: 0, zIndex: 1 },
   name: {
-    ...o.type.title,
+    ...o.type.amount,
     color: o.colors.ink,
     textAlign: 'center',
-    marginTop: spacing[8],
+    marginTop: spacing[12],
   },
   branch: { ...o.type.product, color: o.colors.ink, textAlign: 'center' },
   meta: { ...o.type.caption, color: o.colors.secondary, textAlign: 'center' },

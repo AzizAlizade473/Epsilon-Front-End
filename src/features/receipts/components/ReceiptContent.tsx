@@ -9,6 +9,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import BadgeCheck from 'lucide-react-native/icons/badge-check';
 import ChevronDown from 'lucide-react-native/icons/chevron-down';
 import ChevronUp from 'lucide-react-native/icons/chevron-up';
 import PartyPopper from 'lucide-react-native/icons/party-popper';
@@ -123,7 +124,20 @@ export function ReceiptContent({
   const partner = fiscal ? fiscal.partner.isPartner : true;
   const cashback = fiscal ? fiscal.eligibility.cashbackAllowed : true;
 
-  const status = readOnly
+  const earned = receipt.cashback?.earnedMinor ?? 0;
+  const waiting = receipt.cashback?.pendingMinor ?? 0;
+  const reward =
+    earned || waiting
+      ? {
+          tone: earned ? ('earned' as const) : ('neutral' as const),
+          title: earned
+            ? t('bills.earnedTitle', { amount: formatMoney(earned) })
+            : t('bills.pendingAmount', { amount: formatMoney(waiting) }),
+          body: earned ? t('bills.earnedBody') : t('bills.pendingBody'),
+        }
+      : null;
+
+  const base = readOnly
     ? {
         tone: 'muted' as const,
         title: t('receipt.status.' + receipt.status),
@@ -155,6 +169,9 @@ export function ReceiptContent({
               : null,
           };
 
+  // Money already recorded matters more than what could be earned.
+  const status = reward ?? base;
+
   return (
     <ScrollView
       contentContainerStyle={styles.list}
@@ -169,14 +186,25 @@ export function ReceiptContent({
         style={[
           styles.status,
           status.tone === 'partner' && styles.statusPartner,
+          status.tone === 'earned' && styles.statusEarned,
         ]}
         accessibilityRole="summary"
       >
         <Icon
-          icon={status.tone === 'partner' ? Sparkles : Store}
+          icon={
+            status.tone === 'earned'
+              ? BadgeCheck
+              : status.tone === 'partner'
+                ? Sparkles
+                : Store
+          }
           size="small"
           color={
-            status.tone === 'partner' ? o.colors.primary : o.colors.secondary
+            status.tone === 'earned'
+              ? o.colors.rated
+              : status.tone === 'partner'
+                ? o.colors.primary
+                : o.colors.secondary
           }
           decorative
         />
@@ -296,6 +324,10 @@ const styles = StyleSheet.create({
   statusPartner: {
     backgroundColor: o.colors.primaryTint,
     borderColor: o.colors.primaryTint,
+  },
+  statusEarned: {
+    backgroundColor: o.colors.ratedTint,
+    borderColor: o.colors.ratedTint,
   },
   statusTitle: { ...o.type.product, color: o.colors.ink },
   sectionHead: { gap: spacing[8], marginTop: spacing[4] },

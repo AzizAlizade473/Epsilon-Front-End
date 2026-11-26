@@ -192,7 +192,7 @@ export const httpReceiptService: ReceiptService = {
   async get(id, options) {
     return requestWithAuth(
       'GET',
-      `/receipts/${id}`,
+      `/receipts/${id}?include=cashback`,
       receiptSchema,
       undefined,
       options,

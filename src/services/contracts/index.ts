@@ -353,6 +353,11 @@ export const receiptSchema = z
       })
       .strict()
       .optional(),
+    /** What the ledger already holds for this receipt (detail requests only). */
+    cashback: z
+      .object({ earnedMinor: qepik, pendingMinor: qepik })
+      .strict()
+      .optional(),
   })
   .strict();
 

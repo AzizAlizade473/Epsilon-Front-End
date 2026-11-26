@@ -3,14 +3,19 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { FlashList } from '@shopify/flash-list';
 import { StyleSheet, View } from 'react-native';
+import Animated, {
+  FadeIn,
+  FadeOut,
+  ReduceMotion,
+} from 'react-native-reanimated';
 import ReceiptText from 'lucide-react-native/icons/receipt-text';
 import SearchIcon from 'lucide-react-native/icons/search';
 import X from 'lucide-react-native/icons/x';
 import { Screen } from '@/components/ui/Screen';
 import { BackButton } from '@/components/navigation/BackButton';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { IconButton } from '@/components/ui/IconButton';
+import { Icon } from '@/components/ui/Icon';
+import { PressSurface } from '@/components/ui/PressSurface';
 import { Text } from '@/components/ui/Text';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { DetailRowSkeleton } from '@/components/feedback/DetailRowSkeleton';
@@ -22,12 +27,46 @@ import {
   activeFilterCount,
   billParams,
   noBillFilters,
+  type BillFilters,
 } from '@/hooks/billFilters';
-import { spacing } from '@/design';
+import { billMonth } from '@/hooks/billView';
+import { colors, radius, spacing } from '@/design';
+import { originalReceipts as o } from '@/design/original-receipts';
+import type { Receipt } from '@/services/contracts';
 import { BillFilterPanel } from '../components/BillFilterPanel';
+import { BillSearch } from '../components/BillSearch';
+
+type Entry =
+  | { kind: 'month'; key: string; label: string }
+  | { kind: 'bill'; key: string; receipt: Receipt; order: number };
+
+/** The list as a memory of visits: a heading wherever the month changes. */
+function byMonth(receipts: readonly Receipt[], language: string): Entry[] {
+  const thisYear = new Date().getFullYear();
+  const entries: Entry[] = [];
+  let current = '';
+  receipts.forEach((receipt, order) => {
+    const month = billMonth(receipt.issuedAt);
+    if (month !== current) {
+      current = month;
+      const date = new Date(receipt.issuedAt);
+      entries.push({
+        kind: 'month',
+        // A server page can return to an earlier month: keys stay unique.
+        key: `${month}/${receipt.id}`,
+        label: new Intl.DateTimeFormat(language, {
+          month: 'long',
+          ...(date.getFullYear() === thisYear ? {} : { year: 'numeric' }),
+        }).format(date),
+      });
+    }
+    entries.push({ kind: 'bill', key: receipt.id, receipt, order });
+  });
+  return entries;
+}
 
 export function BillsScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const [input, setInput] = useState('');
   const [filters, setFilters] = useState(noBillFilters);
@@ -39,6 +78,33 @@ export function BillsScreen() {
   const bills = useBills(params);
   const active = activeFilterCount(filters);
   const narrowed = Object.keys(params).length > 0;
+  const tags = (
+    [
+      [
+        'date',
+        {
+          any: '',
+          week: t('bills.week'),
+          month: t('bills.month'),
+          custom: `${filters.from} – ${filters.to}`,
+        }[filters.date],
+      ],
+      [
+        'partner',
+        { any: '', yes: t('bills.partnerYes'), no: t('bills.partnerNo') }[
+          filters.partner
+        ],
+      ],
+      [
+        'cashback',
+        {
+          any: '',
+          eligible: t('bills.cashbackTagYes'),
+          none: t('bills.cashbackTagNo'),
+        }[filters.cashback],
+      ],
+    ] satisfies [keyof BillFilters, string][]
+  ).filter(([, label]) => label);
   const reset = () => {
     setInput('');
     setFilters(noBillFilters);
@@ -62,65 +128,81 @@ export function BillsScreen() {
         />
       }
     >
-      <View style={styles.search}>
-        <View style={styles.field}>
-          <Input
-            label={t('bills.search')}
-            value={input}
-            onChangeText={setInput}
-            maxLength={80}
-            autoCorrect={false}
-            returnKeyType="search"
-            appearance="underline"
-            leading={<SearchIcon size={spacing[20]} />}
-          />
-        </View>
-        {input.length > 0 && (
-          <IconButton
-            icon={X}
-            accessibilityLabel={t('bills.clearSearch')}
-            onPress={() => setInput('')}
-          />
-        )}
-      </View>
-      <View style={styles.actions}>
-        <Button
-          variant="ghost"
-          label={
-            active
-              ? t('bills.filtersActive', { count: active })
-              : t('bills.filters')
-          }
-          onPress={() => setOpen((value) => !value)}
+      <View style={styles.controls}>
+        <BillSearch
+          value={input}
+          onChange={setInput}
+          activeFilters={active}
+          onFilters={() => setOpen(true)}
         />
         {narrowed && (
-          <Button variant="ghost" label={t('bills.reset')} onPress={reset} />
+          <Animated.View
+            entering={FadeIn.duration(180).reduceMotion(ReduceMotion.System)}
+            exiting={FadeOut.duration(120).reduceMotion(ReduceMotion.System)}
+            style={styles.tags}
+          >
+            {tags.map(([key, label]) => (
+              <PressSurface
+                key={key}
+                accessibilityLabel={t('bills.removeFilter', { name: label })}
+                onPress={() => setFilters({ ...filters, [key]: 'any' })}
+                style={styles.tag}
+                contentStyle={styles.tagContent}
+              >
+                <Text style={styles.tagText}>{label}</Text>
+                <Icon
+                  icon={X}
+                  size="small"
+                  color={colors.brand.primary}
+                  decorative
+                />
+              </PressSurface>
+            ))}
+            <View>
+              <Button
+                variant="ghost"
+                label={t('bills.reset')}
+                onPress={reset}
+              />
+            </View>
+          </Animated.View>
         )}
       </View>
+      {open && (
+        <BillFilterPanel
+          filters={filters}
+          onChange={setFilters}
+          onClose={() => setOpen(false)}
+        />
+      )}
       <FlashList
-        data={bills.receipts}
-        keyExtractor={(item) => item.id}
+        data={byMonth(bills.receipts, i18n.language)}
+        keyExtractor={(item) => item.key}
+        getItemType={(item) => item.kind}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
-        ListHeaderComponent={
-          open ? (
-            <BillFilterPanel filters={filters} onChange={setFilters} />
-          ) : null
+        showsVerticalScrollIndicator={false}
+        renderItem={({ item }) =>
+          item.kind === 'month' ? (
+            <Text style={styles.month} accessibilityRole="header">
+              {item.label}
+            </Text>
+          ) : (
+            <BillRow
+              receipt={item.receipt}
+              order={item.order}
+              onPress={() => {
+                if (!locked.current) {
+                  locked.current = true;
+                  router.push({
+                    pathname: '/receipt/[receiptId]',
+                    params: { receiptId: item.receipt.id },
+                  });
+                }
+              }}
+            />
+          )
         }
-        renderItem={({ item }) => (
-          <BillRow
-            receipt={item}
-            onPress={() => {
-              if (!locked.current) {
-                locked.current = true;
-                router.replace({
-                  pathname: '/receipt/[receiptId]',
-                  params: { receiptId: item.id },
-                });
-              }
-            }}
-          />
-        )}
         refreshControl={
           <PullToRefresh
             refreshing={bills.isRefetching}
@@ -177,11 +259,34 @@ export function BillsScreen() {
   );
 }
 const styles = StyleSheet.create({
-  search: { flexDirection: 'row', alignItems: 'flex-end', gap: spacing[4] },
-  field: { flex: 1 },
-  actions: {
+  controls: { gap: spacing[8], paddingBottom: spacing[8] },
+  tags: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: spacing[8],
+  },
+  tag: {
+    borderRadius: radius.pill,
+    backgroundColor: colors.brand.tint,
+    overflow: 'hidden',
+  },
+  tagContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing[4],
+    paddingHorizontal: spacing[12],
+  },
+  tagText: {
+    ...o.type.caption,
+    fontWeight: '700',
+    color: colors.brand.primary,
+  },
+  month: {
+    ...o.type.product,
+    color: o.colors.secondary,
+    textTransform: 'capitalize',
+    paddingTop: spacing[8],
+    paddingBottom: spacing[12],
   },
 });
