@@ -76,6 +76,12 @@ export const queryKeys = {
     transaction: (id: string) =>
       [...queryKeys.wallet.all, 'transaction', id] as const,
   },
+  likes: {
+    lists: ['likes', 'list'] as const,
+    list: (kind: string) => ['likes', 'list', kind] as const,
+    state: (kind: string, targetId: string) =>
+      ['likes', 'state', kind, targetId] as const,
+  },
   notification: {
     all: ['notification'] as const,
     settings: () => [...queryKeys.notification.all, 'settings'] as const,

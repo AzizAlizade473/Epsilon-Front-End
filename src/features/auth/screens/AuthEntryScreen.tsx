@@ -83,7 +83,6 @@ export default function AuthEntryScreen({ intent }: { intent: AuthIntent }) {
             }}
           />
         </Rise>
-        <AuthConflictAction reason={google.conflict} />
         <Rise order={3} style={styles.fields}>
           <PhoneField
             appearance="underline"
@@ -103,6 +102,7 @@ export default function AuthEntryScreen({ intent }: { intent: AuthIntent }) {
             onSubmit={submit}
           />
         </Rise>
+        <AuthConflictAction reason={phone.conflict ?? google.conflict} />
         <Rise order={4}>
           <Button
             shape="rounded"

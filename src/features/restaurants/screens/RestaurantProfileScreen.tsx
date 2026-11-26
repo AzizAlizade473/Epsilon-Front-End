@@ -1,5 +1,4 @@
 import { FlashList, type ListRenderItemInfo } from '@shopify/flash-list';
-import { useQuery } from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
@@ -15,7 +14,10 @@ import { Skeleton } from '@/components/feedback/Skeleton';
 import { MockDataNotice } from '@/components/feedback/MockDataNotice';
 import { colors, layout, radius, spacing, typography } from '@/design';
 import { premium } from '@/design/premium';
-import { restaurantService } from '../hooks/useRestaurants';
+import { useRestaurant } from '../hooks/useRestaurants';
+import { LikeButton } from '@/components/likes/LikeButton';
+import { dishLike, restaurantLike } from '@/hooks/likeTargets';
+import { isApiError } from '@/services/http/errors';
 import { safeIdSchema } from '@/lib/deep-link';
 import { useCatalog, type Catalog, type CatalogDish } from '../catalog';
 import { MenuDish } from '../components/MenuDish';
@@ -46,11 +48,9 @@ function menuRows(catalog: Catalog | null | undefined, only: string | null) {
 export default function RestaurantProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const valid = typeof id === 'string' && safeIdSchema.safeParse(id).success;
-  const query = useQuery({
-    queryKey: ['restaurant', 'detail', id],
-    queryFn: async () => (await restaurantService()).get(id),
-    enabled: valid,
-  });
+  const query = useRestaurant(id, valid);
+  const name = query.data?.name;
+  const gone = isApiError(query.error) && query.error.status === 404;
   const catalog = useCatalog(valid ? id : '');
   const { t } = useTranslation();
   const router = useRouter();
@@ -76,9 +76,19 @@ export default function RestaurantProfileScreen() {
           {item.name}
         </Text>
       ) : (
-        <MenuDish dish={item.dish} onPress={open} />
+        <MenuDish
+          dish={item.dish}
+          onPress={open}
+          like={dishLike(
+            id,
+            item.dish.id,
+            item.dish.name,
+            name ?? '',
+            item.dish.imageUrl,
+          )}
+        />
       ),
-    [open],
+    [open, id, name],
   );
   const back = (
     <RoundButton
@@ -95,6 +105,19 @@ export default function RestaurantProfileScreen() {
         uri={data?.coverUrl}
         height={premium.restaurantHero}
         leading={back}
+        trailing={
+          name ? (
+            <LikeButton
+              variant="overlay"
+              target={restaurantLike(
+                id,
+                name,
+                data?.district ?? '',
+                data?.coverUrl,
+              )}
+            />
+          ) : undefined
+        }
       />
       <View style={styles.sheet}>
         <Reveal order={0} style={styles.block}>
@@ -210,6 +233,10 @@ export default function RestaurantProfileScreen() {
                   accessibilityLabel={t('common.loading')}
                 />
               </View>
+            ) : gone ? (
+              <Text accessibilityRole="alert" style={styles.pad}>
+                {t('likes.gone')}
+              </Text>
             ) : query.isError || catalog.isError || !valid ? (
               <ErrorState
                 title={t('product.loadError')}

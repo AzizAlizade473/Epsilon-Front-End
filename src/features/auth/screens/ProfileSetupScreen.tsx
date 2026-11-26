@@ -17,7 +17,7 @@ import { env } from '@/lib/env';
 import { useAuth, useAuthActions } from '@/providers/AuthProvider';
 import { services } from '@/services';
 import { isApiError } from '@/services/http/errors';
-import { BirthDateField } from '../components/BirthDateField';
+import { BirthDateField } from '@/components/ui/BirthDateField';
 import { useOnboardingConfig } from '../hooks/useOnboardingConfig';
 import {
   createProfileSchema,

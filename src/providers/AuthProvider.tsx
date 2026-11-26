@@ -20,6 +20,7 @@ import {
 } from '@/lib/bootstrap';
 import { authOperation, clearAuthFlows } from '@/lib/auth-lifecycle';
 import { initializeGoogle } from '@/lib/google-signin';
+import { SignedInContext } from './signed-in';
 import type {
   AuthResult,
   Config,
@@ -270,7 +271,9 @@ export function AuthProvider({
           },
         }}
       >
-        {children}
+        <SignedInContext.Provider value={Boolean(state.session)}>
+          {children}
+        </SignedInContext.Provider>
       </ActionsContext.Provider>
     </StateContext.Provider>
   );

@@ -2,6 +2,8 @@ import { useRef, useState } from 'react';
 import * as SecureStore from '@/lib/session-storage';
 import { storageKeys } from '@/lib/bootstrap';
 import { useTranslation } from 'react-i18next';
+import Check from 'lucide-react-native/icons/check';
+import { Icon } from '@/components/ui/Icon';
 import { PressSurface } from '@/components/ui/PressSurface';
 import { Text } from '@/components/ui/Text';
 import { Button } from '@/components/ui/Button';
@@ -12,8 +14,8 @@ import { services } from '@/services';
 import { useAuthActions } from '@/providers/AuthProvider';
 import { useProfile } from '@/hooks/useProfile';
 import { useToast } from '@/providers/ToastProvider';
-import { layout, spacing } from '@/design';
-import { View } from 'react-native';
+import { colors, layout, radius, spacing } from '@/design';
+import { StyleSheet, View } from 'react-native';
 const languages = ['az', 'en', 'ru'] as const;
 export default function LanguageScreen() {
   const { t, i18n } = useTranslation();
@@ -56,28 +58,32 @@ export default function LanguageScreen() {
       <View
         accessibilityRole="radiogroup"
         accessibilityLabel={t('profile.language')}
+        style={styles.group}
       >
-        {languages.map((language) => (
-          <PressSurface
-            key={language}
-            disabled={busy || !profile.data}
-            accessibilityRole="radio"
-            accessibilityLabel={t(`profile.languages.${language}`)}
-            accessibilityState={{ checked: i18n.language === language }}
-            contentStyle={{
-              minHeight: layout.controlHeight,
-              paddingVertical: spacing[16],
-            }}
-            onPress={() => {
-              void select(language);
-            }}
-          >
-            <Text>
-              {t(`profile.languages.${language}`)}
-              {i18n.language === language ? ` · ${t('profile.selected')}` : ''}
-            </Text>
-          </PressSurface>
-        ))}
+        {languages.map((language) => {
+          const checked = i18n.language === language;
+          return (
+            <PressSurface
+              key={language}
+              disabled={busy || !profile.data}
+              accessibilityRole="radio"
+              accessibilityLabel={t(`profile.languages.${language}`)}
+              accessibilityState={{ checked }}
+              style={[styles.option, checked && styles.checked]}
+              contentStyle={styles.content}
+              onPress={() => {
+                void select(language);
+              }}
+            >
+              <Text style={styles.label}>
+                {t(`profile.languages.${language}`)}
+              </Text>
+              {checked && (
+                <Icon icon={Check} color={colors.brand.primary} decorative />
+              )}
+            </PressSurface>
+          );
+        })}
       </View>
       {pending && (
         <>
@@ -96,3 +102,24 @@ export default function LanguageScreen() {
     </ProfilePage>
   );
 }
+const styles = StyleSheet.create({
+  group: { gap: spacing[8] },
+  option: {
+    borderRadius: radius[16],
+    borderWidth: layout.borderWidth,
+    borderColor: colors.border,
+    overflow: 'hidden',
+  },
+  checked: {
+    backgroundColor: colors.brand.tint,
+    borderColor: colors.brand.primary,
+  },
+  content: {
+    minHeight: layout.controlHeight,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: spacing[12],
+    padding: spacing[16],
+  },
+  label: { flex: 1 },
+});

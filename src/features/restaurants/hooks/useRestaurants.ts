@@ -1,5 +1,9 @@
-import { infiniteQueryOptions, useInfiniteQuery } from '@tanstack/react-query';
-import { useEffect, useMemo, useState } from 'react';
+import {
+  infiniteQueryOptions,
+  useInfiniteQuery,
+  useQuery,
+} from '@tanstack/react-query';
+import { useMemo } from 'react';
 import { services } from '@/services';
 import { demoContent } from '@/lib/demoContent';
 import { env } from '@/lib/env';
@@ -14,6 +18,14 @@ export async function restaurantService() {
     return services.restaurant;
   const { mockServices } = await import('@/services/mock/services');
   return mockServices.restaurant;
+}
+
+export function useRestaurant(id: string, enabled = Boolean(id)) {
+  return useQuery({
+    queryKey: queryKeys.restaurant.detail(id),
+    queryFn: async () => (await restaurantService()).get(id),
+    enabled,
+  });
 }
 
 export function restaurantOptions(search: string, limit = 20) {
@@ -52,12 +64,4 @@ export function useRestaurants(search: string) {
   );
   return { ...query, items };
 }
-export function useRestaurantSearch(value: string) {
-  const [search, setSearch] = useState('');
-  useEffect(() => {
-    const timer = setTimeout(() => setSearch(value.trim()), 300);
-    return () => clearTimeout(timer);
-  }, [value]);
-  // Clearing is immediate; changing a query never retains the previous results.
-  return value.trim() === '' ? '' : search;
-}
+export { useDebouncedSearch as useRestaurantSearch } from '@/hooks/useDebouncedSearch';

@@ -677,6 +677,13 @@ paths:
       parameters:
         - $ref: '#/components/parameters/Language'
         - $ref: '#/components/parameters/RequestId'
+        - $ref: '#/components/parameters/Q'
+        - $ref: '#/components/parameters/From'
+        - $ref: '#/components/parameters/To'
+        - $ref: '#/components/parameters/Partner'
+        - $ref: '#/components/parameters/Cashback'
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
       responses:
         '200':
           description: Validated server projection
@@ -1383,6 +1390,208 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /likes/{kind}/{targetId}:
+    put:
+      operationId: like
+      parameters:
+        - $ref: '#/components/parameters/Language'
+        - $ref: '#/components/parameters/RequestId'
+        - $ref: '#/components/parameters/Idempotency'
+        - $ref: '#/components/parameters/Kind'
+        - $ref: '#/components/parameters/TargetId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LikeSnapshot'
+      responses:
+        '200':
+          description: Validated server projection
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LikeResult'
+          headers:
+            X-Request-Id:
+              schema: *a1
+            Date:
+              schema:
+                type: string
+              description:
+                HTTP server date anchors client time; authorization/expiry remain
+                server enforced.
+        '429':
+          description: Rate limited; delta-seconds Retry-After
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                minimum: 0
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description:
+            Machine-readable error. HTTP status remains authoritative; 403 is
+            generic forbidden, unknown codes never become typed domain codes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      operationId: unlike
+      parameters:
+        - $ref: '#/components/parameters/Language'
+        - $ref: '#/components/parameters/RequestId'
+        - $ref: '#/components/parameters/Idempotency'
+        - $ref: '#/components/parameters/Kind'
+        - $ref: '#/components/parameters/TargetId'
+      responses:
+        '200':
+          description: Validated server projection
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LikeResult'
+          headers:
+            X-Request-Id:
+              schema: *a1
+            Date:
+              schema:
+                type: string
+              description:
+                HTTP server date anchors client time; authorization/expiry remain
+                server enforced.
+        '429':
+          description: Rate limited; delta-seconds Retry-After
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                minimum: 0
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description:
+            Machine-readable error. HTTP status remains authoritative; 403 is
+            generic forbidden, unknown codes never become typed domain codes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /likes:
+    get:
+      operationId: myLikes
+      parameters:
+        - $ref: '#/components/parameters/Language'
+        - $ref: '#/components/parameters/RequestId'
+        - $ref: '#/components/parameters/LikeKind'
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/LikeLimit'
+      responses:
+        '200':
+          description: Validated server projection
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LikePage'
+          headers:
+            X-Request-Id:
+              schema: *a1
+            Date:
+              schema:
+                type: string
+              description:
+                HTTP server date anchors client time; authorization/expiry remain
+                server enforced.
+        '429':
+          description: Rate limited; delta-seconds Retry-After
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                minimum: 0
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description:
+            Machine-readable error. HTTP status remains authoritative; 403 is
+            generic forbidden, unknown codes never become typed domain codes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /likes/state:
+    post:
+      operationId: likeState
+      parameters:
+        - $ref: '#/components/parameters/Language'
+        - $ref: '#/components/parameters/RequestId'
+        - $ref: '#/components/parameters/Idempotency'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                kind: &a2
+                  enum:
+                    - dish
+                    - review
+                    - restaurant
+                targetIds:
+                  type: array
+                  items: &a3
+                    type: string
+                    pattern: ^[A-Za-z0-9_:-]{1,160}$
+                  minItems: 1
+                  maxItems: 100
+              required:
+                - kind
+                - targetIds
+      responses:
+        '200':
+          description: Validated server projection
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LikeState'
+          headers:
+            X-Request-Id:
+              schema: *a1
+            Date:
+              schema:
+                type: string
+              description:
+                HTTP server date anchors client time; authorization/expiry remain
+                server enforced.
+        '429':
+          description: Rate limited; delta-seconds Retry-After
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+                minimum: 0
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description:
+            Machine-readable error. HTTP status remains authoritative; 403 is
+            generic forbidden, unknown codes never become typed domain codes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   securitySchemes:
     bearerAuth:
@@ -1440,6 +1649,65 @@ components:
       required: false
       schema:
         type: string
+    Kind:
+      name: kind
+      in: path
+      required: true
+      schema: *a2
+    TargetId:
+      name: targetId
+      in: path
+      required: true
+      schema: *a3
+    LikeKind:
+      name: kind
+      in: query
+      required: false
+      schema: *a2
+    LikeLimit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+    Q:
+      name: q
+      in: query
+      required: false
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 80
+    From:
+      name: from
+      in: query
+      required: false
+      schema: &a4
+        type: string
+        format: date
+    To:
+      name: to
+      in: query
+      required: false
+      schema: *a4
+    Partner:
+      name: partner
+      in: query
+      required: false
+      schema:
+        enum:
+          - 'true'
+          - 'false'
+    Cashback:
+      name: cashback
+      in: query
+      required: false
+      schema:
+        enum:
+          - eligible
+          - none
   schemas:
     OtpChallenge:
       type: object
@@ -2745,6 +3013,124 @@ components:
         - partnerUpdates
         - reminders
       additionalProperties: false
+    LikeSnapshot:
+      type: object
+      properties:
+        restaurantId:
+          type: string
+          pattern: ^[A-Za-z0-9_-]{1,64}$
+        dishId:
+          anyOf:
+            - type: string
+              pattern: ^[A-Za-z0-9_-]{1,64}$
+            - type: 'null'
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        subtitle:
+          type: string
+          maxLength: 200
+        imageUrl:
+          anyOf:
+            - type: string
+              maxLength: 500
+              format: starts_with
+              pattern: ^https:\/\/.*
+            - type: 'null'
+      required:
+        - restaurantId
+        - dishId
+        - title
+        - subtitle
+        - imageUrl
+      additionalProperties: false
+    LikeResult:
+      type: object
+      properties:
+        liked:
+          type: boolean
+        count:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+      required:
+        - liked
+        - count
+      additionalProperties: false
+    LikeItem:
+      type: object
+      properties:
+        kind:
+          type: string
+          enum:
+            - dish
+            - review
+            - restaurant
+        targetId:
+          type: string
+          pattern: ^[A-Za-z0-9_:-]{1,160}$
+        restaurantId:
+          type: string
+          minLength: 1
+        dishId:
+          type:
+            - string
+            - 'null'
+        title:
+          type: string
+          minLength: 1
+        subtitle:
+          type: string
+        imageUrl:
+          anyOf:
+            - type: string
+              format: uri
+            - type: 'null'
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+        count:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+      required:
+        - kind
+        - targetId
+        - restaurantId
+        - dishId
+        - title
+        - subtitle
+        - imageUrl
+        - createdAt
+        - count
+      additionalProperties: false
+    LikeState:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              targetId:
+                type: string
+                pattern: ^[A-Za-z0-9_:-]{1,160}$
+              liked:
+                type: boolean
+              count:
+                type: integer
+                minimum: 0
+                maximum: 9007199254740991
+            required:
+              - targetId
+              - liked
+              - count
+            additionalProperties: false
+      required:
+        - items
+      additionalProperties: false
     ProfileUpdate:
       oneOf:
         - type: object
@@ -2768,7 +3154,7 @@ components:
       type: object
       additionalProperties: false
       properties:
-        phone: &a2
+        phone: &a5
           type: string
           pattern: ^\+994[0-9]{9}$
       required:
@@ -2777,7 +3163,7 @@ components:
       type: object
       additionalProperties: false
       properties:
-        phone: *a2
+        phone: *a5
         code:
           type: string
           pattern: ^[0-9]{6}$
@@ -2870,6 +3256,21 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Restaurant'
+        nextCursor:
+          type:
+            - string
+            - 'null'
+      required:
+        - items
+        - nextCursor
+    LikePage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LikeItem'
         nextCursor:
           type:
             - string

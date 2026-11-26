@@ -60,6 +60,10 @@ const schemaNames = {
   Wallet: 'walletSchema',
   WalletTransaction: 'walletTransactionSchema',
   NotificationPreferences: 'notificationPreferencesSchema',
+  LikeSnapshot: 'likeSnapshotSchema',
+  LikeResult: 'likeResultSchema',
+  LikeItem: 'likeItemSchema',
+  LikeState: 'likeStateSchema',
 };
 const schemas = Object.fromEntries(
   Object.entries(schemaNames).map(([name, key]) => {
@@ -142,6 +146,7 @@ const page = (name) =>
     nextCursor: { type: ['string', 'null'] },
   });
 schemas.RestaurantPage = page('Restaurant');
+schemas.LikePage = page('LikeItem');
 schemas.FeedbackPage = page('FeedbackReview');
 schemas.TransactionPage = page('WalletTransaction');
 schemas.RestaurantList = {
@@ -194,6 +199,31 @@ const parameters = {
     schema: { type: 'string' },
   },
 };
+const query = (name, schema) => ({
+  name,
+  in: 'query',
+  required: false,
+  schema,
+});
+const likeKind = { enum: ['dish', 'review', 'restaurant'] };
+const likeTarget = { type: 'string', pattern: '^[A-Za-z0-9_:-]{1,160}$' };
+const date = { type: 'string', format: 'date' };
+Object.assign(parameters, {
+  Kind: { name: 'kind', in: 'path', required: true, schema: likeKind },
+  TargetId: {
+    name: 'targetId',
+    in: 'path',
+    required: true,
+    schema: likeTarget,
+  },
+  LikeKind: query('kind', likeKind),
+  LikeLimit: query('limit', { type: 'integer', minimum: 1, maximum: 100 }),
+  Q: query('q', { type: 'string', minLength: 1, maxLength: 80 }),
+  From: query('from', date),
+  To: query('to', date),
+  Partner: query('partner', { enum: ['true', 'false'] }),
+  Cashback: query('cashback', { enum: ['eligible', 'none'] }),
+});
 const paths = {};
 function operation(
   method,
@@ -210,6 +240,7 @@ function operation(
     'RequestId',
     ...(mutation ? ['Idempotency'] : []),
     ...(route.includes('{id}') ? ['Id'] : []),
+    ...(route.includes('{kind}') ? ['Kind', 'TargetId'] : []),
     ...extra,
   ];
   const responses = {
@@ -325,7 +356,15 @@ operation(
   'Receipt',
   'PurchaseReference',
 );
-operation('get', '/receipts', 'myReceipts', 'ReceiptList');
+operation('get', '/receipts', 'myReceipts', 'ReceiptList', null, false, [
+  'Q',
+  'From',
+  'To',
+  'Partner',
+  'Cashback',
+  'Cursor',
+  'Limit',
+]);
 operation(
   'post',
   '/receipts/fiscal/import',
@@ -400,6 +439,29 @@ operation(
   null,
   object({ token: string }),
 );
+operation(
+  'put',
+  '/likes/{kind}/{targetId}',
+  'like',
+  'LikeResult',
+  'LikeSnapshot',
+);
+operation('delete', '/likes/{kind}/{targetId}', 'unlike', 'LikeResult');
+operation('get', '/likes', 'myLikes', 'LikePage', null, false, [
+  'LikeKind',
+  'Cursor',
+  'LikeLimit',
+]);
+operation(
+  'post',
+  '/likes/state',
+  'likeState',
+  'LikeState',
+  object({
+    kind: likeKind,
+    targetIds: { type: 'array', items: likeTarget, minItems: 1, maxItems: 100 },
+  }),
+);
 const document = {
   openapi: '3.1.0',
   info: {
@@ -441,7 +503,9 @@ if (process.argv.includes('--check')) {
     ts.forEachChild(node, visit);
   }
   visit(wire);
-  if (!isDeepStrictEqual([...wirePaths].sort(), Object.keys(paths).sort()))
+  // Template spans all read as {id}; compare route shapes, not parameter names.
+  const shapes = Object.keys(paths).map((p) => p.replace(/\{\w+\}/g, '{id}'));
+  if (!isDeepStrictEqual([...wirePaths].sort(), shapes.sort()))
     throw new Error(
       'HTTP adapter path inventory differs from OpenAPI; review the contract handoff.',
     );

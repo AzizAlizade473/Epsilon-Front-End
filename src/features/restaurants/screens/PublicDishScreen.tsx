@@ -9,7 +9,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import type { LucideIcon } from 'lucide-react-native';
 import ArrowLeft from 'lucide-react-native/icons/arrow-left';
-import Heart from 'lucide-react-native/icons/heart';
 import Star from 'lucide-react-native/icons/star';
 import Timer from 'lucide-react-native/icons/timer';
 import Weight from 'lucide-react-native/icons/weight';
@@ -38,6 +37,10 @@ import Nut from 'lucide-react-native/icons/nut';
 import Bean from 'lucide-react-native/icons/bean';
 import Sandwich from 'lucide-react-native/icons/sandwich';
 import { Button } from '@/components/ui/Button';
+import { Chip } from '@/components/ui/Chip';
+import { LikeButton } from '@/components/likes/LikeButton';
+import { dishLike, reviewLike } from '@/hooks/likeTargets';
+import { useRestaurant } from '../hooks/useRestaurants';
 import { Icon } from '@/components/ui/Icon';
 import { PressSurface } from '@/components/ui/PressSurface';
 import { Text } from '@/components/ui/Text';
@@ -53,6 +56,7 @@ import {
   aspectCounts,
   useCatalog,
   useDishReviews,
+  type Aspect,
   type CatalogDish,
   type Ingredient,
 } from '../catalog';
@@ -147,11 +151,11 @@ export default function PublicDishScreen() {
     safeIdSchema.safeParse(dishId).success;
   const catalog = useCatalog(valid ? id : '');
   const reviews = useDishReviews(valid ? id : '', valid ? dishId : '');
+  const restaurant = useRestaurant(valid ? id : '');
   const dish = catalog.data?.dishes.find((d) => d.id === dishId);
   const router = useRouter();
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
-  const [saved, setSaved] = useState(false);
   const scrollY = useSharedValue(0);
   const onScroll = useAnimatedScrollHandler((e) => {
     scrollY.set(e.contentOffset.y);
@@ -164,10 +168,15 @@ export default function PublicDishScreen() {
       }),
     [router, id],
   );
-  const openReviews = (stars?: number) =>
+  const openReviews = (filter: { stars?: number; aspect?: Aspect } = {}) =>
     router.push({
       pathname: '/restaurant/[id]/dish/[dishId]/reviews',
-      params: { id, dishId, ...(stars ? { stars: String(stars) } : {}) },
+      params: {
+        id,
+        dishId,
+        ...(filter.stars ? { stars: String(filter.stars) } : {}),
+        ...(filter.aspect ? { aspect: filter.aspect } : {}),
+      },
     });
   const back = (
     <RoundButton
@@ -179,12 +188,15 @@ export default function PublicDishScreen() {
     />
   );
   const heart = dish && (
-    <RoundButton
-      icon={Heart}
-      fill={saved}
-      selected={saved}
-      label={t(saved ? 'dining.saved' : 'dining.save')}
-      onPress={() => setSaved((v) => !v)}
+    <LikeButton
+      variant="overlay"
+      target={dishLike(
+        id,
+        dish.id,
+        dish.name,
+        restaurant.data?.name ?? '',
+        dish.imageUrl,
+      )}
     />
   );
   const pairings =
@@ -228,7 +240,7 @@ export default function PublicDishScreen() {
               />
             ) : (
               <Text accessibilityRole="alert">
-                {t('premium.menuUnavailable')}
+                {t(catalog.data ? 'likes.gone' : 'premium.menuUnavailable')}
               </Text>
             )
           ) : (
@@ -369,7 +381,10 @@ export default function PublicDishScreen() {
                       {t('dining.ratings', { count: dish.rating.count })}
                     </Text>
                   </View>
-                  <RatingBars rating={dish.rating} onSelect={openReviews} />
+                  <RatingBars
+                    rating={dish.rating}
+                    onSelect={(stars) => openReviews({ stars })}
+                  />
                 </View>
                 <View style={styles.panel}>
                   <RatingTrend trend={dish.trend} />
@@ -379,14 +394,12 @@ export default function PublicDishScreen() {
                     <Text variant="headline">{t('dining.mentions')}</Text>
                     <View style={styles.tags}>
                       {mentions.map(([aspect, count]) => (
-                        <View key={aspect} style={styles.mention}>
-                          <Text variant="caption" style={styles.link}>
-                            {t(`dining.aspect.${aspect}`)}
-                          </Text>
-                          <Text variant="caption" tone="secondary">
-                            {count}
-                          </Text>
-                        </View>
+                        <Chip
+                          key={aspect}
+                          tone="brand"
+                          label={`${t(`dining.aspect.${aspect}`)} · ${count}`}
+                          onPress={() => openReviews({ aspect })}
+                        />
                       ))}
                     </View>
                   </View>
@@ -420,6 +433,14 @@ export default function PublicDishScreen() {
                       <ReviewCard
                         key={r.id}
                         review={r}
+                        like={reviewLike(
+                          id,
+                          dish.id,
+                          r.id,
+                          dish.name,
+                          r.comment,
+                          dish.imageUrl,
+                        )}
                         tagKeys={r.aspects.map((a) => `dining.aspect.${a}`)}
                         lines={4}
                       />
@@ -427,7 +448,7 @@ export default function PublicDishScreen() {
                     <Button
                       variant="secondary"
                       label={t('dining.seeAll', {
-                        count: dish.rating.reviewCount,
+                        count: reviews.data.length,
                       })}
                       onPress={() => openReviews()}
                     />
@@ -530,14 +551,6 @@ const styles = StyleSheet.create({
     borderRadius: radius[20],
     borderWidth: layout.hairlineWidth,
     borderColor: colors.border,
-  },
-  mention: {
-    flexDirection: 'row',
-    gap: spacing[8],
-    paddingHorizontal: spacing[12],
-    paddingVertical: spacing[4],
-    borderRadius: radius.pill,
-    backgroundColor: colors.brand.tint,
   },
   notice: {
     flexDirection: 'row',

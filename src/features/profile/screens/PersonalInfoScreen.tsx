@@ -97,14 +97,14 @@ function PersonalForm({ user }: { user: User }) {
         editable={!busy}
         maxLength={40}
       />
-      <ListRow title={t('profile.phone')} value={user.phone ?? undefined} />
+      <ListRow title={t('profile.phone')} subtitle={user.phone ?? undefined} />
       <Text variant="caption">{t('profile.phoneHelp')}</Text>
       <ListRow
         title={t('profile.birthDate')}
-        value={user.birthDate ?? undefined}
+        subtitle={user.birthDate ?? undefined}
       />
       {user.email && (
-        <ListRow title={t('auth.emailLabel')} value={user.email} />
+        <ListRow title={t('auth.emailLabel')} subtitle={user.email} />
       )}
       {/* The phone number is shown once, above; only other sign-in methods are listed here. */}
       {user.identities.some((identity) => identity.provider !== 'phone') && (
@@ -118,7 +118,7 @@ function PersonalForm({ user }: { user: User }) {
               <ListRow
                 key={identity.provider}
                 title={t(`profile.provider.${identity.provider}`)}
-                value={identity.email ?? undefined}
+                subtitle={identity.email ?? undefined}
               />
             ))}
         </>

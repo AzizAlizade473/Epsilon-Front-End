@@ -1,43 +1,54 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { FlashList } from '@shopify/flash-list';
+import { StyleSheet, View } from 'react-native';
 import ReceiptText from 'lucide-react-native/icons/receipt-text';
+import SearchIcon from 'lucide-react-native/icons/search';
+import X from 'lucide-react-native/icons/x';
 import { Screen } from '@/components/ui/Screen';
 import { BackButton } from '@/components/navigation/BackButton';
 import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { IconButton } from '@/components/ui/IconButton';
 import { Text } from '@/components/ui/Text';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { DetailRowSkeleton } from '@/components/feedback/DetailRowSkeleton';
 import { PullToRefresh } from '@/components/ui/PullToRefresh';
-import { useWalletHistory } from '@/hooks/useWalletHistory';
-import { useReceiptLibrary } from '@/hooks/useReceiptLibrary';
+import { useBills } from '@/hooks/useReceiptLibrary';
+import { useDebouncedSearch } from '@/hooks/useDebouncedSearch';
 import { BillRow } from '@/components/receipts/BillRow';
+import {
+  activeFilterCount,
+  billParams,
+  noBillFilters,
+} from '@/hooks/billFilters';
+import { spacing } from '@/design';
+import { BillFilterPanel } from '../components/BillFilterPanel';
 
 export function BillsScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const history = useWalletHistory();
-  const bills = useReceiptLibrary(
-    history.data?.items.map((item) => item.receiptId),
-  );
-  const locked = useRef(false),
-    nextLocked = useRef(false);
+  const [input, setInput] = useState('');
+  const [filters, setFilters] = useState(noBillFilters);
+  const [open, setOpen] = useState(false);
+  const search = useDebouncedSearch(input);
+  // Date presets are relative to when the screen opened.
+  const [openedAt] = useState(() => Date.now());
+  const params = billParams(search, filters, openedAt);
+  const bills = useBills(params);
+  const active = activeFilterCount(filters);
+  const narrowed = Object.keys(params).length > 0;
+  const reset = () => {
+    setInput('');
+    setFilters(noBillFilters);
+  };
+  const locked = useRef(false);
   useFocusEffect(
     useCallback(() => {
       locked.current = false;
     }, []),
   );
-  const next = async () => {
-    if (!history.hasNextPage || history.isFetching || nextLocked.current)
-      return;
-    nextLocked.current = true;
-    try {
-      await history.fetchNextPage();
-    } finally {
-      nextLocked.current = false;
-    }
-  };
   return (
     <Screen
       surface="receiptCanvas"
@@ -51,9 +62,51 @@ export function BillsScreen() {
         />
       }
     >
+      <View style={styles.search}>
+        <View style={styles.field}>
+          <Input
+            label={t('bills.search')}
+            value={input}
+            onChangeText={setInput}
+            maxLength={80}
+            autoCorrect={false}
+            returnKeyType="search"
+            appearance="underline"
+            leading={<SearchIcon size={spacing[20]} />}
+          />
+        </View>
+        {input.length > 0 && (
+          <IconButton
+            icon={X}
+            accessibilityLabel={t('bills.clearSearch')}
+            onPress={() => setInput('')}
+          />
+        )}
+      </View>
+      <View style={styles.actions}>
+        <Button
+          variant="ghost"
+          label={
+            active
+              ? t('bills.filtersActive', { count: active })
+              : t('bills.filters')
+          }
+          onPress={() => setOpen((value) => !value)}
+        />
+        {narrowed && (
+          <Button variant="ghost" label={t('bills.reset')} onPress={reset} />
+        )}
+      </View>
       <FlashList
         data={bills.receipts}
         keyExtractor={(item) => item.id}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        ListHeaderComponent={
+          open ? (
+            <BillFilterPanel filters={filters} onChange={setFilters} />
+          ) : null
+        }
         renderItem={({ item }) => (
           <BillRow
             receipt={item}
@@ -70,15 +123,21 @@ export function BillsScreen() {
         )}
         refreshControl={
           <PullToRefresh
-            refreshing={history.isRefetching || bills.isFetching}
+            refreshing={bills.isRefetching}
             onRefresh={() => {
-              void Promise.all([history.refetch(), bills.refetch()]);
+              void bills.refetch();
             }}
           />
         }
         ListEmptyComponent={
-          history.isPending || bills.isPending ? (
+          bills.isPending ? (
             <DetailRowSkeleton />
+          ) : bills.isError ? null : narrowed ? (
+            <EmptyState
+              icon={SearchIcon}
+              title={t('bills.noMatches')}
+              message={t('bills.noMatchesBody')}
+            />
           ) : (
             <EmptyState
               icon={ReceiptText}
@@ -89,7 +148,7 @@ export function BillsScreen() {
         }
         ListFooterComponent={
           <>
-            {(history.isError || bills.isError) && (
+            {bills.isError && (
               <>
                 <Text accessibilityRole="alert">
                   {t('receipt.unavailable')}
@@ -97,17 +156,17 @@ export function BillsScreen() {
                 <Button
                   label={t('common.retry')}
                   onPress={() => {
-                    void Promise.all([history.refetch(), bills.refetch()]);
+                    void bills.refetch();
                   }}
                 />
               </>
             )}
-            {history.hasNextPage && (
+            {bills.hasNextPage && (
               <Button
                 label={t('product.loadMore')}
-                loading={history.isFetchingNextPage}
+                loading={bills.isFetchingNextPage}
                 onPress={() => {
-                  void next();
+                  void bills.fetchNextPage();
                 }}
               />
             )}
@@ -117,3 +176,12 @@ export function BillsScreen() {
     </Screen>
   );
 }
+const styles = StyleSheet.create({
+  search: { flexDirection: 'row', alignItems: 'flex-end', gap: spacing[4] },
+  field: { flex: 1 },
+  actions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+});

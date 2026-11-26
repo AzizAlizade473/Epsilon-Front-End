@@ -9,18 +9,16 @@ import Star from 'lucide-react-native/icons/star';
 import Store from 'lucide-react-native/icons/store';
 import UtensilsCrossed from 'lucide-react-native/icons/utensils-crossed';
 import Wallet from 'lucide-react-native/icons/wallet';
-import X from 'lucide-react-native/icons/x';
 import type { LucideIcon } from 'lucide-react-native';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
-import { IconButton } from '@/components/ui/IconButton';
 import { Text } from '@/components/ui/Text';
 import { spacing } from '@/design';
 import { originalReceipts as o } from '@/design/original-receipts';
-import { formatDate, formatTime } from '@/lib/date';
 import { formatMoney } from '@/lib/money';
 import type { FiscalInfo, Receipt } from '@/services/contracts';
 import { formatQuantity } from './DishCard';
+import { ReceiptHeader } from './ReceiptHeader';
 import { FiscalFooter, FiscalSummary } from './FiscalDetails';
 
 const WHY: [LucideIcon, string][] = [
@@ -59,7 +57,7 @@ export function NotEligibleReceipt({
   onExplore?: () => void;
   onHome: () => void;
 }) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [details, setDetails] = useState(false);
   const c = fiscal.classification;
   const unknown = c.businessType === 'unknown' || c.sector === 'unknown';
@@ -71,24 +69,12 @@ export function NotEligibleReceipt({
       contentContainerStyle={styles.root}
       showsVerticalScrollIndicator={false}
     >
-      <View style={styles.top}>
-        <View style={styles.copy}>
-          <Text style={styles.amount}>{formatMoney(receipt.totalMinor)}</Text>
-          <Text style={styles.merchant}>{receipt.restaurant.name}</Text>
-          <Text style={styles.caption}>
-            {formatDate(receipt.issuedAt, { locale: i18n.language }) +
-              ' · ' +
-              formatTime(receipt.issuedAt)}
-          </Text>
-        </View>
-        {onClose && (
-          <IconButton
-            icon={X}
-            accessibilityLabel={t('navigation.close')}
-            onPress={onClose}
-          />
-        )}
-      </View>
+      <ReceiptHeader
+        receipt={receipt}
+        showSource={false}
+        {...(onClose ? { onClose } : {})}
+      />
+      <Text style={styles.amount}>{formatMoney(receipt.totalMinor)}</Text>
 
       <View style={styles.badges}>
         <View style={[styles.badge, styles.badgeOk]}>
@@ -230,19 +216,16 @@ function Row({ label, value }: { label: string; value: string }) {
 
 const styles = StyleSheet.create({
   root: { gap: spacing[20], paddingBottom: spacing[24] },
-  top: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    gap: spacing[12],
+  amount: {
+    ...o.type.amount,
+    color: o.colors.ink,
+    textAlign: 'center',
   },
-  copy: { flex: 1, minWidth: 0, gap: spacing[4] },
-  amount: { ...o.type.amount, color: o.colors.ink },
-  merchant: { ...o.type.product, color: o.colors.ink },
   caption: { ...o.type.caption, color: o.colors.secondary },
   badges: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    justifyContent: 'center',
     gap: spacing[8],
     marginTop: -spacing[8],
   },

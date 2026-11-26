@@ -8,12 +8,13 @@
   },
   "authFlow": {
     "birthDateFormat": "Year-month-day: YYYY-MM-DD",
-    "unavailable": "This sign-in method is currently unavailable. Please try again later.",
-    "notFound": "No account was found for this sign-in method. Sign up to continue.",
+    "unavailable": "This login method is currently unavailable. Please try again later.",
+    "notFound": "No account found. Create an account to continue.",
     "exists": "This account already exists. Log in to continue.",
-    "conflict": "This sign-in method belongs to another account. Use your existing sign-in method.",
+    "conflict": "This login method belongs to another account. Use your existing login method.",
     "googleNativeOnly": "Use the Epsilon Android app to continue with Google.",
-    "googleSetupRequired": "Google is temporarily unavailable. Continue with your phone number."
+    "googleSetupRequired": "Google is temporarily unavailable. Continue with your phone number.",
+    "createAccount": "Create account"
   },
   "authEntry": {
     "headline": "Good food deserves\ngreat feedback.",
@@ -22,7 +23,7 @@
     "register": "Sign up",
     "loginHelper": "Verify your phone number to access your account.",
     "registerHelper": "Verify your phone number, then complete your profile.",
-    "googleUnavailable": "Google sign-in is not enabled in this version.",
+    "googleUnavailable": "Google login is not enabled in this version.",
     "noAccount": "Don't have an account?",
     "hasAccount": "Already have an account?"
   },
@@ -86,7 +87,7 @@
     "network": "No internet connection",
     "timeout": "Request timed out",
     "generic": "Something went wrong",
-    "unauthorized": "Sign-in required",
+    "unauthorized": "Log in required",
     "otpInvalid": "Invalid code entered",
     "otpExpired": "Code has expired",
     "receiptAlreadyClaimed": "This receipt has already been claimed",
@@ -166,7 +167,7 @@
     "continueApple": "Continue with Apple"
   },
   "onboarding": {
-    "googleFailed": "Unable to sign in. Please try again.",
+    "googleFailed": "Unable to log in. Please try again.",
     "googleNetwork": "No internet connection",
     "googlePlayServices": "Google Play services need to be updated.",
     "googleNoAccount": "No Google account on this device",
@@ -427,7 +428,7 @@
     "phone": "Phone",
     "phoneHelp": "Contact support to change your phone number.",
     "birthDate": "Date of birth",
-    "identities": "Sign-in methods",
+    "identities": "Login methods",
     "provider": {
       "phone": "Phone",
       "google": "Google",
@@ -440,7 +441,6 @@
       "en": "English",
       "ru": "Русский"
     },
-    "selected": "Selected",
     "languageSyncError": "The language changed on this device. Retry to sync it to your account.",
     "contact": "Contact support",
     "privacyPolicy": "Privacy policy",
@@ -486,13 +486,14 @@
       }
     },
     "deleteKeyword": "DELETE",
-    "reminders": "Reminders about my meals"
+    "reminders": "Reminders about my meals",
+    "likes": "Liked"
   },
   "resilience": {
     "errorTitle": "Something went wrong",
     "reload": "Reload",
     "reconnected": "Connection restored",
-    "sessionExpired": "Your session expired. Sign in again.",
+    "sessionExpired": "Your session expired. Log in again.",
     "updateTitle": "Update required",
     "updateBody": "Install the latest version of Epsilon to continue.",
     "updateAction": "Update on Play Store",
@@ -593,8 +594,6 @@
     "allergens": "Allergens",
     "noAllergens": "No listed allergens",
     "pairings": "Pairs well with",
-    "save": "Save dish",
-    "saved": "Saved",
     "feedback": "Ratings & reviews",
     "trend": "Score over 6 months",
     "trendLabel": "Monthly average score: {{from}} to {{to}}",
@@ -808,7 +807,6 @@
       "none": "Not determined"
     },
     "devJson": "Developer: show JSON",
-    "linePrice": "{{qty}} {{unit}} × {{price}} = {{total}}",
     "cashbackClaimed": "Cashback for this item was already claimed",
     "officialImage": "From official receipt image",
     "paperPhoto": "Read from paper receipt photo",
@@ -1032,5 +1030,63 @@
         "body": "Add today’s meal and see what you’ve rated so far."
       }
     }
+  },
+  "likes": {
+    "like": "Like {{name}}",
+    "unlike": "Remove like from {{name}}",
+    "count_one": "{{count}} like",
+    "count_other": "{{count}} likes",
+    "error": "Couldn’t save your like. Please try again.",
+    "gone": "This item is no longer available.",
+    "tabs": {
+      "dish": "Dishes",
+      "review": "Reviews",
+      "restaurant": "Places"
+    },
+    "empty": {
+      "dish": "No liked dishes yet",
+      "review": "No liked reviews yet",
+      "restaurant": "No liked places yet"
+    },
+    "emptyBody": "Tap the heart to keep something here."
+  },
+  "bills": {
+    "search": "Search bills",
+    "clearSearch": "Clear search",
+    "filters": "Filters",
+    "filtersActive_one": "Filters · {{count}}",
+    "filtersActive_other": "Filters · {{count}}",
+    "reset": "Reset",
+    "date": "Visit date",
+    "anyDate": "Any date",
+    "week": "Last 7 days",
+    "month": "Last 30 days",
+    "custom": "Custom range",
+    "from": "From",
+    "to": "To",
+    "partner": "Partner",
+    "partnerYes": "Partners",
+    "partnerNo": "Not partners",
+    "cashback": "Cashback",
+    "cashbackYes": "Eligible",
+    "cashbackNo": "Not eligible",
+    "any": "All",
+    "noMatches": "No matching bills",
+    "noMatchesBody": "Change the search or filters, or reset them."
+  },
+  "dishes": {
+    "title": "All dishes",
+    "seeAll": "See all dishes",
+    "sortLabel": "Sort dishes",
+    "sort": {
+      "top": "Top rated",
+      "rated": "Most rated",
+      "mentioned": "Most mentioned"
+    },
+    "showing_one": "{{count}} dish",
+    "showing_other": "{{count}} dishes",
+    "mentions_one": "{{count}} mention",
+    "mentions_other": "{{count}} mentions",
+    "empty": "No dishes yet"
   }
 }

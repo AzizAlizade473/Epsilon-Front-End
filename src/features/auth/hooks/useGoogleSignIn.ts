@@ -37,9 +37,11 @@ export function useGoogleSignIn(intent?: AuthIntent) {
       const result = await googleDriver.exchange((idToken) => {
         if (!active.current || !authOperation.current(epoch))
           throw new Error('Obsolete authentication');
+        // Login sends no intent: an unknown Google identity is registered with
+        // this same credential and continues at the server's next step.
         return services.auth.signInWithGoogle({
           idToken,
-          ...(intent ? { intent } : {}),
+          ...(intent === 'register' ? { intent } : {}),
         });
       });
       if (!result || !active.current || !authOperation.current(epoch))

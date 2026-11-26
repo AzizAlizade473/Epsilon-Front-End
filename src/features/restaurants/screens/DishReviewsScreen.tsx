@@ -29,23 +29,33 @@ import {
 } from '../catalog';
 import { RatingBars, Stars } from '@/components/ratings/Ratings';
 import { ReviewCard } from '@/components/ratings/ReviewCard';
+import { reviewLike } from '@/hooks/likeTargets';
+import { aspectSchema } from '@/services/contracts/restaurant-catalog';
 import { Reveal } from '@/components/ratings/Reveal';
 
-const renderItem = ({ item, index }: ListRenderItemInfo<Review>) => (
-  <Reveal order={index} style={styles.item}>
-    <ReviewCard
-      review={item}
-      tagKeys={item.aspects.map((a) => `dining.aspect.${a}`)}
-    />
-  </Reveal>
-);
+type Params = {
+  id: string;
+  dishId: string;
+  stars?: string;
+  aspect?: string;
+  /** A liked review to show first. */
+  review?: string;
+};
 
 export default function DishReviewsScreen() {
-  const params = useLocalSearchParams<{
-    id: string;
-    dishId: string;
-    stars?: string;
-  }>();
+  const params = useLocalSearchParams<Params>();
+  // A reused screen with new params starts clean: no filter survives navigation.
+  const key = [
+    params.id,
+    params.dishId,
+    params.stars,
+    params.aspect,
+    params.review,
+  ].join('/');
+  return <Reviews key={key} params={params} />;
+}
+
+function Reviews({ params }: { params: Params }) {
   const { id, dishId } = params;
   const valid =
     safeIdSchema.safeParse(id).success &&
@@ -61,23 +71,63 @@ export default function DishReviewsScreen() {
       ? initialStars
       : null,
   );
-  const [aspect, setAspect] = useState<Aspect | null>(null);
+  const [aspect, setAspect] = useState<Aspect | null>(
+    aspectSchema.safeParse(params.aspect).data ?? null,
+  );
   const [sort, setSort] = useState<ReviewSort>('newest');
   const all = reviews.data;
-  const items = useMemo(
-    () => filterReviews(all ?? [], { stars, aspect, sort }),
-    [all, stars, aspect, sort],
-  );
-  const aspects = useMemo(() => aspectCounts(all ?? []), [all]);
+  const items = useMemo(() => {
+    const kept = filterReviews(all ?? [], { stars, aspect, sort });
+    const focus = kept.findIndex((r) => r.id === params.review);
+    if (focus > 0) kept.unshift(...kept.splice(focus, 1));
+    return kept;
+  }, [all, stars, aspect, sort, params.review]);
+  // Each count answers "how many would I see?": the other filter stays applied.
+  const aspects = useMemo(() => {
+    const counted = aspectCounts(
+      filterReviews(all ?? [], { stars, aspect: null, sort: 'newest' }),
+    );
+    if (aspect && !counted.some(([a]) => a === aspect))
+      counted.push([aspect, 0]);
+    return counted;
+  }, [all, stars, aspect]);
   const starCounts = useMemo(() => {
     const counts = [0, 0, 0, 0, 0, 0];
-    for (const r of all ?? []) counts[r.rating]! += 1;
+    for (const r of filterReviews(all ?? [], {
+      stars: null,
+      aspect,
+      sort: 'newest',
+    }))
+      counts[r.rating]! += 1;
     return counts;
-  }, [all]);
-  const clear = () => {
+  }, [all, aspect]);
+  const clearFilters = () => {
     setStars(null);
     setAspect(null);
   };
+  const reset = () => {
+    clearFilters();
+    setSort('newest');
+  };
+  const gone = Boolean(
+    params.review && all && !all.some((r) => r.id === params.review),
+  );
+  const renderItem = ({ item, index }: ListRenderItemInfo<Review>) => (
+    <Reveal order={index} style={styles.item}>
+      <ReviewCard
+        review={item}
+        tagKeys={item.aspects.map((a) => `dining.aspect.${a}`)}
+        like={reviewLike(
+          id,
+          dishId,
+          item.id,
+          dish?.name ?? t('dining.reviewsTitle'),
+          item.comment,
+          dish?.imageUrl,
+        )}
+      />
+    </Reveal>
+  );
   const header = (
     <View style={styles.header}>
       {dish && (
@@ -116,7 +166,7 @@ export default function DishReviewsScreen() {
           label={t('dining.filterAll', { count: all?.length ?? 0 })}
           tone="brand"
           selected={stars === null && aspect === null}
-          onPress={clear}
+          onPress={clearFilters}
         />
         {[5, 4, 3, 2, 1].map((s) => (
           <Chip
@@ -124,7 +174,7 @@ export default function DishReviewsScreen() {
             label={t('dining.starFilter', { stars: s, count: starCounts[s] })}
             tone="brand"
             selected={stars === s}
-            disabled={!starCounts[s]}
+            disabled={!starCounts[s] && stars !== s}
             onPress={() => setStars(stars === s ? null : s)}
           />
         ))}
@@ -146,9 +196,17 @@ export default function DishReviewsScreen() {
           ))}
         </ScrollView>
       )}
+      {gone && <Text accessibilityRole="alert">{t('likes.gone')}</Text>}
       <Text variant="caption" tone="secondary" accessibilityLiveRegion="polite">
         {t('dining.showing', { count: items.length })}
       </Text>
+      {(stars !== null || aspect !== null || sort !== 'newest') && (
+        <Button
+          variant="ghost"
+          label={t('dining.clearFilters')}
+          onPress={reset}
+        />
+      )}
     </View>
   );
   return (
@@ -171,6 +229,7 @@ export default function DishReviewsScreen() {
         <FlashList
           data={reviews.isSuccess ? items : []}
           renderItem={renderItem}
+          maintainVisibleContentPosition={{ disabled: true }}
           keyExtractor={(r) => r.id}
           contentContainerStyle={styles.list}
           ListHeaderComponent={header}
@@ -193,11 +252,6 @@ export default function DishReviewsScreen() {
             ) : all?.length ? (
               <View style={styles.empty}>
                 <Text tone="secondary">{t('dining.noMatches')}</Text>
-                <Button
-                  variant="ghost"
-                  label={t('dining.clearFilters')}
-                  onPress={clear}
-                />
               </View>
             ) : (
               <EmptyState icon={MessageSquare} title={t('dining.noReviews')} />

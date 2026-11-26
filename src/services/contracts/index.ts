@@ -428,6 +428,17 @@ export const receiptListSchema = z
     nextCursor: z.string().nullable(),
   })
   .strict();
+/** Filters of GET /receipts; applied by the server to the complete history. */
+export type ReceiptListParams = {
+  q?: string;
+  /** YYYY-MM-DD, Asia/Baku, inclusive on the visit date. */
+  from?: string;
+  to?: string;
+  partner?: boolean;
+  cashback?: 'eligible' | 'none';
+  cursor?: string;
+  limit?: number;
+};
 export const purchaseReferenceSchema = z
   .object({
     kind: z.enum(['qr', 'code']),
@@ -579,6 +590,60 @@ export const walletTransactionSchema = z
   .strict();
 
 export type WalletTransaction = z.infer<typeof walletTransactionSchema>;
+
+// ---------------------------------------------------------------------------
+// Likes
+// ---------------------------------------------------------------------------
+
+export const likeKindSchema = z.enum(['dish', 'review', 'restaurant']);
+export type LikeKind = z.infer<typeof likeKindSchema>;
+/** dish: `<restaurantId>:<dishId>`; restaurant: its id; review: the review id. */
+export const likeTargetIdSchema = z.string().regex(/^[A-Za-z0-9_:-]{1,160}$/);
+const likeRefId = z.string().regex(/^[A-Za-z0-9_-]{1,64}$/);
+/** Display copy stored with a like: the server may not know the liked item. */
+export const likeSnapshotSchema = z
+  .object({
+    restaurantId: likeRefId,
+    dishId: likeRefId.nullable(),
+    title: z.string().min(1).max(200),
+    subtitle: z.string().max(200),
+    imageUrl: z.string().url().startsWith('https://').max(500).nullable(),
+  })
+  .strict();
+export type LikeSnapshot = z.infer<typeof likeSnapshotSchema>;
+const likeCount = z.number().int().safe().nonnegative();
+export const likeResultSchema = z
+  .object({ liked: z.boolean(), count: likeCount })
+  .strict();
+export type LikeResult = z.infer<typeof likeResultSchema>;
+export const likeItemSchema = z
+  .object({
+    kind: likeKindSchema,
+    targetId: likeTargetIdSchema,
+    restaurantId: z.string().min(1),
+    dishId: z.string().nullable(),
+    title: z.string().min(1),
+    subtitle: z.string(),
+    imageUrl: z.string().url().nullable(),
+    createdAt: isoDate,
+    count: likeCount,
+  })
+  .strict();
+export type LikeItem = z.infer<typeof likeItemSchema>;
+export const likeStateSchema = z
+  .object({
+    items: z.array(
+      z
+        .object({
+          targetId: likeTargetIdSchema,
+          liked: z.boolean(),
+          count: likeCount,
+        })
+        .strict(),
+    ),
+  })
+  .strict();
+export type LikeState = z.infer<typeof likeStateSchema>;
 
 // ---------------------------------------------------------------------------
 // Pagination

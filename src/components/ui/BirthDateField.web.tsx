@@ -7,23 +7,26 @@ export function BirthDateField({
   onChange,
   error,
   disabled,
+  label,
 }: {
   value: string;
   onChange: (value: string) => void;
   maximumDate: Date;
   error?: string;
   disabled?: boolean;
+  /** Other date inputs reuse this field under their own name. */
+  label?: string;
 }) {
   const { t } = useTranslation();
   return (
     <Input
-      label={t('onboarding.birthDate')}
+      label={label ?? t('onboarding.birthDate')}
       value={value}
       editable={!disabled}
       error={error}
       hint={t('authFlow.birthDateFormat')}
       onChangeText={onChange}
-      autoComplete="birthdate-full"
+      autoComplete={label ? 'off' : 'birthdate-full'}
     />
   );
 }

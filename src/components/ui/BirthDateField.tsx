@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { PressSurface } from '@/components/ui/PressSurface';
 import { Text } from '@/components/ui/Text';
 import { colors, layout, radius, spacing } from '@/design';
-import { dateOnly, parseBirthDate } from '../profile-schema';
+import { dateOnly, parseBirthDate } from '@/lib/date-only';
 const DateTimePicker = lazy(
   () => import('@react-native-community/datetimepicker'),
 );
@@ -16,12 +16,15 @@ export function BirthDateField({
   maximumDate,
   error,
   disabled,
+  label,
 }: {
   value: string;
   onChange: (value: string) => void;
   maximumDate: Date;
   error?: string;
   disabled?: boolean;
+  /** Other date inputs reuse this field under their own name. */
+  label?: string;
 }) {
   const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -31,11 +34,12 @@ export function BirthDateField({
     month: 'long',
     year: 'numeric',
   });
+  const name = label ?? t('onboarding.birthDate');
   return (
     <View style={styles.group}>
-      <Text variant="callout">{t('onboarding.birthDate')}</Text>
+      <Text variant="callout">{name}</Text>
       <PressSurface
-        accessibilityLabel={`${t('onboarding.birthDate')}: ${display}`}
+        accessibilityLabel={`${name}: ${display}`}
         disabled={disabled}
         onPress={() => {
           Keyboard.dismiss();

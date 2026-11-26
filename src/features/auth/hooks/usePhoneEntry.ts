@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useSecondsUntil } from '../components/ResendTimer';
 import { emailSchema, phoneSchema } from '../schemas';
-import { useOtpChallenge } from '../store';
+import { entryDraft, useOtpChallenge } from '../store';
 import { usePhoneAuth } from './usePhoneAuth';
 import type { AuthIntent } from '@/lib/auth-intent';
 
@@ -11,9 +11,10 @@ import type { AuthIntent } from '@/lib/auth-intent';
 export function usePhoneEntry(intent?: AuthIntent) {
   const { t } = useTranslation();
   const router = useRouter();
-  const [phone, setPhone] = useState('');
+  const [phone, setPhone] = useState(() => entryDraft.get().phone);
   const [touched, setTouched] = useState(false);
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(() => entryDraft.get().email);
+  useEffect(() => entryDraft.clear(), []);
   const [emailTouched, setEmailTouched] = useState(false);
   const emailValid = emailSchema.safeParse(email);
   const auth = usePhoneAuth('signIn', intent);
@@ -37,10 +38,13 @@ export function usePhoneEntry(intent?: AuthIntent) {
       return;
     }
     if (await auth.requestCode(phone, emailValid.data)) router.push('/otp');
+    // Kept only after a refusal, so "Create account" / "Log in" opens prefilled.
+    else entryDraft.set({ phone, email });
   };
   return {
     phone,
     busy: auth.busy,
+    conflict: auth.conflict,
     disabled: !valid.success || !emailValid.success || rateLimited,
     email,
     onEmailChange: (value: string) => {

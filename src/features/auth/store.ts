@@ -59,6 +59,19 @@ export const otpChallenge = {
 };
 registerAuthCleanup(() => otpChallenge.clear());
 
+/** Typed entry values carried between Log in and Sign up. Memory only. */
+let draft = { phone: '', email: '' };
+export const entryDraft = {
+  get: () => draft,
+  set(next: { phone: string; email: string }) {
+    draft = next;
+  },
+  clear() {
+    draft = { phone: '', email: '' };
+  },
+};
+registerAuthCleanup(() => entryDraft.clear());
+
 export function useOtpChallenge() {
   return useSyncExternalStore(
     (listener) => {

@@ -14,40 +14,25 @@ import { FoodImage } from '@/components/food/FoodImage';
 import { colors, layout, radius, spacing } from '@/design';
 import { premium } from '@/design/premium';
 
-/** Round translucent control over photography (back, save). */
+/** Round translucent control over photography (back). */
 export function RoundButton({
   icon,
   label,
   onPress,
-  selected,
-  fill,
 }: {
   icon: LucideIcon;
   label: string;
   onPress: () => void;
-  selected?: boolean;
-  fill?: boolean;
 }) {
-  const Glyph = icon;
   return (
     <PressSurface
       accessibilityLabel={label}
-      accessibilityState={selected === undefined ? undefined : { selected }}
       onPress={onPress}
       style={styles.round}
       contentStyle={styles.roundInner}
       spring
     >
-      {fill ? (
-        <Glyph
-          size={spacing[20]}
-          strokeWidth={layout.iconStrokeWidth}
-          color={colors.surface}
-          fill={colors.surface}
-        />
-      ) : (
-        <Icon icon={icon} size="small" color={colors.surface} decorative />
-      )}
+      <Icon icon={icon} size="small" color={colors.surface} decorative />
     </PressSurface>
   );
 }

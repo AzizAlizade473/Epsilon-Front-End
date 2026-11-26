@@ -4,7 +4,7 @@ import { Platform } from 'react-native';
 import az from '../locales/az.json';
 import { initializeI18n } from '@/lib/i18n';
 import { GoogleEntry } from '@/features/auth/components/AuthEntryActions';
-import { BirthDateField } from '@/features/auth/components/BirthDateField.web';
+import { BirthDateField } from '@/components/ui/BirthDateField.web';
 
 jest.mock('@/lib/env', () => ({ env: { ENABLE_GOOGLE_SIGNIN: true } }));
 test('browser Google control cannot invoke a native-only provider even if its flag is enabled', async () => {

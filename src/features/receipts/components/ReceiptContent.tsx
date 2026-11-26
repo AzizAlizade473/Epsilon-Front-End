@@ -9,37 +9,24 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import BadgeCheck from 'lucide-react-native/icons/badge-check';
 import ChevronDown from 'lucide-react-native/icons/chevron-down';
 import ChevronUp from 'lucide-react-native/icons/chevron-up';
 import PartyPopper from 'lucide-react-native/icons/party-popper';
 import Sparkles from 'lucide-react-native/icons/sparkles';
 import Store from 'lucide-react-native/icons/store';
-import X from 'lucide-react-native/icons/x';
 import { Text } from '@/components/ui/Text';
 import { Icon } from '@/components/ui/Icon';
-import { IconButton } from '@/components/ui/IconButton';
 import { Button } from '@/components/ui/Button';
 import { PressSurface } from '@/components/ui/PressSurface';
 import { MockDataNotice } from '@/components/feedback/MockDataNotice';
-import { BrandBadge } from '@/components/brand/BrandBadge';
 import { spacing } from '@/design';
 import { originalReceipts as o } from '@/design/original-receipts';
-import { displayMerchantName } from '@/lib/brands';
+import { ReceiptHeader } from './ReceiptHeader';
 import { formatMoney } from '@/lib/money';
-import { formatDate } from '@/lib/date';
 import type { Receipt, ReceiptItem } from '@/services/contracts';
 import { DishCard } from './DishCard';
 import { FiscalFooter, FiscalSummary } from './FiscalDetails';
 import { NotEligibleReceipt } from './NotEligibleReceipt';
-
-/** Says where the data came from: only an authorised provider is "verified". */
-const SOURCE = {
-  verified: 'receipt.status.verified',
-  official_image: 'receipt.official',
-  paper_photo: 'fiscal.paperPhoto',
-  test_data: 'fiscal.testData',
-} as const;
 
 const enter = (order: number) =>
   FadeInDown.duration(260)
@@ -102,7 +89,7 @@ export function ReceiptContent({
   onScanAnother?: () => void;
   onExplore?: () => void;
 }) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [details, setDetails] = useState(false);
   const fiscal = receipt.fiscal;
   // A valid receipt from a business outside the programme — an outcome, not an error.
@@ -135,8 +122,6 @@ export function ReceiptContent({
   );
   const partner = fiscal ? fiscal.partner.isPartner : true;
   const cashback = fiscal ? fiscal.eligibility.cashbackAllowed : true;
-  const merchant = fiscal?.merchant.objectName ?? receipt.restaurant.name;
-  const name = displayMerchantName(merchant);
 
   const status = readOnly
     ? {
@@ -175,38 +160,8 @@ export function ReceiptContent({
       contentContainerStyle={styles.list}
       showsVerticalScrollIndicator={false}
     >
-      <Animated.View entering={enter(0)} style={styles.top}>
-        <BrandBadge name={merchant} logoUrl={receipt.restaurant.logoUrl} />
-        <View style={styles.copy}>
-          <Text style={styles.name} accessibilityRole="header">
-            {name}
-          </Text>
-          <Text style={styles.sub}>
-            {formatDate(receipt.issuedAt, { locale: i18n.language }) +
-              ' · ' +
-              formatMoney(receipt.totalMinor)}
-          </Text>
-          {!readOnly && (
-            <View style={styles.verified}>
-              <Icon
-                icon={BadgeCheck}
-                size="small"
-                color={o.colors.rated}
-                decorative
-              />
-              <Text style={styles.verifiedText}>
-                {t(SOURCE[fiscal?.verification.status ?? 'verified'])}
-              </Text>
-            </View>
-          )}
-        </View>
-        {onClose && (
-          <IconButton
-            icon={X}
-            accessibilityLabel={t('navigation.close')}
-            onPress={onClose}
-          />
-        )}
+      <Animated.View entering={enter(0)}>
+        <ReceiptHeader receipt={receipt} {...(onClose ? { onClose } : {})} />
       </Animated.View>
 
       <Animated.View
@@ -255,6 +210,11 @@ export function ReceiptContent({
             />
           </Animated.View>
         ))}
+      </View>
+
+      <View style={styles.total}>
+        <Text style={styles.statusTitle}>{t('receipt.total')}</Text>
+        <Text style={styles.totalValue}>{formatMoney(receipt.totalMinor)}</Text>
       </View>
 
       {allRated && (
@@ -310,12 +270,18 @@ const styles = StyleSheet.create({
     paddingBottom: spacing[24],
     paddingRight: Platform.OS === 'web' ? spacing[12] : 0,
   },
-  top: { flexDirection: 'row', alignItems: 'center', gap: spacing[12] },
   copy: { flex: 1, minWidth: 0, gap: 2 },
-  name: { ...o.type.title, color: o.colors.ink },
   sub: { ...o.type.caption, color: o.colors.secondary },
-  verified: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  verifiedText: { ...o.type.caption, fontWeight: '600', color: o.colors.rated },
+  total: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: spacing[12],
+    paddingVertical: spacing[12],
+    borderTopWidth: 1,
+    borderTopColor: o.colors.border,
+  },
+  totalValue: { ...o.type.title, color: o.colors.ink },
   status: {
     flexDirection: 'row',
     alignItems: 'flex-start',

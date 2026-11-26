@@ -101,7 +101,8 @@ const styles = StyleSheet.create({
     gap: spacing[12],
   },
   text: { flex: 1, minWidth: 0, gap: spacing[4] },
-  value: { flexShrink: 1, textAlign: 'right' },
+  // A long value wraps inside its share instead of squeezing the title away.
+  value: { flexShrink: 1, maxWidth: '60%', textAlign: 'right' },
   leading: {
     width: layout.leadingIconSize,
     height: layout.leadingIconSize,

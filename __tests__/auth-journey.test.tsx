@@ -175,7 +175,12 @@ describe('Phone → OTP → session', () => {
       );
       const target = reason === 'notFound' ? 'register' : 'login';
       await fireEvent.press(
-        screen.getByRole('button', { name: az.authEntry[target] }),
+        screen.getByRole('button', {
+          name:
+            target === 'register'
+              ? az.authFlow.createAccount
+              : az.authEntry.login,
+        }),
       );
       expect(mockReplace).toHaveBeenLastCalledWith(`/${target}`);
       expect(SecureStore.setItemAsync).not.toHaveBeenCalled();

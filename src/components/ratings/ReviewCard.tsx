@@ -4,6 +4,8 @@ import { demoContent } from '@/lib/demoContent';
 import { StyleSheet, View } from 'react-native';
 import BadgeCheck from 'lucide-react-native/icons/badge-check';
 import FlaskConical from 'lucide-react-native/icons/flask-conical';
+import { LikeButton } from '@/components/likes/LikeButton';
+import type { LikeTarget } from '@/hooks/likeTargets';
 import { Icon } from '@/components/ui/Icon';
 import { Text } from '@/components/ui/Text';
 import { colors, radius, spacing } from '@/design';
@@ -23,12 +25,14 @@ export type ReviewCardData = {
  */
 export const ReviewCard = memo(function ReviewCard({
   review,
+  like,
   tagKeys = [],
   // Demo builds show the demo catalogue: never present those reviews as verified buyers.
   sample = demoContent(),
   lines,
 }: {
   review: ReviewCardData;
+  like: LikeTarget;
   tagKeys?: readonly string[];
   sample?: boolean;
   lines?: number;
@@ -68,6 +72,9 @@ export const ReviewCard = memo(function ReviewCard({
           </Text>
         </View>
       </View>
+      <View style={styles.like}>
+        <LikeButton target={like} />
+      </View>
     </View>
   );
 });
@@ -103,4 +110,9 @@ const styles = StyleSheet.create({
     gap: spacing[8],
   },
   verified: { flexDirection: 'row', alignItems: 'center', gap: spacing[4] },
+  like: {
+    alignSelf: 'flex-start',
+    marginLeft: -spacing[8],
+    marginVertical: -spacing[8],
+  },
 });

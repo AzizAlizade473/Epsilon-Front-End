@@ -1,6 +1,7 @@
 import Constants from 'expo-constants';
 import { useRouter, type Href } from 'expo-router';
 import UserRound from 'lucide-react-native/icons/user-round';
+import Heart from 'lucide-react-native/icons/heart';
 import MessageSquare from 'lucide-react-native/icons/message-square';
 import Bell from 'lucide-react-native/icons/bell';
 import Languages from 'lucide-react-native/icons/languages';
@@ -39,6 +40,7 @@ export default function ProfileScreen() {
   const account = [
     ['personal-info', UserRound, 'personal'],
     ['my-reviews', MessageSquare, 'reviews'],
+    ['likes', Heart, 'likes'],
     ['notifications', Bell, 'notifications'],
     ['language', Languages, 'language'],
   ] as const;

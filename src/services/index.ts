@@ -65,6 +65,9 @@ export const services = {
   get notification() {
     return getServices().notification;
   },
+  get like() {
+    return getServices().like;
+  },
 };
 
 export * from './interfaces';

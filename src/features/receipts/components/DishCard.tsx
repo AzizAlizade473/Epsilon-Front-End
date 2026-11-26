@@ -50,17 +50,18 @@ export function DishCard({
   const rated = item.rating !== null || completed;
   const canRate = !readOnly && item.canRate && !rated && !pending;
   const name = dishName(item.name);
-  const price = item.line
-    ? t('fiscal.linePrice', {
-        qty: formatQuantity(item.line.quantityMilli),
-        unit: item.line.unit ?? '',
-        price: formatMoney(item.line.unitPriceMinor),
-        total: formatMoney(item.line.lineTotalMinor),
-      })
-    : t('receipt.quantityPrice', {
-        qty: item.quantity,
-        price: formatMoney(item.unitPriceMinor),
-      });
+  const quantity = item.line
+    ? `${formatQuantity(item.line.quantityMilli)}${
+        item.line.unit ? ` ${item.line.unit}` : ''
+      }`
+    : String(item.quantity);
+  const price = t('receipt.quantityPrice', {
+    qty: quantity,
+    price: formatMoney(item.line?.unitPriceMinor ?? item.unitPriceMinor),
+  });
+  const total = formatMoney(
+    item.line?.lineTotalMinor ?? item.unitPriceMinor * item.quantity,
+  );
   const body = (
     <>
       <View style={styles.main}>
@@ -81,6 +82,7 @@ export function DishCard({
             <Text style={styles.sub}>{t('fiscal.cashbackClaimed')}</Text>
           )}
         </View>
+        <Text style={styles.total}>{total}</Text>
         {rated && (
           <Animated.View entering={checkIn} style={styles.done}>
             <Icon
@@ -183,6 +185,7 @@ const styles = StyleSheet.create({
     color: o.colors.ink,
   },
   sub: { ...o.type.caption, color: o.colors.secondary },
+  total: { ...o.type.product, color: o.colors.ink },
   done: {
     width: 28,
     height: 28,

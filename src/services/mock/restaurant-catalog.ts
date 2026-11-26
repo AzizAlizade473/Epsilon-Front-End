@@ -2480,14 +2480,13 @@ interface Built {
 const cache = new Map<string, Built>();
 
 function makeReviews(
-  dishId: string,
   distribution: number[],
   reviewCount: number,
   lang: CatalogLanguage,
   seed: string,
 ): Review[] {
   const r = rng(`${seed}:reviews`);
-  const total = Math.min(reviewCount, MAX_REVIEWS);
+  const total = reviewCount;
   const stars = shuffle(
     apportion(total, distribution).flatMap((c, i) =>
       Array<number>(c).fill(5 - i),
@@ -2505,7 +2504,8 @@ function makeReviews(
     const first = NAMES[int(r, 0, NAMES.length - 1)]!;
     const surname = SURNAME_INITIALS[int(r, 0, SURNAME_INITIALS.length - 1)]!;
     return {
-      id: `${dishId}_r${String(i + 1).padStart(2, '0')}`,
+      // Unique across restaurants: shared dishes must not share a liked review.
+      id: `${seed.replace(':', '_')}_r${String(i + 1).padStart(2, '0')}`,
       rating,
       createdAt: new Date(times[i]!).toISOString(),
       author: `${first[0]}*** ${surname}.`,
@@ -2568,11 +2568,14 @@ function build(index: number, lang: CatalogLanguage): Built {
     const count = int(dr, 18, 420);
     const target = dr() < 0.12 ? 3.4 + dr() * 0.6 : 4.2 + dr() * 0.7;
     const distribution = distribute(count, target, dr);
-    const reviewCount = Math.max(6, Math.round(count * (0.15 + dr() * 0.2)));
+    // Never advertise more written reviews than the list holds.
+    const reviewCount = Math.min(
+      MAX_REVIEWS,
+      Math.max(6, Math.round(count * (0.15 + dr() * 0.2))),
+    );
     const rating = summary(distribution, reviewCount);
 
     const list = makeReviews(
-      tpl.id,
       distribution,
       reviewCount,
       lang,

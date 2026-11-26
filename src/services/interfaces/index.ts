@@ -20,6 +20,12 @@ import type {
   PurchaseReference,
   FiscalImport,
   Receipt,
+  ReceiptListParams,
+  LikeItem,
+  LikeKind,
+  LikeResult,
+  LikeSnapshot,
+  LikeState,
   Restaurant,
   Session,
   User,
@@ -85,7 +91,10 @@ export interface ReceiptService {
   ): Promise<Receipt>;
   get(id: string, options?: ReadOptions): Promise<Receipt>;
   /** Ids of the receipts this account holds, newest first (incl. scanned fiscal receipts). */
-  list(options?: ReadOptions): Promise<string[]>;
+  list(
+    params?: ReceiptListParams,
+    options?: ReadOptions,
+  ): Promise<Paginated<{ id: string }>>;
   /** Read a scanned fiscal receipt from an image the customer supplied (server-side AI). */
   importFiscalImage(
     input: FiscalImport,
@@ -142,6 +151,26 @@ export interface NotificationService {
   markAllRead(): Promise<void>;
 }
 
+export interface LikeService {
+  /** Idempotent: liking twice stays one like. */
+  like(
+    kind: LikeKind,
+    targetId: string,
+    snapshot: LikeSnapshot,
+  ): Promise<LikeResult>;
+  unlike(kind: LikeKind, targetId: string): Promise<LikeResult>;
+  list(
+    params: { kind?: LikeKind; cursor?: string; limit?: number },
+    options?: ReadOptions,
+  ): Promise<Paginated<LikeItem>>;
+  /** Up to 100 targets of one kind. */
+  state(
+    kind: LikeKind,
+    targetIds: string[],
+    options?: ReadOptions,
+  ): Promise<LikeState>;
+}
+
 export interface ServiceContainer {
   auth: AuthService;
   user: UserService;
@@ -151,4 +180,5 @@ export interface ServiceContainer {
   feedback: FeedbackService;
   wallet: WalletService;
   notification: NotificationService;
+  like: LikeService;
 }

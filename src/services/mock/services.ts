@@ -10,12 +10,18 @@ import {
   type FeedbackReview,
   type NotificationPreferences,
   type WalletTransaction,
+  type LikeItem,
+  type Receipt,
+  type ReceiptListParams,
+  likeSnapshotSchema,
+  likeTargetIdSchema,
 } from '../contracts';
 import { ApiError } from '../http/errors';
 import type {
   AuthService,
   ConfigService,
   FeedbackService,
+  LikeService,
   NotificationService,
   ReceiptService,
   RestaurantService,
@@ -40,6 +46,8 @@ import {
   mockAccountStep,
   rememberMockAccount,
   forgetMockAccount,
+  requireMockIntent,
+  mockAccountOrCreate,
 } from './accounts';
 
 let _currentUser: User = { ...mockUser };
@@ -63,6 +71,46 @@ const currentReceipt = () => ({
     rating: mockRatings.get(item.id) ?? item.rating,
   })),
 });
+function mockPage<T>(all: T[], cursor?: string, limit = 20) {
+  const start = Math.max(0, Number(cursor ?? 0) || 0);
+  return {
+    items: all.slice(start, start + limit),
+    nextCursor: start + limit < all.length ? String(start + limit) : null,
+  };
+}
+/** Same meaning as the server filters of GET /receipts. */
+function matchesReceipt(receipt: Receipt, params: ReceiptListParams) {
+  const fold = (text: string) => text.toLocaleLowerCase('az');
+  const text = [
+    receipt.id,
+    receipt.restaurant.name,
+    receipt.branch.name,
+    receipt.fiscal?.merchant.objectName,
+    receipt.fiscal?.receipt.number,
+    receipt.fiscal?.receipt.fiscalId,
+    ...receipt.items.map((item) => item.name),
+  ];
+  // Asia/Baku is UTC+4 all year.
+  const day = new Date(Date.parse(receipt.issuedAt) + 4 * 3600_000)
+    .toISOString()
+    .slice(0, 10);
+  const partner = receipt.fiscal?.partner.isPartner ?? true;
+  const cashback = receipt.fiscal?.eligibility.cashbackAllowed ?? true;
+  return (
+    (!params.q ||
+      text.some((value) => value && fold(value).includes(fold(params.q!)))) &&
+    (!params.from || day >= params.from) &&
+    (!params.to || day <= params.to) &&
+    (params.partner === undefined || partner === params.partner) &&
+    (!params.cashback || cashback === (params.cashback === 'eligible'))
+  );
+}
+const mockLikes = new Map<string, Map<string, LikeItem>>();
+function myLikes() {
+  let mine = mockLikes.get(_currentUser.id);
+  if (!mine) mockLikes.set(_currentUser.id, (mine = new Map()));
+  return mine;
+}
 function walletFixture(): WalletTransaction[] {
   if (getMockScenario() !== 'wallet_long_history') return mockTransactions;
   return Array.from({ length: 1000 }, (_, index) => ({
@@ -74,9 +122,11 @@ function walletFixture(): WalletTransaction[] {
 
 export const mockAuthService: AuthService = {
   supportsAuthIntent: true,
-  async requestOtp() {
+  async requestOtp(input) {
     await simulateDelay();
     checkMockScenario('auth');
+    // Like the server: no code at all when the intent cannot succeed.
+    if (input.intent) requireMockIntent(`phone:${input.phone}`, input.intent);
     return {
       expiresAt: new Date(Date.now() + 120_000).toISOString(),
       retryAfterSeconds: 60,
@@ -123,19 +173,16 @@ export const mockAuthService: AuthService = {
         birthDate: null,
         phoneVerified: false,
       };
-    if (input.intent)
-      _currentUser = mockAccount(
-        input.idToken === 'fixture-new-google' || isE2E()
-          ? 'google:new'
-          : 'google:existing',
-        input.intent,
-        {
-          ...mockUser,
-          phone: null,
-          phoneVerified: false,
-          identities: [mockUser.identities[1]!],
-        },
-      );
+    const unknown = input.idToken === 'fixture-new-google' || isE2E();
+    const key = unknown ? 'google:new' : 'google:existing';
+    const profile: User = {
+      ...mockUser,
+      phone: null,
+      phoneVerified: false,
+      identities: [mockUser.identities[1]!],
+    };
+    if (input.intent) _currentUser = mockAccount(key, input.intent, profile);
+    else if (unknown) _currentUser = mockAccountOrCreate(key, profile);
     return {
       session: {
         accessToken: 'mock_google_access_token',
@@ -143,12 +190,11 @@ export const mockAuthService: AuthService = {
         expiresAt: new Date(Date.now() + 3600_000).toISOString(),
       },
       user: _currentUser,
-      isNewUser: input.intent ? input.intent === 'register' : isE2E(),
-      nextStep: input.intent
-        ? mockAccountStep(_currentUser)
-        : isE2E()
-          ? 'profile'
-          : 'home',
+      isNewUser: input.intent
+        ? input.intent === 'register'
+        : unknown && !_currentUser.firstName,
+      nextStep:
+        input.intent || unknown ? mockAccountStep(_currentUser) : 'home',
     };
   },
 
@@ -220,6 +266,7 @@ export const mockUserService: UserService = {
     await simulateDelay();
     checkMockScenario();
     forgetMockAccount(_currentUser);
+    mockLikes.delete(_currentUser.id);
     _currentUser = { ...mockUser };
     resetMockFeedback();
     mockPreferences = {
@@ -321,9 +368,18 @@ export const mockReceiptService: ReceiptService = {
     return currentReceipt();
   },
 
-  // Demo receipts are reachable through wallet transactions already.
-  async list() {
-    return [];
+  async list(params) {
+    await simulateDelay();
+    checkMockScenario();
+    if (getMockScenario() === 'empty') return { items: [], nextCursor: null };
+    const matches = [currentReceipt(), mockSupermarketReceipt]
+      .filter((receipt) => matchesReceipt(receipt, params ?? {}))
+      .sort((a, b) => Date.parse(b.issuedAt) - Date.parse(a.issuedAt));
+    return mockPage(
+      matches.map(({ id }) => ({ id })),
+      params?.cursor,
+      params?.limit,
+    );
   },
 
   // The demo has no receipt reader: never fabricate a reading.
@@ -522,6 +578,48 @@ export const mockNotificationService: NotificationService = {
   },
 };
 
+/** Mock mode only: likes live in memory, per account. */
+export const mockLikeService: LikeService = {
+  async like(kind, targetId, snapshot) {
+    await simulateDelay();
+    checkMockScenario();
+    const key = `${kind}/${likeTargetIdSchema.parse(targetId)}`;
+    if (!myLikes().has(key))
+      myLikes().set(key, {
+        ...likeSnapshotSchema.parse(snapshot),
+        kind,
+        targetId,
+        createdAt: new Date().toISOString(),
+        count: 1,
+      });
+    return { liked: true, count: 1 };
+  },
+  async unlike(kind, targetId) {
+    await simulateDelay();
+    checkMockScenario();
+    myLikes().delete(`${kind}/${targetId}`);
+    return { liked: false, count: 0 };
+  },
+  async list(params) {
+    await simulateDelay();
+    checkMockScenario();
+    const all = [...myLikes().values()]
+      .filter((item) => !params.kind || item.kind === params.kind)
+      .reverse();
+    return mockPage(all, params.cursor, params.limit ?? 50);
+  },
+  async state(kind, targetIds) {
+    await simulateDelay();
+    checkMockScenario();
+    return {
+      items: targetIds.map((targetId) => {
+        const liked = myLikes().has(`${kind}/${targetId}`);
+        return { targetId, liked, count: liked ? 1 : 0 };
+      }),
+    };
+  },
+};
+
 export const mockServices: ServiceContainer = {
   auth: mockAuthService,
   user: mockUserService,
@@ -531,4 +629,5 @@ export const mockServices: ServiceContainer = {
   feedback: mockFeedbackService,
   wallet: mockWalletService,
   notification: mockNotificationService,
+  like: mockLikeService,
 };

@@ -9,53 +9,63 @@ import { formatMoney } from '@/lib/money';
 import type { CatalogDish } from '../catalog';
 import { FoodImage } from '@/components/food/FoodImage';
 import { ScoreLine } from '@/components/ratings/Ratings';
+import { LikeButton } from '@/components/likes/LikeButton';
+import type { LikeTarget } from '@/hooks/likeTargets';
 
 /** Public menu row: deliberately no rating control or mutation. */
 export const MenuDish = memo(function MenuDish({
   dish,
   onPress,
+  like,
 }: {
   dish: CatalogDish;
   onPress: (dishId: string) => void;
+  like: LikeTarget;
 }) {
   const { t } = useTranslation();
+  // The heart is a sibling of the row, never a button inside a button.
   return (
-    <PressSurface
-      accessibilityLabel={[
-        dish.name,
-        dish.priceMinor === null ? null : formatMoney(dish.priceMinor),
-        t('dining.scoreLabel', { score: dish.rating.average.toFixed(1) }),
-        t('dining.ratings', { count: dish.rating.count }),
-      ]
-        .filter(Boolean)
-        .join(', ')}
-      onPress={() => onPress(dish.id)}
-      contentStyle={styles.row}
-      pressedColor={colors.divider}
-    >
-      <View style={styles.copy}>
-        <Text variant="headline" numberOfLines={2}>
-          {dish.name}
-        </Text>
-        <ScoreLine rating={dish.rating} />
-        {dish.preview && (
-          <Text variant="caption" tone="secondary" numberOfLines={2}>
-            {`“${dish.preview.comment}”`}
+    <View>
+      <PressSurface
+        accessibilityLabel={[
+          dish.name,
+          dish.priceMinor === null ? null : formatMoney(dish.priceMinor),
+          t('dining.scoreLabel', { score: dish.rating.average.toFixed(1) }),
+          t('dining.ratings', { count: dish.rating.count }),
+        ]
+          .filter(Boolean)
+          .join(', ')}
+        onPress={() => onPress(dish.id)}
+        contentStyle={styles.row}
+        pressedColor={colors.divider}
+      >
+        <View style={styles.copy}>
+          <Text variant="headline" numberOfLines={2}>
+            {dish.name}
           </Text>
-        )}
-        {dish.priceMinor !== null && (
-          <Text variant="callout" style={styles.price}>
-            {formatMoney(dish.priceMinor)}
-          </Text>
-        )}
+          <ScoreLine rating={dish.rating} />
+          {dish.preview && (
+            <Text variant="caption" tone="secondary" numberOfLines={2}>
+              {`“${dish.preview.comment}”`}
+            </Text>
+          )}
+          {dish.priceMinor !== null && (
+            <Text variant="callout" style={styles.price}>
+              {formatMoney(dish.priceMinor)}
+            </Text>
+          )}
+        </View>
+        <FoodImage
+          uri={dish.imageUrl}
+          cover
+          width={premium.menuThumb}
+          height={premium.menuThumb}
+        />
+      </PressSurface>
+      <View style={styles.like}>
+        <LikeButton target={like} variant="overlay" />
       </View>
-      <FoodImage
-        uri={dish.imageUrl}
-        cover
-        width={premium.menuThumb}
-        height={premium.menuThumb}
-      />
-    </PressSurface>
+    </View>
   );
 });
 const styles = StyleSheet.create({
@@ -70,4 +80,9 @@ const styles = StyleSheet.create({
   },
   copy: { flex: 1, minWidth: 0, gap: spacing[8] },
   price: { color: colors.brand.primary },
+  like: {
+    position: 'absolute',
+    right: spacing.screenMargin,
+    bottom: spacing[16],
+  },
 });

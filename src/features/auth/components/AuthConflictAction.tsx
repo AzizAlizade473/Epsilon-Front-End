@@ -18,7 +18,9 @@ export function AuthConflictAction({
   return (
     <Button
       variant="ghost"
-      label={t(`authEntry.${target}`)}
+      label={t(
+        target === 'register' ? 'authFlow.createAccount' : 'authEntry.login',
+      )}
       onPress={() => {
         onNavigate?.();
         otpChallenge.clear();

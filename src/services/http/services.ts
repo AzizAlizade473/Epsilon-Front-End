@@ -22,6 +22,11 @@ import {
   userSchema,
   walletSchema,
   walletTransactionSchema,
+  likeResultSchema,
+  likeItemSchema,
+  likeSnapshotSchema,
+  likeStateSchema,
+  likeTargetIdSchema,
   type FeedbackInput,
 } from '../contracts';
 import { request } from '../http/client';
@@ -31,6 +36,7 @@ import type {
   AuthService,
   ConfigService,
   FeedbackService,
+  LikeService,
   NotificationService,
   ReceiptService,
   RestaurantService,
@@ -69,9 +75,11 @@ export const httpAuthService: AuthService = {
   supportsAuthIntent: true,
 
   async requestOtp(input) {
-    return request('POST', '/auth/otp/request', otpChallengeSchema, input, {
-      idempotencyKey: generateIdempotencyKey('otp-req'),
-    });
+    return withIntent(input.intent, () =>
+      request('POST', '/auth/otp/request', otpChallengeSchema, input, {
+        idempotencyKey: generateIdempotencyKey('otp-req'),
+      }),
+    );
   },
 
   async verifyOtp(input) {
@@ -191,15 +199,18 @@ export const httpReceiptService: ReceiptService = {
     );
   },
 
-  async list(options) {
-    const page = await requestWithAuth(
+  async list(params, options) {
+    const query = new URLSearchParams();
+    for (const [key, value] of Object.entries(params ?? {}))
+      if (value !== undefined && value !== '') query.set(key, String(value));
+    const qs = query.toString();
+    return requestWithAuth(
       'GET',
-      '/receipts',
+      qs ? `/receipts?${qs}` : '/receipts',
       receiptListSchema,
       undefined,
       options,
     );
-    return page.items.map((item) => item.id);
   },
 
   async importFiscalImage(input, options) {
@@ -360,6 +371,53 @@ export const httpNotificationService: NotificationService = {
   },
 };
 
+const likeSegment = (targetId: string) =>
+  encodeURIComponent(likeTargetIdSchema.parse(targetId));
+
+export const httpLikeService: LikeService = {
+  async like(kind, targetId, snapshot) {
+    return requestWithAuth(
+      'PUT',
+      `/likes/${kind}/${likeSegment(targetId)}`,
+      likeResultSchema,
+      likeSnapshotSchema.parse(snapshot),
+      { idempotencyKey: generateIdempotencyKey('like') },
+    );
+  },
+  async unlike(kind, targetId) {
+    return requestWithAuth(
+      'DELETE',
+      `/likes/${kind}/${likeSegment(targetId)}`,
+      likeResultSchema,
+      undefined,
+      { idempotencyKey: generateIdempotencyKey('unlike') },
+    );
+  },
+  async list(params, options) {
+    const query = new URLSearchParams();
+    if (params.kind) query.set('kind', params.kind);
+    if (params.cursor) query.set('cursor', params.cursor);
+    if (params.limit) query.set('limit', String(params.limit));
+    const qs = query.toString();
+    return requestWithAuth(
+      'GET',
+      qs ? `/likes?${qs}` : '/likes',
+      paginatedSchema(likeItemSchema),
+      undefined,
+      options,
+    );
+  },
+  async state(kind, targetIds, options) {
+    return requestWithAuth(
+      'POST',
+      '/likes/state',
+      likeStateSchema,
+      { kind, targetIds },
+      { ...options, idempotencyKey: generateIdempotencyKey('like-state') },
+    );
+  },
+};
+
 export const httpServices: ServiceContainer = {
   auth: httpAuthService,
   user: httpUserService,
@@ -369,4 +427,5 @@ export const httpServices: ServiceContainer = {
   feedback: httpFeedbackService,
   wallet: httpWalletService,
   notification: httpNotificationService,
+  like: httpLikeService,
 };

@@ -8,6 +8,15 @@ const accounts = new Map<string, User>([
   ['google:existing', { ...mockUser }],
 ]);
 let nextAccountId = 0;
+export function requireMockIntent(key: string, intent: AuthIntent) {
+  const known = accounts.has(key);
+  if (intent === 'login' && !known) throw new AuthIntentError('notFound');
+  if (intent === 'register' && known) throw new AuthIntentError('exists');
+}
+/** Combined provider auth: signs in a known identity, provisions an unknown one. */
+export function mockAccountOrCreate(key: string, profile: User) {
+  return accounts.get(key) ?? mockAccount(key, 'register', profile);
+}
 export function mockAccount(key: string, intent: AuthIntent, profile: User) {
   const existing = accounts.get(key);
   if (intent === 'login') {
