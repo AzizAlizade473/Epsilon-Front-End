@@ -57,6 +57,8 @@ const schema = z
         }
       }),
     ENABLE_CRASH_REPORTING_DEV: flag,
+    /** Labelled demo restaurants for partner presentations; ignored in production. */
+    EXPO_PUBLIC_DEMO_CATALOG: flag,
   })
   .superRefine((env, context) => {
     if (
@@ -154,6 +156,7 @@ export function getEnv(): Environment {
       EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID:
         process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
       EXPO_PUBLIC_SENTRY_DSN: process.env.EXPO_PUBLIC_SENTRY_DSN,
+      EXPO_PUBLIC_DEMO_CATALOG: process.env.EXPO_PUBLIC_DEMO_CATALOG,
       ...(flags.success
         ? {
             ENABLE_GOOGLE_SIGNIN: String(flags.data.google),
