@@ -5,6 +5,14 @@ native or live-service result. FAIL is an observed failed requirement; NOT TESTE
 means no execution; BLOCKED means missing external prerequisites. Automated
 totals/artifact measurements are recorded in FINAL_AUDIT.md and PERF_REPORT.md.
 
+## Update 2026-11-26 (statuses below are unchanged)
+
+- Backend is live on AWS; backend tests 165/165, including duplicate claims, replayed rewards and account deletion.
+- Informal checks on the owner's phone (not formal evidence): sign-in with email code, receipt scan, rating.
+- Email carries login codes. SMS does not exist, so phone numbers are unverified.
+- `live-phone` build profile: staging environment (no demo catalog or developer diagnostics), ARM libraries only.
+- Still open: restaurant menu/public review API, public web account deletion, crash monitoring, backup restore drill, device QA, legal.
+
 | Area / scenario                                                                                              | Status     | Evidence / limit                                                                      | Required follow-up                                   |
 | ------------------------------------------------------------------------------------------------------------ | ---------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------- |
 | Strict types, zero-warning lint, all tests/coverage, locale parity, formatting                               | PASS       | npm run check: 91 suites / 557 tests; all coverage thresholds intact                  | Native/backend evidence remains separate             |

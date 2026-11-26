@@ -106,6 +106,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         android: {
           enableProguardInReleaseBuilds: true,
           enableShrinkResourcesInReleaseBuilds: true,
+          // Phone-only APKs set this to drop the x86 emulator libraries (about half the size).
+          buildArchs: process.env.ANDROID_ARCHS?.split(','),
           // Local backend over plain http: only development builds that opt in
           // (.env.local, or the internal eas.json "live-local" profile). Never store builds.
           usesCleartextTraffic:

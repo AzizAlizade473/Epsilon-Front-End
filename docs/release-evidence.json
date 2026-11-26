@@ -5,25 +5,25 @@
       "id": "backend",
       "priority": "P0",
       "status": "BLOCKED",
-      "proof": "No staging backend ownership, isolation, rate-limit or contract verification supplied."
+      "proof": "Live demo API on AWS (EC2 + Neon) since 2026-11; backend suite 165/165 on 2026-11-26. Independent isolation, rate-limit and contract verification still required."
     },
     {
       "id": "auth",
       "priority": "P0",
       "status": "BLOCKED",
-      "proof": "Real SMS delivery, expiry/abuse controls, refresh/revocation and Google OAuth signing verification required."
+      "proof": "Email OTP (not SMS) and Google sign-in used informally on the owner's phone; phone numbers are unverified. SMS or an email-only sign-up decision, abuse controls and signed-build OAuth evidence required."
     },
     {
       "id": "ledger",
       "priority": "P0",
       "status": "BLOCKED",
-      "proof": "Backend atomic claim, durable replay, unique rewards, reconciliation, refund and source accounting evidence required."
+      "proof": "Backend tests cover concurrent scans, single global claim, idempotent replay, one reward per item and ledger-derived balance (165/165, 2026-11-26). Live race, refund/reversal and reconciliation evidence required."
     },
     {
       "id": "deletion",
       "priority": "P0",
       "status": "BLOCKED",
-      "proof": "Backend deletion, session/device revocation, retention and public deletion request workflow unverified."
+      "proof": "Backend tests cover recent-sign-in deletion, personal data erasure and phone release. Live end-to-end check, retention approval and a public web deletion page required."
     },
     {
       "id": "legal",

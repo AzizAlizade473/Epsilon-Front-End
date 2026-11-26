@@ -2,9 +2,7 @@ import { useTranslation } from 'react-i18next';
 import Mail from 'lucide-react-native/icons/mail';
 import { Icon } from '@/components/ui/Icon';
 import { Input } from '@/components/ui/Input';
-import { View } from 'react-native';
 import { colors } from '@/design';
-import { AUTH_LEADING_WIDTH } from './PhoneField';
 
 /** Where the login code is e-mailed while codes go by e-mail instead of SMS. */
 export function EmailField({
@@ -41,14 +39,7 @@ export function EmailField({
       returnKeyType="send"
       appearance={appearance}
       leading={
-        <View style={{ width: AUTH_LEADING_WIDTH }}>
-          <Icon
-            icon={Mail}
-            size="small"
-            color={colors.inkSecondary}
-            decorative
-          />
-        </View>
+        <Icon icon={Mail} size="small" color={colors.inkSecondary} decorative />
       }
     />
   );
