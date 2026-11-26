@@ -1,6 +1,8 @@
 import { expect, test } from '@jest/globals';
 import { mockAuthService, mockUserService } from '@/services/mock/services';
 import { setMockScenario } from '@/services/mock/scenario';
+import { mockUser } from '@/services/mock/fixtures';
+import { emailListSchema } from '@/services/contracts';
 
 test('fixture registration verifies first, asks for profile, then returns the same existing account', async () => {
   setMockScenario('success');
@@ -78,4 +80,36 @@ test('Google fixture intent does not silently provision during Login', async () 
   await expect(
     mockAuthService.verifyPhoneLink({ phone: '+994509876545', code: '123456' }),
   ).resolves.toMatchObject({ phone: '+994509876545', phoneVerified: true });
+});
+test('fixture e-mail change: pending, verify, conflicts, removal', async () => {
+  const email = 'second@example.test';
+  await mockAuthService.verifyOtp({
+    email: 'first@example.test',
+    code: '123456',
+    intent: 'register',
+  });
+  await mockUserService.requestEmail({ email, makePrimary: true });
+  await expect(mockUserService.emails()).resolves.toMatchObject({
+    items: [{ email: 'first@example.test', primary: true }],
+    pending: { email, makePrimary: true },
+  });
+  const changed = emailListSchema.parse(
+    await mockUserService.verifyEmail({ email, code: '123456' }),
+  );
+  expect(changed.items.map((item) => [item.email, item.primary])).toEqual(
+    expect.arrayContaining([
+      [email, true],
+      ['first@example.test', false],
+    ]),
+  );
+  await expect(mockUserService.removeEmail(email)).rejects.toMatchObject({
+    code: 'EMAIL_IS_PRIMARY',
+  });
+  await mockUserService.removeEmail('first@example.test');
+  await expect(
+    mockUserService.requestEmail({
+      email: mockUser.email!,
+      makePrimary: false,
+    }),
+  ).rejects.toMatchObject({ code: 'EMAIL_IN_USE' });
 });

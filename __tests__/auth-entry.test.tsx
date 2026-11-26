@@ -17,7 +17,11 @@ const mockPush = jest.fn();
 const mockReplace = jest.fn();
 const mockGoogle = jest.fn<() => Promise<'/profile-setup' | null>>();
 const mockRequest =
-  jest.fn<() => Promise<{ expiresAt: string; retryAfterSeconds: number }>>();
+  jest.fn<
+    (
+      input: unknown,
+    ) => Promise<{ expiresAt: string; retryAfterSeconds: number }>
+  >();
 jest.mock('expo-router', () => {
   const React = jest.requireActual<typeof import('react')>('react');
   return {
@@ -33,7 +37,7 @@ jest.mock('expo-router', () => {
 jest.mock('@/providers/AuthProvider', () => ({ useAuthActions: () => ({}) }));
 jest.mock('@/providers/ToastProvider', () => ({ useToast: () => jest.fn() }));
 jest.mock('@/services', () => ({
-  services: { auth: { requestOtp: () => mockRequest() } },
+  services: { auth: { requestOtp: (input: unknown) => mockRequest(input) } },
 }));
 jest.mock('@/features/auth/hooks/useGoogleSignIn', () => ({
   useGoogleSignIn: () => ({ busy: false, signIn: mockGoogle }),
@@ -87,37 +91,37 @@ it.each(['login', 'register'] as const)(
   },
 );
 it.each(['login', 'register'] as const)(
-  '%s omits unsupported email authentication',
+  '%s is email only: no phone field',
   async (intent) => {
     await entry(intent);
-    expect(screen.queryByText('Email')).toBeNull();
+    expect(screen.queryByLabelText(az.auth.phoneLabel)).toBeNull();
     expect(screen.queryAllByRole('radio')).toHaveLength(0);
     expect(mockRequest).not.toHaveBeenCalled();
     expect(mockGoogle).not.toHaveBeenCalled();
-    expect(screen.getByLabelText(az.auth.phoneLabel)).toBeOnTheScreen();
+    expect(screen.getByLabelText(az.auth.emailLabel)).toBeOnTheScreen();
   },
 );
 it.each(['login', 'register'] as const)(
-  '%s requests only the canonical phone challenge and routes without PII',
+  '%s requests an e-mail challenge and routes without PII',
   async (intent) => {
     await entry(intent);
     expect(
       screen.getByRole('button', { name: az.common.continue }),
     ).toBeDisabled();
     await fireEvent.changeText(
-      screen.getByLabelText(az.auth.phoneLabel),
-      '+994501234567',
-    );
-    await fireEvent.changeText(
       screen.getByLabelText(az.auth.emailLabel),
-      'owner@gmail.com',
+      ' Owner@Gmail.com ',
     );
     await fireEvent.press(
       screen.getByRole('button', { name: az.common.continue }),
     );
     await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/otp'));
     expect(mockRequest).toHaveBeenCalledTimes(1);
-    expect(otpChallenge.get()?.phone).toBe('+994501234567');
+    expect(mockRequest).toHaveBeenCalledWith({
+      email: 'owner@gmail.com',
+      intent,
+    });
+    expect(otpChallenge.get()?.target).toBe('owner@gmail.com');
   },
 );
 it.each(['login', 'register'] as const)(
@@ -147,7 +151,7 @@ it('represents disabled Google honestly and direct-entry Back returns to Welcome
   expect(mockGoogle).not.toHaveBeenCalled();
 });
 
-it('locks phone, Google and entry switching during a pending phone request', async () => {
+it('locks e-mail, Google and entry switching during a pending request', async () => {
   let finish: (value: {
     expiresAt: string;
     retryAfterSeconds: number;
@@ -160,10 +164,6 @@ it('locks phone, Google and entry switching during a pending phone request', asy
   );
   await entry('register');
   await fireEvent.changeText(
-    screen.getByLabelText(az.auth.phoneLabel),
-    '+994501234567',
-  );
-  await fireEvent.changeText(
     screen.getByLabelText(az.auth.emailLabel),
     'owner@gmail.com',
   );
@@ -175,7 +175,7 @@ it('locks phone, Google and entry switching during a pending phone request', asy
     'accessibilityState',
     expect.objectContaining({ busy: true }),
   );
-  expect(screen.getByLabelText(az.auth.phoneLabel)).toHaveProp(
+  expect(screen.getByLabelText(az.auth.emailLabel)).toHaveProp(
     'editable',
     false,
   );

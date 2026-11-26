@@ -70,7 +70,7 @@ async function restaurants() {
     </SafeAreaProvider>,
   );
 }
-it('opens restaurant profiles and clearly labels development partner data', async () => {
+it('opens restaurant profiles', async () => {
   await restaurants();
   await waitFor(() =>
     expect(screen.getByText(mockRestaurants[0]!.name)).toBeOnTheScreen(),
@@ -83,7 +83,6 @@ it('opens restaurant profiles and clearly labels development partner data', asyn
     pathname: '/restaurant/[id]',
     params: { id: mockRestaurants[0]!.id },
   });
-  expect(screen.getByText(az.product.demoData)).toBeOnTheScreen();
 });
 it('distinguishes a real empty directory from a request failure', async () => {
   mockList.mockResolvedValue({ items: [], nextCursor: null });

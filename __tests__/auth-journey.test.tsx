@@ -11,7 +11,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as SecureStore from 'expo-secure-store';
 import type { ReactNode } from 'react';
 import az from '../locales/az.json';
-import PhoneScreen from '@/features/auth/screens/PhoneScreen';
+import AuthEntryScreen from '@/features/auth/screens/AuthEntryScreen';
 import OtpScreen from '@/features/auth/screens/OtpScreen';
 import {
   AuthProvider,
@@ -38,15 +38,22 @@ const mockToast = jest.fn();
 const mockRequest =
   jest.fn<
     (input: {
-      phone: string;
-      email?: string;
+      email: string;
+      intent?: string;
     }) => Promise<{ expiresAt: string; retryAfterSeconds: number }>
   >();
 const mockVerify =
-  jest.fn<(input: { phone: string; code: string }) => Promise<AuthResult>>();
+  jest.fn<(input: { email: string; code: string }) => Promise<AuthResult>>();
 const mockMe = jest.fn<() => Promise<typeof mockUser>>();
 jest.mock('expo-router', () => ({
-  useRouter: () => ({ push: mockPush, replace: mockReplace, back: jest.fn() }),
+  useRouter: () => ({
+    push: mockPush,
+    replace: mockReplace,
+    back: jest.fn(),
+    dismissTo: jest.fn(),
+    canGoBack: () => false,
+  }),
+  useFocusEffect: () => undefined,
   Redirect: ({ href }: { href: string }) => {
     mockReplace(href);
     return null;
@@ -59,11 +66,11 @@ jest.mock('@/lib/env', () => ({
 jest.mock('@/services', () => ({
   services: {
     user: { me: () => mockMe() },
-    config: { get: async () => ({ requirePhoneVerification: true }) },
+    config: { get: async () => ({ requirePhoneVerification: false }) },
     auth: {
       logout: async () => undefined,
-      requestOtp: (input: { phone: string }) => mockRequest(input),
-      verifyOtp: (input: { phone: string; code: string }) => mockVerify(input),
+      requestOtp: (input: { email: string }) => mockRequest(input),
+      verifyOtp: (input: { email: string; code: string }) => mockVerify(input),
     },
   },
 }));
@@ -152,13 +159,13 @@ beforeEach(async () => {
   await initializeI18n();
 });
 
-describe('Phone → OTP → session', () => {
+describe('E-mail → OTP → session', () => {
   it.each(['notFound', 'exists'] as const)(
     'offers safe counterpart navigation after %s without persisting a session',
     async (reason) => {
       mockVerify.mockRejectedValue(new AuthIntentError(reason));
       otpChallenge.set(
-        '+994501234567',
+        'aysel@gmail.com',
         60,
         'signIn',
         reason === 'notFound' ? 'login' : 'register',
@@ -272,7 +279,7 @@ describe('Phone → OTP → session', () => {
       ),
     );
   });
-  it('normalizes paste, prevents double requests and navigates without phone params', async () => {
+  it('normalizes the address, prevents double requests and navigates without PII params', async () => {
     let finish: (value: {
       expiresAt: string;
       retryAfterSeconds: number;
@@ -283,18 +290,9 @@ describe('Phone → OTP → session', () => {
           finish = resolve;
         }),
     );
-    await render(<PhoneScreen />, { wrapper: Wrapper });
-    expect(
-      screen.getByRole('button', { name: az.auth.sendCode }),
-    ).toBeDisabled();
-    await fireEvent.changeText(
-      screen.getByLabelText(az.auth.phoneLabel),
-      '+994501234567',
-    );
-    // The code goes to the owner's e-mail: no e-mail, no request.
-    expect(
-      screen.getByRole('button', { name: az.auth.sendCode }),
-    ).toBeDisabled();
+    await render(<AuthEntryScreen intent="login" />, { wrapper: Wrapper });
+    const submit = screen.getByRole('button', { name: az.common.continue });
+    expect(submit).toBeDisabled();
     await fireEvent.changeText(
       screen.getByLabelText(az.auth.emailLabel),
       'not-an-email',
@@ -304,16 +302,12 @@ describe('Phone → OTP → session', () => {
       screen.getByLabelText(az.auth.emailLabel),
       ' Aysel@Gmail.com ',
     );
-    await fireEvent.press(
-      screen.getByRole('button', { name: az.auth.sendCode }),
-    );
-    await fireEvent.press(
-      screen.getByRole('button', { name: az.auth.sendCode }),
-    );
+    await fireEvent.press(submit);
+    await fireEvent.press(submit);
     expect(mockRequest).toHaveBeenCalledTimes(1);
     expect(mockRequest).toHaveBeenCalledWith({
-      phone: '+994501234567',
       email: 'aysel@gmail.com',
+      intent: 'login',
     });
     await act(async () =>
       finish({ expiresAt: '2027-01-01T00:00:00Z', retryAfterSeconds: 60 }),
@@ -325,7 +319,7 @@ describe('Phone → OTP → session', () => {
     'persists and publishes server session before routing to %s',
     async (nextStep) => {
       mockVerify.mockResolvedValue(result(nextStep));
-      otpChallenge.set('+994501234567', 60);
+      otpChallenge.set('aysel@gmail.com', 60);
       await render(<OtpScreen />, { wrapper: Wrapper });
       await fireEvent.changeText(
         screen.getByLabelText(az.auth.codeLabel),
@@ -338,9 +332,7 @@ describe('Phone → OTP → session', () => {
       );
       await waitFor(() =>
         expect(mockReplace).toHaveBeenCalledWith(
-          { profile: '/profile-setup', phone: '/phone-verify', home: '/home' }[
-            nextStep
-          ],
+          nextStep === 'profile' ? '/profile-setup' : '/home',
         ),
       );
       expect(mockVerify).toHaveBeenCalledTimes(1);
@@ -364,7 +356,7 @@ describe('Phone → OTP → session', () => {
           save = resolve;
         });
     });
-    otpChallenge.set('+994501234567', 60);
+    otpChallenge.set('aysel@gmail.com', 60);
     await render(<OtpScreen />, { wrapper: Wrapper });
     await fireEvent.changeText(
       screen.getByLabelText(az.auth.codeLabel),
@@ -380,25 +372,27 @@ describe('Phone → OTP → session', () => {
     await waitFor(() => expect(mockReplace).toHaveBeenCalledWith('/home'));
   });
 
-  it('tells the user to wait for an e-mail when the server mailed the code', async () => {
-    otpChallenge.set(
-      '+994501234567',
-      60,
-      'signIn',
-      undefined,
-      'email',
-      'a***@gmail.com',
-    );
+  it('always says the sign-in code is e-mailed and to which address', async () => {
+    otpChallenge.set('aysel@gmail.com', 60);
     await render(<OtpScreen />, { wrapper: Wrapper });
     expect(screen.getByText(az.auth.otpEmailTitle)).toBeTruthy();
-    expect(screen.getByText(/a\*\*\*@gmail\.com/)).toBeTruthy();
+    expect(screen.getByText(/aysel@gmail\.com/)).toBeTruthy();
     expect(screen.getByText(az.auth.otpEmailNote)).toBeTruthy();
     expect(screen.queryByText(az.navigation.otp)).toBeNull();
   });
 
-  it('keeps the SMS wording when no delivery channel is given', async () => {
-    otpChallenge.set('+994501234567', 60);
-    await render(<OtpScreen />, { wrapper: Wrapper });
+  it('shows the e-mailed inbox for a phone code, SMS wording only for real SMS', async () => {
+    otpChallenge.set(
+      '+994501234567',
+      60,
+      'link',
+      undefined,
+      'email',
+      'a***@gmail.com',
+    );
+    await render(<OtpScreen mode="link" />, { wrapper: Wrapper });
+    expect(screen.getByText(/a\*\*\*@gmail\.com/)).toBeTruthy();
+    await act(async () => otpChallenge.set('+994501234567', 60, 'link'));
     expect(screen.getByText(az.navigation.otp)).toBeTruthy();
     expect(screen.queryByText(az.auth.otpEmailNote)).toBeNull();
   });
@@ -414,7 +408,7 @@ describe('Phone → OTP → session', () => {
           retryAfterSeconds: 30,
         }),
       );
-      otpChallenge.set('+994501234567', 60);
+      otpChallenge.set('aysel@gmail.com', 60);
       await render(<OtpScreen />, { wrapper: Wrapper });
       await fireEvent.changeText(
         screen.getByLabelText(az.auth.codeLabel),
@@ -450,7 +444,7 @@ describe('Phone → OTP → session', () => {
     jest
       .mocked(SecureStore.setItemAsync)
       .mockRejectedValue(new Error('secure storage unavailable'));
-    otpChallenge.set('+994501234567', 60);
+    otpChallenge.set('aysel@gmail.com', 60);
     await render(<OtpScreen />, { wrapper: Wrapper });
     await fireEvent.changeText(
       screen.getByLabelText(az.auth.codeLabel),
@@ -465,7 +459,7 @@ describe('Phone → OTP → session', () => {
 
   it('rejects a direct OTP visit without an in-memory challenge', async () => {
     await render(<OtpScreen />, { wrapper: Wrapper });
-    expect(mockReplace).toHaveBeenCalledWith('/phone');
+    expect(mockReplace).toHaveBeenCalledWith('/login');
     expect(mockVerify).not.toHaveBeenCalled();
   });
 });

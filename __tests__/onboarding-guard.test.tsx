@@ -23,7 +23,6 @@ beforeEach(() => {
     },
     onboardingComplete: true,
     user: { firstName: 'Test', birthDate: null, phoneVerified: false },
-    requirePhoneVerification: true,
   };
 });
 it('blocks direct entry to finished tabs for authenticated but incomplete users', async () => {
@@ -35,46 +34,27 @@ it('blocks direct entry to finished tabs for authenticated but incomplete users'
   expect(mockRedirect).toHaveBeenCalledWith('/profile-setup');
   expect(screen.queryByText('Protected')).toBeNull();
 });
-it('resumes profile then mandatory phone and finally completed home from server fields', () => {
+it('resumes profile and then home: a phone is never a step', async () => {
   expect(resolveBootstrapRoute(mockAuth)).toBe('/profile-setup');
   mockAuth.user = {
     firstName: 'Test',
     birthDate: '2000-01-01',
     phoneVerified: false,
   };
-  expect(resolveBootstrapRoute(mockAuth)).toBe('/phone-verify');
-  mockAuth.user.phoneVerified = true;
+  mockAuth.nextStep = 'phone';
   expect(resolveBootstrapRoute(mockAuth)).toBe('/home');
-});
-it('allows optional phone verification to be skipped without claiming the phone is verified', async () => {
-  mockAuth.user = {
-    firstName: 'Test',
-    birthDate: '2000-01-01',
-    phoneVerified: false,
-  };
-  mockAuth.requirePhoneVerification = false;
   await render(
     <AuthBoundary mode="complete">
       <Text>Protected</Text>
     </AuthBoundary>,
   );
   expect(screen.getByText('Protected')).toBeOnTheScreen();
-  expect(mockAuth.user.phoneVerified).toBe(false);
 });
-it('blocks returning to Welcome or phone sign-in while an authenticated account needs onboarding', async () => {
+it('blocks returning to Welcome or sign-in while an authenticated account needs onboarding', async () => {
   await render(
     <AuthBoundary mode="signedOut">
       <Text>Welcome</Text>
     </AuthBoundary>,
   );
   expect(mockRedirect).toHaveBeenCalledWith('/profile-setup');
-});
-it('does not let a stale home instruction bypass mandatory phone verification', () => {
-  mockAuth.user = {
-    firstName: 'Test',
-    birthDate: '2000-01-01',
-    phoneVerified: false,
-  };
-  mockAuth.nextStep = 'home';
-  expect(resolveBootstrapRoute(mockAuth)).toBe('/phone-verify');
 });

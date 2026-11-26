@@ -56,10 +56,7 @@ test('profile config fetch completes without waiting on its own query and applie
   );
   await waitFor(() => expect(hook.result.current.query.isSuccess).toBe(true));
   expect(mockGet).toHaveBeenCalledTimes(1);
-  expect(hook.result.current.auth).toMatchObject({
-    minimumAge: 18,
-    requirePhoneVerification: false,
-  });
+  expect(hook.result.current.auth).toMatchObject({ minimumAge: 18 });
 });
 test('fresh cached config also updates auth requirements without an extra request', async () => {
   client.setQueryDefaults(queryKeys.config.current(), { staleTime: Infinity });
@@ -69,6 +66,6 @@ test('fresh cached config also updates auth requirements without an extra reques
     { wrapper: Wrapper },
   );
   await waitFor(() => expect(hook.result.current.auth.minimumAge).toBe(18));
-  expect(hook.result.current.auth.requirePhoneVerification).toBe(false);
+  expect(hook.result.current.auth.minimumAge).toBeDefined();
   expect(mockGet).not.toHaveBeenCalled();
 });

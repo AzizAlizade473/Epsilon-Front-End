@@ -14,7 +14,7 @@ export default function TabsLayout() {
   const { reduceMotion } = useMotion();
   return (
     <Tabs
-      backBehavior="none"
+      backBehavior="firstRoute"
       tabBar={(props) => <TabBar {...props} />}
       screenLayout={({ route, navigation, children }) => (
         <TabSwipe

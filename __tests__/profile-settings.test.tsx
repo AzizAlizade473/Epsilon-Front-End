@@ -7,7 +7,6 @@ import {
 } from '@testing-library/react-native';
 import { QueryClientProvider } from '@tanstack/react-query';
 import PrivacyScreen from '@/features/profile/screens/PrivacyScreen';
-import { maskedPhone } from '@/lib/profile';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as SecureStore from 'expo-secure-store';
 import PersonalInfoScreen from '@/features/profile/screens/PersonalInfoScreen';
@@ -44,13 +43,18 @@ jest.mock('@/providers/AuthProvider', () => ({
 }));
 jest.mock('@/providers/ToastProvider', () => ({ useToast: () => mockToast }));
 jest.mock('expo-router', () => ({
-  useRouter: () => ({ canGoBack: () => true, back: jest.fn() }),
+  useRouter: () => ({
+    canGoBack: () => true,
+    back: jest.fn(),
+    push: jest.fn(),
+  }),
 }));
 jest.mock('@/services', () => ({
   services: {
     auth: { requestOtp: () => mockRequestOtp() },
     user: {
       me: async () => mockUser,
+      emails: async () => ({ items: [], pending: null }),
       updateProfile: (input: { firstName?: string; language?: string }) =>
         mockUpdate(input),
     },
@@ -100,9 +104,7 @@ it('native deletion-modal Back closes idle flow but preserves an active reauthen
   );
   await fireEvent.press(
     screen.getByRole('button', {
-      name: i18n.t('profile.reauthPhone', {
-        phone: maskedPhone(mockUser.phone!),
-      }),
+      name: i18n.t('profile.reauthEmail', { email: mockUser.email }),
     }),
   );
   expect(mockRequestOtp).toHaveBeenCalledTimes(1);
@@ -110,7 +112,7 @@ it('native deletion-modal Back closes idle flow but preserves an active reauthen
   expect(screen.getByTestId('account-deletion-modal').props.visible).toBe(true);
   finish?.();
   await waitFor(() =>
-    expect(screen.getByLabelText(az.profile.smsCode)).toBeOnTheScreen(),
+    expect(screen.getByLabelText(az.auth.codeLabel)).toBeOnTheScreen(),
   );
   await fireEvent(screen.getByTestId('account-deletion-modal'), 'requestClose');
   expect(screen.queryByTestId('account-deletion-modal')).toBeNull();

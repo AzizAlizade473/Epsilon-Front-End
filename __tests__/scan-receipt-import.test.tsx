@@ -7,6 +7,7 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 import { QueryClientProvider } from '@tanstack/react-query';
+import { launchImageLibraryAsync } from 'expo-image-picker';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import ScanScreen from '@/features/scan/screens/ScanScreen';
 import { OfficialReceiptScreen } from '@/features/scan/screens/OfficialReceiptScreen';
@@ -50,6 +51,7 @@ const mockRouter = {
 let mockParams: { qr?: string } = {};
 const mockResolve = jest.fn<(input: PurchaseReference) => Promise<Receipt>>();
 const mockImport = jest.fn<(input: FiscalImport) => Promise<Receipt>>();
+const mockScanImage = jest.fn<(uri: string) => Promise<{ data: string }[]>>();
 const mockRecognize = jest.fn<(uri: string) => Promise<unknown>>();
 const mockReload = jest.fn();
 const mockDeleted: string[] = [];
@@ -76,6 +78,7 @@ jest.mock('expo-camera', () => {
     jest.requireActual<typeof import('react-native')>('react-native');
   return {
     useCameraPermissions: () => mockPermissions,
+    scanFromURLAsync: (uri: string) => mockScanImage(uri),
     CameraView: function MockCamera({
       onBarcodeScanned,
     }: {
@@ -212,11 +215,70 @@ describe('scanning a fiscal QR', () => {
     expect(mockImport).not.toHaveBeenCalled();
   });
 
+  it('leads a typed Fiscal ID without a partner source into the official import, case kept', async () => {
+    await render(wrap(<ScanScreen />));
+    await fireEvent.press(screen.getByRole('button', { name: az.scan.manual }));
+    const field = screen.getByLabelText(az.scan.code);
+    expect(field).toHaveProp('autoCapitalize', 'none');
+    await fireEvent.changeText(field, 'aB3dE6 gH9jK2');
+    await fireEvent.press(
+      screen.getByRole('button', { name: az.common.continue }),
+    );
+    await waitFor(() =>
+      expect(mockPush).toHaveBeenCalledWith({
+        pathname: '/receipt-import',
+        params: {
+          qr: 'https://monitoring.e-kassa.gov.az/#/index?doc=aB3dE6gH9jK2',
+        },
+      }),
+    );
+    expect(mockResolve.mock.calls[0]).toEqual([
+      { kind: 'code', value: 'aB3dE6gH9jK2' },
+    ]);
+  });
+
   it('opens the receipt directly when a partner POS already sent it', async () => {
     mockResolve.mockResolvedValue(mockReceipt);
     await scanQr(QR);
-    await waitFor(() => expect(mockReplace).toHaveBeenCalled());
-    expect(mockPush).not.toHaveBeenCalled();
+    await waitFor(() =>
+      expect(mockPush).toHaveBeenCalledWith({
+        pathname: '/receipt/[receiptId]',
+        params: { receiptId: mockReceipt.id },
+      }),
+    );
+    expect(mockReplace).not.toHaveBeenCalled(); // the tabs stay underneath
+  });
+
+  const upload = async () => {
+    jest.mocked(launchImageLibraryAsync).mockResolvedValue({
+      canceled: false,
+      assets: [{ uri: 'file:///qr.jpg', width: 1, height: 1 }],
+    });
+    await render(wrap(<ScanScreen />));
+    await fireEvent.press(screen.getByRole('button', { name: az.scan.upload }));
+  };
+
+  it('checks an uploaded QR image through the same path as the camera', async () => {
+    mockScanImage.mockResolvedValue([{ data: LONG_QR }]);
+    await upload();
+    await waitFor(() =>
+      expect(mockPush).toHaveBeenCalledWith({
+        pathname: '/receipt-import',
+        params: { qr: LONG_QR },
+      }),
+    );
+    expect(mockResolve).toHaveBeenCalledWith({ kind: 'qr', value: LONG_QR });
+  });
+
+  it('explains an uploaded image without a QR and sends nothing', async () => {
+    mockScanImage.mockResolvedValue([]);
+    await upload();
+    await waitFor(() =>
+      expect(
+        screen.getByText(az.scan.errors.imageNone.title),
+      ).toBeOnTheScreen(),
+    );
+    expect(mockResolve).not.toHaveBeenCalled();
   });
 });
 

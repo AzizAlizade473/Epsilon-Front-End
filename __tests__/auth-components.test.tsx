@@ -2,7 +2,7 @@ import { afterEach, expect, it, jest } from '@jest/globals';
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { AppState } from 'react-native';
 import { OtpInput } from '@/features/auth/components/OtpInput';
-import { ResendTimer } from '@/features/auth/components/ResendTimer';
+import { ResendTimer } from '@/components/ui/ResendTimer';
 import { initializeI18n } from '@/lib/i18n';
 import az from '../locales/az.json';
 

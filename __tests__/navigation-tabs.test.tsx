@@ -1,7 +1,8 @@
 import { afterEach, expect, jest, test } from '@jest/globals';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { createQueryClient } from '@/services/query';
-import { userEvent } from '@testing-library/react-native';
+import { act, userEvent } from '@testing-library/react-native';
+import { router } from 'expo-router';
 import { renderRouter, screen } from 'expo-router/testing-library';
 
 import az from '../locales/az.json';
@@ -69,4 +70,8 @@ test('four tabs include Scan and omit Market and Cashback', async () => {
       selected: true,
     }),
   ).toBeOnTheScreen();
+  // Android Back: any tab returns to Home; only Home lets the app close.
+  await act(() => router.back());
+  expect(result.getPathname()).toBe('/home');
+  expect(router.canGoBack()).toBe(false);
 }, 20_000); // builds the whole route tree; slow under full-suite load

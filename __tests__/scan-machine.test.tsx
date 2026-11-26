@@ -6,6 +6,7 @@ import {
   candidate,
   manualCodeSchema,
   scanTransition,
+  typedFiscalUrl,
 } from '@/features/scan/machine';
 import { useScanMachine } from '@/features/scan/hooks/useScanMachine';
 import { clearAuthFlows } from '@/lib/auth-lifecycle';
@@ -33,8 +34,18 @@ describe('opaque receipt scanner', () => {
     );
     expect(candidate('qr', ' ').success).toBe(false);
     expect(candidate('qr', 'x'.repeat(2049)).success).toBe(false);
-    expect(manualCodeSchema.parse(' ab 12-34 ')).toBe('AB12-34');
+    expect(manualCodeSchema.parse(' ab 12-34 ')).toBe('ab12-34');
     expect(manualCodeSchema.safeParse('12345').success).toBe(false);
+    for (const length of [12, 44])
+      expect(manualCodeSchema.parse('aB'.repeat(length / 2))).toHaveLength(
+        length,
+      );
+    expect(manualCodeSchema.safeParse('a'.repeat(45)).success).toBe(false);
+    expect(typedFiscalUrl('aB3dE6gH9jK2')).toBe(
+      'https://monitoring.e-kassa.gov.az/#/index?doc=aB3dE6gH9jK2',
+    );
+    expect(typedFiscalUrl('a'.repeat(13))).toBeNull();
+    expect(typedFiscalUrl('ab12-34cd-56')).toBeNull();
   });
   it('uses one request for repeated camera reads and primes the receipt cache', async () => {
     const client = createQueryClient();
@@ -102,4 +113,22 @@ describe('opaque receipt scanner', () => {
       spy.mockRestore();
     },
   );
+});
+
+it('shows a device-side failure once and never over a running or shown check', async () => {
+  const client = createQueryClient();
+  clients.push(client);
+  const hook = await renderHook(() => useScanMachine(), {
+    wrapper: ({ children }: { children: ReactNode }) => (
+      <QueryClientProvider client={client}>{children}</QueryClientProvider>
+    ),
+  });
+  await act(() => hook.result.current.event('denied'));
+  await act(() => hook.result.current.fail('IMAGE_NO_QR'));
+  await act(() => hook.result.current.fail('IMAGE_UNREADABLE'));
+  expect(hook.result.current.state).toBe('error');
+  expect(hook.result.current.error).toBe('IMAGE_NO_QR');
+  await act(async () => {
+    expect(await hook.result.current.resolve('qr', 'opaque')).toBeNull();
+  });
 });

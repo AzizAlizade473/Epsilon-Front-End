@@ -21,7 +21,6 @@ describe('resolveBootstrapRoute', () => {
       onboardingComplete: false,
       session: null,
       user: null,
-      requirePhoneVerification: true,
     };
     expect(resolveBootstrapRoute(auth)).toBe('/welcome');
   });
@@ -31,7 +30,6 @@ describe('resolveBootstrapRoute', () => {
       onboardingComplete: true,
       session: null,
       user: null,
-      requirePhoneVerification: true,
     };
     expect(resolveBootstrapRoute(auth)).toBe('/phone');
   });
@@ -41,7 +39,6 @@ describe('resolveBootstrapRoute', () => {
       onboardingComplete: true,
       session: validSession,
       user: null,
-      requirePhoneVerification: true,
     };
     expect(resolveBootstrapRoute(authNoUser)).toBe('/profile-setup');
 
@@ -49,7 +46,6 @@ describe('resolveBootstrapRoute', () => {
       onboardingComplete: true,
       session: validSession,
       user: { firstName: 'Aziz', birthDate: null, phoneVerified: true },
-      requirePhoneVerification: true,
     };
     expect(resolveBootstrapRoute(authNoBirthDate)).toBe('/profile-setup');
 
@@ -57,12 +53,11 @@ describe('resolveBootstrapRoute', () => {
       onboardingComplete: true,
       session: validSession,
       user: { firstName: null, birthDate: '2000-01-01', phoneVerified: true },
-      requirePhoneVerification: true,
     };
     expect(resolveBootstrapRoute(authNoName)).toBe('/profile-setup');
   });
 
-  it('redirects to /phone-verify when phone is required and unverified', () => {
+  it('never requires a phone number: an unverified account goes home', () => {
     const auth: AuthState = {
       onboardingComplete: true,
       session: validSession,
@@ -71,23 +66,10 @@ describe('resolveBootstrapRoute', () => {
         birthDate: '2000-01-01',
         phoneVerified: false,
       },
-      requirePhoneVerification: true,
-    };
-    expect(resolveBootstrapRoute(auth)).toBe('/phone-verify');
-  });
-
-  it('redirects to /home when phone verification is not required even if unverified', () => {
-    const auth: AuthState = {
-      onboardingComplete: true,
-      session: validSession,
-      user: {
-        firstName: 'Aziz',
-        birthDate: '2000-01-01',
-        phoneVerified: false,
-      },
-      requirePhoneVerification: false,
     };
     expect(resolveBootstrapRoute(auth)).toBe('/home');
+    // Even an older server's `phone` step blocks nothing.
+    expect(resolveBootstrapRoute({ ...auth, nextStep: 'phone' })).toBe('/home');
   });
 
   it('redirects to /home when profile is complete and phone verified', () => {
@@ -95,7 +77,6 @@ describe('resolveBootstrapRoute', () => {
       onboardingComplete: true,
       session: validSession,
       user: { firstName: 'Aziz', birthDate: '2000-01-01', phoneVerified: true },
-      requirePhoneVerification: true,
     };
     expect(resolveBootstrapRoute(auth)).toBe('/home');
   });
@@ -107,7 +88,6 @@ describe('Bootstrap screen', () => {
       onboardingComplete: false,
       session: null,
       user: null,
-      requirePhoneVerification: true,
     });
 
     const element = Bootstrap();

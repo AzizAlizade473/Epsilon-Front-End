@@ -16,6 +16,7 @@ const mockFinish = jest.fn(async () => undefined);
 const mockRemove = jest.fn(async () => undefined);
 const mockReplace = jest.fn();
 const mockDismiss = jest.fn();
+const mockRequestInput = jest.fn();
 const mockRevoke = jest.fn(async () => undefined);
 const mockSignOut = jest.fn(async () => undefined);
 const result: AuthResult = {
@@ -45,10 +46,10 @@ jest.mock('@/providers/AuthProvider', () => ({
 jest.mock('@/services', () => ({
   services: {
     auth: {
-      requestOtp: async () => ({
-        retryAfterSeconds: 60,
-        expiresAt: '2030-01-01T00:00:00Z',
-      }),
+      requestOtp: async (input: unknown) => {
+        mockRequestInput(input);
+        return { retryAfterSeconds: 60, expiresAt: '2030-01-01T00:00:00Z' };
+      },
       verifyOtp: () => mockVerify(),
     },
     user: { deleteAccount: () => mockRemove() },
@@ -88,10 +89,10 @@ async function start() {
     )!;
   await fireEvent.press(request);
   await waitFor(() =>
-    expect(screen.getByLabelText(az.profile.smsCode)).toBeOnTheScreen(),
+    expect(screen.getByLabelText(az.auth.codeLabel)).toBeOnTheScreen(),
   );
   await fireEvent.changeText(
-    screen.getByLabelText(az.profile.smsCode),
+    screen.getByLabelText(az.auth.codeLabel),
     '123456',
   );
   await fireEvent.press(
@@ -118,6 +119,11 @@ it('requires fresh same-account authentication and the exact typed confirmation 
     ).toBeOnTheScreen(),
   );
   expect(mockReauth).toHaveBeenCalledWith(result);
+  // Chosen from user.email, and "login" never creates an account.
+  expect(mockRequestInput).toHaveBeenCalledWith({
+    email: mockUser.email,
+    intent: 'login',
+  });
   expect(
     screen.getByRole('button', { name: az.profile.deleteAccount }),
   ).toBeDisabled();

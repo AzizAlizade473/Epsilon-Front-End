@@ -9,8 +9,8 @@ name: Account deletion requires fresh OTP and typed confirmation
       text: Hesabı sil
 - tapOn: Hesabı sil
 - tapOn: Davam et
-- tapOn: '.*nömrəsinə kod göndər'
-- tapOn: SMS kodu
+- tapOn: '.*ünvanına kod göndər'
+- tapOn: 6 rəqəmli kod
 - inputText: '123456'
 - hideKeyboard
 - tapOn: Davam et
@@ -18,4 +18,4 @@ name: Account deletion requires fresh OTP and typed confirmation
 - inputText: SİL
 - hideKeyboard
 - tapOn: Hesabı sil
-- assertVisible: Telefon nömrəsi ilə davam et
+- assertVisible: Daxil ol

@@ -18,7 +18,7 @@ import az from '../locales/az.json';
 
 const mockReplace = jest.fn();
 const mockUpdate = jest.fn(
-  (_user: typeof mockUser, _nextStep: string | null) => '/phone-verify',
+  (_user: typeof mockUser, _nextStep: string | null) => '/home',
 );
 const mockSave =
   jest.fn<(input: ProfileInput) => Promise<ProfileUpdateResult>>();
@@ -26,15 +26,19 @@ jest.mock('expo-router', () => ({
   useRouter: () => ({ replace: mockReplace }),
 }));
 jest.mock('@/lib/env', () => ({ env: { EXPO_PUBLIC_MIN_AGE: 16 } }));
+type SetupUser = Record<
+  'firstName' | 'lastName' | 'birthDate' | 'email',
+  string | null
+>;
+const complete: SetupUser = {
+  firstName: 'Aygun',
+  lastName: 'Aliyeva',
+  birthDate: '2000-01-01',
+  email: 'test@example.test',
+};
+let mockSetupUser: SetupUser = complete;
 jest.mock('@/providers/AuthProvider', () => ({
-  useAuth: () => ({
-    user: {
-      firstName: 'Aygun',
-      lastName: 'Aliyeva',
-      birthDate: '2000-01-01',
-      email: 'test@example.test',
-    },
-  }),
+  useAuth: () => ({ user: mockSetupUser }),
   useAuthActions: () => ({ updateUser: mockUpdate }),
 }));
 jest.mock('@/features/auth/hooks/useOnboardingConfig', () => ({
@@ -48,6 +52,7 @@ jest.mock('@/services', () => ({
 jest.mock('@react-native-community/datetimepicker', () => 'DateTimePicker');
 beforeEach(async () => {
   jest.clearAllMocks();
+  mockSetupUser = complete;
   authOperation.release();
   mockSave.mockReset().mockResolvedValue({ user: mockUser, nextStep: 'phone' });
   await initializeI18n();
@@ -82,7 +87,7 @@ it('submits only the required fields and follows the server onboarding result', 
     }),
   );
   expect(mockUpdate).toHaveBeenCalledWith(mockUser, 'phone');
-  expect(mockReplace).toHaveBeenCalledWith('/phone-verify');
+  expect(mockReplace).toHaveBeenCalledWith('/home');
 });
 it('blocks invalid names without submitting personal data', async () => {
   await form();
@@ -139,4 +144,18 @@ it('honors server AGE_RESTRICTED without navigating or publishing the user', asy
   );
   expect(mockUpdate).not.toHaveBeenCalled();
   expect(mockReplace).not.toHaveBeenCalled();
+});
+it('asks only for what Google did not fill, and always for a missing birth date', async () => {
+  mockSetupUser = { ...complete, birthDate: null };
+  await form();
+  expect(screen.queryByLabelText(az.onboarding.firstName)).toBeNull();
+  expect(screen.queryByLabelText(az.onboarding.lastName)).toBeNull();
+  await fireEvent.press(
+    screen.getByRole('button', { name: az.common.continue }),
+  );
+  await waitFor(() => expect(mockSave).toHaveBeenCalled());
+  expect(Object.keys(mockSave.mock.calls[0]![0]).sort()).toEqual([
+    'birthDate',
+    'language',
+  ]);
 });

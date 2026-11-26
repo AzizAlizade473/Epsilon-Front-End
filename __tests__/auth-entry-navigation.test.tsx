@@ -63,15 +63,15 @@ test('legacy phone visits reach the complete Login screen', async () => {
 });
 
 test.each(['login', 'register'] as const)(
-  '%s preserves entered phone while reading both bundled legal documents',
+  '%s preserves the entered e-mail while reading both bundled legal documents',
   async (intent) => {
     const result = await renderRouter(routes, { initialUrl: `/${intent}` });
     const user = userEvent.setup();
     await fireEvent.changeText(
-      screen.getByLabelText(az.auth.phoneLabel),
-      '+994509876543',
+      screen.getByLabelText(az.auth.emailLabel),
+      'aysel@example.test',
     );
-    const entered = screen.getByLabelText(az.auth.phoneLabel).props.value;
+    const entered = screen.getByLabelText(az.auth.emailLabel).props.value;
     for (const type of ['terms', 'privacy'] as const) {
       await user.press(screen.getByRole('link', { name: az.auth[type] }));
       expect(result.getPathname()).toBe(`/legal/${type}`);
@@ -85,7 +85,7 @@ test.each(['login', 'register'] as const)(
         screen.getByRole('button', { name: az.navigation.back }),
       );
       expect(result.getPathname()).toBe(`/${intent}`);
-      expect(screen.getByLabelText(az.auth.phoneLabel)).toHaveProp(
+      expect(screen.getByLabelText(az.auth.emailLabel)).toHaveProp(
         'value',
         entered,
       );

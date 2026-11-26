@@ -62,19 +62,20 @@ enforce the security/business requirements in `BUSINESS_RULES.md`.
 
 ## Active endpoint inventory
 
-| Domain        | Methods and relative paths                                         | Request / response                                                 |
-| ------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------ |
-| Config        | GET `/config`                                                      | Config: minAppVersion, minAge, requirePhoneVerification            |
-| Phone sign-in | POST `/auth/otp/request`, `/auth/otp/verify`                       | phone; phone+code → OtpChallenge / AuthResult                      |
-| Google        | POST `/auth/google`                                                | idToken → AuthResult; backend validates Google token               |
-| Session       | POST `/auth/refresh`, `/auth/logout`                               | refreshToken → Session; logout → empty                             |
-| User          | GET/PATCH/DELETE `/me`                                             | User; partial profile → ProfileUpdate; deletion → empty            |
-| Phone linking | POST `/me/phone/otp/request`, `/me/phone/otp/verify`               | authenticated phone; phone+code → challenge / User                 |
-| Restaurants   | GET `/restaurants`, `/restaurants/{id}`                            | search/cursor/limit → RestaurantPage; detail → Restaurant          |
-| Purchase      | POST `/receipts/resolve`; GET `/receipts/{id}`                     | `{kind: qr                                                         | code, value}` → Receipt; owned receipt → Receipt |
-| Feedback      | POST/GET `/feedback`                                               | FeedbackInput → FeedbackResult; cursor/limit → FeedbackPage        |
-| Wallet        | GET `/wallet`, `/wallet/transactions`, `/wallet/transactions/{id}` | Wallet; cursor/limit → TransactionPage; detail → WalletTransaction |
-| Notifications | GET/PUT `/me/notification-settings`; POST `/devices`               | preferences; `{token}` → empty                                     |
+| Domain           | Methods and relative paths                                                                                          | Request / response                                                             |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Config           | GET `/config`                                                                                                       | Config: minAppVersion, minAge, requirePhoneVerification (always false)         |
+| Sign-in          | POST `/auth/otp/request`, `/auth/otp/verify`                                                                        | email (e-mailed code) → OtpChallenge / AuthResult; phone only re-authenticates |
+| Google           | POST `/auth/google`                                                                                                 | idToken → AuthResult; backend validates Google token                           |
+| Session          | POST `/auth/refresh`, `/auth/logout`                                                                                | refreshToken → Session; logout → empty                                         |
+| User             | GET/PATCH/DELETE `/me`                                                                                              | User; partial profile → ProfileUpdate; deletion → empty                        |
+| Phone (optional) | POST `/me/phone/otp/request`, `/me/phone/otp/verify`; DELETE `/me/phone`                                            | phone → challenge / User; removal needs recentAuth → empty                     |
+| E-mails          | GET `/me/emails`; POST `/me/emails/request`, `/me/emails/verify`; DELETE `/me/emails/pending`, `/me/emails/{email}` | EmailList; request and removal need recentAuth                                 |
+| Restaurants      | GET `/restaurants`, `/restaurants/{id}`                                                                             | search/cursor/limit → RestaurantPage; detail → Restaurant                      |
+| Purchase         | POST `/receipts/resolve`; GET `/receipts/{id}`                                                                      | `{kind: qr                                                                     | code, value}` → Receipt; owned receipt → Receipt |
+| Feedback         | POST/GET `/feedback`                                                                                                | FeedbackInput → FeedbackResult; cursor/limit → FeedbackPage                    |
+| Wallet           | GET `/wallet`, `/wallet/transactions`, `/wallet/transactions/{id}`                                                  | Wallet; cursor/limit → TransactionPage; detail → WalletTransaction             |
+| Notifications    | GET/PUT `/me/notification-settings`; POST `/devices`                                                                | preferences; `{token}` → empty                                                 |
 
 No redemption/withdrawal API is implemented. `/auth/apple` and optional Apple
 authorization code for deletion are reserved canonical future requirements,
@@ -87,7 +88,8 @@ Canonical phone linking is now `/me/phone/otp/request|verify`; the earlier
 handoff. Backend owner must confirm the canonical paths in staging.
 Profile PATCH prefers `{user,nextStep}` but explicitly decodes legacy User-only
 responses; restaurant list prefers a page but accepts a legacy array. No new
-backend should rely on those legacy forms. `nextStep` is profile/phone/home.
+backend should rely on those legacy forms. `nextStep` is profile/home
+(`phone` is still decoded and treated as home: a phone number is optional).
 DELETE `/me` currently sends no Android body and requires server recentAuth;
 client-only token deletion is never account deletion.
 
@@ -185,3 +187,10 @@ tenant isolation, idempotent lost-response replay, global claim uniqueness,
 atomic ledger/reversals, deletion/recentAuth and retention, and exercise real
 phone/Google/POS/push contracts in staging. No handoff message was sent externally
 from this session and no backend behavior is claimed verified.
+
+## Scan activity, restaurant replies and staff
+
+- `GET /activity/scans?cursor=&limit=` lists this account's receipt scan outcomes. The client explains `reason` by error code and offers Retry only when `retryable` and `retryQr` are set; retry reuses `/receipts/resolve`, then the official import.
+- `GET /feedback` and `GET /feedback/{id}` are requested with `include=reply`. `reply` is optional in the client schema.
+- `POST /feedback/{id}/reply/report` `{ reason }`: the review's author only, idempotent.
+- `GET /staff/restaurants` is empty for non-staff. `GET /staff/restaurants/{id}/reviews`, `PUT`/`DELETE /staff/reviews/{feedbackId}/reply` are authorised by the server on every call. Every write sends `Idempotency-Key`.

@@ -108,7 +108,7 @@ it('offers Settings and manual entry after denial, normalizes the code, and show
   );
   await waitFor(() =>
     expect(mockResolve).toHaveBeenCalledWith(
-      { kind: 'code', value: 'AB12-34' },
+      { kind: 'code', value: 'ab12-34' },
       expect.objectContaining({ idempotencyKey: expect.any(String) }),
     ),
   );

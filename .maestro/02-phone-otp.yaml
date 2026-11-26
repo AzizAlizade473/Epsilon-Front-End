@@ -4,16 +4,16 @@ name: Wrong, expired and correct mock OTP
 - launchApp:
     clearState: true
 - tapOn: Daxil ol
-- tapOn: Telefon nömrəsi
-- inputText: '501234567'
+- tapOn: E-poçt
+- inputText: 'aysel@example.test'
 - hideKeyboard
 - tapOn: Davam et
-- tapOn: 6 rəqəmli SMS kodu
+- tapOn: 6 rəqəmli kod
 - inputText: '000000'
 - assertVisible: Kod yanlışdır. Yenidən cəhd edin.
-- tapOn: 6 rəqəmli SMS kodu
+- tapOn: 6 rəqəmli kod
 - inputText: '111111'
 - assertVisible: Kodun müddəti bitib. Yeni kod göndərin.
-- tapOn: 6 rəqəmli SMS kodu
+- tapOn: 6 rəqəmli kod
 - inputText: '123456'
 - assertVisible: Ana səhifə

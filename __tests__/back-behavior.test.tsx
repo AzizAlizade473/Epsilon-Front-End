@@ -143,13 +143,13 @@ describe('Scan modal Back behavior (02.f)', () => {
 });
 
 describe('Tab root Back behavior (02.f)', () => {
-  it('Tabs layout configures backBehavior="none" so back exits instead of tab hopping', async () => {
+  it('Tabs layout configures backBehavior="firstRoute" so back returns Home before exiting', async () => {
     await initializeI18n();
     await render(
       <SafeAreaProvider initialMetrics={initialMetrics}>
         <TabsLayout />
       </SafeAreaProvider>,
     );
-    expect(capturedTabsProps?.backBehavior).toBe('none');
+    expect(capturedTabsProps?.backBehavior).toBe('firstRoute');
   });
 });
