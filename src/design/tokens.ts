@@ -44,6 +44,8 @@ export const colors = {
   glass: 'rgba(255,255,255,0.82)',
   glassEdge: 'rgba(40,41,115,0.08)',
   scanDim: 'rgba(0,0,0,0.6)',
+  /** Press highlight: translucent, so it never paints a pale box on dark surfaces. */
+  press: 'rgba(40,41,115,0.08)',
 } as const;
 
 export const spacing = {

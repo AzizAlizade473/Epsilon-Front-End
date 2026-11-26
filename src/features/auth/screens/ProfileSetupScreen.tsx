@@ -50,6 +50,21 @@ export default function ProfileSetupScreen() {
     }
     return { values: {}, errors };
   };
+  // Only what is missing or unusable is asked: Google already fills the names.
+  const [fields] = useState(() => {
+    const all = ['firstName', 'lastName', 'birthDate'] as const;
+    const { shape } = createProfileSchema(env.EXPO_PUBLIC_MIN_AGE, today);
+    const missing = all.filter((key) =>
+      key === 'birthDate'
+        ? !auth.user?.birthDate
+        : !shape[key].safeParse(auth.user?.[key] ?? '').success,
+    );
+    // A complete-looking profile the server still refuses can be edited in full.
+    return missing.length ? missing : [...all];
+  });
+  const names = (['firstName', 'lastName'] as const).filter((name) =>
+    fields.includes(name),
+  );
   const form = useForm<ProfileInput>({
     resolver,
     mode: 'onTouched',
@@ -72,7 +87,10 @@ export default function ProfileSetupScreen() {
       setSaving(true);
       setError(undefined);
       try {
-        const result = await services.user.updateProfile(values);
+        const result = await services.user.updateProfile({
+          ...Object.fromEntries(fields.map((key) => [key, values[key]])),
+          language: values.language,
+        });
         if (!authOperation.current(epoch)) return;
         router.replace(updateUser(result.user, result.nextStep));
       } catch (cause) {
@@ -127,7 +145,7 @@ export default function ProfileSetupScreen() {
           />
         </>
       )}
-      {(['firstName', 'lastName'] as const).map((name) => (
+      {names.map((name) => (
         <Controller
           key={name}
           name={name}
@@ -139,7 +157,7 @@ export default function ProfileSetupScreen() {
               onChangeText={field.onChange}
               onBlur={field.onBlur}
               ref={field.ref}
-              autoFocus={name === 'firstName'}
+              autoFocus={name === names[0]}
               autoComplete={name === 'firstName' ? 'given-name' : 'family-name'}
               autoCapitalize="words"
               editable={!(form.formState.isSubmitting || saving)}
@@ -148,22 +166,24 @@ export default function ProfileSetupScreen() {
           )}
         />
       ))}
-      <Controller
-        name="birthDate"
-        control={form.control}
-        render={({ field, fieldState }) => (
-          <BirthDateField
-            value={field.value}
-            onChange={(value) => {
-              field.onChange(value);
-              field.onBlur();
-            }}
-            maximumDate={today}
-            disabled={form.formState.isSubmitting || saving}
-            error={message(fieldState.error?.message)}
-          />
-        )}
-      />
+      {fields.includes('birthDate') && (
+        <Controller
+          name="birthDate"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <BirthDateField
+              value={field.value}
+              onChange={(value) => {
+                field.onChange(value);
+                field.onBlur();
+              }}
+              maximumDate={today}
+              disabled={form.formState.isSubmitting || saving}
+              error={message(fieldState.error?.message)}
+            />
+          )}
+        />
+      )}
       {auth.user?.email && (
         <Text variant="caption">
           {t('onboarding.account', { email: auth.user.email })}

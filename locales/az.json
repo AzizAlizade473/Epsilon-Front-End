@@ -13,7 +13,7 @@
     "exists": "Bu hesab artıq mövcuddur. Davam etmək üçün daxil olun.",
     "conflict": "Bu giriş üsulu başqa hesabla bağlıdır. Mövcud giriş üsulundan istifadə edin.",
     "googleNativeOnly": "Google ilə davam etmək üçün Epsilon Android tətbiqindən istifadə edin.",
-    "googleSetupRequired": "Google hazırda əlçatan deyil. Telefon nömrənizlə davam edin.",
+    "googleSetupRequired": "Google hazırda əlçatan deyil. E-poçtunuzla davam edin.",
     "createAccount": "Hesab yarat"
   },
   "authEntry": {
@@ -21,8 +21,8 @@
     "description": "Yemək təcrübənizdən daha çox qazanın. Çeki skan edin, rəy bildirin və uyğun alışlardan keşbek qazanın.",
     "login": "Daxil ol",
     "register": "Qeydiyyatdan keç",
-    "loginHelper": "Telefon nömrənizi təsdiqləyərək hesabınıza daxil olun.",
-    "registerHelper": "Telefon nömrənizi təsdiqləyin, sonra profilinizi tamamlayın.",
+    "loginHelper": "E-poçtunuzu yazın: giriş kodunu ora göndərəcəyik.",
+    "registerHelper": "E-poçtunuzu yazın, kodu təsdiqləyin, sonra profilinizi tamamlayın.",
     "googleUnavailable": "Google ilə giriş bu versiyada aktiv deyil.",
     "noAccount": "Hesabınız yoxdur?",
     "hasAccount": "Hesabınız var?"
@@ -136,13 +136,11 @@
     "scanStep": "Çeki skan edin",
     "rateStep": "Yeməyi qiymətləndirin",
     "rewardStep": "Keşbek qazanın",
-    "continuePhone": "Telefon nömrəsi ilə davam et",
     "continueGoogle": "Google ilə davam et",
     "or": "və ya",
     "legal": "Davam etməklə İstifadə Şərtləri və Məxfilik Siyasəti ilə razı olursunuz.",
     "terms": "İstifadə Şərtləri",
     "privacy": "Məxfilik Siyasəti",
-    "phoneHelper": "Sizə 6 rəqəmli təsdiq kodu göndərəcəyik.",
     "phoneLabel": "Telefon nömrəsi",
     "countryCode": "Azərbaycan, ölkə kodu +994",
     "invalidPhone": "Nömrə düzgün deyil.",
@@ -152,12 +150,11 @@
     "codeLabel": "6 rəqəmli kod",
     "codeHint": "Kodu daxil edin və ya yapışdırın. Tam kod avtomatik yoxlanılır.",
     "otpEmailTitle": "E-poçtunuzu yoxlayın",
-    "otpEmailHelper": "6 rəqəmli kodu {{email}} ünvanına göndərdik. Gmail-də «Epsilon kodu» məktubunu axtarın.",
+    "otpEmailHelper": "6 rəqəmli kodu {{email}} ünvanına e-poçtla göndərdik.",
     "otpEmailNote": "Məktubun gəlməsi bir dəqiqəyə qədər çəkə bilər. Gələnlərdə yoxdursa, Spam və ya Bütün məktublar qovluğuna baxın.",
     "emailLabel": "E-poçt",
-    "emailHelp": "Giriş kodu bu ünvana göndəriləcək.",
+    "emailHelp": "Kod bu e-poçt ünvanına göndəriləcək.",
     "invalidEmail": "Düzgün e-poçt ünvanı yazın.",
-    "emailRequired": "E-poçtunuzu yazın: giriş kodu ora göndərilir.",
     "verifyCode": "Kodu təsdiqlə",
     "resend": "Kodu yenidən göndər",
     "resendAfter": "{{s}} san. sonra yenidən göndər",
@@ -180,17 +177,13 @@
     "invalidDate": "Doğum tarixini düzgün seçin.",
     "ageRestricted": "Epsilon-dan istifadə üçün ən azı {{age}} yaşınız olmalıdır.",
     "profileInvalid": "Məlumatları yoxlayın və yenidən cəhd edin.",
-    "verifyPhoneHelper": "Hesabınızı qorumaq və keşbeki təhlükəsiz hesablamaq üçün nömrənizi bir dəfə təsdiqləməlisiniz.",
     "phoneInUse": "Bu nömrə başqa hesaba bağlıdır.",
     "otherPhone": "Başqa nömrə yaz",
     "contactSupport": "Dəstəklə əlaqə",
-    "notNow": "İndi yox",
-    "verifyBanner": "Keşbek almaq üçün nömrəni təsdiqləyin",
     "logout": "Hesabdan çıx",
     "logoutConfirm": "Hesabdan çıxmaq istəyirsiniz?"
   },
   "product": {
-    "demoData": "Nümunə məlumatlar",
     "loadError": "Məlumatları yükləmək mümkün olmadı.",
     "loadMore": "Daha çox göstər"
   },
@@ -265,12 +258,12 @@
   },
   "scan": {
     "permissionTitle": "Çeki skan et",
-    "permissionBody": "Restoranın çekindəki QR kodu kamera ilə skan edin. Çek kodunu əl ilə də daxil edə bilərsiniz.",
+    "permissionBody": "Rəsmi fiskal (e-kassa) çekdəki QR kodu kamera ilə skan edin. Şəkil yükləyə və ya çek kodunu əl ilə daxil edə bilərsiniz.",
     "allow": "Kameraya icazə ver",
     "settings": "Ayarları aç",
     "manual": "Kodu əl ilə daxil et",
-    "code": "Çek kodu",
-    "position": "Çekdəki QR kodu çərçivəyə yerləşdirin",
+    "code": "Fiskal ID",
+    "position": "Rəsmi fiskal (e-kassa) çekdəki QR kodu çərçivəyə yerləşdirin",
     "resolving": "Çek yoxlanılır…",
     "resolved": "Çek təsdiqləndi",
     "torchOn": "Fənəri yandır",
@@ -279,7 +272,7 @@
     "errors": {
       "unsupported": {
         "title": "Kod dəstəklənmir",
-        "body": "Restoranın çekindəki QR kodu skan edin."
+        "body": "Rəsmi fiskal (e-kassa) çekdəki QR kodu skan edin."
       },
       "claimed": {
         "title": "Çek artıq istifadə edilib",
@@ -291,7 +284,7 @@
       },
       "notFound": {
         "title": "Çek tapılmadı",
-        "body": "Kodu yoxlayıb yenidən cəhd edin."
+        "body": "Fiskal ID-ni yoxlayıb yenidən cəhd edin."
       },
       "network": {
         "title": "Bağlantı qurulmadı",
@@ -308,8 +301,27 @@
       "verificationFailed": {
         "title": "Çek təsdiqlənmədi",
         "body": "Rəsmi çek məlumatları uyğun gəlmədi, ona görə Epsilon onlardan istifadə etmədi."
+      },
+      "imageNone": {
+        "title": "QR kod tapılmadı",
+        "body": "Rəsmi fiskal (e-kassa) çekdəki QR kodun böyük və aydın göründüyü şəkil seçin."
+      },
+      "imageMultiple": {
+        "title": "Şəkildə bir neçə QR kod var",
+        "body": "Yalnız rəsmi fiskal (e-kassa) çekin QR kodu görünən şəkil seçin."
+      },
+      "imageUnreadable": {
+        "title": "Şəkil oxunmadı",
+        "body": "Başqa şəkil seçin və ya QR kodu kamera ilə skan edin."
+      },
+      "manualUnsupported": {
+        "title": "Bu ID istifadə edilə bilmir",
+        "body": "Çekdəki Fiskal ID-ni yoxlayın və ya QR kodu skan edin."
       }
-    }
+    },
+    "upload": "Şəkil yüklə",
+    "codeHint": "Çekdə çap olunmuş Fiskal ID-ni yazın: 12 və ya 44 simvol. Böyük və kiçik hərflər fərqlidir.",
+    "codeTooLong": "Fiskal ID ən çox 44 simvoldan ibarətdir."
   },
   "receipt": {
     "branchDate": "{{branch}} · {{date}}, {{time}}",
@@ -426,7 +438,6 @@
     "saved": "Yadda saxlanıldı",
     "save": "Yadda saxla",
     "phone": "Telefon",
-    "phoneHelp": "Telefon nömrəsini dəyişmək üçün dəstəklə əlaqə saxlayın.",
     "birthDate": "Doğum tarixi",
     "identities": "Daxil olma üsulları",
     "provider": {
@@ -451,11 +462,10 @@
     "crashBody": "Texniki xəta hesabatlarına icazə verin. Hesabatlara ad, telefon, alış məlumatları və rəylər daxil edilmir.",
     "deleteAccount": "Hesabı sil",
     "deleteBody": "Hesabın silinməsi üçün əvvəlcə kimliyinizi yenidən təsdiqləməlisiniz. Məlumatların saxlanması və silinməsi məxfilik siyasətinə və aşağıda göstərilən server məlumatına əsaslanır.",
-    "reauthBody": "Bu hesaba aid telefon və ya Google ilə yenidən daxil olun.",
-    "reauthPhone": "{{phone}} nömrəsinə kod göndər",
+    "reauthBody": "Bu dəyişiklikdən əvvəl hesabı yenidən təsdiqləyin.",
+    "reauthPhone": "{{phone}} üçün e-poçta kod göndər",
     "reauthGoogle": "Google ilə yenidən təsdiqlə",
     "reauthUnavailable": "Təsdiqləmə üsulu əlçatan deyil. Dəstəklə əlaqə saxlayın.",
-    "smsCode": "SMS kodu",
     "deleteType": "Davam etmək üçün {{keyword}} yazın.",
     "deleteConfirmation": "Silmənin təsdiqi",
     "deleteError": "Əməliyyat tamamlanmadı. Eyni hesabı təsdiqləyib yenidən cəhd edin.",
@@ -470,7 +480,7 @@
     "faq": {
       "1": {
         "question": "Çeki necə skan edə bilərəm?",
-        "answer": "Skan düyməsinə toxunun və çekdəki QR kodu çərçivəyə yerləşdirin. Kod serverdə yoxlanıldıqdan sonra alınan yeməklər görünür."
+        "answer": "Skan düyməsinə toxunun və rəsmi fiskal (e-kassa) çekdəki QR kodu çərçivəyə yerləşdirin. Alınan yeməklər kod serverdə yoxlanıldıqdan sonra görünür."
       },
       "2": {
         "question": "Çek niyə dəstəklənmir?",
@@ -487,7 +497,9 @@
     },
     "deleteKeyword": "SİL",
     "reminders": "Yeməklərim barədə xatırlatmalar",
-    "likes": "Bəyəndiklərim"
+    "likes": "Bəyəndiklərim",
+    "supportSubject": "Epsilon tətbiqi: dəstək sorğusu",
+    "reauthEmail": "{{email}} ünvanına kod göndər"
   },
   "resilience": {
     "errorTitle": "Nəsə səhv getdi",
@@ -506,7 +518,7 @@
     "partner": "Epsilon-da",
     "scanTitle": "Hər şey çekinizdən başlayır.",
     "scanHint": "Skan edin. Rəy bildirin. Mükafatınızı görün.",
-    "manualHint": "Alış kodunu çekinizdə tapın.",
+    "manualHint": "Fiskal ID-ni çekinizdə tapın.",
     "profileSetup": "Epsilon-u sizə uyğunlaşdırmaq üçün bir neçə məlumat lazımdır.",
     "profileNote": "Yeməkləriniz. Rəyləriniz. Sizin Epsilon.",
     "ratingHint": "Kiçik bir rəy böyük fərq yaradır."
@@ -593,7 +605,6 @@
     "ingredients": "Əsas inqrediyentlər",
     "allergens": "Allergenlər",
     "noAllergens": "Göstərilmiş allergen yoxdur",
-    "pairings": "Bununla yaxşı gedir",
     "feedback": "Qiymətləndirmələr və rəylər",
     "trend": "Son 6 ayda bal",
     "trendLabel": "Aylıq orta bal: {{from}} → {{to}}",
@@ -751,7 +762,7 @@
       "UNSUPPORTED_MERCHANT_CATEGORY": "Çek təsdiqləndi. Bu obyekt {{type}} kimi müəyyən edilib. Epsilon-da qiymətləndirmə və keşbek hazırda yalnız restoran və kafelər üçün mövcuddur.",
       "MERCHANT_CATEGORY_UNKNOWN": "Epsilon bu obyektin növünü dəqiq müəyyən edə bilmədi, ona görə bu çek üçün qiymətləndirmə və keşbek əlçatan deyil.",
       "NOT_EPSILON_PARTNER": "Bu məkan hələ Epsilon tərəfdaşı deyil. Yeməklərinizi qiymətləndirə bilərsiniz, lakin keşbek verilmir.",
-      "PHONE_NOT_VERIFIED": "Bu çekdən keşbek qazanmaq üçün telefon nömrənizi təsdiqləyin. Yeməkləri yenə qiymətləndirə bilərsiniz.",
+      "PHONE_NOT_VERIFIED": "Bu çek üzrə keşbek hazırda əlçatan deyil. Yeməkləri yenə qiymətləndirə bilərsiniz.",
       "VERIFICATION_REQUIRED": "Bu çek şəkildən oxunub, ona görə qiymətləndirmək olar, lakin keşbek verilmir. Keşbek üçün rəsmi təsdiqlənmiş çek məlumatı lazımdır."
     },
     "scanAnother": "Başqa çek skan et",
@@ -1106,5 +1117,136 @@
     "mentions_one": "{{count}} qeyd",
     "mentions_other": "{{count}} qeyd",
     "empty": "Hələ yemək yoxdur"
+  },
+  "contact": {
+    "emailTitle": "E-poçt",
+    "primary": "Əsas e-poçt",
+    "secondary": "Əlavə e-poçt",
+    "noEmail": "E-poçt hələ əlavə edilməyib.",
+    "addEmail": "E-poçt əlavə et",
+    "changeEmail": "E-poçtu dəyiş",
+    "addSecondary": "Daha bir e-poçt əlavə et",
+    "newEmail": "Yeni e-poçt",
+    "changeHint": "Bu ünvana kod göndərəcəyik. Təsdiqləyənədək hazırkı e-poçtunuz aktiv qalır.",
+    "addHint": "Təsdiq üçün bu ünvana kod göndərəcəyik.",
+    "pending": "Təsdiq gözlənilir: {{email}} ünvanına kod göndərdik.",
+    "pendingPrimary": "Təsdiq gözlənilir: {{email}} ünvanına kod göndərdik. O vaxtadək hazırkı e-poçtunuz aktiv qalır.",
+    "expired": "{{email}} ünvanına göndərilən kodun müddəti bitib.",
+    "newCode": "Yeni kod göndər",
+    "cancelChange": "Dəyişikliyi ləğv et",
+    "makePrimary": "{{email}} əsas e-poçt olsun",
+    "removeEmail": "{{email}} ünvanını sil",
+    "removeEmailConfirm": "{{email}} silinsin? Onunla daxil ola bilməyəcəksiniz.",
+    "confirmRemove": "Sil",
+    "reauthTitle": "Siz olduğunuzu təsdiqləyin",
+    "codeSent": "6 rəqəmli kodu {{email}} ünvanına e-poçtla göndərdik.",
+    "codeSentAccount": "6 rəqəmli kodu hesabınızda saxlanan e-poçta göndərdik.",
+    "noPhone": "Əlavə edilməyib (istəyə bağlıdır)",
+    "addPhone": "Telefon nömrəsi əlavə et",
+    "changePhone": "Nömrəni dəyiş",
+    "removePhone": "Nömrəni sil",
+    "phoneHelp": "Telefon nömrəsi istəyə bağlıdır. SMS hələ mövcud deyil: təsdiq kodları {{email}} ünvanına göndərilir.",
+    "phoneAddHelper": "İstəyə bağlıdır. SMS hələ mövcud deyil: təsdiq kodunu {{email}} ünvanına göndəririk.",
+    "changePhoneConfirm": "Nömrəni dəyişmək üçün əvvəlcə hazırkı nömrə silinir. Sonra yenisini əlavə edib təsdiqləyirsiniz.",
+    "removePhoneConfirm": "Bu telefon nömrəsi hesabınızdan silinsin?",
+    "errors": {
+      "EMAIL_IN_USE": "Bu e-poçt başqa hesaba bağlıdır.",
+      "EMAIL_IS_PRIMARY": "Əvvəlcə başqa e-poçtu əsas edin.",
+      "LAST_SIGN_IN_METHOD": "Bu, yeganə giriş üsulunuzdur. Əvvəlcə başqasını əlavə edin.",
+      "EMAIL_DELIVERY_FAILED": "Məktub göndərilmədi. Daha sonra yenidən cəhd edin.",
+      "EMAIL_REQUIRED": "Əvvəlcə e-poçt əlavə edin: kod ora göndərilir.",
+      "PHONE_SIGNIN_UNAVAILABLE": "Bu nömrə üçün kod göndərmək mümkün deyil. Başqa giriş üsulundan istifadə edin və ya dəstəyə yazın.",
+      "IDENTITY_ALREADY_LINKED": "Hesabınızda artıq telefon nömrəsi var. Yenisini əlavə etməzdən əvvəl onu silin.",
+      "OTP_INVALID": "Kod yanlışdır. Yenidən cəhd edin.",
+      "OTP_EXPIRED": "Kodun müddəti bitib. Yeni kod göndərin.",
+      "OTP_TOO_MANY": "Cəhdlər çoxdur. Daha sonra yenidən yoxlayın.",
+      "RATE_LIMITED": "Sorğular çoxdur. Bir az gözləyib yenidən cəhd edin.",
+      "NETWORK": "İnternet bağlantısı yoxdur",
+      "TIMEOUT": "Sorğunun vaxtı bitdi"
+    }
+  },
+  "offline": {
+    "saved": "Oflaynsınız. Bu məlumat əvvəl yadda saxlanılıb və köhnəlmiş ola bilər.",
+    "notSaved": "Oflaynsınız və bu məlumat cihazda saxlanılmayıb. Yükləmək üçün internetə qoşulun."
+  },
+  "scans": {
+    "title": "Qəbz skanları",
+    "empty": "Hələ qəbz skanı yoxdur.",
+    "loadError": "Skanlarınızı yükləmək alınmadı.",
+    "reload": "Skanları yenilə",
+    "more": "Daha çox skan göstər",
+    "retry": "Skanı təkrarla",
+    "success": "Qəbz əlavə edildi",
+    "unknownPlace": "Qəbz skanı",
+    "kind": {
+      "temporary": "Müvəqqəti problem",
+      "unsupported": "Dəstəklənmir",
+      "invalid": "Qəbul edilmədi"
+    },
+    "reason": {
+      "RECEIPT_SOURCE_UNAVAILABLE": "Rəsmi qəbz xidməti əlçatan deyildi.",
+      "RECEIPT_READER_UNAVAILABLE": "Qəbzin oxunması əlçatan deyildi.",
+      "RECEIPT_READER_QUOTA": "Qəbz oxuma hələlik limitə çatıb.",
+      "RECEIPT_READER_BUSY": "Qəbz oxuma məşğul idi.",
+      "RATE_LIMITED": "Çox sayda cəhd edildi. Bir az gözləyin.",
+      "NETWORK": "İnternet bağlantısı yox idi.",
+      "TIMEOUT": "Server vaxtında cavab vermədi.",
+      "INTERNAL": "Bizim tərəfdə xəta baş verdi.",
+      "RECEIPT_UNSUPPORTED": "Bu kod dəstəklənən qəbz deyil.",
+      "RECEIPT_NOT_FOUND": "Qəbz tapılmadı.",
+      "RECEIPT_ALREADY_CLAIMED": "Bu qəbz artıq istifadə edilib.",
+      "RECEIPT_EXPIRED": "Bu qəbzin müddəti bitib.",
+      "RECEIPT_VERIFICATION_FAILED": "Rəsmi qəbz məlumatları uyğun gəlmədi.",
+      "RECEIPT_IMAGE_INCOMPLETE": "Qəbz şəkli tam oxunmadı.",
+      "RECEIPT_IMAGE_MISMATCH": "Şəkil başqa qəbzə aiddir.",
+      "VALIDATION_FAILED": "Qəbz məlumatı və ya şəkil etibarlı deyildi."
+    }
+  },
+  "discovery": {
+    "all": "Bütün kateqoriyalar",
+    "allSelected": "Bütün kateqoriyalar ({{count}})",
+    "group": {
+      "cuisine": "Mətbəx",
+      "district": "Rayon",
+      "price": "Qiymət səviyyəsi",
+      "ingredient": "Yemək tərkibi"
+    },
+    "show_one": "{{count}} məkanı göstər",
+    "show_other": "{{count}} məkanı göstər",
+    "clear": "Filtrləri təmizlə",
+    "none": "Hələ kateqoriya yoxdur."
+  },
+  "replies": {
+    "official": "Restoranın rəsmi cavabı",
+    "report": "Cavabdan şikayət et",
+    "reportTitle": "Bu cavabdan şikayət",
+    "reportBody": "Bu cavabda nəyin yanlış olduğunu Epsilon-a yazın.",
+    "reason": "Səbəb",
+    "send": "Şikayəti göndər",
+    "reportError": "Şikayət göndərilmədi. Yenidən cəhd edin.",
+    "reported": "Şikayət göndərildi. Təşəkkür edirik."
+  },
+  "staff": {
+    "title": "Restoran rəyləri",
+    "empty": "Bu restoran üçün hələ rəy yoxdur.",
+    "guest": "Qonaq",
+    "reply": "Cavab yaz",
+    "edit": "Cavabı redaktə et",
+    "delete": "Cavabı sil",
+    "publish": "Cavabı dərc et",
+    "replyTitle": "Rəyə cavab",
+    "editTitle": "Cavabınızı redaktə edin",
+    "deleteTitle": "Bu cavab silinsin?",
+    "deleteBody": "Müştəri onu artıq görməyəcək.",
+    "yourReply": "Cavabın mətni",
+    "publicHint": "Müştəri bunu öz rəyinin altında restoranın adı ilə görür.",
+    "status": {
+      "published": "Dərc edilmiş cavab",
+      "hidden": "Cavab Epsilon tərəfindən gizlədilib"
+    },
+    "saveError": "Dəyişiklik yadda saxlanmadı. Yenidən cəhd edin.",
+    "reviewHidden": "Bu rəy gizlədilib, ona cavab yazmaq olmaz.",
+    "replyHidden": "Epsilon bu cavabı gizlədib, onu dəyişmək olmaz.",
+    "gone": "Bu rəy artıq sizin üçün əlçatan deyil."
   }
 }

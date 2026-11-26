@@ -21,7 +21,7 @@ import MessageSquare from 'lucide-react-native/icons/message-square';
 import { Icon } from '@/components/ui/Icon';
 import { colors, layout, radius, spacing, useMotion } from '@/design';
 import { OtpInput } from '../components/OtpInput';
-import { ResendTimer, useSecondsUntil } from '../components/ResendTimer';
+import { ResendTimer, useSecondsUntil } from '@/components/ui/ResendTimer';
 import { usePhoneAuth } from '../hooks/usePhoneAuth';
 import { maskPhone } from '../schemas';
 import { otpChallenge, useOtpChallenge } from '../store';
@@ -86,12 +86,15 @@ export default function OtpScreen({
     setCode('');
     if (route) {
       setCompleted(true);
-      router.replace(route);
+      // Adding a phone returns to where it was started, closing both phone steps.
+      if (mode === 'link') router.dismissTo('/profile/personal-info');
+      else router.replace(route);
     }
   };
-  const email = challenge?.delivery === 'email';
+  // Sign-in codes are always e-mailed; a phone code is SMS only if the server says so.
+  const email = mode === 'signIn' || challenge?.delivery === 'email';
   if ((!challenge || challenge.mode !== mode) && !completed)
-    return <Redirect href={mode === 'link' ? '/phone-verify' : '/phone'} />;
+    return <Redirect href={mode === 'link' ? '/phone-verify' : '/login'} />;
   return (
     <Screen
       surface="surface"
@@ -105,7 +108,7 @@ export default function OtpScreen({
           onResend={() => {
             if (challenge) {
               setCode('');
-              void auth.requestCode(challenge.phone);
+              void auth.requestCode(challenge.target);
             }
           }}
         />
@@ -115,8 +118,12 @@ export default function OtpScreen({
         icon={email ? Mail : MessageSquare}
         title={email ? t('auth.otpEmailTitle') : t('navigation.otp')}
         message={t(email ? 'auth.otpEmailHelper' : 'auth.otpHelper', {
-          phone: maskPhone(challenge?.phone ?? ''),
-          email: challenge?.sentTo ?? '',
+          phone: maskPhone(challenge?.target ?? ''),
+          // The full address when the customer typed it; masked for a phone code.
+          email:
+            mode === 'signIn'
+              ? (challenge?.target ?? '')
+              : (challenge?.sentTo ?? ''),
         })}
       />
       <Animated.View

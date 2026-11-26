@@ -7,16 +7,18 @@ import { isApiError } from '@/services/http/errors';
 import { devReason } from '@/services/http/devReason';
 import { useAuthActions } from '@/providers/AuthProvider';
 import { authOperation, otpChallenge } from '../store';
-import { otpSchema, phoneSchema } from '../schemas';
+import { emailSchema, otpSchema, phoneSchema } from '../schemas';
 import { AuthIntentError, type AuthIntent } from '@/lib/auth-intent';
 
+/** A phone number is optional: an older server's `phone` step also goes home. */
 export function routeForNextStep(nextStep: NextStep) {
-  return { profile: '/profile-setup', phone: '/phone-verify', home: '/home' }[
-    nextStep
-  ] as '/profile-setup' | '/phone-verify' | '/home';
+  return nextStep === 'profile' ? '/profile-setup' : '/home';
 }
 
-/** Async service calls are kept outside the query cache to avoid retaining OTP/PII. */
+/**
+ * E-mailed codes: `signIn` proves an e-mail address, `link` adds a phone number.
+ * Async service calls are kept outside the query cache to avoid retaining OTP/PII.
+ */
 export function usePhoneAuth(
   mode: 'signIn' | 'link' = 'signIn',
   intent?: AuthIntent,
@@ -64,8 +66,13 @@ export function usePhoneAuth(
         setRequestRetryAt(authOperation.retryAt());
       }
       setError(t('auth.tooMany'));
-    } else if (code === 'EMAIL_REQUIRED') {
-      setError(t('auth.emailRequired'));
+    } else if (
+      code === 'EMAIL_REQUIRED' ||
+      code === 'EMAIL_DELIVERY_FAILED' ||
+      code === 'PHONE_SIGNIN_UNAVAILABLE' ||
+      code === 'IDENTITY_ALREADY_LINKED'
+    ) {
+      setError(t(`contact.errors.${code}`));
     } else if (code === 'OTP_INVALID') {
       setInvalidAttempt((value) => value + 1);
       setError(t('auth.otpInvalid'));
@@ -75,21 +82,24 @@ export function usePhoneAuth(
       );
   };
 
-  const requestCode = async (phone: string, email?: string) => {
+  const requestCode = async (value: string) => {
     if (gate.current) return false;
     if (authOperation.retryAt() > monotonicNow()) return false;
-    const parsed = phoneSchema.safeParse(phone);
+    const parsed = (mode === 'link' ? phoneSchema : emailSchema).safeParse(
+      value,
+    );
     if (!parsed.success) {
-      setError(t('auth.invalidPhone'));
+      setError(t(mode === 'link' ? 'auth.invalidPhone' : 'auth.invalidEmail'));
       return false;
     }
+    const target = parsed.data;
     const current = otpChallenge.get();
     const activeIntent =
-      intent ?? (current?.phone === parsed.data ? current.intent : undefined);
+      intent ?? (current?.target === target ? current.intent : undefined);
     if (
       current?.mode === mode &&
       current.intent === activeIntent &&
-      current.phone === parsed.data &&
+      current.target === target &&
       Math.max(current.resendAt, current.lockedUntil) > monotonicNow()
     )
       return false;
@@ -100,18 +110,14 @@ export function usePhoneAuth(
     setError(undefined);
     try {
       const result = await (mode === 'link'
-        ? services.auth.requestPhoneLinkOtp({
-            phone: parsed.data,
-            ...(email ? { email } : {}),
-          })
+        ? services.auth.requestPhoneLinkOtp({ phone: target })
         : services.auth.requestOtp({
-            phone: parsed.data,
+            email: target,
             ...(activeIntent ? { intent: activeIntent } : {}),
-            ...(email ? { email } : {}),
           }));
       if (!authOperation.current(epoch)) return false;
       otpChallenge.set(
-        parsed.data,
+        target,
         result.retryAfterSeconds,
         mode,
         activeIntent,
@@ -147,7 +153,7 @@ export function usePhoneAuth(
     try {
       if (mode === 'link') {
         const user = await services.auth.verifyPhoneLink({
-          phone: current.phone,
+          phone: current.target,
           code,
         });
         return active.current && authOperation.current(epoch)
@@ -155,7 +161,7 @@ export function usePhoneAuth(
           : null;
       }
       const result = await services.auth.verifyOtp({
-        phone: current.phone,
+        email: current.target,
         code,
         ...(current.intent ? { intent: current.intent } : {}),
       });

@@ -13,7 +13,7 @@
     "exists": "This account already exists. Log in to continue.",
     "conflict": "This login method belongs to another account. Use your existing login method.",
     "googleNativeOnly": "Use the Epsilon Android app to continue with Google.",
-    "googleSetupRequired": "Google is temporarily unavailable. Continue with your phone number.",
+    "googleSetupRequired": "Google is temporarily unavailable. Continue with your email.",
     "createAccount": "Create account"
   },
   "authEntry": {
@@ -21,8 +21,8 @@
     "description": "Turn your dining experience into something more. Scan, rate and earn cashback on eligible purchases.",
     "login": "Log in",
     "register": "Sign up",
-    "loginHelper": "Verify your phone number to access your account.",
-    "registerHelper": "Verify your phone number, then complete your profile.",
+    "loginHelper": "Enter your email: we send you a login code.",
+    "registerHelper": "Enter your email, confirm the code, then complete your profile.",
     "googleUnavailable": "Google login is not enabled in this version.",
     "noAccount": "Don't have an account?",
     "hasAccount": "Already have an account?"
@@ -136,13 +136,11 @@
     "scanStep": "Scan your receipt",
     "rateStep": "Rate your meal",
     "rewardStep": "Earn cashback",
-    "continuePhone": "Continue with phone number",
     "continueGoogle": "Continue with Google",
     "or": "or",
     "legal": "By continuing, you agree to the Terms of Use and Privacy Policy.",
     "terms": "Terms of Use",
     "privacy": "Privacy Policy",
-    "phoneHelper": "We'll send you a 6-digit verification code.",
     "phoneLabel": "Phone number",
     "countryCode": "Azerbaijan, country code +994",
     "invalidPhone": "Enter a valid phone number.",
@@ -152,12 +150,11 @@
     "codeLabel": "6-digit code",
     "codeHint": "Enter or paste the code. The complete code is verified automatically.",
     "otpEmailTitle": "Check your email",
-    "otpEmailHelper": "We emailed the 6-digit code to {{email}}. In Gmail, look for “Epsilon kodu”.",
+    "otpEmailHelper": "We emailed the 6-digit code to {{email}}.",
     "otpEmailNote": "It can take up to a minute to arrive. Not in your Inbox? Check Spam or All Mail.",
     "emailLabel": "Email",
-    "emailHelp": "Your login code will be sent here.",
+    "emailHelp": "We will email your code to this address.",
     "invalidEmail": "Enter a valid email address.",
-    "emailRequired": "Enter your email: the login code is sent there.",
     "verifyCode": "Verify code",
     "resend": "Resend code",
     "resendAfter": "Resend in {{s}} sec.",
@@ -180,17 +177,13 @@
     "invalidDate": "Select a valid date of birth.",
     "ageRestricted": "You must be at least {{age}} to use Epsilon.",
     "profileInvalid": "Check your details and try again.",
-    "verifyPhoneHelper": "Verify your phone number once to protect your account and keep cashback calculations secure.",
     "phoneInUse": "This number is linked to another account.",
     "otherPhone": "Use another number",
     "contactSupport": "Contact support",
-    "notNow": "Not now",
-    "verifyBanner": "Verify your number to receive cashback",
     "logout": "Sign out",
     "logoutConfirm": "Do you want to sign out?"
   },
   "product": {
-    "demoData": "Preview data",
     "loadError": "Unable to load data.",
     "loadMore": "Load more"
   },
@@ -265,12 +258,12 @@
   },
   "scan": {
     "permissionTitle": "Scan your receipt",
-    "permissionBody": "Use your camera to scan the QR code on a participating restaurant receipt. You can also enter the receipt code.",
+    "permissionBody": "Use your camera to scan the QR on the official fiscal (e-kassa) receipt. You can also upload an image or enter the receipt code.",
     "allow": "Allow camera access",
     "settings": "Open settings",
     "manual": "Enter code manually",
-    "code": "Receipt code",
-    "position": "Place the receipt QR code inside the frame",
+    "code": "Fiscal ID",
+    "position": "Place the QR on the official fiscal (e-kassa) receipt inside the frame",
     "resolving": "Checking receipt…",
     "resolved": "Receipt verified",
     "torchOn": "Turn torch on",
@@ -279,7 +272,7 @@
     "errors": {
       "unsupported": {
         "title": "Code not supported",
-        "body": "Scan the QR code on a participating restaurant receipt."
+        "body": "Scan the QR on the official fiscal (e-kassa) receipt."
       },
       "claimed": {
         "title": "Receipt already used",
@@ -291,7 +284,7 @@
       },
       "notFound": {
         "title": "Receipt not found",
-        "body": "Check the code and try again."
+        "body": "Check the Fiscal ID and try again."
       },
       "network": {
         "title": "Could not connect",
@@ -308,8 +301,27 @@
       "verificationFailed": {
         "title": "Receipt could not be verified",
         "body": "The official receipt data did not add up, so Epsilon did not use it."
+      },
+      "imageNone": {
+        "title": "No QR code found",
+        "body": "Choose an image where the QR on the official fiscal (e-kassa) receipt is large and sharp."
+      },
+      "imageMultiple": {
+        "title": "Several QR codes in the image",
+        "body": "Choose an image that shows only the QR of the official fiscal (e-kassa) receipt."
+      },
+      "imageUnreadable": {
+        "title": "Could not read the image",
+        "body": "Choose another image or scan the QR code with the camera."
+      },
+      "manualUnsupported": {
+        "title": "This ID cannot be used",
+        "body": "Check the Fiscal ID printed on the receipt, or scan its QR code."
       }
-    }
+    },
+    "upload": "Upload image",
+    "codeHint": "Type the Fiscal ID printed on the receipt: 12 or 44 characters. Capital and small letters matter.",
+    "codeTooLong": "A Fiscal ID has at most 44 characters."
   },
   "receipt": {
     "branchDate": "{{branch}} · {{date}}, {{time}}",
@@ -426,7 +438,6 @@
     "saved": "Saved",
     "save": "Save",
     "phone": "Phone",
-    "phoneHelp": "Contact support to change your phone number.",
     "birthDate": "Date of birth",
     "identities": "Login methods",
     "provider": {
@@ -451,11 +462,10 @@
     "crashBody": "Allow technical crash reports. Reports exclude names, phone numbers, purchase details and comments.",
     "deleteAccount": "Delete account",
     "deleteBody": "To delete your account, first verify your identity again. Data retention and deletion follow the privacy policy and any server information shown below.",
-    "reauthBody": "Verify this account again using its phone number or Google identity.",
-    "reauthPhone": "Send code to {{phone}}",
+    "reauthBody": "Verify this account again before this change.",
+    "reauthPhone": "Email a code for {{phone}}",
     "reauthGoogle": "Verify again with Google",
     "reauthUnavailable": "Verification is unavailable. Contact support.",
-    "smsCode": "SMS code",
     "deleteType": "Type {{keyword}} to continue.",
     "deleteConfirmation": "Deletion confirmation",
     "deleteError": "The operation did not finish. Verify the same account and try again.",
@@ -470,7 +480,7 @@
     "faq": {
       "1": {
         "question": "How do I scan a receipt?",
-        "answer": "Tap Scan and place the receipt QR code inside the frame. Purchased dishes appear after the server checks the code."
+        "answer": "Tap Scan and place the QR on the official fiscal (e-kassa) receipt inside the frame. Purchased dishes appear after the server checks the code."
       },
       "2": {
         "question": "Why is a receipt unsupported?",
@@ -487,7 +497,9 @@
     },
     "deleteKeyword": "DELETE",
     "reminders": "Reminders about my meals",
-    "likes": "Liked"
+    "likes": "Liked",
+    "supportSubject": "Epsilon app: support request",
+    "reauthEmail": "Email a code to {{email}}"
   },
   "resilience": {
     "errorTitle": "Something went wrong",
@@ -506,7 +518,7 @@
     "partner": "On Epsilon",
     "scanTitle": "Your receipt is the beginning.",
     "scanHint": "Scan. Share your experience. See your reward.",
-    "manualHint": "Find the purchase code on your receipt.",
+    "manualHint": "Find the Fiscal ID on your receipt.",
     "profileSetup": "A few details to make Epsilon yours.",
     "profileNote": "Your meals. Your feedback. Your Epsilon.",
     "ratingHint": "A little feedback goes a long way."
@@ -593,7 +605,6 @@
     "ingredients": "Key ingredients",
     "allergens": "Allergens",
     "noAllergens": "No listed allergens",
-    "pairings": "Pairs well with",
     "feedback": "Ratings & reviews",
     "trend": "Score over 6 months",
     "trendLabel": "Monthly average score: {{from}} to {{to}}",
@@ -751,7 +762,7 @@
       "UNSUPPORTED_MERCHANT_CATEGORY": "Receipt verified. This business is classified as a {{type}}. Epsilon currently supports ratings and cashback only for restaurants and cafés.",
       "MERCHANT_CATEGORY_UNKNOWN": "Epsilon could not confidently determine what kind of business this is, so ratings and cashback are off for this receipt.",
       "NOT_EPSILON_PARTNER": "This place is not an Epsilon partner yet. You can rate your dishes, but there is no cashback.",
-      "PHONE_NOT_VERIFIED": "Verify your phone number to earn cashback on this receipt. You can still rate your dishes.",
+      "PHONE_NOT_VERIFIED": "Cashback is not available for this receipt right now. You can still rate your dishes.",
       "VERIFICATION_REQUIRED": "This receipt was read from an image, so it can be rated but does not earn cashback. Cashback needs officially verified receipt data."
     },
     "scanAnother": "Scan another receipt",
@@ -1106,5 +1117,136 @@
     "mentions_one": "{{count}} mention",
     "mentions_other": "{{count}} mentions",
     "empty": "No dishes yet"
+  },
+  "contact": {
+    "emailTitle": "Email",
+    "primary": "Main email",
+    "secondary": "Additional email",
+    "noEmail": "No email added yet.",
+    "addEmail": "Add email",
+    "changeEmail": "Change email",
+    "addSecondary": "Add another email",
+    "newEmail": "New email",
+    "changeHint": "We email a code to this address. Your current email stays active until you confirm it.",
+    "addHint": "We email a code to this address to confirm it.",
+    "pending": "Waiting for confirmation: we emailed a code to {{email}}.",
+    "pendingPrimary": "Waiting for confirmation: we emailed a code to {{email}}. Your current email stays active until then.",
+    "expired": "The code sent to {{email}} has expired.",
+    "newCode": "Send a new code",
+    "cancelChange": "Cancel this change",
+    "makePrimary": "Make {{email}} the main email",
+    "removeEmail": "Remove {{email}}",
+    "removeEmailConfirm": "Remove {{email}}? You will no longer sign in with it.",
+    "confirmRemove": "Remove",
+    "reauthTitle": "Confirm it is you",
+    "codeSent": "We emailed the 6-digit code to {{email}}.",
+    "codeSentAccount": "We emailed the 6-digit code to the email saved for this account.",
+    "noPhone": "Not added (optional)",
+    "addPhone": "Add phone number",
+    "changePhone": "Change number",
+    "removePhone": "Remove number",
+    "phoneHelp": "A phone number is optional. SMS is not available yet: confirmation codes are emailed to {{email}}.",
+    "phoneAddHelper": "Optional. SMS is not available yet: we email the confirmation code to {{email}}.",
+    "changePhoneConfirm": "To change the number, the current one is removed first. Then you add and confirm the new one.",
+    "removePhoneConfirm": "Remove this phone number from your account?",
+    "errors": {
+      "EMAIL_IN_USE": "This email belongs to another account.",
+      "EMAIL_IS_PRIMARY": "Make another email the main one first.",
+      "LAST_SIGN_IN_METHOD": "This is your only way to sign in. Add another one first.",
+      "EMAIL_DELIVERY_FAILED": "The email could not be sent. Please try again later.",
+      "EMAIL_REQUIRED": "Add an email first: the code is sent there.",
+      "PHONE_SIGNIN_UNAVAILABLE": "A code cannot be sent for this number. Use another sign-in method or contact support.",
+      "IDENTITY_ALREADY_LINKED": "Your account already has a phone number. Remove it before adding another.",
+      "OTP_INVALID": "Incorrect code. Try again.",
+      "OTP_EXPIRED": "The code has expired. Send a new code.",
+      "OTP_TOO_MANY": "Too many attempts. Please try again later.",
+      "RATE_LIMITED": "Too many requests. Wait a little and try again.",
+      "NETWORK": "No internet connection",
+      "TIMEOUT": "Request timed out"
+    }
+  },
+  "offline": {
+    "saved": "You are offline. This was saved earlier and may be out of date.",
+    "notSaved": "You are offline and this has not been saved on this device. Connect to load it."
+  },
+  "scans": {
+    "title": "Receipt scans",
+    "empty": "No receipt scans yet.",
+    "loadError": "Could not load your scans.",
+    "reload": "Reload scans",
+    "more": "Show more scans",
+    "retry": "Retry scan",
+    "success": "Receipt added",
+    "unknownPlace": "Receipt scan",
+    "kind": {
+      "temporary": "Temporary problem",
+      "unsupported": "Not supported",
+      "invalid": "Not accepted"
+    },
+    "reason": {
+      "RECEIPT_SOURCE_UNAVAILABLE": "The official receipt service was not available.",
+      "RECEIPT_READER_UNAVAILABLE": "Receipt reading was not available.",
+      "RECEIPT_READER_QUOTA": "Receipt reading reached its limit for now.",
+      "RECEIPT_READER_BUSY": "Receipt reading was busy.",
+      "RATE_LIMITED": "Too many attempts. Wait a little.",
+      "NETWORK": "There was no connection.",
+      "TIMEOUT": "The server took too long to answer.",
+      "INTERNAL": "Something went wrong on our side.",
+      "RECEIPT_UNSUPPORTED": "This code is not a supported receipt.",
+      "RECEIPT_NOT_FOUND": "The receipt was not found.",
+      "RECEIPT_ALREADY_CLAIMED": "This receipt has already been claimed.",
+      "RECEIPT_EXPIRED": "This receipt has expired.",
+      "RECEIPT_VERIFICATION_FAILED": "The official receipt data did not add up.",
+      "RECEIPT_IMAGE_INCOMPLETE": "The receipt image could not be read completely.",
+      "RECEIPT_IMAGE_MISMATCH": "The image belongs to a different receipt.",
+      "VALIDATION_FAILED": "The receipt data or image was not valid."
+    }
+  },
+  "discovery": {
+    "all": "All categories",
+    "allSelected": "All categories ({{count}})",
+    "group": {
+      "cuisine": "Cuisine",
+      "district": "District",
+      "price": "Price level",
+      "ingredient": "Dish ingredients"
+    },
+    "show_one": "Show {{count}} place",
+    "show_other": "Show {{count}} places",
+    "clear": "Clear filters",
+    "none": "No categories are available yet."
+  },
+  "replies": {
+    "official": "Official restaurant response",
+    "report": "Report response",
+    "reportTitle": "Report this response",
+    "reportBody": "Tell Epsilon what is wrong with this response.",
+    "reason": "Reason",
+    "send": "Send report",
+    "reportError": "The report was not sent. Please try again.",
+    "reported": "Report sent. Thank you."
+  },
+  "staff": {
+    "title": "Restaurant reviews",
+    "empty": "No reviews for this restaurant yet.",
+    "guest": "Diner",
+    "reply": "Reply",
+    "edit": "Edit reply",
+    "delete": "Delete reply",
+    "publish": "Publish reply",
+    "replyTitle": "Reply to review",
+    "editTitle": "Edit your reply",
+    "deleteTitle": "Delete this reply?",
+    "deleteBody": "The customer will no longer see it.",
+    "yourReply": "Reply text",
+    "publicHint": "The customer sees this under their review, with the restaurant name.",
+    "status": {
+      "published": "Published reply",
+      "hidden": "Reply hidden by Epsilon"
+    },
+    "saveError": "The change was not saved. Please try again.",
+    "reviewHidden": "This review is hidden, so it cannot be answered.",
+    "replyHidden": "Epsilon hid this reply, so it cannot be changed.",
+    "gone": "This review is no longer available to you."
   }
 }

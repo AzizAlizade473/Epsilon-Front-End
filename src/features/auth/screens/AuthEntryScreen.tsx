@@ -15,21 +15,20 @@ import {
 } from '../components/AuthEntryActions';
 import { LegalLinks } from '../components/LegalLinks';
 import { EmailField } from '../components/EmailField';
-import { PhoneField } from '../components/PhoneField';
 import { Rise } from '../components/Rise';
 import { WaveHeader } from '../components/WaveHeader';
 import { useGoogleSignIn } from '../hooks/useGoogleSignIn';
-import { usePhoneEntry } from '../hooks/usePhoneEntry';
+import { useEmailEntry } from '../hooks/useEmailEntry';
 import { AuthConflictAction } from '../components/AuthConflictAction';
 
 export default function AuthEntryScreen({ intent }: { intent: AuthIntent }) {
   const { t } = useTranslation();
   const router = useRouter();
-  const phone = usePhoneEntry(intent);
+  const email = useEmailEntry(intent);
   const google = useGoogleSignIn(intent);
-  const busy = phone.busy || google.busy;
+  const busy = email.busy || google.busy;
   const submit = () => {
-    if (!busy) void phone.submit();
+    if (!busy) void email.submit();
   };
   return (
     <Screen
@@ -83,32 +82,23 @@ export default function AuthEntryScreen({ intent }: { intent: AuthIntent }) {
             }}
           />
         </Rise>
-        <Rise order={3} style={styles.fields}>
-          <PhoneField
-            appearance="underline"
-            autoFocus={false}
-            value={phone.phone}
-            onChange={phone.onChange}
-            disabled={busy}
-            error={phone.error}
-            onSubmit={submit}
-          />
+        <Rise order={3}>
           <EmailField
             appearance="underline"
-            value={phone.email}
-            onChange={phone.onEmailChange}
+            value={email.email}
+            onChange={email.onChange}
             disabled={busy}
-            error={phone.emailError}
+            error={email.error}
             onSubmit={submit}
           />
         </Rise>
-        <AuthConflictAction reason={phone.conflict ?? google.conflict} />
+        <AuthConflictAction reason={email.conflict ?? google.conflict} />
         <Rise order={4}>
           <Button
             shape="rounded"
-            label={t(phone.hasCode ? 'auth.enterCode' : 'common.continue')}
-            loading={phone.busy}
-            disabled={phone.disabled || google.busy}
+            label={t(email.hasCode ? 'auth.enterCode' : 'common.continue')}
+            loading={email.busy}
+            disabled={email.disabled || google.busy}
             onPress={submit}
           />
         </Rise>
@@ -121,7 +111,6 @@ export default function AuthEntryScreen({ intent }: { intent: AuthIntent }) {
 }
 
 const styles = StyleSheet.create({
-  fields: { gap: spacing[20] },
   bleed: { padding: 0, gap: 0 },
   topRow: {
     flexDirection: 'row',

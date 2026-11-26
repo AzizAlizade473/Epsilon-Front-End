@@ -1,72 +1,58 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { useSecondsUntil } from '../components/ResendTimer';
-import { emailSchema, phoneSchema } from '../schemas';
+import { useSecondsUntil } from '@/components/ui/ResendTimer';
+import { emailSchema } from '../schemas';
 import { entryDraft, useOtpChallenge } from '../store';
 import { usePhoneAuth } from './usePhoneAuth';
 import type { AuthIntent } from '@/lib/auth-intent';
 
 /** Reuses the canonical OTP operation; entry intent never creates an account. */
-export function usePhoneEntry(intent?: AuthIntent) {
+export function useEmailEntry(intent: AuthIntent) {
   const { t } = useTranslation();
   const router = useRouter();
-  const [phone, setPhone] = useState(() => entryDraft.get().phone);
+  const [email, setEmail] = useState(entryDraft.get);
   const [touched, setTouched] = useState(false);
-  const [email, setEmail] = useState(() => entryDraft.get().email);
   useEffect(() => entryDraft.clear(), []);
-  const [emailTouched, setEmailTouched] = useState(false);
-  const emailValid = emailSchema.safeParse(email);
   const auth = usePhoneAuth('signIn', intent);
   const challenge = useOtpChallenge();
-  const valid = phoneSchema.safeParse(phone);
-  const samePhone =
+  const valid = emailSchema.safeParse(email);
+  const sameEmail =
     valid.success &&
-    valid.data === challenge?.phone &&
+    valid.data === challenge?.target &&
     challenge.intent === intent;
   const cooldown = useSecondsUntil(
-    samePhone
+    sameEmail
       ? Math.max(challenge?.resendAt ?? 0, challenge?.lockedUntil ?? 0)
       : 0,
   );
   const rateLimited = useSecondsUntil(auth.requestRetryAt) > 0;
   const submit = async () => {
-    if (!valid.success || !emailValid.success || auth.busy || rateLimited)
-      return;
+    if (!valid.success || auth.busy || rateLimited) return;
     if (cooldown > 0) {
       router.push('/otp');
       return;
     }
-    if (await auth.requestCode(phone, emailValid.data)) router.push('/otp');
+    if (await auth.requestCode(email)) router.push('/otp');
     // Kept only after a refusal, so "Create account" / "Log in" opens prefilled.
-    else entryDraft.set({ phone, email });
+    else entryDraft.set(email);
   };
   return {
-    phone,
+    email,
     busy: auth.busy,
     conflict: auth.conflict,
-    disabled: !valid.success || !emailValid.success || rateLimited,
-    email,
-    onEmailChange: (value: string) => {
-      setEmail(value);
-      setEmailTouched(true);
-      auth.clearError();
-    },
-    emailError:
-      emailTouched && email.trim().length > 0 && !emailValid.success
-        ? t('auth.invalidEmail')
-        : undefined,
+    disabled: !valid.success || rateLimited,
     hasCode: cooldown > 0,
     submit,
     onChange: (value: string) => {
-      setPhone(value);
+      setEmail(value);
       setTouched(true);
       auth.clearError();
     },
     error:
       auth.error ??
-      (touched && phone.length > 0 && !valid.success
-        ? t('auth.invalidPhone')
+      (touched && email.trim().length > 0 && !valid.success
+        ? t('auth.invalidEmail')
         : undefined),
   };
 }

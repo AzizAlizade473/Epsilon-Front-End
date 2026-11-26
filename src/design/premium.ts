@@ -23,8 +23,6 @@ export const premium = {
   sheetOverlap: 32,
   menuThumb: 104,
   tile: 84,
-  pairingWidth: 156,
-  pairingHeight: 116,
   barHeight: 8,
   barLabel: 28,
   trendHeight: 104,

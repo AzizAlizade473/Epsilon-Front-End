@@ -5,7 +5,8 @@ import type { AuthIntent } from '@/lib/auth-intent';
 export { authOperation };
 
 export type OtpChallenge = {
-  phone: string;
+  /** The e-mail address being signed in, or the phone number being added. */
+  target: string;
   resendAt: number;
   lockedUntil: number;
   mode: 'signIn' | 'link';
@@ -20,11 +21,11 @@ function emit() {
   listeners.forEach((listener) => listener());
 }
 
-/** Memory only: no phone or code in route params, storage, query keys or logs. */
+/** Memory only: no e-mail, phone or code in route params, storage, query keys or logs. */
 export const otpChallenge = {
   get: () => challenge,
   set(
-    phone: string,
+    target: string,
     retryAfterSeconds: number,
     mode: 'signIn' | 'link' = 'signIn',
     intent?: AuthIntent,
@@ -32,7 +33,7 @@ export const otpChallenge = {
     sentTo?: string,
   ) {
     challenge = {
-      phone,
+      target,
       mode,
       delivery,
       ...(sentTo ? { sentTo } : {}),
@@ -59,15 +60,15 @@ export const otpChallenge = {
 };
 registerAuthCleanup(() => otpChallenge.clear());
 
-/** Typed entry values carried between Log in and Sign up. Memory only. */
-let draft = { phone: '', email: '' };
+/** The typed address, carried between Log in and Sign up. Memory only. */
+let draft = '';
 export const entryDraft = {
   get: () => draft,
-  set(next: { phone: string; email: string }) {
-    draft = next;
+  set(email: string) {
+    draft = email;
   },
   clear() {
-    draft = { phone: '', email: '' };
+    draft = '';
   },
 };
 registerAuthCleanup(() => entryDraft.clear());

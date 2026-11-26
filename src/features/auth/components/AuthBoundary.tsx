@@ -8,7 +8,7 @@ export function AuthBoundary({
   mode,
   children,
 }: {
-  mode: 'signedOut' | 'profile' | 'phone' | 'complete';
+  mode: 'signedOut' | 'profile' | 'complete';
   children: ReactNode;
 }) {
   const auth = useAuth();
@@ -25,9 +25,5 @@ export function AuthBoundary({
   if (!auth.session) return <Redirect href={target} />;
   if (mode === 'complete')
     return target === '/home' ? children : <Redirect href={target} />;
-  if (mode === 'profile')
-    return target === '/profile-setup' ? children : <Redirect href={target} />;
-  if (target === '/profile-setup' || auth.user?.phoneVerified)
-    return <Redirect href={target} />;
-  return children;
+  return target === '/profile-setup' ? children : <Redirect href={target} />;
 }

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/Button';
 import { Sheet } from '@/components/ui/Sheet';
 import { Text } from '@/components/ui/Text';
-import { env } from '@/lib/env';
+import { supportMailUrl } from '@/lib/support';
 import { useToast } from '@/providers/ToastProvider';
 
 export function PhoneInUseSheet({
@@ -32,7 +32,7 @@ export function PhoneInUseSheet({
           label={t('onboarding.contactSupport')}
           onPress={() => {
             void Linking.openURL(
-              `mailto:${env.EXPO_PUBLIC_SUPPORT_EMAIL}`,
+              supportMailUrl(t('profile.supportSubject')),
             ).catch(() => toast(t('errors.generic')));
           }}
         />

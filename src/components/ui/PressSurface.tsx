@@ -106,7 +106,13 @@ export function PressSurface({
           busy: loading,
         }}
         disabled={blocked}
-        style={[styles.target, contentStyle, styles.clip]}
+        // The highlight is clipped here, so it needs the surface's own corners.
+        style={[
+          styles.target,
+          { borderRadius: StyleSheet.flatten(style)?.borderRadius },
+          contentStyle,
+          styles.clip,
+        ]}
         onPressIn={() =>
           animate(motion.reduceMotion ? 1 : (pressScale ?? motion.pressScale))
         }
@@ -126,7 +132,7 @@ export function PressSurface({
           style={[
             StyleSheet.absoluteFill,
             {
-              backgroundColor: pressedColor ?? colors.brand.tint,
+              backgroundColor: pressedColor ?? colors.press,
               opacity: tint,
             },
           ]}

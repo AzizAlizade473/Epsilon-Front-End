@@ -41,6 +41,7 @@ const object = (properties, required = Object.keys(properties)) => ({
 const json = (schema) => ({ 'application/json': { schema } });
 const schemaNames = {
   OtpChallenge: 'otpChallengeSchema',
+  EmailList: 'emailListSchema',
   Identity: 'identitySchema',
   User: 'userSchema',
   Session: 'sessionSchema',
@@ -56,6 +57,11 @@ const schemaNames = {
   FeedbackResult: 'feedbackResultSchema',
   FeedbackReview: 'feedbackReviewSchema',
   FeedbackUpdate: 'feedbackUpdateSchema',
+  ReplyReport: 'replyReportSchema',
+  ScanAttempt: 'scanAttemptSchema',
+  StaffRestaurantList: 'staffRestaurantListSchema',
+  StaffReview: 'staffReviewSchema',
+  StaffReply: 'staffReplySchema',
   NotificationPage: 'notificationPageSchema',
   Wallet: 'walletSchema',
   WalletTransaction: 'walletTransactionSchema',
@@ -103,13 +109,32 @@ schemas.ProfileUpdate = {
   description:
     'Canonical envelope first; legacy User-only response is decoded explicitly.',
 };
-schemas.OtpRequest = object({
-  phone: { type: 'string', pattern: '^\\+994[0-9]{9}$' },
+const phoneNumber = { type: 'string', pattern: '^\\+994[0-9]{9}$' };
+const emailText = { type: 'string', format: 'email', maxLength: 254 };
+const otpCode = { type: 'string', pattern: '^[0-9]{6}$' };
+const intent = { enum: ['login', 'register'] };
+// E-mail first. The phone shape only re-authenticates accounts without an e-mail.
+const subject = (extra, required) => ({
+  oneOf: ['email', 'phone'].map((key) =>
+    object(
+      {
+        [key]: key === 'email' ? emailText : phoneNumber,
+        intent,
+        ...extra,
+      },
+      [key, ...required],
+    ),
+  ),
 });
-schemas.OtpVerify = object({
-  ...schemas.OtpRequest.properties,
-  code: { type: 'string', pattern: '^[0-9]{6}$' },
+schemas.OtpRequest = subject({}, []);
+schemas.OtpVerify = subject({ code: otpCode }, ['code']);
+schemas.PhoneLinkRequest = object({ phone: phoneNumber });
+schemas.PhoneLinkVerify = object({ phone: phoneNumber, code: otpCode });
+schemas.EmailChange = object({
+  email: emailText,
+  makePrimary: { type: 'boolean' },
 });
+schemas.EmailVerify = object({ email: emailText, code: otpCode });
 schemas.ProfilePatch = object(
   {
     firstName: { type: 'string', minLength: 2, maxLength: 40 },
@@ -149,6 +174,8 @@ schemas.RestaurantPage = page('Restaurant');
 schemas.LikePage = page('LikeItem');
 schemas.FeedbackPage = page('FeedbackReview');
 schemas.TransactionPage = page('WalletTransaction');
+schemas.ScanPage = page('ScanAttempt');
+schemas.StaffReviewPage = page('StaffReview');
 schemas.RestaurantList = {
   oneOf: [ref('RestaurantPage'), { type: 'array', items: ref('Restaurant') }],
   description: 'Prefer cursor page; legacy bare array remains accepted.',
@@ -209,6 +236,14 @@ const likeKind = { enum: ['dish', 'review', 'restaurant'] };
 const likeTarget = { type: 'string', pattern: '^[A-Za-z0-9_:-]{1,160}$' };
 const date = { type: 'string', format: 'date' };
 Object.assign(parameters, {
+  Include: query('include', { enum: ['reply'] }),
+  FeedbackId: {
+    name: 'feedbackId',
+    in: 'path',
+    required: true,
+    schema: { type: 'string', format: 'uuid' },
+  },
+  Email: { name: 'email', in: 'path', required: true, schema: emailText },
   Kind: { name: 'kind', in: 'path', required: true, schema: likeKind },
   TargetId: {
     name: 'targetId',
@@ -240,6 +275,8 @@ function operation(
     'RequestId',
     ...(mutation ? ['Idempotency'] : []),
     ...(route.includes('{id}') ? ['Id'] : []),
+    ...(route.includes('{feedbackId}') ? ['FeedbackId'] : []),
+    ...(route.includes('{email}') ? ['Email'] : []),
     ...(route.includes('{kind}') ? ['Kind', 'TargetId'] : []),
     ...extra,
   ];
@@ -328,15 +365,33 @@ operation(
   '/me/phone/otp/request',
   'requestPhoneLinkOtp',
   'OtpChallenge',
-  'OtpRequest',
+  'PhoneLinkRequest',
 );
 operation(
   'post',
   '/me/phone/otp/verify',
   'verifyPhoneLink',
   'User',
-  'OtpVerify',
+  'PhoneLinkVerify',
 );
+operation('delete', '/me/phone', 'removePhone', null);
+operation('get', '/me/emails', 'myEmails', 'EmailList');
+operation(
+  'post',
+  '/me/emails/request',
+  'requestEmailChange',
+  'OtpChallenge',
+  'EmailChange',
+);
+operation(
+  'post',
+  '/me/emails/verify',
+  'verifyEmailChange',
+  'EmailList',
+  'EmailVerify',
+);
+operation('delete', '/me/emails/pending', 'cancelEmailChange', null);
+operation('delete', '/me/emails/{email}', 'removeEmail', null);
 operation('get', '/me', 'currentUser', 'User');
 operation('patch', '/me', 'updateProfile', 'ProfileUpdate', 'ProfilePatch');
 operation('delete', '/me', 'deleteAccount', null);
@@ -381,10 +436,47 @@ operation(
   'FeedbackInput',
 );
 operation('get', '/feedback', 'myReviews', 'FeedbackPage', null, false, [
+  'Include',
   'Cursor',
   'Limit',
 ]);
-operation('get', '/feedback/{id}', 'myReview', 'FeedbackReview');
+operation('get', '/feedback/{id}', 'myReview', 'FeedbackReview', null, false, [
+  'Include',
+]);
+operation(
+  'post',
+  '/feedback/{id}/reply/report',
+  'reportReply',
+  null,
+  'ReplyReport',
+);
+operation('get', '/activity/scans', 'scanActivity', 'ScanPage', null, false, [
+  'Cursor',
+  'Limit',
+]);
+operation(
+  'get',
+  '/staff/restaurants',
+  'staffRestaurants',
+  'StaffRestaurantList',
+);
+operation(
+  'get',
+  '/staff/restaurants/{id}/reviews',
+  'staffReviews',
+  'StaffReviewPage',
+  null,
+  false,
+  ['Cursor', 'Limit'],
+);
+operation(
+  'put',
+  '/staff/reviews/{feedbackId}/reply',
+  'saveReply',
+  'StaffReview',
+  'StaffReply',
+);
+operation('delete', '/staff/reviews/{feedbackId}/reply', 'deleteReply', null);
 operation(
   'patch',
   '/feedback/{id}',
