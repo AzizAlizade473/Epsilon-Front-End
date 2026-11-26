@@ -13,8 +13,8 @@ import { Button } from '@/components/ui/Button';
 import { Text } from '@/components/ui/Text';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { ErrorState } from '@/components/feedback/ErrorState';
+import { OfflineNotice, useOnline } from '@/components/feedback/OfflineNotice';
 import { DetailRowSkeleton } from '@/components/feedback/DetailRowSkeleton';
-import { MockDataNotice } from '@/components/feedback/MockDataNotice';
 import { FoodImage } from '@/components/food/FoodImage';
 import { LikeButton } from '@/components/likes/LikeButton';
 import { colors, layout, radius, spacing } from '@/design';
@@ -74,6 +74,7 @@ function Row({ item }: { item: LikeItem }) {
 export default function LikedScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const online = useOnline();
   const [kind, setKind] = useState<LikeKind>('dish');
   const query = useLikedList(kind);
   const items = query.data?.items ?? [];
@@ -99,7 +100,7 @@ export default function LikedScreen() {
         value={kind}
         onValueChange={setKind}
       />
-      <MockDataNotice />
+      <OfflineNotice saved={items.length > 0} />
       <FlashList
         // A new list per tab: scroll offsets never leak between tabs.
         key={kind}
@@ -124,7 +125,8 @@ export default function LikedScreen() {
             void query.fetchNextPage();
         }}
         ListEmptyComponent={
-          query.isPending ? (
+          // Never claim "nothing liked" for a list that was not loaded or saved.
+          !online && !query.data ? null : query.isPending ? (
             <View
               accessibilityRole="progressbar"
               accessibilityLabel={t('common.loading')}

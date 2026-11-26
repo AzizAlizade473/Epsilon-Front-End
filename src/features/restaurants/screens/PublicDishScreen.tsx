@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { memo, useCallback, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Animated, {
@@ -42,12 +42,10 @@ import { LikeButton } from '@/components/likes/LikeButton';
 import { dishLike, reviewLike } from '@/hooks/likeTargets';
 import { useRestaurant } from '../hooks/useRestaurants';
 import { Icon } from '@/components/ui/Icon';
-import { PressSurface } from '@/components/ui/PressSurface';
 import { Text } from '@/components/ui/Text';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { ErrorState } from '@/components/feedback/ErrorState';
-import { MockDataNotice } from '@/components/feedback/MockDataNotice';
-import { FoodImage } from '@/components/food/FoodImage';
+import { OfflineNotice, useOnline } from '@/components/feedback/OfflineNotice';
 import { colors, layout, radius, spacing, typography } from '@/design';
 import { premium } from '@/design/premium';
 import { formatMoney } from '@/lib/money';
@@ -57,11 +55,10 @@ import {
   useCatalog,
   useDishReviews,
   type Aspect,
-  type CatalogDish,
   type Ingredient,
 } from '../catalog';
 import { Hero, RoundButton } from '../components/Hero';
-import { RatingBars, ScoreLine, Stars } from '@/components/ratings/Ratings';
+import { RatingBars, Stars } from '@/components/ratings/Ratings';
 import { RatingTrend } from '../components/RatingTrend';
 import { ReviewCard } from '@/components/ratings/ReviewCard';
 import { Reveal } from '@/components/ratings/Reveal';
@@ -105,45 +102,6 @@ function Meta({ icon, label }: { icon?: LucideIcon; label: string }) {
   );
 }
 
-const Pairings = memo(function Pairings({
-  dishes,
-  onOpen,
-}: {
-  dishes: CatalogDish[];
-  onOpen: (id: string) => void;
-}) {
-  const { t } = useTranslation();
-  return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      style={styles.rail}
-      contentContainerStyle={styles.railContent}
-    >
-      {dishes.map((d) => (
-        <PressSurface
-          key={d.id}
-          accessibilityLabel={`${d.name}, ${t('dining.scoreLabel', { score: d.rating.average.toFixed(1) })}`}
-          onPress={() => onOpen(d.id)}
-          contentStyle={styles.pairing}
-          spring
-        >
-          <FoodImage
-            uri={d.imageUrl}
-            cover
-            width={premium.pairingWidth}
-            height={premium.pairingHeight}
-          />
-          <Text variant="callout" numberOfLines={1}>
-            {d.name}
-          </Text>
-          <ScoreLine rating={d.rating} />
-        </PressSurface>
-      ))}
-    </ScrollView>
-  );
-});
-
 export default function PublicDishScreen() {
   const { id, dishId } = useLocalSearchParams<{ id: string; dishId: string }>();
   const valid =
@@ -155,19 +113,12 @@ export default function PublicDishScreen() {
   const dish = catalog.data?.dishes.find((d) => d.id === dishId);
   const router = useRouter();
   const { t } = useTranslation();
+  const online = useOnline();
   const [expanded, setExpanded] = useState(false);
   const scrollY = useSharedValue(0);
   const onScroll = useAnimatedScrollHandler((e) => {
     scrollY.set(e.contentOffset.y);
   });
-  const openDish = useCallback(
-    (next: string) =>
-      router.push({
-        pathname: '/restaurant/[id]/dish/[dishId]',
-        params: { id, dishId: next },
-      }),
-    [router, id],
-  );
   const openReviews = (filter: { stars?: number; aspect?: Aspect } = {}) =>
     router.push({
       pathname: '/restaurant/[id]/dish/[dishId]/reviews',
@@ -199,12 +150,6 @@ export default function PublicDishScreen() {
       )}
     />
   );
-  const pairings =
-    dish && catalog.data
-      ? dish.pairingIds
-          .map((p) => catalog.data!.dishes.find((d) => d.id === p))
-          .filter((d): d is CatalogDish => Boolean(d))
-      : [];
   const longText = (dish?.description.length ?? 0) > READ_MORE_AT;
   const mentions = aspectCounts(reviews.data ?? []).slice(0, 4);
   return (
@@ -223,8 +168,9 @@ export default function PublicDishScreen() {
           trailing={heart}
         />
         <View style={styles.sheet}>
+          <OfflineNotice saved={Boolean(dish)} />
           {!dish ? (
-            catalog.isLoading ? (
+            !online && !catalog.data ? null : catalog.isLoading ? (
               <View
                 style={styles.section}
                 accessibilityLabel={t('common.loading')}
@@ -355,14 +301,6 @@ export default function PublicDishScreen() {
                   )}
                 </View>
               </Reveal>
-              {pairings.length > 0 && (
-                <Reveal order={3} style={styles.section}>
-                  <Text variant="title2" accessibilityRole="header">
-                    {t('dining.pairings')}
-                  </Text>
-                  <Pairings dishes={pairings} onOpen={openDish} />
-                </Reveal>
-              )}
               <Reveal order={4} style={styles.section}>
                 <Text variant="title2" accessibilityRole="header">
                   {t('dining.feedback')}
@@ -456,7 +394,6 @@ export default function PublicDishScreen() {
                 ) : (
                   <Text tone="secondary">{t('dining.noReviews')}</Text>
                 )}
-                <MockDataNotice />
               </Reveal>
             </>
           )}
@@ -529,11 +466,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[4],
     borderRadius: radius[12],
     backgroundColor: colors.divider,
-  },
-  pairing: {
-    width: premium.pairingWidth,
-    gap: spacing[8],
-    alignItems: 'flex-start',
   },
   summary: {
     flexDirection: 'row',

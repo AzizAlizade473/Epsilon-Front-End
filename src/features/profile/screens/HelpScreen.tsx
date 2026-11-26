@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { PressSurface } from '@/components/ui/PressSurface';
 import { env } from '@/lib/env';
+import { supportMailUrl } from '@/lib/support';
 import { useToast } from '@/providers/ToastProvider';
 import { ProfilePage } from '../components/ProfilePage';
 import { colors, layout, motionTokens, spacing } from '@/design';
@@ -79,11 +80,14 @@ export default function HelpScreen() {
       <Button
         label={t('profile.contact')}
         onPress={() => {
-          void Linking.openURL(`mailto:${env.EXPO_PUBLIC_SUPPORT_EMAIL}`).catch(
-            () => toast(t('errors.generic')),
-          );
+          void Linking.openURL(
+            supportMailUrl(t('profile.supportSubject')),
+          ).catch(() => toast(t('errors.generic')));
         }}
       />
+      <Text variant="caption" tone="secondary" selectable>
+        {env.EXPO_PUBLIC_SUPPORT_EMAIL}
+      </Text>
     </ProfilePage>
   );
 }

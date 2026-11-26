@@ -24,7 +24,6 @@ import { ErrorState } from '@/components/feedback/ErrorState';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { DetailRowSkeleton } from '@/components/feedback/DetailRowSkeleton';
-import { MockDataNotice } from '@/components/feedback/MockDataNotice';
 import { TransactionRow } from '@/components/wallet/TransactionRow';
 import { colors, layout, radius, spacing } from '@/design';
 import { walletDesign as w } from '@/design/wallet';
@@ -98,10 +97,7 @@ export default function WalletScreen() {
             contentStyle={styles.cardPress}
             spring
           >
-            <WalletSurface
-              focused={expanded}
-              pendingMinor={wallet.data?.pendingMinor}
-            >
+            <WalletSurface pendingMinor={wallet.data?.pendingMinor}>
               {wallet.data ? (
                 <Amount minor={wallet.data.balanceMinor} tone="inverse" />
               ) : wallet.isLoading ? (
@@ -144,7 +140,6 @@ export default function WalletScreen() {
         <Text variant="title2" accessibilityRole="header">
           {t('visual.history')}
         </Text>
-        <MockDataNotice />
       </View>
     </>
   );
@@ -274,7 +269,7 @@ const styles = StyleSheet.create({
     paddingBottom: spacing[32],
   },
   heading: { flexDirection: 'row', alignItems: 'center', gap: spacing[12] },
-  cardPress: { alignItems: 'stretch' },
+  cardPress: { alignItems: 'stretch', borderRadius: w.card.radius },
   error: { color: w.colors.text },
   ledgerHeading: {
     borderTopLeftRadius: radius[24],

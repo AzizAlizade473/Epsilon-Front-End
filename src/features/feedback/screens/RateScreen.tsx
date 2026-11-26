@@ -25,6 +25,7 @@ import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { BrandBadge } from '@/components/brand/BrandBadge';
 import { OriginalStars } from '@/components/receipts/OriginalStars';
+import { OfficialReply } from '@/components/reviews/OfficialReply';
 import { colors, spacing } from '@/design';
 import { originalReceipts as o } from '@/design/original-receipts';
 import { displayMerchantName } from '@/lib/brands';
@@ -462,7 +463,7 @@ function EditRating({ feedbackId }: { feedbackId: string }) {
   const client = useQueryClient();
   const { t, i18n } = useTranslation();
   const review = useQuery({
-    queryKey: [...queryKeys.feedback.all, 'detail', feedbackId],
+    queryKey: queryKeys.feedback.detail(feedbackId),
     queryFn: ({ signal }) => services.feedback.get(feedbackId, { signal }),
   });
   const [draft, setDraft] = useState<RatingDraft | null>(null);
@@ -592,6 +593,12 @@ function EditRating({ feedbackId }: { feedbackId: string }) {
                 busy={busy}
                 error={error}
                 queued={false}
+              />
+            )}
+            {review.data.reply && (
+              <OfficialReply
+                feedbackId={feedbackId}
+                reply={review.data.reply}
               />
             )}
           </View>

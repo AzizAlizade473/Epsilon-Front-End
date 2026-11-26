@@ -68,7 +68,7 @@ export function ReceiptScreen() {
             pendingIds={feedback.entries.map((entry) => entry.receiptItemId)}
             completedIds={feedback.completedIds}
             onClose={close}
-            onScanAnother={() => router.replace('/scan')}
+            onScanAnother={() => router.dismissTo('/scan')}
             onExplore={() => {
               router.dismissAll();
               router.replace('/restaurants');

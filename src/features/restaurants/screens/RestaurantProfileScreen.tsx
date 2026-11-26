@@ -10,8 +10,8 @@ import { Text } from '@/components/ui/Text';
 import { Chip } from '@/components/ui/Chip';
 import { Icon } from '@/components/ui/Icon';
 import { ErrorState } from '@/components/feedback/ErrorState';
+import { OfflineNotice, useOnline } from '@/components/feedback/OfflineNotice';
 import { Skeleton } from '@/components/feedback/Skeleton';
-import { MockDataNotice } from '@/components/feedback/MockDataNotice';
 import { colors, layout, radius, spacing, typography } from '@/design';
 import { premium } from '@/design/premium';
 import { useRestaurant } from '../hooks/useRestaurants';
@@ -53,6 +53,7 @@ export default function RestaurantProfileScreen() {
   const gone = isApiError(query.error) && query.error.status === 404;
   const catalog = useCatalog(valid ? id : '');
   const { t } = useTranslation();
+  const online = useOnline();
   const router = useRouter();
   const [category, setCategory] = useState<string | null>(null);
   const data = catalog.data;
@@ -120,6 +121,7 @@ export default function RestaurantProfileScreen() {
         }
       />
       <View style={styles.sheet}>
+        <OfflineNotice saved={Boolean(query.data || data)} />
         <Reveal order={0} style={styles.block}>
           <View style={styles.titleRow}>
             {query.data && (
@@ -178,7 +180,6 @@ export default function RestaurantProfileScreen() {
             </Text>
           </Reveal>
         )}
-        <MockDataNotice />
         {data && (
           <View style={styles.block}>
             <Text variant="title2" accessibilityRole="header">
@@ -225,7 +226,9 @@ export default function RestaurantProfileScreen() {
           contentContainerStyle={styles.list}
           ListHeaderComponent={header}
           ListEmptyComponent={
-            query.isLoading || catalog.isLoading ? (
+            // Offline the notice above says what is missing; claim nothing else.
+            !online && (!query.data || !data) ? null : query.isLoading ||
+              catalog.isLoading ? (
               <View style={styles.pad}>
                 <Skeleton
                   width="100%"

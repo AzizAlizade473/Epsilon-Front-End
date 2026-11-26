@@ -13,7 +13,6 @@ import { Text } from '@/components/ui/Text';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { ErrorState } from '@/components/feedback/ErrorState';
 import { DetailRowSkeleton } from '@/components/feedback/DetailRowSkeleton';
-import { MockDataNotice } from '@/components/feedback/MockDataNotice';
 import { spacing } from '@/design';
 import {
   aspectSchema,
@@ -75,7 +74,6 @@ export default function DishesScreen() {
           }}
         />
       )}
-      <MockDataNotice />
     </View>
   );
   return (

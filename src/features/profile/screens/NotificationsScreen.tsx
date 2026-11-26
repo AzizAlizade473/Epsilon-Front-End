@@ -61,15 +61,20 @@ function Inbox() {
           {t('notifications.inboxTitle')}
         </Text>
         {(inbox.data?.unreadCount ?? 0) > 0 && (
-          <Button
-            variant="ghost"
-            label={t('notifications.markAll')}
+          <PressSurface
+            accessibilityLabel={t('notifications.markAll')}
             onPress={() => {
               void services.notification
                 .markAllRead()
                 .then(refresh, () => undefined);
             }}
-          />
+            style={styles.markAll}
+            contentStyle={styles.markAllContent}
+          >
+            <Text variant="callout" style={styles.markAllText}>
+              {t('notifications.markAll')}
+            </Text>
+          </PressSurface>
         )}
       </View>
       {items.length === 0 ? (
@@ -105,7 +110,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: spacing[8],
   },
+  markAll: { marginLeft: 'auto', borderRadius: radius[12] },
+  markAllContent: { paddingHorizontal: spacing[8] },
+  markAllText: { color: colors.brand.primary },
   item: {
     flexDirection: 'row',
     gap: spacing[12],

@@ -1,6 +1,7 @@
 import { useContext, useRef, useState } from 'react';
 import { BottomTabBarHeightContext } from 'expo-router/js-tabs';
 import { useRouter } from 'expo-router';
+import { useQueryClient } from '@tanstack/react-query';
 import Bell from 'lucide-react-native/icons/bell';
 import CircleHelp from 'lucide-react-native/icons/circle-question-mark';
 import ArrowUpRight from 'lucide-react-native/icons/arrow-up-right';
@@ -19,11 +20,9 @@ import {
 import { IconButton } from '@/components/ui/IconButton';
 import { Screen } from '@/components/ui/Screen';
 import { PressSurface } from '@/components/ui/PressSurface';
-import { PhoneVerificationBanner } from '@/components/feedback/PhoneVerificationBanner';
 import { Text } from '@/components/ui/Text';
 import { Skeleton } from '@/components/feedback/Skeleton';
 import { DetailRowSkeleton } from '@/components/feedback/DetailRowSkeleton';
-import { MockDataNotice } from '@/components/feedback/MockDataNotice';
 import { BalanceAmount } from '@/components/wallet/BalanceAmount';
 import { TransactionRow } from '@/components/wallet/TransactionRow';
 import { colors, layout, radius, spacing } from '@/design';
@@ -37,12 +36,14 @@ import { WaitingDishes } from '../components/WaitingDishes';
 import { StaggeredRow } from '../components/StaggeredRow';
 import { NotificationPrimer } from '../components/NotificationPrimer';
 import { ExploreSection } from '../components/ExploreSection';
+import { ScanActivity } from '../components/ScanActivity';
 
 export default function HomeScreen() {
   const { t } = useTranslation();
   const auth = useAuth();
   const router = useRouter();
   const wallet = useWallet();
+  const client = useQueryClient();
   const journey = useWalletJourney();
   const walletCard = useRef<WalletCardRef>(null);
   const transactions = useWalletTransactions({ limit: 3 });
@@ -55,7 +56,11 @@ export default function HomeScreen() {
     refreshing.current = true;
     setPulling(true);
     try {
-      await Promise.all([wallet.refetch(), transactions.refetch()]);
+      await Promise.all([
+        wallet.refetch(),
+        transactions.refetch(),
+        client.invalidateQueries({ queryKey: queryKeys.activity.all }),
+      ]);
     } finally {
       refreshing.current = false;
       setPulling(false);
@@ -267,10 +272,9 @@ export default function HomeScreen() {
               />
             </>
           )}
+          <ScanActivity />
         </View>
         <ExploreSection />
-        <PhoneVerificationBanner />
-        <MockDataNotice />
         <NotificationPrimer />
       </View>
     </Screen>

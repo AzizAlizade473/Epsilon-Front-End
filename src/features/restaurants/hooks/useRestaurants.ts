@@ -1,5 +1,6 @@
 import {
   infiniteQueryOptions,
+  queryOptions,
   useInfiniteQuery,
   useQuery,
 } from '@tanstack/react-query';
@@ -20,12 +21,14 @@ export async function restaurantService() {
   return mockServices.restaurant;
 }
 
-export function useRestaurant(id: string, enabled = Boolean(id)) {
-  return useQuery({
+export function restaurantDetailOptions(id: string) {
+  return queryOptions({
     queryKey: queryKeys.restaurant.detail(id),
     queryFn: async () => (await restaurantService()).get(id),
-    enabled,
   });
+}
+export function useRestaurant(id: string, enabled = Boolean(id)) {
+  return useQuery({ ...restaurantDetailOptions(id), enabled });
 }
 
 export function restaurantOptions(search: string, limit = 20) {

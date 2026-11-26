@@ -14,6 +14,8 @@ import { services, type User } from '@/services';
 import { useAuthActions } from '@/providers/AuthProvider';
 import { useToast } from '@/providers/ToastProvider';
 import { ProfilePage } from '../components/ProfilePage';
+import { EmailSection } from '../components/EmailSection';
+import { PhoneSection } from '../components/PhoneSection';
 
 export default function PersonalInfoScreen() {
   const query = useProfile();
@@ -51,6 +53,9 @@ function PersonalForm({ user }: { user: User }) {
   const lock = useRef(false);
   const dirty =
     firstName !== (user.firstName ?? '') || lastName !== (user.lastName ?? '');
+  const otherMethods = user.identities.filter(
+    (identity) => identity.provider !== 'phone',
+  );
   const save = async () => {
     if (lock.current) return;
     const first = profileNameSchema.safeParse(firstName);
@@ -97,32 +102,10 @@ function PersonalForm({ user }: { user: User }) {
         editable={!busy}
         maxLength={40}
       />
-      <ListRow title={t('profile.phone')} subtitle={user.phone ?? undefined} />
-      <Text variant="caption">{t('profile.phoneHelp')}</Text>
       <ListRow
         title={t('profile.birthDate')}
         subtitle={user.birthDate ?? undefined}
       />
-      {user.email && (
-        <ListRow title={t('auth.emailLabel')} subtitle={user.email} />
-      )}
-      {/* The phone number is shown once, above; only other sign-in methods are listed here. */}
-      {user.identities.some((identity) => identity.provider !== 'phone') && (
-        <>
-          <Text variant="headline" accessibilityRole="header">
-            {t('profile.identities')}
-          </Text>
-          {user.identities
-            .filter((identity) => identity.provider !== 'phone')
-            .map((identity) => (
-              <ListRow
-                key={identity.provider}
-                title={t(`profile.provider.${identity.provider}`)}
-                subtitle={identity.email ?? undefined}
-              />
-            ))}
-        </>
-      )}
       {error && (
         <Text tone="danger" accessibilityRole="alert">
           {error}
@@ -136,6 +119,23 @@ function PersonalForm({ user }: { user: User }) {
             void save();
           }}
         />
+      )}
+      <EmailSection user={user} />
+      <PhoneSection user={user} />
+      {/* Phone and e-mail have their own sections; only other methods are listed here. */}
+      {otherMethods.length > 0 && (
+        <>
+          <Text variant="headline" accessibilityRole="header">
+            {t('profile.identities')}
+          </Text>
+          {otherMethods.map((identity) => (
+            <ListRow
+              key={identity.provider}
+              title={t(`profile.provider.${identity.provider}`)}
+              subtitle={identity.email ?? undefined}
+            />
+          ))}
+        </>
       )}
     </>
   );

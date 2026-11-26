@@ -8,6 +8,7 @@ import Languages from 'lucide-react-native/icons/languages';
 import Shield from 'lucide-react-native/icons/shield';
 import CircleHelp from 'lucide-react-native/icons/circle-question-mark';
 import Pencil from 'lucide-react-native/icons/pencil';
+import Store from 'lucide-react-native/icons/store';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
@@ -19,7 +20,11 @@ import { Button } from '@/components/ui/Button';
 import { Sheet } from '@/components/ui/Sheet';
 import { DevScenarioMenu } from '@/components/dev/dev-scenario-menu';
 import { colors, layout, radius, spacing } from '@/design';
-import { useProfile, useReviews } from '@/hooks/useProfile';
+import {
+  useProfile,
+  useReviews,
+  useStaffRestaurants,
+} from '@/hooks/useProfile';
 import { maskedPhone } from '@/lib/profile';
 import { useAuthActions } from '@/providers/AuthProvider';
 import { useToast } from '@/providers/ToastProvider';
@@ -30,6 +35,7 @@ export default function ProfileScreen() {
   const router = useRouter();
   const user = useProfile();
   const reviews = useReviews();
+  const staff = useStaffRestaurants();
   const { logout } = useAuthActions();
   const toast = useToast();
   const client = useQueryClient();
@@ -102,7 +108,7 @@ export default function ProfileScreen() {
               .join(' ')}
           </Text>
           <Text variant="caption" style={styles.identityMeta}>
-            {maskedPhone(user.data?.phone ?? null) || user.data?.email}
+            {user.data?.email || maskedPhone(user.data?.phone ?? null)}
           </Text>
         </View>
         <IconButton
@@ -130,6 +136,16 @@ export default function ProfileScreen() {
         {t('profile.account')}
       </Text>
       <View style={styles.group}>{account.map(row)}</View>
+      {Boolean(staff.data?.items.length) && (
+        <View style={styles.group}>
+          <ListRow
+            title={t('staff.title')}
+            icon={Store}
+            divider={false}
+            onPress={() => router.push('/profile/restaurant-reviews')}
+          />
+        </View>
+      )}
       <Text variant="caption" accessibilityRole="header">
         {t('profile.security')}
       </Text>

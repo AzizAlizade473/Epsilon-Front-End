@@ -3,7 +3,14 @@ import Store from 'lucide-react-native/icons/store';
 import Search from 'lucide-react-native/icons/search';
 import X from 'lucide-react-native/icons/x';
 import { StatusBar } from 'expo-status-bar';
-import { useCallback, useContext, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { BottomTabBarHeightContext } from 'expo-router/js-tabs';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
@@ -16,7 +23,6 @@ import { Text } from '@/components/ui/Text';
 import { PullToRefresh } from '@/components/ui/PullToRefresh';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { ErrorState } from '@/components/feedback/ErrorState';
-import { MockDataNotice } from '@/components/feedback/MockDataNotice';
 import { DetailRowSkeleton } from '@/components/feedback/DetailRowSkeleton';
 import { colors, layout, radius, spacing, typography } from '@/design';
 import { useStaleRefetchOnFocus } from '@/hooks/useStaleRefetchOnFocus';
@@ -24,7 +30,16 @@ import type { Restaurant } from '@/services/contracts';
 import { queryKeys } from '@/services/query';
 import { RestaurantRow } from '../components/RestaurantRow';
 import { useRestaurants, useRestaurantSearch } from '../hooks/useRestaurants';
-import { useDirectory, type Cuisine } from '../catalog';
+import { useDirectory } from '../catalog';
+import { CategorySheet } from '../components/CategorySheet';
+import {
+  activeCount,
+  matches,
+  noFilters,
+  toggle,
+  topCuisines,
+  type Filters,
+} from '../discovery';
 import { Reveal } from '@/components/ratings/Reveal';
 import { Chip } from '@/components/ui/Chip';
 
@@ -41,14 +56,23 @@ export default function RestaurantsScreen() {
     () => new Map(directory.data?.map((e) => [e.restaurantId, e])),
     [directory.data],
   );
-  const cuisines = useMemo(
-    () => [...new Set(directory.data?.map((e) => e.cuisine))],
+  const [filters, setFilters] = useState<Filters>(noFilters);
+  const [categories, setCategories] = useState(false);
+  const shortcuts = useMemo(
+    () => topCuisines(directory.data ?? []),
     [directory.data],
   );
-  const [cuisine, setCuisine] = useState<Cuisine | null>(null);
-  const items = cuisine
-    ? query.items.filter((r) => entries.get(r.id)?.cuisine === cuisine)
+  const selected = activeCount(filters);
+  const items = selected
+    ? query.items.filter((r) => matches(entries.get(r.id), filters))
     : query.items;
+  // A filter must see every page, or its counts would promise hidden places.
+  const { hasNextPage, isFetching, isFetchNextPageError, fetchNextPage } =
+    query;
+  useEffect(() => {
+    if (selected && hasNextPage && !isFetching && !isFetchNextPageError)
+      void fetchNextPage();
+  }, [selected, hasNextPage, isFetching, isFetchNextPageError, fetchNextPage]);
   const renderItem = useCallback(
     ({ item, index }: ListRenderItemInfo<Restaurant>) => (
       <Reveal order={index}>
@@ -127,7 +151,7 @@ export default function RestaurantsScreen() {
           />
         )}
       </View>
-      {cuisines.length > 1 && (
+      {shortcuts.length > 0 && (
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -137,21 +161,35 @@ export default function RestaurantsScreen() {
           <Chip
             label={t('dining.allCuisines')}
             tone="brand"
-            selected={cuisine === null}
-            onPress={() => setCuisine(null)}
+            selected={!selected}
+            onPress={() => setFilters(noFilters)}
           />
-          {cuisines.map((c) => (
+          {shortcuts.map((c) => (
             <Chip
               key={c}
               label={t(`dining.cuisine.${c}`)}
               tone="brand"
-              selected={cuisine === c}
-              onPress={() => setCuisine(cuisine === c ? null : c)}
+              selected={filters.cuisine.includes(c)}
+              onPress={() => setFilters(toggle(filters, 'cuisine', c))}
             />
           ))}
         </ScrollView>
       )}
-      <MockDataNotice />
+      {/* On its own line: inside the rail it sits off screen. */}
+      {shortcuts.length > 0 && (
+        <View style={styles.allCategories}>
+          <Chip
+            label={
+              selected
+                ? t('discovery.allSelected', { count: selected })
+                : t('discovery.all')
+            }
+            tone="brand"
+            selected={selected > 0}
+            onPress={() => setCategories(true)}
+          />
+        </View>
+      )}
       {query.isError &&
         query.items.length > 0 &&
         !query.isFetchNextPageError && (
@@ -188,12 +226,21 @@ export default function RestaurantsScreen() {
           void query.refetch();
         }}
       />
-    ) : search || cuisine ? (
-      <EmptyState
-        icon={Search}
-        title={t('restaurants.noResults')}
-        message={t('restaurants.tryAnother')}
-      />
+    ) : search || selected ? (
+      <View>
+        <EmptyState
+          icon={Search}
+          title={t('restaurants.noResults')}
+          message={t('restaurants.tryAnother')}
+        />
+        {selected > 0 && (
+          <Button
+            variant="ghost"
+            label={t('discovery.clear')}
+            onPress={() => setFilters(noFilters)}
+          />
+        )}
+      </View>
     ) : (
       <EmptyState icon={Store} title={t('restaurants.empty')} />
     );
@@ -268,10 +315,19 @@ export default function RestaurantsScreen() {
           }
         />
       </View>
+      {categories && (
+        <CategorySheet
+          entries={directory.data ?? []}
+          filters={filters}
+          onChange={setFilters}
+          onClose={() => setCategories(false)}
+        />
+      )}
     </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
+  allCategories: { alignItems: 'flex-start' },
   root: { flex: 1, backgroundColor: colors.background },
   column: {
     flex: 1,

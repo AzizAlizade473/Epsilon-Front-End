@@ -4,6 +4,7 @@ import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { Screen } from '@/components/ui/Screen';
+import { OfficialReply } from '@/components/reviews/OfficialReply';
 import { BackButton } from '@/components/navigation/BackButton';
 import { useRouter } from 'expo-router';
 import { Text } from '@/components/ui/Text';
@@ -12,7 +13,6 @@ import { Button } from '@/components/ui/Button';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { ErrorState } from '@/components/feedback/ErrorState';
 import { DetailRowSkeleton } from '@/components/feedback/DetailRowSkeleton';
-import { MockDataNotice } from '@/components/feedback/MockDataNotice';
 import { colors, layout, radius, spacing } from '@/design';
 import { useReviews } from '@/hooks/useProfile';
 import { BrandBadge } from '@/components/brand/BrandBadge';
@@ -78,7 +78,6 @@ export default function ReviewsScreen() {
           onRefresh={() => {
             void query.refetch();
           }}
-          ListHeaderComponent={<MockDataNotice />}
           renderItem={({ item }) => (
             <View style={styles.row}>
               <View style={styles.titleRow}>
@@ -129,6 +128,14 @@ export default function ReviewsScreen() {
                 </View>
               )}
               {item.comment && <Text>{item.comment}</Text>}
+              {item.reply && (
+                <OfficialReply
+                  // Rows are recycled: report state belongs to one review.
+                  key={item.feedbackId}
+                  feedbackId={item.feedbackId}
+                  reply={item.reply}
+                />
+              )}
             </View>
           )}
           ListEmptyComponent={

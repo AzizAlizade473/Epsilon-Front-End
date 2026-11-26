@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { queryOptions, useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { demoContent } from '@/lib/demoContent';
 import {
@@ -61,11 +61,16 @@ export async function readDishReviews(
 function useLanguage() {
   return catalogLanguage(useTranslation().i18n.language);
 }
+export function catalogOptions(id: string, language: CatalogLanguage) {
+  return queryOptions({
+    queryKey: ['restaurant', 'catalog', id, language],
+    queryFn: () => readCatalog(id, language),
+  });
+}
 export function useCatalog(id: string) {
   const language = useLanguage();
   return useQuery({
-    queryKey: ['restaurant', 'catalog', id, language],
-    queryFn: () => readCatalog(id, language),
+    ...catalogOptions(id, language),
     enabled: Boolean(id),
   });
 }

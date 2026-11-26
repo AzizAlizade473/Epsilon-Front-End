@@ -19,7 +19,6 @@ import { Text } from '@/components/ui/Text';
 import { Icon } from '@/components/ui/Icon';
 import { Button } from '@/components/ui/Button';
 import { PressSurface } from '@/components/ui/PressSurface';
-import { MockDataNotice } from '@/components/feedback/MockDataNotice';
 import { spacing } from '@/design';
 import { originalReceipts as o } from '@/design/original-receipts';
 import { ReceiptHeader } from './ReceiptHeader';
@@ -28,6 +27,7 @@ import type { Receipt, ReceiptItem } from '@/services/contracts';
 import { DishCard } from './DishCard';
 import { FiscalFooter, FiscalSummary } from './FiscalDetails';
 import { NotEligibleReceipt } from './NotEligibleReceipt';
+import { ReceiptReply } from './ReceiptReply';
 
 const enter = (order: number) =>
   FadeInDown.duration(260)
@@ -236,6 +236,12 @@ export function ReceiptContent({
               }
               {...(onEdit ? { onEdit: () => onEdit(item) } : {})}
             />
+            {item.feedbackId && (
+              <ReceiptReply
+                key={item.feedbackId}
+                feedbackId={item.feedbackId}
+              />
+            )}
           </Animated.View>
         ))}
       </View>
@@ -288,7 +294,6 @@ export function ReceiptContent({
           )}
         </View>
       )}
-      {!fiscal && <MockDataNotice />}
     </ScrollView>
   );
 }

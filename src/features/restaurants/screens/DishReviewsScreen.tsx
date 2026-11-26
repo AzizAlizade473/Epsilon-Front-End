@@ -14,6 +14,7 @@ import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { Button } from '@/components/ui/Button';
 import { EmptyState } from '@/components/feedback/EmptyState';
 import { ErrorState } from '@/components/feedback/ErrorState';
+import { OfflineNotice, useOnline } from '@/components/feedback/OfflineNotice';
 import { DetailRowSkeleton } from '@/components/feedback/DetailRowSkeleton';
 import { colors, layout, radius, spacing, typography } from '@/design';
 import { premium } from '@/design/premium';
@@ -62,6 +63,7 @@ function Reviews({ params }: { params: Params }) {
     safeIdSchema.safeParse(dishId).success;
   const initialStars = Number(params.stars);
   const { t } = useTranslation();
+  const online = useOnline();
   const router = useRouter();
   const catalog = useCatalog(valid ? id : '');
   const reviews = useDishReviews(valid ? id : '', valid ? dishId : '');
@@ -130,6 +132,7 @@ function Reviews({ params }: { params: Params }) {
   );
   const header = (
     <View style={styles.header}>
+      <OfflineNotice saved={Boolean(reviews.data)} />
       {dish && (
         <View style={styles.summary}>
           <View style={styles.big}>
@@ -234,7 +237,7 @@ function Reviews({ params }: { params: Params }) {
           contentContainerStyle={styles.list}
           ListHeaderComponent={header}
           ListEmptyComponent={
-            reviews.isLoading || catalog.isLoading ? (
+            !online && !all ? null : reviews.isLoading || catalog.isLoading ? (
               <View
                 accessibilityLabel={t('common.loading')}
                 accessibilityRole="progressbar"
