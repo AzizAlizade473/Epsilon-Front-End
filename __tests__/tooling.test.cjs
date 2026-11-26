@@ -59,7 +59,6 @@ test('app.config.ts satisfies Android-first, security, and runtime requirements'
     'android.permission.READ_SMS',
     'android.permission.RECEIVE_SMS',
     'android.permission.SCHEDULE_EXACT_ALARM',
-    'android.permission.RECEIVE_BOOT_COMPLETED',
   ]);
   expect(exp.runtimeVersion).toEqual({ policy: 'appVersion' });
   const buildPropertiesPlugin = exp.plugins.find(

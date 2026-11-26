@@ -4,9 +4,8 @@ import { i18n } from '@/lib/i18n';
 
 /**
  * The gentle daily nudge, scheduled on the phone: one per day at 19:00 local
- * time, for the next week, a different message each day. Rescheduling on every
- * app start always begins tomorrow, so a day the customer already opened
- * Epsilon gets no reminder. Meal-specific reminders come from the server.
+ * time, today (if still ahead) and the next week, a different message each day.
+ * Rescheduled on every app start. Meal-specific reminders come from the server.
  */
 const PREFIX = 'epsilon-reminder-';
 const DAYS = 7;
@@ -34,10 +33,11 @@ export async function scheduleDailyReminders(
   await cancelReminders();
   if (!enabled || !(await native.getPermissionsAsync()).granted) return;
   const start = Math.floor(now.getTime() / 86_400_000);
-  for (let day = 1; day <= DAYS; day += 1) {
+  for (let day = 0; day <= DAYS; day += 1) {
     const at = new Date(now);
     at.setDate(now.getDate() + day);
     at.setHours(HOUR, 0, 0, 0);
+    if (at <= now) continue;
     const n = ((start + day) % MESSAGES) + 1;
     await native.scheduleNotificationAsync({
       identifier: `${PREFIX}${day}`,

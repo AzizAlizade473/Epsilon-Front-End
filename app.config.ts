@@ -43,7 +43,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       'android.permission.READ_SMS',
       'android.permission.RECEIVE_SMS',
       'android.permission.SCHEDULE_EXACT_ALARM',
-      'android.permission.RECEIVE_BOOT_COMPLETED',
     ],
   },
   runtimeVersion: {

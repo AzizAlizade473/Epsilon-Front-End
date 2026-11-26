@@ -37,6 +37,8 @@ export function NotificationPrimer() {
       void (async () => {
         const granted = await readNotificationPermission().catch(() => false);
         if (granted) {
+          // Re-register the push token: a new sign-in or install has none on the server.
+          await enableDeviceNotifications().catch(() => false);
           const prefs = await services.notification.settings();
           await scheduleDailyReminders(prefs.reminders);
           return;

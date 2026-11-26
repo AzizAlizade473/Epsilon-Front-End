@@ -6,6 +6,8 @@ const normalPermissions = new Set([
   'android.permission.ACCESS_NETWORK_STATE',
   'android.permission.WAKE_LOCK',
   'com.google.android.c2dm.permission.RECEIVE',
+  // expo-notifications restores scheduled reminders after a phone restart.
+  'android.permission.RECEIVE_BOOT_COMPLETED',
 ]);
 const featurePermissions = new Set([
   'android.permission.CAMERA',
