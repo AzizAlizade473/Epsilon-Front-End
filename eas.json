@@ -87,6 +87,52 @@
       "android": {
         "buildType": "apk"
       }
+    },
+    "live-tunnel": {
+      "environment": "preview",
+      "env": {
+        "EXPO_PUBLIC_APP_ENV": "development",
+        "EXPO_PUBLIC_API_MODE": "live",
+        "EXPO_PUBLIC_API_URL": "https://63-188-203-198.sslip.io/v1",
+        "EXPO_PUBLIC_MIN_AGE": "16",
+        "EXPO_PUBLIC_SUPPORT_EMAIL": "support@epsilonup.app",
+        "EXPO_PUBLIC_PRIVACY_URL": "https://epsilonup.app/privacy",
+        "EXPO_PUBLIC_TERMS_URL": "https://epsilonup.app/terms",
+        "EXPO_PUBLIC_E2E": "false",
+        "ENABLE_GOOGLE_SIGNIN": "true",
+        "ENABLE_APPLE_SIGNIN": "false",
+        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "786528593162-moqf1e8ke7s3jnfc9uftuq7k6jghmpb4.apps.googleusercontent.com"
+      },
+      "distribution": "internal",
+      "channel": "preview",
+      "android": {
+        "buildType": "apk"
+      },
+      "credentialsSource": "local"
+    },
+    "live-phone": {
+      "environment": "preview",
+      "env": {
+        "EXPO_PUBLIC_APP_ENV": "staging",
+        "EXPO_PUBLIC_API_MODE": "live",
+        "EXPO_PUBLIC_API_URL": "https://63-188-203-198.sslip.io/v1",
+        "EXPO_PUBLIC_MIN_AGE": "16",
+        "EXPO_PUBLIC_SUPPORT_EMAIL": "support@epsilonup.app",
+        "EXPO_PUBLIC_PRIVACY_URL": "https://epsilonup.app/privacy",
+        "EXPO_PUBLIC_TERMS_URL": "https://epsilonup.app/terms",
+        "EXPO_PUBLIC_E2E": "false",
+        "ENABLE_GOOGLE_SIGNIN": "true",
+        "ENABLE_APPLE_SIGNIN": "false",
+        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "786528593162-moqf1e8ke7s3jnfc9uftuq7k6jghmpb4.apps.googleusercontent.com",
+        "ANDROID_ARCHS": "arm64-v8a,armeabi-v7a",
+        "EXPO_PUBLIC_DEMO_CATALOG": "true"
+      },
+      "distribution": "internal",
+      "channel": "preview",
+      "android": {
+        "buildType": "apk"
+      },
+      "credentialsSource": "local"
     }
   },
   "submit": {
